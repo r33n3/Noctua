@@ -1411,6 +1411,8 @@ Over the next four units, you'll build a personal **context library**—a curate
 
 > **🔑 Key Concept:** Every time Claude Code generates something you like—a system prompt that works, an analysis framework that's clear, a tool definition that's reusable—extract it. Store it in your context library. In future sessions, feed your library back to Claude as context. This teaches the model YOUR style, YOUR standards, and YOUR architectural preferences. You get increasingly consistent, personalized outputs.
 
+> **💡 Technique — Let Claude Write the Entry:** You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, say: *"Based on what you just produced, write a reusable context library entry—a template or prompt—that would reliably reproduce this quality of output for similar scenarios."* Claude has full visibility into its own reasoning and can articulate the pattern more precisely than you can by inspecting the output alone. The entry it writes becomes your starting point; you refine it over time as you learn what consistently works.
+
 **Why This Matters:**
 - **Context Engineering at Meta-Level:** You learn what makes good context by curating your own
 - **Pattern Recognition:** Identifying reusable patterns trains your eye for architecture
