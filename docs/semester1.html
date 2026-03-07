@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semester 1 Syllabus — AgentForge</title>
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === BASE === */
+:root {
+  --bg: #0b0f19;
+  --bg-card: #121929;
+  --bg-sidebar: #060a14;
+  --bg-code: #0f1525;
+  --border: #2a3045;
+  --text: #e8dcc8;
+  --text-muted: #9a8e7a;
+  --accent: #d4a017;
+  --accent-hover: #f0c040;
+  --accent-bg: rgba(212, 160, 23, 0.10);
+  --green: #50c878;
+  --orange: #e67e22;
+  --red: #e74c3c;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --table-header: #151d30;
+  --table-row-alt: #121929;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid rgba(212, 160, 23, 0.15);
+  padding: 24px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
+}
+.sidebar-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+}
+.sidebar a {
+  display: block;
+  padding: 8px 20px 8px 28px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a.sub {
+  padding-left: 42px;
+  font-size: 13px;
+  color: #9a8e7a;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: var(--accent-bg);
+}
+.sidebar a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+.sidebar a.active.sub {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* === MOBILE TOGGLE === */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+
+/* === MAIN CONTENT === */
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-width: 0;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* === TYPOGRAPHY === */
+.content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  letter-spacing: -0.5px;
+}
+.content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
+}
+.content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 32px 0 12px;
+}
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2dd4bf;
+  margin: 24px 0 8px;
+}
+.content p {
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.content em {
+  color: var(--text-muted);
+}
+.content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* === LISTS === */
+.content ul, .content ol {
+  margin: 0 0 16px 24px;
+}
+.content li {
+  margin-bottom: 6px;
+}
+.content li > ul, .content li > ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* === CODE === */
+.content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.content pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 24px;
+  overflow-x: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+.content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+/* === TABLES === */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.content thead {
+  background: var(--table-header);
+}
+.content th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+  font-size: 13px;
+}
+.content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.content tbody tr:nth-child(even) {
+  background: var(--table-row-alt);
+}
+.content tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+/* === BLOCKQUOTE (default) === */
+.content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 14px 24px;
+  margin: 20px 0;
+  background: var(--accent-bg);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+.content blockquote p { color: var(--text-muted); }
+
+/* === CALLOUT CONTAINERS === */
+.callout {
+  padding: 16px 24px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.callout p { margin: 0; color: var(--text); }
+.callout p + p { margin-top: 10px; }
+.callout a { color: var(--accent); }
+.callout code { font-size: 12px; }
+.callout ul, .callout ol { margin: 8px 0 4px 20px; }
+.callout li { margin-bottom: 4px; }
+.callout-key {
+  border-color: var(--accent);
+  background: rgba(212, 160, 23, 0.08);
+}
+.callout-tip {
+  border-color: var(--green);
+  background: rgba(80, 200, 120, 0.08);
+}
+.callout-pitfall {
+  border-color: var(--orange);
+  background: rgba(230, 126, 34, 0.08);
+}
+.callout-remember {
+  border-color: var(--purple);
+  background: rgba(167, 139, 250, 0.08);
+}
+.callout-reading {
+  border-color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.06);
+}
+.callout-discuss {
+  border-color: var(--text-muted);
+  background: rgba(154, 142, 122, 0.08);
+}
+
+/* === HR === */
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .overlay.show {
+    display: block;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .content {
+    padding: 60px 20px 60px;
+  }
+  .content h1 { font-size: 26px; }
+  .content h2 { font-size: 20px; }
+}
+
+/* === MERMAID DIAGRAMS === */
+.mermaid {
+  background: #0f1525;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>AgentForge</h1>
+    <p>AI Security Engineering</p>
+  </div>
+  <div class="nav-section">Overview</div>
+<a href="index.html">Course Overview</a>
+<a href="assessment.html">Design Rationale</a>
+<div class="nav-section">Semester 1: Foundations</div>
+<a href="semester1.html" class="active">Semester 1 Overview</a>
+<a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
+<a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
+<a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
+<a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
+<div class="nav-section">Semester 2: Advanced</div>
+<a href="semester2.html">Semester 2 Overview</a>
+<a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
+<a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
+<a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
+<a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
+<div class="nav-section">Resources</div>
+<a href="frameworks.html">Frameworks & Protocols</a>
+<a href="lab-setup.html">Lab Setup Guide</a>
+<a href="reading.html">Reading List</a>
+
+</nav>
+
+<main class="main">
+  <div class="content">
+    <h1 id="csec-601-agentforge-foundations-of-agentic-ai-security">CSEC 601: AgentForge — Foundations of Agentic AI Security</h1>
+<p><strong>Semester 1 of a Year-Long Graduate Course</strong></p>
+<hr />
+<h2 id="course-information">Course Information</h2>
+<p><strong>Course Title:</strong> AgentForge — Foundations of Agentic AI Security</p>
+<p><strong>Course Number:</strong> CSEC 601</p>
+<p><strong>Semester:</strong> Spring 2026</p>
+<p><strong>Credit Hours:</strong> 3</p>
+<p><strong>Class Schedule:</strong> [16 weeks, includes 50-minute lectures and 110-minute labs]</p>
+<p><strong>Prerequisites:</strong>
+- Bachelor's degree in Computer Science, Information Security, or related field, OR
+- Equivalent professional cybersecurity experience
+- Working knowledge of command-line environments
+- Familiarity with basic cybersecurity concepts (recommended)</p>
+<p><strong>Instructor:</strong> [Instructor Name and Contact Information]</p>
+<p><strong>Office Hours:</strong> [Days/Times and Location/Virtual Details]</p>
+<p><strong>Communication:</strong> [Email, Slack, or other platform]</p>
+<hr />
+<h2 id="course-description">Course Description</h2>
+<p>CSEC 601 is an intensive graduate course designed to prepare security professionals for the agentic AI era. This course bridges three critical pillars: <strong>Collaborative Critical Thinking (CCT)</strong>, <strong>Ethical AI</strong>, and <strong>Rapid Prototyping</strong>. Students will learn to leverage Claude's advanced agentic capabilities—including Claude Code, the Claude Agent SDK, worktrees, subagents, and Model Context Protocol (MCP)—to build production-grade security tools in real time.</p>
+<p>The course emphasizes hands-on learning (70% labs, 30% theory) starting from Week 1. Rather than studying AI security as an abstract discipline, students will build working prototypes immediately, applying structured critical thinking to AI-augmented security work. By the end of Semester 1, students will understand the modern AI landscape, design context-engineered solutions for real security challenges, audit AI systems for safety and fairness, and deliver production-ready security tools using agentic engineering patterns.</p>
+<p>This is not a course about writing prompts. It is a course about orchestrating AI agents to solve security problems responsibly, ethically, and measurably.</p>
+<hr />
+<h2 id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this course, students will be able to:</p>
+<ol>
+<li>
+<p><strong>Apply Collaborative Critical Thinking (CCT)</strong> systematically to security problems, integrating Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, and Ethical Governance when working with AI-augmented tools.</p>
+</li>
+<li>
+<p><strong>Design and implement context-engineered solutions</strong> that move beyond prompt engineering to leverage system prompts, structured outputs, tool definitions, and memory architectures for security applications.</p>
+</li>
+<li>
+<p><strong>Build and deploy Model Context Protocol (MCP) servers</strong> that standardize agent-tool communication and enable auditable, secure AI agent access to external systems.</p>
+</li>
+<li>
+<p><strong>Evaluate AI security tools</strong> against established frameworks including NIST AI RMF, OWASP Top 10 for Agentic Applications, and the FS-ISAC Responsible AI Principles.</p>
+</li>
+<li>
+<p><strong>Identify and mitigate bias, fairness, and explainability issues</strong> in AI-powered security systems through hands-on bias detection and fairness engineering.</p>
+</li>
+<li>
+<p><strong>Architect multi-agent security operations</strong> using Claude's agentic stack (subagents, worktrees, agent teams) to coordinate specialized security functions.</p>
+</li>
+<li>
+<p><strong>Prototype production-grade security tools in 2-3 hour sprints</strong> from problem analysis through deployment, demonstrating mastery of rapid agentic engineering.</p>
+</li>
+<li>
+<p><strong>Compose and enforce AI security policies</strong> that govern data handling, model governance, agent permissions, and incident response for AI-driven security systems.</p>
+</li>
+<li>
+<p><strong>Measure AI-augmented security workflows</strong> using five key performance metrics: Mean Time to Triage (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Isolate (MTTI), and Augmented Mean Time to Respond (aMTTR).</p>
+</li>
+<li>
+<p><strong>Defend security decisions made by AI agents</strong> by providing explanations grounded in evidence, audit logs, and structured reasoning that satisfy both technical and non-technical stakeholders.</p>
+</li>
+</ol>
+<hr />
+<h2 id="course-structure-delivery">Course Structure &amp; Delivery</h2>
+<p><strong>In-Class Format:</strong> Each week consists of two class sessions:
+- <strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development
+- <strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</p>
+<p><strong>Overall Course Philosophy:</strong>
+- <strong>Hands-On First:</strong> Students build working tools before deep-diving into theory
+- <strong>CCT Integration:</strong> All assignments require application of CCT principles
+- <strong>Rapid Iteration:</strong> Single-session prototyping is a core competency
+- <strong>Ethical Accountability:</strong> Every tool students build is audited for safety, fairness, and transparency
+- <strong>Real-World Scenarios:</strong> All labs use realistic cybersecurity problems and data</p>
+<hr />
+<h2 id="weekly-schedule">Weekly Schedule</h2>
+<h3 id="unit-1-cct-foundations-ai-landscape-weeks-14">Unit 1: CCT Foundations &amp; AI Landscape (Weeks 1–4)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s1-unit1.html#week-1-welcome-to-the-agentic-era">Week 1: Welcome to the Agentic Era</a></td>
+<td>Course overview, AI evolution, intro to CCT</td>
+</tr>
+<tr>
+<td><a href="s1-unit1.html#week-2-the-5-pillars-of-collaborative-critical-thinking">Week 2: The 5 Pillars of CCT</a></td>
+<td>Deep dive into CCT theory and cognitive biases</td>
+</tr>
+<tr>
+<td><a href="s1-unit1.html#week-3-the-modern-ai-landscape-for-security-professionals">Week 3: Modern AI Landscape</a></td>
+<td>AI models, capabilities, security implications</td>
+</tr>
+<tr>
+<td><a href="s1-unit1.html#week-4-from-prompt-engineering-to-context-engineering">Week 4: Context Engineering</a></td>
+<td>Beyond prompt engineering</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s1-unit1.html">→ View Full Unit 1 Content</a></p>
+<hr />
+<h3 id="unit-2-context-engineering-tool-design-weeks-58">Unit 2: Context Engineering &amp; Tool Design (Weeks 5–8)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s1-unit2.html#week-5-model-context-protocol-mcp--the-agent-tool-interface">Week 5: Model Context Protocol</a></td>
+<td>Introduction to MCP architecture and standardization</td>
+</tr>
+<tr>
+<td><a href="s1-unit2.html#week-6-tool-design-patterns-for-security-agents">Week 6: Tool Design Patterns</a></td>
+<td>Building robust, secure tools</td>
+</tr>
+<tr>
+<td><a href="s1-unit2.html#week-7-structured-outputs--security-reporting">Week 7: Structured Outputs</a></td>
+<td>Machine-readable formats for reports</td>
+</tr>
+<tr>
+<td><a href="s1-unit2.html#week-8-retrieval-augmented-generation-rag-for-security-knowledge">Week 8: RAG for Security</a></td>
+<td>Domain-specific knowledge systems</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s1-unit2.html">→ View Full Unit 2 Content</a></p>
+<hr />
+<h3 id="unit-3-ethical-ai-responsible-ai-weeks-912">Unit 3: Ethical AI &amp; Responsible AI (Weeks 9–12)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s1-unit3.html#week-9-fs-isac-responsible-ai-principles-for-security-applications">Week 9: Responsible AI Principles</a></td>
+<td>Industry frameworks for AI safety and fairness</td>
+</tr>
+<tr>
+<td><a href="s1-unit3.html#week-10-owasp-top-10-for-agentic-applications">Week 10: OWASP Top 10 for Agentic Applications</a></td>
+<td>Security vulnerabilities in AI systems</td>
+</tr>
+<tr>
+<td><a href="s1-unit3.html#week-11-bias-fairness-and-explainability-in-security-ai">Week 11: Bias, Fairness, and Explainability</a></td>
+<td>Detecting and mitigating AI bias</td>
+</tr>
+<tr>
+<td><a href="s1-unit3.html#week-12-privacy-data-governance-and-ai-security-policy">Week 12: Privacy and AI Security Policy</a></td>
+<td>Data governance and policy frameworks</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s1-unit3.html">→ View Full Unit 3 Content</a></p>
+<hr />
+<h3 id="unit-4-rapid-prototyping-with-agentic-tools-weeks-1316">Unit 4: Rapid Prototyping with Agentic Tools (Weeks 13–16)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s1-unit4.html#week-13-claude-code-deep-dive--worktrees-subagents-and-agent-teams">Week 13: Claude Code Deep Dive</a></td>
+<td>Agentic stack mastery</td>
+</tr>
+<tr>
+<td><a href="s1-unit4.html#week-14-rapid-prototyping-sprint-i--from-concept-to-demo-in-3-hours">Week 14: Rapid Prototyping Sprint I</a></td>
+<td>Build from concept to demo in 3 hours</td>
+</tr>
+<tr>
+<td><a href="s1-unit4.html#week-15-rapid-prototyping-sprint-ii--iteration-and-hardening">Week 15: Rapid Prototyping Sprint II</a></td>
+<td>Hardening and production-ready quality</td>
+</tr>
+<tr>
+<td><a href="s1-unit4.html#week-16-midyear-project-presentations">Week 16: Midyear Presentations</a></td>
+<td>Demo and reflection</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s1-unit4.html">→ View Full Unit 4 Content</a></p>
+<hr />
+<h3 id="detailed-week-content">Detailed Week Content</h3>
+<p>For detailed content including lecture notes, labs, and deliverables for each week, please visit the unit documentation files linked above. The remaining content below focuses on assessment, policies, and course resources.</p>
+<hr />
+<h2 id="assessment-breakdown">Assessment Breakdown</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab Exercises (Weekly)</td>
+<td>25%</td>
+<td>Deliverables from Weeks 1–15 (13 graded labs). Evaluated on functionality, documentation, and application of course concepts.</td>
+</tr>
+<tr>
+<td>CCT Journals</td>
+<td>10%</td>
+<td>Weekly reflection entries (Weeks 1–15, 14 entries). Must demonstrate deepening understanding of Collaborative Critical Thinking principles.</td>
+</tr>
+<tr>
+<td>Participation</td>
+<td>5%</td>
+<td>In-class discussion, peer collaboration, responsiveness to instructor feedback. Attendance expected for all sessions.</td>
+</tr>
+<tr>
+<td>Midyear Project</td>
+<td>30%</td>
+<td>Rapid prototypes and final presentation (Weeks 14–16). Evaluated on problem significance, technical execution, demo quality, and presentation.</td>
+</tr>
+<tr>
+<td>OWASP/Ethics Audits</td>
+<td>15%</td>
+<td>Audit deliverables from Weeks 9–12 (four major audit reports). Evaluated on thoroughness and actionability of recommendations.</td>
+</tr>
+<tr>
+<td>Peer Reviews</td>
+<td>5%</td>
+<td>Quality and constructiveness of feedback provided to peers. Peer review assignments throughout semester.</td>
+</tr>
+<tr>
+<td>Performance Metrics Tracking</td>
+<td>10%</td>
+<td>Consistent tracking and improvement of MTTS/MTTP/MTTSol/MTTI/aMTTR across sprints. Demonstrated efficiency gains from Week 14 to Week 15.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Grading Scale:</strong>
+- A: 90–100%
+- B: 80–89%
+- C: 70–79%
+- D: 60–69%
+- F: Below 60%</p>
+<hr />
+<h2 id="course-policies">Course Policies</h2>
+<h3 id="academic-integrity">Academic Integrity</h3>
+<p>This is an AI course. You are <strong>expected</strong> to use AI tools, including Claude, to accelerate your learning and development. The skill we are building is not "avoid AI" but "direct AI effectively using structured critical thinking."</p>
+<p><strong>AI Usage Requirements:</strong>
+- All AI-assisted work must include a brief <strong>methodology note</strong> (50–150 words) explaining:
+  - How you used AI (which tool, what prompts, how many iterations)
+  - Why you chose that approach
+  - How you verified the AI's output for correctness and relevance
+  - What you would do differently next time
+- Example: "I used Claude Opus to help design the architecture for my MCP server. I provided the tool specifications and asked Claude to propose a modular design. I validated the design against security best practices and made three iterations to improve error handling. Next time, I would provide more detailed constraints upfront."</p>
+<p><strong>Academic integrity violations:</strong>
+- Submitting work that is not your own (e.g., using a classmate's code without attribution)
+- Misrepresenting AI-assisted work as entirely your own (not including methodology note)
+- Plagiarizing readings or external sources
+- Cheating on assignments (e.g., submitting another's prototype)</p>
+<p>Violations will be reported to the Dean of Students per institutional policy.</p>
+<h3 id="attendance">Attendance</h3>
+<p>Attendance at lectures and labs is expected. If you need to miss class:
+- Notify the instructor as soon as possible
+- Arrange to review recorded content or notes from peers
+- Complete lab deliverables even if you miss the in-class session (though participating in lab is strongly recommended)</p>
+<p>Excessive absences may impact your participation grade.</p>
+<h3 id="late-work">Late Work</h3>
+<ul>
+<li><strong>Up to 48 hours late:</strong> 10% penalty</li>
+<li><strong>Up to 1 week late:</strong> 20% penalty</li>
+<li><strong>After 1 week:</strong> Not accepted without instructor approval</li>
+</ul>
+<p>For lab-heavy courses, timely completion is critical for peer collaboration and feedback. Contact the instructor if you're falling behind.</p>
+<h3 id="ai-usage-policy-detailed">AI Usage Policy (Detailed)</h3>
+<p><strong>Philosophy:</strong> AI tools are force multipliers for security professionals. The goal is not to replace human thinking but to augment it with AI capabilities while maintaining rigor, fairness, and accountability.</p>
+<p><strong>Expected Usage:</strong>
+- Use Claude or other AI tools for brainstorming, drafting, ideation, and rapid prototyping
+- Use AI to accelerate coding, documentation, and report writing
+- Use AI as a thinking partner to stress-test your ideas (apply CCT via Claude)
+- Use AI to learn new concepts and explore alternatives</p>
+<p><strong>Prohibited Usage:</strong>
+- Submitting AI-generated work without verification or significant modification
+- Using AI to help peers cheat (sharing answers instead of helping them think)
+- Over-relying on AI to the point of losing understanding (if you can't explain the output, you haven't learned it)</p>
+<p><strong>Documentation:</strong>
+- Include the methodology note with all major deliverables (labs, reports, projects)
+- Indicate in code comments where AI assisted (e.g., <code># Claude-assisted error handling</code>)
+- If you copy code from AI, cite it (e.g., <code>// Generated with Claude, adapted for our use case</code>)</p>
+<hr />
+<h2 id="course-expectations">Course Expectations</h2>
+<h3 id="workload">Workload</h3>
+<p>This course is intensive and hands-on. Expect:
+- <strong>In-class:</strong> 3 hours per week (lecture + lab)
+- <strong>Outside class:</strong> 6–9 hours per week (reading, reflection, lab continuation, project work)
+- <strong>Total:</strong> ~10–12 hours per week (typical for a 3-credit graduate course)</p>
+<p>Weeks 14–16 (sprint weeks) may require additional time as you iterate on prototypes.</p>
+<h3 id="technology-requirements">Technology Requirements</h3>
+<p><strong>Required:</strong>
+- Laptop with Claude Code installed (Mac, Windows, or Linux)
+- Access to Claude (Claude Opus or Sonnet; Anthropic API credentials or Claude Max subscription)
+- Git for version control
+- A text editor or IDE (VSCode, PyCharm, or similar)
+- Command-line familiarity (bash/zsh)</p>
+<p><strong>Recommended:</strong>
+- Docker for containerizing tools and MCP servers
+- Python 3.9+ for building tools and MCP servers
+- Access to public vulnerability databases (NVD API, Shodan, GreyNoise) — free tiers available</p>
+<h3 id="classroom-conduct">Classroom Conduct</h3>
+<ul>
+<li>Arrive on time and be ready to engage</li>
+<li>Collaborate respectfully with peers; diverse perspectives strengthen learning</li>
+<li>Communicate clearly and ask questions when concepts are unclear</li>
+<li>Support each other; security is a team sport</li>
+<li>Respect intellectual property and cite your sources</li>
+</ul>
+<hr />
+<h2 id="course-resources">Course Resources</h2>
+<h3 id="provided-materials">Provided Materials</h3>
+<ul>
+<li>Weekly lecture slides and recordings (if virtual or hybrid)</li>
+<li>Lab starter code and datasets</li>
+<li>Reference materials (MITRE ATT&amp;CK, NIST frameworks, security whitepapers)</li>
+<li>Example MCP servers and Claude agents</li>
+<li>Security tools and APIs (simulated when production access isn't available)</li>
+</ul>
+<h3 id="external-resources">External Resources</h3>
+<ul>
+<li>Claude documentation (https://claude.ai/docs)</li>
+<li>Model Context Protocol (https://modelcontextprotocol.io/)</li>
+<li>NIST Cyber AI Profile (https://csrc.nist.gov/)</li>
+<li>OWASP Top 10 for Agentic Applications (https://owasp.org/)</li>
+<li>Security frameworks and standards (ATT&amp;CK, CIS Controls, SANS guidelines)</li>
+</ul>
+<h3 id="getting-help">Getting Help</h3>
+<p><strong>For course content questions:</strong>
+- Office hours (as scheduled)
+- Email the instructor
+- Slack channel (if applicable)
+- Peer discussion and collaboration</p>
+<p><strong>For mental health or personal support:</strong>
+- Campus counseling services (if applicable)
+- Your support network
+- Dean of Students office</p>
+<hr />
+<h2 id="course-schedule-summary">Course Schedule Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+<th>Major Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Welcome to the Agentic Era</td>
+<td>Environment setup + CCT journal</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The 5 Pillars of CCT</td>
+<td>CCT analysis report</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The Modern AI Landscape</td>
+<td>Model comparison report</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Context Engineering</td>
+<td>Context-engineered tool</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Model Context Protocol</td>
+<td>First MCP server</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tool Design Patterns</td>
+<td>Multi-tool MCP server</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Structured Outputs</td>
+<td>Report generator</td>
+</tr>
+<tr>
+<td>8</td>
+<td>RAG for Security</td>
+<td>RAG security assistant</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Responsible AI Principles</td>
+<td>Ethics audit report</td>
+</tr>
+<tr>
+<td>10</td>
+<td>OWASP Top 10</td>
+<td>Vulnerability assessment</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Bias and Fairness</td>
+<td>Bias analysis report</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Privacy and AI Policy</td>
+<td>AI Security Policy</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Agentic Stack Deep Dive</td>
+<td>Multi-agent prototype</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Rapid Prototyping Sprint I</td>
+<td>Working prototype + metrics</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Rapid Prototyping Sprint II</td>
+<td>Hardened prototype</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Midyear Presentations</td>
+<td>Final project presentation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="final-notes">Final Notes</h2>
+<h3 id="course-philosophy">Course Philosophy</h3>
+<p>This course is designed for security professionals who want to lead in the agentic AI era. You will not just learn about AI; you will build with AI, reason critically about AI, and deploy AI responsibly. By the end of Semester 1, you will be capable of:</p>
+<ul>
+<li><strong>Thinking critically</strong> about AI-augmented security problems using a structured framework (CCT)</li>
+<li><strong>Building rapidly</strong> using modern agentic tools (Claude Code, MCP, agent teams)</li>
+<li><strong>Evaluating responsibly</strong> using established frameworks (NIST, OWASP, Responsible AI Principles)</li>
+<li><strong>Measuring objectively</strong> using performance metrics and fairness assessments</li>
+<li><strong>Deploying confidently</strong> with security hardening and ethical safeguards</li>
+</ul>
+<h3 id="instructor-commitment">Instructor Commitment</h3>
+<p>I am committed to:
+- Providing clear, actionable feedback on your work
+- Creating a collaborative, safe learning environment
+- Staying current with rapidly evolving AI and security landscapes
+- Helping you connect course learning to your career goals
+- Responding to questions and concerns promptly</p>
+<h3 id="your-commitment">Your Commitment</h3>
+<p>You are expected to:
+- Engage actively in lectures and labs
+- Complete assignments thoroughly and on time
+- Participate constructively with peers
+- Ask questions when concepts are unclear
+- Apply critical thinking and ethical reasoning to all work
+- Respect the diverse perspectives and backgrounds of your classmates</p>
+<hr />
+<h2 id="appendix-performance-metrics-definitions">Appendix: Performance Metrics Definitions</h2>
+<p><strong>MTTS (Mean Time to Triage):</strong> Time from alert generation to initial assessment of the alert's nature and severity. Measures how quickly the system (human + AI) understands the problem.</p>
+<p><strong>MTTP (Mean Time to Protect):</strong> Time from triage to implementation of protective measures (e.g., isolating a system, blocking traffic). Measures speed of protective response.</p>
+<p><strong>MTTSol (Mean Time to Solve):</strong> Time from alert generation to complete resolution (root cause addressed, normal operations restored). Measures overall incident resolution speed.</p>
+<p><strong>MTTI (Mean Time to Isolate):</strong> Time from alert to containment (threat isolated, spread prevented). Measures containment speed.</p>
+<p><strong>aMTTR (Augmented Mean Time to Respond):</strong> Overall time from alert generation to resolution, accounting for human decision time and AI analysis time. Demonstrates the efficiency gain from AI augmentation.</p>
+<hr />
+<p><strong>Course Last Updated:</strong> March 4, 2026</p>
+<p><strong>Instructor:</strong> [Name]</p>
+<p><strong>Contact:</strong> [Email and office information]</p>
+  </div>
+</main>
+
+<script>
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('show');
+}
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) toggleSidebar();
+  });
+});
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6b4c1e',
+      primaryTextColor: '#e8dcc8',
+      primaryBorderColor: '#d4a017',
+      lineColor: '#9a8e7a',
+      secondaryColor: '#1a1f30',
+      tertiaryColor: '#0f1525',
+      background: '#0f1525',
+      mainBkg: '#6b4c1e',
+      nodeBorder: '#d4a017',
+      clusterBkg: '#0b0f19',
+      clusterBorder: '#2a3045',
+      titleColor: '#d4a017',
+      edgeLabelBackground: '#0f1525',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>

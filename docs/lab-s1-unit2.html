@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Guide: Unit 2 — Context Engineering & Tool Design | AgentForge</title>
+<link rel="stylesheet" href="labs.css">
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Lab Guide: Unit 2 — Context Engineering &amp; Tool Design</h1>
+<p><strong>CSEC 601 | Weeks 5–8 | Semester 1</strong></p>
+<p>Four labs covering MCP server implementation, tool design patterns, structured outputs, and RAG-based security knowledge systems.</p>
+
+<div class="lab-progress">
+  <div class="lab-progress-header"><span>Unit 2 Lab Progress</span><span id="prog-text">0 / 28 steps complete</span></div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
+</div>
+<hr>
+
+<!-- ======== WEEK 5 ======== -->
+<h2 id="week-5">Week 5 — Model Context Protocol (MCP): Your First Server</h2>
+<div class="week-header"><span class="week-badge">WEEK 5</span><span class="week-sub">Lab: Build a CVE Lookup MCP Server</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a functioning MCP server in Python that exposes a <code>query_cve</code> tool to Claude Code. By the end, Claude should be able to fetch live CVE data from the NVD API using natural language in your terminal.</p></div>
+
+<div class="quiz-block" id="quiz-w5">
+  <h4>&#x1f4da; Knowledge Check — Week 5</h4>
+  <p class="quiz-intro">Complete before starting the lab.</p>
+
+  <div class="quiz-question" data-qid="w5q1" data-answer="b" data-explain="MCP defines three components: Clients (AI agents consuming tools), Servers (stateless services exposing tools with input validation and logging), and Transports (the communication channel — stdio, HTTP, or WebSockets). Each layer provides distinct security controls.">
+    <p class="q-text">1. What are the three architectural components of the Model Context Protocol?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w5q1" value="a"> A) Models, Prompts, and Tools</label>
+      <label><input type="radio" name="w5q1" value="b"> B) Clients, Servers, and Transports</label>
+      <label><input type="radio" name="w5q1" value="c"> C) Inputs, Outputs, and Schemas</label>
+      <label><input type="radio" name="w5q1" value="d"> D) APIs, SDKs, and Runtimes</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w5q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w5q2" data-answer="a" data-explain="stdio (standard input/output) is the transport used for local integrations, including Claude Code. When you configure Claude Code to use an MCP server, it communicates via stdin/stdout — no network port needed for local tools.">
+    <p class="q-text">2. Which MCP transport is used for local Claude Code integrations?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w5q2" value="a"> A) stdio (standard input/output)</label>
+      <label><input type="radio" name="w5q2" value="b"> B) HTTP/HTTPS</label>
+      <label><input type="radio" name="w5q2" value="c"> C) WebSockets</label>
+      <label><input type="radio" name="w5q2" value="d"> D) gRPC</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w5q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w5q3" data-answer="d" data-explain="MCP tool metadata includes: name, description (natural language), input schema (JSON Schema with types and constraints), output schema, and error codes. This enables automatic tool discovery — an agent can connect to a new MCP server and immediately understand all available capabilities.">
+    <p class="q-text">3. What does MCP's tool discovery mechanism expose to an agent?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w5q3" value="a"> A) The server's source code</label>
+      <label><input type="radio" name="w5q3" value="b"> B) Authentication credentials and API keys</label>
+      <label><input type="radio" name="w5q3" value="c"> C) Historical usage statistics</label>
+      <label><input type="radio" name="w5q3" value="d"> D) Tool names, descriptions, input/output schemas, and error codes</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w5q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: CVE Lookup MCP Server</h4>
+  <div class="callout callout-tip" style="margin-bottom:14px;"><p><strong>Architecture note:</strong> You are building an MCP <em>server</em> — a Python process that Claude Code connects to. Claude becomes the <em>client</em>. The server wraps the NVD API and exposes it as the <code>query_cve</code> tool. Claude never calls the NVD API directly.</p></div>
+
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w5-1">
+      <label><input type="checkbox" onchange="toggleStep('w5-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Set up MCP Python development environment</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit2/week5/cve-mcp
+cd ~/agentforge-labs/unit2/week5/cve-mcp
+python3 -m venv .venv && source .venv/bin/activate
+pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w5-2">
+      <label><input type="checkbox" onchange="toggleStep('w5-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Design the query_cve tool schema</div>
+        <div class="step-desc">Create <code>schema.py</code> defining the input schema (CVE ID with regex validation, optional include_remediation flag) and output schema (id, description, severity, cvss score, affected products, remediation). Document why each field and constraint exists from a security perspective.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w5-3">
+      <label><input type="checkbox" onchange="toggleStep('w5-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Implement server.py — the MCP server</div>
+        <div class="step-desc">Use the MCP SDK to create a server that: (1) exposes <code>query_cve</code>, (2) validates the CVE ID format with regex before making any API call, (3) calls NVD API with proper headers, (4) returns structured JSON, (5) handles rate limits and API failures gracefully with fallback responses.</div>
+      </div></label>
+      <div class="code-block"><pre><code># server.py skeleton (use Claude Code to complete the implementation)
+# Prompt Claude Code:
+# "Build an MCP server in Python using the mcp SDK that exposes a
+# query_cve tool. The tool should: validate CVE ID format (regex),
+# call the NVD API (https://services.nvd.nist.gov/rest/json/cves/2.0),
+# return structured JSON with id/description/severity/cvss/remediation,
+# handle API errors with graceful fallback. Use stdio transport."
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w5-4">
+      <label><input type="checkbox" onchange="toggleStep('w5-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Register the server with Claude Code</div>
+        <div class="step-desc">Create or edit <code>~/.claude/claude_desktop_config.json</code> (or the Claude Code MCP config) to register your new server. The key fields are <code>command</code> (path to python), <code>args</code> (path to server.py), and <code>env</code> (environment variables).</div>
+      </div></label>
+      <div class="code-block"><pre><code># ~/.claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "cve-lookup": {
+      "command": "python3",
+      "args": ["/path/to/agentforge-labs/unit2/week5/cve-mcp/server.py"],
+      "env": {}
+    }
+  }
+}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w5-5">
+      <label><input type="checkbox" onchange="toggleStep('w5-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Test tool discovery in Claude Code</div>
+        <div class="step-desc">Launch Claude Code and ask: "What MCP tools do you have available?" Verify your <code>query_cve</code> tool appears with correct description and schema. If it doesn't appear, debug the registration config.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w5-6">
+      <label><input type="checkbox" onchange="toggleStep('w5-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Test with natural language CVE queries</div>
+        <div class="step-desc">In Claude Code: "Look up CVE-2021-44228 (Log4Shell) and tell me which of our systems are at risk given [paste a sample software inventory]." Verify Claude calls your tool, parses the response, and reasons about it.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w5-7">
+      <label><input type="checkbox" onchange="toggleStep('w5-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Test edge cases and error handling</div>
+        <div class="step-desc">Test: (1) invalid CVE format <code>CVE-ABC</code> — should be rejected before API call, (2) non-existent CVE — should return graceful error, (3) what happens if NVD API is unreachable — should return cached/fallback response.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 5 Deliverables</h5>
+  <ul>
+    <li><strong>server.py</strong> — working MCP server with query_cve tool, input validation, and error handling</li>
+    <li><strong>schema.py</strong> — documented input/output schemas with security justifications for each constraint</li>
+    <li><strong>test-results.md</strong> — results from natural language queries, edge case tests, and tool discovery screenshot</li>
+    <li><strong>MCP Analysis Report</strong> (500 words) — how MCP solves the integration sprawl problem; what security advantages does tool discovery + schema validation provide?</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 6 ======== -->
+<h2 id="week-6">Week 6 — Tool Design Patterns for Security Agents</h2>
+<div class="week-header"><span class="week-badge">WEEK 6</span><span class="week-sub">Lab: Multi-Tool Security MCP Server</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Extend your CVE server to expose four security tools, implementing rate limiting, input sanitization, and the "Pit of Success" design principle — making the secure path the easy path.</p></div>
+
+<div class="quiz-block" id="quiz-w6">
+  <h4>&#x1f4da; Knowledge Check — Week 6</h4>
+
+  <div class="quiz-question" data-qid="w6q1" data-answer="c" data-explain="The 'Pit of Success' principle (from Jaymin West's Agentic Engineering) means designing tools so that the correct, secure usage is the path of least resistance. Agents should naturally fall into secure patterns without requiring developers to know all the edge cases.">
+    <p class="q-text">1. What does the 'Pit of Success' principle mean for MCP tool design?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w6q1" value="a"> A) Tools should always return successful responses</label>
+      <label><input type="radio" name="w6q1" value="b"> B) Error handling should be hidden from the agent</label>
+      <label><input type="radio" name="w6q1" value="c"> C) Secure, correct usage should be the easiest path; unsafe usage should require extra effort</label>
+      <label><input type="radio" name="w6q1" value="d"> D) Tools should never fail with an error</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w6q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w6q2" data-answer="b" data-explain="Tool input validation at the MCP server layer prevents parameter injection attacks — where an agent is manipulated into passing malicious parameters (like SQL injection payloads or path traversal strings) through a legitimate tool call. The server validates before executing any backend operation.">
+    <p class="q-text">2. Why should MCP servers validate inputs even when the calling agent is trusted?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w6q2" value="a"> A) For performance optimization</label>
+      <label><input type="radio" name="w6q2" value="b"> B) Because the agent itself could be manipulated by prompt injection into passing malicious parameters</label>
+      <label><input type="radio" name="w6q2" value="c"> C) Because MCP protocol requires it</label>
+      <label><input type="radio" name="w6q2" value="d"> D) To reduce logging volume</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w6q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w6q3" data-answer="d" data-explain="Every tool invocation should be logged with: timestamp, calling agent identity, tool name, input parameters (sanitized), output summary, and duration. This creates an audit trail for compliance and forensic investigation if an agent behaves unexpectedly.">
+    <p class="q-text">3. What should every MCP tool invocation log for security compliance?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w6q3" value="a"> A) Only errors — successful calls don't need logging</label>
+      <label><input type="radio" name="w6q3" value="b"> B) The complete raw output for replay</label>
+      <label><input type="radio" name="w6q3" value="c"> C) Only the tool name and timestamp</label>
+      <label><input type="radio" name="w6q3" value="d"> D) Timestamp, caller identity, tool name, sanitized inputs, output summary, and duration</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w6q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Extend to a Multi-Tool Security Server</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w6-1">
+      <label><input type="checkbox" onchange="toggleStep('w6-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Add ip_reputation tool</div>
+        <div class="step-desc">Add a tool that queries AbuseIPDB (free API key required) or returns mock reputation data. Input: IP address (validate with regex). Output: abuse confidence score, country, usage type, ISP, last reported. Block private/loopback IPs at validation layer.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Add an ip_reputation tool to my MCP server. It should:
+# 1. Validate IP is not private/loopback (reject 10.x, 192.168.x, 127.x)
+# 2. Call AbuseIPDB API or return mock data if no API key
+# 3. Return: abuse_score, country_code, usage_type, isp, last_reported_at
+# 4. Log every invocation with sanitized inputs"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w6-2">
+      <label><input type="checkbox" onchange="toggleStep('w6-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Add hash_lookup tool</div>
+        <div class="step-desc">Add a tool that checks file hashes against VirusTotal (free tier API key) or a local mock threat intelligence database. Input: SHA256 hash (validate format). Output: malicious flag, detection ratio, threat name, first seen date.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w6-3">
+      <label><input type="checkbox" onchange="toggleStep('w6-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Add rate limiting middleware</div>
+        <div class="step-desc">Implement per-tool rate limits (e.g., ip_reputation: 5 calls/minute, query_cve: 10 calls/minute). Return a structured error with retry-after when rate limit is exceeded. This prevents agent loops from exhausting external API quotas.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w6-4">
+      <label><input type="checkbox" onchange="toggleStep('w6-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Implement structured audit logging</div>
+        <div class="step-desc">Add JSON-structured logging for every tool call: <code>{"ts": "ISO-8601", "tool": "ip_reputation", "input_hash": "sha256(params)", "result_code": "success|error", "duration_ms": 234}</code>. Hash inputs to avoid logging sensitive data while maintaining auditability.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w6-5">
+      <label><input type="checkbox" onchange="toggleStep('w6-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Test a multi-tool investigation workflow</div>
+        <div class="step-desc">In Claude Code: "Analyze this incident: user account accessed our data warehouse from 203.45.12.89 and downloaded files with hash d41d8cd98f00b204e9800998ecf8427e. Use available tools to investigate." Claude should chain ip_reputation + hash_lookup + query_cve automatically.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w6-6">
+      <label><input type="checkbox" onchange="toggleStep('w6-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Attempt a parameter injection attack</div>
+        <div class="step-desc">Try to trick Claude Code into passing a SQL injection payload as an IP address: "Look up the reputation of the IP '1.1.1.1; DROP TABLE logs;--'." Verify your server's input validation blocks this before any backend operation.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 6 Deliverables</h5>
+  <ul>
+    <li><strong>server.py</strong> (updated) — four tools with rate limiting, input validation, and structured audit logging</li>
+    <li><strong>Tool Design Document</strong> — for each tool: input schema, validation rules, error codes, and rate limit rationale</li>
+    <li><strong>Injection Test Report</strong> — results of your parameter injection attempt and how validation stopped it</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 7 ======== -->
+<h2 id="week-7">Week 7 — Structured Outputs &amp; Security Reporting</h2>
+<div class="week-header"><span class="week-badge">WEEK 7</span><span class="week-sub">Lab: Machine-Readable Security Report Generator</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build an MCP tool that generates structured security incident reports as both JSON (machine-readable) and Markdown (human-readable). Reports must be valid against a defined JSON Schema and parseable by downstream systems.</p></div>
+
+<div class="quiz-block" id="quiz-w7">
+  <h4>&#x1f4da; Knowledge Check — Week 7</h4>
+
+  <div class="quiz-question" data-qid="w7q1" data-answer="b" data-explain="Structured outputs (validated JSON) allow downstream agents, SOAR platforms, ticketing systems, and dashboards to reliably parse security reports. Unstructured text requires brittle regex parsing that breaks when output format changes. Machine-readable outputs are the foundation of automated security workflows.">
+    <p class="q-text">1. Why is structured JSON output preferred over free-text in security automation?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w7q1" value="a"> A) JSON is shorter and uses less bandwidth</label>
+      <label><input type="radio" name="w7q1" value="b"> B) Downstream systems can reliably parse, validate, and act on structured data without brittle text parsing</label>
+      <label><input type="radio" name="w7q1" value="c"> C) Humans prefer reading JSON</label>
+      <label><input type="radio" name="w7q1" value="d"> D) Structured outputs are required by NIST AI RMF</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w7q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w7q2" data-answer="c" data-explain="JSON Schema validation ensures outputs conform to an expected structure. In security, this catches cases where Claude hallucinates a field, omits required data, or produces malformed output that would silently corrupt a downstream SOAR workflow. Validate before passing reports to any automated system.">
+    <p class="q-text">2. What does JSON Schema validation catch that format checking alone cannot?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w7q2" value="a"> A) XSS injection in report fields</label>
+      <label><input type="radio" name="w7q2" value="b"> B) Encrypted data in JSON values</label>
+      <label><input type="radio" name="w7q2" value="c"> C) Missing required fields, wrong data types, values outside allowed ranges — structural errors that would silently break downstream pipelines</label>
+      <label><input type="radio" name="w7q2" value="d"> D) Large file sizes that exceed context limits</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w7q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Security Report Generator</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w7-1">
+      <label><input type="checkbox" onchange="toggleStep('w7-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Define the Incident Report JSON Schema</div>
+        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w7-2">
+      <label><input type="checkbox" onchange="toggleStep('w7-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Add generate_incident_report tool to your MCP server</div>
+        <div class="step-desc">Use Claude Code to implement a tool that takes raw incident data (text) and returns a validated JSON report. The tool should call Claude's API internally to structure the data, then validate the output against your JSON Schema before returning it.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Add a generate_incident_report tool to my MCP server that:
+# 1. Accepts raw incident data as a string
+# 2. Uses Claude API to structure it into the JSON Schema in report-schema.json
+# 3. Validates the output with jsonschema library before returning
+# 4. Returns both JSON and markdown versions
+# 5. Raises ValidationError with details if schema validation fails"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w7-3">
+      <label><input type="checkbox" onchange="toggleStep('w7-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Generate a report from the Meridian Financial incident</div>
+        <div class="step-desc">In Claude Code, pass the raw incident description from Week 1 to your generate_incident_report tool. Verify the output validates against your schema with <code>python3 -m jsonschema</code>.</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install jsonschema
+python3 -c "
+import json, jsonschema
+schema = json.load(open('report-schema.json'))
+report = json.load(open('generated-report.json'))
+jsonschema.validate(report, schema)
+print('Report is valid!')
+"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w7-4">
+      <label><input type="checkbox" onchange="toggleStep('w7-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Test schema enforcement — force a validation failure</div>
+        <div class="step-desc">Manually edit the generated report to remove a required field or use an invalid severity value. Run validation — verify it fails with a clear error. Document how this defense prevents silently corrupt reports entering downstream systems.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w7-5">
+      <label><input type="checkbox" onchange="toggleStep('w7-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Build the Markdown rendering for human review</div>
+        <div class="step-desc">Add a <code>render_report_markdown(report_json)</code> function that converts the validated JSON into a well-formatted Markdown document suitable for emailing to leadership or adding to a ticketing system. Test with your Meridian Financial report.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 7 Deliverables</h5>
+  <ul>
+    <li><strong>report-schema.json</strong> — complete JSON Schema for incident reports</li>
+    <li><strong>Updated server.py</strong> — with generate_incident_report tool and schema validation</li>
+    <li><strong>meridian-report.json</strong> and <strong>meridian-report.md</strong> — generated outputs from Week 1 incident</li>
+    <li><strong>Validation Test Results</strong> — screenshots/logs showing both passing and failing validation</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 8 ======== -->
+<h2 id="week-8">Week 8 — RAG for Security Knowledge</h2>
+<div class="week-header"><span class="week-badge">WEEK 8</span><span class="week-sub">Lab: Security Knowledge Base with RAG</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a Retrieval-Augmented Generation system that lets Claude query a curated security knowledge base (threat intel, runbooks, policy docs) without hallucinating answers from training data. This becomes your personal security AI assistant.</p></div>
+
+<div class="quiz-block" id="quiz-w8">
+  <h4>&#x1f4da; Knowledge Check — Week 8</h4>
+
+  <div class="quiz-question" data-qid="w8q1" data-answer="c" data-explain="RAG (Retrieval-Augmented Generation) combines retrieval (finding relevant documents from a knowledge base) with generation (LLM using those documents to answer questions). This grounds the LLM's answers in real, current documents rather than potentially outdated training data — critical for fast-moving fields like threat intelligence.">
+    <p class="q-text">1. What problem does RAG (Retrieval-Augmented Generation) solve for security knowledge systems?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w8q1" value="a"> A) It makes LLMs faster by caching responses</label>
+      <label><input type="radio" name="w8q1" value="b"> B) It reduces the cost of API calls</label>
+      <label><input type="radio" name="w8q1" value="c"> C) It grounds LLM answers in real, current documents — preventing hallucination of outdated or nonexistent security procedures</label>
+      <label><input type="radio" name="w8q1" value="d"> D) It allows LLMs to access the internet in real time</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w8q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w8q2" data-answer="b" data-explain="Vector embeddings represent text as high-dimensional numerical vectors where semantically similar content is numerically close. This enables semantic search — finding documents about 'credential theft' when the query says 'account takeover' — rather than requiring exact keyword matches. This is essential for security knowledge retrieval where terminology varies.">
+    <p class="q-text">2. Why are vector embeddings used for document retrieval in RAG systems?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w8q2" value="a"> A) They compress documents to reduce storage costs</label>
+      <label><input type="radio" name="w8q2" value="b"> B) They enable semantic similarity search — finding conceptually related documents even when exact keywords don't match</label>
+      <label><input type="radio" name="w8q2" value="c"> C) They encrypt documents for security compliance</label>
+      <label><input type="radio" name="w8q2" value="d"> D) They make documents faster to transmit over networks</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w8q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Security Knowledge Base with ChromaDB + Claude</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w8-1">
+      <label><input type="checkbox" onchange="toggleStep('w8-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Install RAG dependencies</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install chromadb anthropic sentence-transformers
+mkdir -p ~/agentforge-labs/unit2/week8/security-kb
+cd ~/agentforge-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w8-2">
+      <label><input type="checkbox" onchange="toggleStep('w8-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Curate the security knowledge base documents</div>
+        <div class="step-desc">Create 5-10 security documents in <code>kb-docs/</code>: (1) OWASP Top 10 for Agentic Apps summary, (2) Meridian Financial IR runbook, (3) prompt injection defense guide, (4) NHI governance policy, (5) your CCT framework reference. These will be your retrieval corpus.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w8-3">
+      <label><input type="checkbox" onchange="toggleStep('w8-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Build the document ingestion pipeline</div>
+        <div class="step-desc">Use Claude Code to build <code>ingest.py</code> that: chunks documents into 500-token segments with 50-token overlap, generates embeddings using sentence-transformers, stores in ChromaDB with metadata (source, chunk_id, created_at).</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Build a document ingestion script that:
+# 1. Reads .md files from kb-docs/ directory
+# 2. Chunks each into 500-token segments with 50-token overlap
+# 3. Generates embeddings with sentence-transformers all-MiniLM-L6-v2
+# 4. Stores in ChromaDB with metadata: source_file, chunk_index, content
+# Save the ChromaDB to ./chroma-db/ directory"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w8-4">
+      <label><input type="checkbox" onchange="toggleStep('w8-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Add search_security_kb tool to your MCP server</div>
+        <div class="step-desc">Add a tool that takes a natural language query, retrieves the top-5 most semantically similar document chunks from ChromaDB, and returns them with source citations. Claude then synthesizes an answer grounded in these retrieved documents.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w8-5">
+      <label><input type="checkbox" onchange="toggleStep('w8-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Test knowledge retrieval and grounding</div>
+        <div class="step-desc">Query: "What are the top defenses against prompt injection in our security policy?" Verify Claude: (1) retrieves relevant documents, (2) cites sources, (3) does NOT hallucinate procedures not in the knowledge base. Test a topic NOT in your KB and verify Claude says it lacks information.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w8-6">
+      <label><input type="checkbox" onchange="toggleStep('w8-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Measure RAG vs. no-RAG quality</div>
+        <div class="step-desc">Ask the same question with and without your RAG tool. Compare: (1) specificity (does RAG answer cite your runbook procedures?), (2) accuracy (does no-RAG hallucinate?), (3) citations (does RAG link to sources?). Document findings for your Unit 2 report.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 8 Deliverables</h5>
+  <ul>
+    <li><strong>kb-docs/</strong> — curated security knowledge base (minimum 5 documents)</li>
+    <li><strong>ingest.py</strong> + <strong>server.py</strong> (with search_security_kb tool) — fully working RAG pipeline</li>
+    <li><strong>RAG Evaluation Report</strong> — side-by-side comparison of RAG vs. no-RAG responses, with accuracy and grounding analysis</li>
+    <li><strong>Unit 2 Final Summary</strong> (1 page) — how your MCP server evolved from a single CVE tool into a multi-tool, RAG-powered security assistant</li>
+  </ul>
+</div>
+
+<hr>
+<div class="unit-complete">
+  <h3>&#x1f3c6; Unit 2 Complete</h3>
+  <p>You have built a production-capable MCP server with CVE lookup, IP reputation, hash analysis, report generation, and RAG-based knowledge retrieval.</p>
+  <p style="margin-top:8px;"><a href="lab-s1-unit3.html">Next: Unit 3 Lab — Ethical AI &amp; Security Governance &rarr;</a></p>
+</div>
+
+</div></main>
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s1-unit2.html');
+  initLabPage('lab-s1-unit2');
+</script>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Guide: Unit 7 — Production Security Engineering | AgentForge</title>
+<link rel="stylesheet" href="labs.css">
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Lab Guide: Unit 7 — Production Security Engineering</h1>
+<p><strong>CSEC 602 | Weeks 9–12 | Semester 2</strong></p>
+<p>Transform your agentic systems from proof-of-concept to production-grade: supply chain security, NHI governance, observability, and containerized deployment with CI/CD.</p>
+
+<div class="lab-progress">
+  <div class="lab-progress-header"><span>Unit 7 Lab Progress</span><span id="prog-text">0 / 28 steps complete</span></div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
+</div>
+<hr>
+
+<!-- ======== WEEK 9 ======== -->
+<h2 id="week-9">Week 9 — AI Supply Chain Security</h2>
+<div class="week-header"><span class="week-badge">WEEK 9</span><span class="week-sub">Lab: SBOM Generation, Dependency Scanning &amp; Model Provenance</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Generate a Software Bill of Materials for your SOC agent system, scan all dependencies for CVEs, verify model integrity, and implement supply chain security controls at each stage of your development pipeline.</p></div>
+
+<div class="quiz-block" id="quiz-u7w9">
+  <h4>&#x1f4da; Knowledge Check — Week 9</h4>
+
+  <div class="quiz-question" data-qid="u7w9q1" data-answer="d" data-explain="A Software Bill of Materials (SBOM) is a machine-readable inventory of all software components in a system — direct dependencies, transitive dependencies, versions, licenses, and known vulnerabilities. For AI systems, the SBOM extends to model artifacts, training data provenance, and evaluation datasets.">
+    <p class="q-text">1. What is a Software Bill of Materials (SBOM) and why does it matter for AI systems?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w9q1" value="a"> A) A list of features built into the AI model</label>
+      <label><input type="radio" name="u7w9q1" value="b"> B) A cost estimate for software procurement</label>
+      <label><input type="radio" name="u7w9q1" value="c"> C) A backup manifest for disaster recovery</label>
+      <label><input type="radio" name="u7w9q1" value="d"> D) A machine-readable inventory of all software components, dependencies, versions, and vulnerabilities — enabling rapid response when a CVE affects any component</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w9q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u7w9q2" data-answer="b" data-explain="The SLSA (Supply chain Levels for Software Artifacts) framework has 4 levels of supply chain security. Level 3 is recommended for production: requires signed provenance with metadata about how the artifact was built, using a hosted build service with separate build/sign infrastructure, verified by the consumer. Level 4 adds two-party review requirements.">
+    <p class="q-text">2. What does SLSA Level 3 require for production AI system deployment?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w9q2" value="a"> A) Only that the code is stored in a version control system</label>
+      <label><input type="radio" name="u7w9q2" value="b"> B) Signed provenance with build metadata using a hosted build service with separate signing infrastructure, verified by the consumer before deployment</label>
+      <label><input type="radio" name="u7w9q2" value="c"> C) A complete rewrite of all dependencies in Rust for memory safety</label>
+      <label><input type="radio" name="u7w9q2" value="d"> D) Quarterly security audits by an external firm</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w9q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u7w9q3" data-answer="a" data-explain="Unlike traditional software where you verify code via checksums, AI models are data artifacts. Model provenance means verifying: (1) the model came from the expected source (Anthropic API in this case), (2) the weights haven't been tampered with (hash verification for locally-run models), (3) the model version is the one you tested (pinned version in config). This prevents supply chain attacks where compromised weights are distributed through unofficial channels.">
+    <p class="q-text">3. What makes model provenance harder to verify than code provenance?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w9q3" value="a"> A) Models are opaque data artifacts — you can't inspect the 'code' that produces their behavior, and the weights can be subtly modified to change behavior in ways that are hard to detect without extensive evaluation</label>
+      <label><input type="radio" name="u7w9q3" value="b"> B) Model files are too large to hash efficiently</label>
+      <label><input type="radio" name="u7w9q3" value="c"> C) There are no standards for model signing yet</label>
+      <label><input type="radio" name="u7w9q3" value="d"> D) Models change every day due to continuous learning</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w9q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: SBOM Generation &amp; Supply Chain Audit</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u7w9-1">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-1',this.checked)">
+      <div class="step-content"><div class="step-title">Step 1: Generate SBOM in CycloneDX format</div></div></label>
+      <div class="code-block"><pre><code>pip install cyclonedx-bom
+mkdir -p ~/agentforge-labs/unit7/week9 && cd ~/agentforge-labs/unit7/week9
+
+# Generate SBOM for your SOC agent system
+cyclonedx-py --requirement ~/agentforge-labs/unit5/requirements.txt \
+  --output sbom.json --format json
+
+# Inspect: how many components? Any with known vulnerabilities?
+cat sbom.json | python3 -m json.tool | grep -c '"type"'</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w9-2">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Scan dependencies for CVEs with pip-audit</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install pip-audit
+pip-audit --requirement ~/agentforge-labs/unit5/requirements.txt \
+  --output json --output-file audit-results.json
+
+# Review findings
+cat audit-results.json | python3 -m json.tool | grep -E '"id"|"description"|"fix"'</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w9-3">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Scan for transitive dependency vulnerabilities</div>
+        <div class="step-desc">Install safety scanner for a second opinion on transitive deps. Compare results with pip-audit. Document: how many direct dependencies vs. transitive? Any high/critical CVEs in transitive deps that pip-audit missed?</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install safety
+safety check --json > safety-results.json
+
+# Compare with pip-audit results
+# Document: discrepancies between scanners, high/critical findings</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w9-4">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Implement model configuration pinning</div>
+        <div class="step-desc">Create <code>model-config.yaml</code> pinning exact model versions used in production. For Claude: pin the specific model ID (e.g., claude-sonnet-4-5). For locally-run models (if any): record the SHA256 hash of the model weights file. This prevents silent version upgrades from changing agent behavior.</div>
+      </div></label>
+      <div class="code-block"><pre><code># model-config.yaml
+models:
+  primary:
+    provider: anthropic
+    model_id: claude-sonnet-4-5   # Pinned version
+    max_tokens: 4096
+    temperature: 0.0
+  fallback:
+    provider: anthropic
+    model_id: claude-haiku-4-5-20251001
+    max_tokens: 1024
+    temperature: 0.0
+
+# For local models, also record:
+# sha256: "abc123..." (hash of weights file)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w9-5">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Write the Supply Chain Audit Report</div>
+        <div class="step-desc">Document: SBOM summary (component count, license types), CVE findings (by severity), transitive risk analysis, model provenance controls, gap analysis against SLSA Level 1 requirements, and 3 prioritized remediation actions.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 10 ======== -->
+<h2 id="week-10">Week 10 — Non-Human Identity Governance</h2>
+<div class="week-header"><span class="week-badge">WEEK 10</span><span class="week-sub">Lab: Agent Identity Registry &amp; Least Privilege Design</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Design and implement a Non-Human Identity (NHI) governance system for your multi-agent SOC. Each agent receives a unique identity with defined permissions, credential rotation, and audit trail. Apply the principle of least privilege to agent tool access.</p></div>
+
+<div class="quiz-block" id="quiz-u7w10">
+  <h4>&#x1f4da; Knowledge Check — Week 10</h4>
+
+  <div class="quiz-question" data-qid="u7w10q1" data-answer="c" data-explain="Enterprise environments in 2026 have an estimated 50:1 ratio of non-human identities (service accounts, API keys, agent credentials, automation tokens) to human identities. This creates a massive attack surface because NHIs are often over-provisioned, rarely audited, and credentials are frequently long-lived or never rotated.">
+    <p class="q-text">1. What is the estimated ratio of non-human to human identities in enterprise environments?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w10q1" value="a"> A) 1:1 — equal numbers</label>
+      <label><input type="radio" name="u7w10q1" value="b"> B) 5:1 — five NHIs per human</label>
+      <label><input type="radio" name="u7w10q1" value="c"> C) 50:1 — fifty NHIs per human identity, creating a massive unmonitored attack surface</label>
+      <label><input type="radio" name="u7w10q1" value="d"> D) 1000:1 — modern automation is fully autonomous</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w10q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u7w10q2" data-answer="b" data-explain="Least privilege for agents means: each agent receives only the minimum permissions needed for its specific task. The recon agent can read threat intelligence but cannot write to the incident ticket. The reporting agent can write reports but cannot call external APIs. This limits blast radius when an agent is compromised or manipulated.">
+    <p class="q-text">2. What does 'least privilege' mean specifically for AI agent tool access?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w10q2" value="a"> A) Using the smallest available LLM for each task</label>
+      <label><input type="radio" name="u7w10q2" value="b"> B) Each agent receives only the specific tools and permissions needed for its defined role — no more, reducing blast radius if the agent is compromised</label>
+      <label><input type="radio" name="u7w10q2" value="c"> C) Limiting the number of tokens each agent can use per request</label>
+      <label><input type="radio" name="u7w10q2" value="d"> D) Requiring human approval for every agent action</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w10q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: NHI Registry for Your SOC Agent System</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u7w10-1">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Create an Agent Identity Manifest</div>
+        <div class="step-desc">Create <code>agent-identities.yaml</code> defining each agent in your system: unique agent_id, role, allowed_tools (explicit list), denied_tools (explicit deny list), max_token_budget, credential_rotation_days. This is your NHI registry.</div>
+      </div></label>
+      <div class="code-block"><pre><code># agent-identities.yaml
+agents:
+  - agent_id: soc-orchestrator-001
+    role: incident_orchestrator
+    allowed_tools: [route_alert, invoke_specialist, generate_report]
+    denied_tools: [external_api_calls, file_write, database_write]
+    max_tokens_per_session: 50000
+    credential_rotation_days: 30
+
+  - agent_id: soc-recon-001
+    role: threat_intelligence_analyst
+    allowed_tools: [query_cve, ip_reputation, hash_lookup]
+    denied_tools: [generate_report, write_database, send_alerts]
+    max_tokens_per_session: 20000
+    credential_rotation_days: 30</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w10-2">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Implement permission enforcement in the MCP server</div>
+        <div class="step-desc">Modify your MCP server to accept an agent_id header with each tool call. Before executing any tool, check the agent-identities.yaml: is this agent_id allowed to call this tool? If not, return 403 Forbidden with a structured error. Log all permission checks.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w10-3">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Implement short-lived JWT tokens for agent authentication</div>
+        <div class="step-desc">Implement a token service that issues 1-hour JWT tokens to agents at startup. Tokens include: agent_id, allowed_tools, issued_at, expires_at. Agents must present a valid token with each MCP call. Revoke a token and verify the agent is blocked.</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install pyjwt
+# Claude Code prompt:
+# "Build a JWT token service for my MCP NHI system:
+# - issue_token(agent_id) → signed JWT with 1hr expiry + allowed tools
+# - validate_token(token) → verify signature + check expiry
+# - revoke_token(agent_id) → add to revocation list (in-memory for now)
+# - Use HS256 signing with a secret from environment variable JWT_SECRET"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w10-4">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Test least privilege enforcement</div>
+        <div class="step-desc">Attempt to call each tool with the wrong agent identity (e.g., the recon agent calling generate_report). Verify: all unauthorized calls are blocked and logged. Verify: a revoked token is immediately blocked across all tool calls.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w10-5">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Build the NHI Audit Trail</div>
+        <div class="step-desc">Create a daily NHI audit log that records: which agents were active, which tools each called, any permission violations (blocked calls), token issuance and expiry events. This log is your compliance evidence for the 'Accountable and Transparent' FS-ISAC principle.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 11 ======== -->
+<h2 id="week-11">Week 11 — Observability &amp; Cost Management</h2>
+<div class="week-header"><span class="week-badge">WEEK 11</span><span class="week-sub">Lab: OpenTelemetry Instrumentation for Agent Systems</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Instrument your SOC agent system with OpenTelemetry to capture distributed traces, metrics, and logs. Build a cost tracking dashboard. Configure anomaly detection alerts for unusual agent behavior.</p></div>
+
+<div class="quiz-block" id="quiz-u7w11">
+  <h4>&#x1f4da; Knowledge Check — Week 11</h4>
+
+  <div class="quiz-question" data-qid="u7w11q1" data-answer="b" data-explain="The three pillars of observability are: Logs (discrete events with structured data), Metrics (numerical measurements over time — counters, gauges, histograms), and Traces (distributed request flows showing cause-and-effect across services). Together they provide complete visibility into system behavior — essential for debugging agent misbehavior.">
+    <p class="q-text">1. What are the three pillars of observability?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w11q1" value="a"> A) Monitoring, Alerting, and Dashboarding</label>
+      <label><input type="radio" name="u7w11q1" value="b"> B) Logs (discrete events), Metrics (numerical measurements over time), and Traces (distributed request flows)</label>
+      <label><input type="radio" name="u7w11q1" value="c"> C) CPU, Memory, and Network utilization</label>
+      <label><input type="radio" name="u7w11q1" value="d"> D) Availability, Performance, and Security</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w11q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u7w11q2" data-answer="d" data-explain="OpenTelemetry provides vendor-neutral instrumentation APIs for all three pillars (logs, metrics, traces). It standardizes how telemetry is collected and exported, allowing teams to switch backend observability platforms (Jaeger, Datadog, Honeycomb) without changing instrumentation code. This prevents vendor lock-in in the observability stack.">
+    <p class="q-text">2. What makes OpenTelemetry valuable for production AI systems?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w11q2" value="a"> A) It provides AI-specific security scanning</label>
+      <label><input type="radio" name="u7w11q2" value="b"> B) It reduces token consumption by caching responses</label>
+      <label><input type="radio" name="u7w11q2" value="c"> C) It automatically detects and blocks prompt injection</label>
+      <label><input type="radio" name="u7w11q2" value="d"> D) Vendor-neutral instrumentation APIs for all three pillars — allows switching backend platforms without code changes, preventing observability vendor lock-in</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w11q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: OTel Instrumentation for Your SOC Agent</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u7w11-1">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-1',this.checked)">
+      <div class="step-content"><div class="step-title">Step 1: Install OpenTelemetry SDK</div></div></label>
+      <div class="code-block"><pre><code>pip install opentelemetry-sdk opentelemetry-exporter-otlp \
+  opentelemetry-instrumentation-requests
+mkdir -p ~/agentforge-labs/unit7/week11 && cd ~/agentforge-labs/unit7/week11</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w11-2">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Add distributed tracing to the orchestrator</div>
+        <div class="step-desc">Instrument each agent invocation as an OTel span. The trace should show: root span (full incident investigation) → child spans (recon_agent, analysis_agent, reporting_agent) → grandchild spans (each tool call within each agent). Each span records: agent_id, model_id, token_count, duration_ms, error (if any).</div>
+      </div></label>
+      <div class="code-block"><pre><code>from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, BatchSpanProcessor
+
+# Setup tracer
+provider = TracerProvider()
+provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer("soc-agent-system")
+
+# Instrument agent calls:
+with tracer.start_as_current_span("recon_agent") as span:
+    span.set_attribute("agent.id", "soc-recon-001")
+    span.set_attribute("model.id", "claude-sonnet-4-5")
+    result = recon_agent.run(alert)
+    span.set_attribute("tokens.input", result.usage.input_tokens)
+    span.set_attribute("tokens.output", result.usage.output_tokens)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w11-3">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Add cost tracking metrics</div>
+        <div class="step-desc">Implement an OTel Counter for token usage per agent per incident. Calculate cost: input tokens * $3/1M + output tokens * $15/1M (Claude Sonnet pricing). Track: total cost per incident, cost per agent role, running daily total. Export to console or Prometheus endpoint.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w11-4">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Configure a cost anomaly alert</div>
+        <div class="step-desc">Set a cost alert: if a single incident investigation costs more than $0.50, log a WARNING with the trace ID. If it costs more than $2.00, log an ERROR and flag for human review. Test by artificially injecting a large incident that causes excessive token usage.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w11-5">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Run 10 incidents and build the observability dashboard</div>
+        <div class="step-desc">Process your 10-incident test suite with instrumentation active. Export all spans. Analyze: average cost per incident, P95 latency by agent, error rate by agent. Use the console exporter output to build a simple HTML dashboard showing these metrics.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 12 ======== -->
+<h2 id="week-12">Week 12 — Deploying Agentic Security Systems</h2>
+<div class="week-header"><span class="week-badge">WEEK 12</span><span class="week-sub">Lab: Dockerfile, Container Scanning &amp; CI/CD Security Gates</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production.</p></div>
+
+<div class="quiz-block" id="quiz-u7w12">
+  <h4>&#x1f4da; Knowledge Check — Week 12</h4>
+
+  <div class="quiz-question" data-qid="u7w12q1" data-answer="c" data-explain="Multi-stage Dockerfiles separate build dependencies from runtime dependencies. Stage 1 (builder): install all dev tools, compile/prepare. Stage 2 (runtime): copy only the artifacts needed to run, using a minimal base image, with a non-root user. This reduces attack surface (no build tools in production) and image size.">
+    <p class="q-text">1. What security benefit does a multi-stage Dockerfile provide?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w12q1" value="a"> A) Faster container startup time</label>
+      <label><input type="radio" name="u7w12q1" value="b"> B) Automatic SBOM generation</label>
+      <label><input type="radio" name="u7w12q1" value="c"> C) Build tools and dependencies are in the build stage only — the production image contains only the minimum needed to run, reducing attack surface significantly</label>
+      <label><input type="radio" name="u7w12q1" value="d"> D) Enables hot-reload in production without restart</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w12q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u7w12q2" data-answer="b" data-explain="Pre-commit hooks (and the 'detect-secrets' tool) catch secrets (API keys, tokens, passwords) in code before they're committed to version control. Once a secret is committed to git history, it must be treated as compromised — the git history cannot be safely purged. Catching at commit-time prevents the entire problem.">
+    <p class="q-text">2. Why is pre-commit secrets detection the most critical CI/CD security gate?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u7w12q2" value="a"> A) It's the cheapest gate to implement</label>
+      <label><input type="radio" name="u7w12q2" value="b"> B) Once a secret is committed to git history, it must be treated as compromised — pre-commit detection prevents this irreversible mistake</label>
+      <label><input type="radio" name="u7w12q2" value="c"> C) It catches the most vulnerabilities compared to other gates</label>
+      <label><input type="radio" name="u7w12q2" value="d"> D) It runs fastest, speeding up the CI/CD pipeline</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u7w12q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Containerize &amp; Build CI/CD Pipeline</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u7w12-1">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Write a hardened multi-stage Dockerfile</div>
+      </div></label>
+      <div class="code-block"><pre><code># Dockerfile (multi-stage, non-root user, health check)
+FROM python:3.11-slim AS builder
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+FROM python:3.11-slim AS runtime
+# Non-root user
+RUN useradd -r -s /bin/false soc-agent
+WORKDIR /app
+# Copy only runtime deps from builder
+COPY --from=builder /install /usr/local
+COPY --chown=soc-agent:soc-agent . .
+USER soc-agent
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s CMD python3 -c "import anthropic; print('OK')"
+EXPOSE 8080
+CMD ["python3", "orchestrator.py"]</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-2">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Build and scan the container image with Trivy</div>
+      </div></label>
+      <div class="code-block"><pre><code>docker build -t soc-agent:latest .
+# Install Trivy
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+# Scan for CVEs
+trivy image --severity HIGH,CRITICAL soc-agent:latest --format json > trivy-report.json
+# Count critical/high CVEs
+cat trivy-report.json | python3 -m json.tool | grep '"Severity"' | sort | uniq -c</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-3">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Build the GitHub Actions CI/CD pipeline</div>
+        <div class="step-desc">Create <code>.github/workflows/security-pipeline.yml</code> with stages: (1) pre-commit: secrets detection with detect-secrets, (2) PR review: SAST with Bandit, (3) Build: container image build + Trivy scan + SBOM generation, (4) Deploy-dev: auto-deploy on merge to main, (5) Deploy-prod: requires manual approval.</div>
+      </div></label>
+      <div class="code-block"><pre><code># .github/workflows/security-pipeline.yml
+name: SOC Agent Security Pipeline
+on: [push, pull_request]
+jobs:
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secrets detection
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          extra_args: --only-verified
+
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install bandit && bandit -r . -f json -o bandit-report.json
+
+  container-build:
+    needs: [secrets-scan, sast]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t soc-agent:${{ github.sha }} .
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: soc-agent:${{ github.sha }}
+          exit-code: 1   # Fail on HIGH/CRITICAL
+          severity: HIGH,CRITICAL</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-4">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Test the pipeline gates</div>
+        <div class="step-desc">Test that each security gate blocks correctly: (1) Commit a test API key — verify secrets scan blocks it, (2) Introduce a SQL injection vulnerability — verify Bandit catches it, (3) Pin a dependency with a known HIGH CVE — verify Trivy blocks the build.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-5">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Write the Deployment Runbook</div>
+        <div class="step-desc">Document: How to deploy a new version, how to rollback, how to respond to a Trivy finding, how to handle a secrets detection failure, who has approval authority for production deployments. This runbook is required for your Unit 8 capstone.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Unit 7 Deliverables Summary</h5>
+  <ul>
+    <li><strong>SBOM + Dependency Scan</strong> — CycloneDX SBOM and pip-audit results for your SOC system</li>
+    <li><strong>NHI Registry</strong> — agent-identities.yaml with working JWT token enforcement</li>
+    <li><strong>OTel Instrumentation</strong> — working traces and cost metrics with anomaly alerting</li>
+    <li><strong>Hardened Dockerfile + GitHub Actions Pipeline</strong> — multi-stage build with all security gates active</li>
+    <li><strong>Deployment Runbook</strong> — documented operational procedures for production deployment</li>
+  </ul>
+</div>
+
+<hr>
+<div class="unit-complete">
+  <h3>&#x1f3c6; Unit 7 Complete</h3>
+  <p>Your systems are now production-ready: supply chain verified, identities governed, observable, and deployable via secure CI/CD.</p>
+  <p style="margin-top:8px;"><a href="lab-s2-unit8.html">Next: Unit 8 Lab — Capstone Projects &rarr;</a></p>
+</div>
+
+</div></main>
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s2-unit7.html');
+  initLabPage('lab-s2-unit7');
+</script>
+</body>
+</html>

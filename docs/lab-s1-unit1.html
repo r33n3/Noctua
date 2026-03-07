@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Guide: Unit 1 — CCT Foundations | AgentForge</title>
+<link rel="stylesheet" href="labs.css">
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main">
+<div class="content">
+
+<h1>Lab Guide: Unit 1 — CCT Foundations &amp; AI Landscape</h1>
+<p><strong>CSEC 601 | Weeks 1–4 | Semester 1</strong></p>
+<p>Four hands-on lab sessions applying Collaborative Critical Thinking to real security scenarios, building your first AI agent interactions, and establishing baseline performance metrics.</p>
+
+<!-- PROGRESS BAR -->
+<div class="lab-progress">
+  <div class="lab-progress-header">
+    <span>Unit 1 Lab Progress</span>
+    <span id="prog-text">0 / 32 steps complete</span>
+  </div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
+</div>
+
+<hr>
+
+<!-- ===== WEEK 1 ===== -->
+<h2 id="week-1">Week 1 — First Agent &amp; CCT Incident Analysis</h2>
+<div class="week-header"><span class="week-badge">WEEK 1</span><span style="color:var(--text-muted);font-size:14px">Lab: Claude Code Setup + Meridian Financial Incident</span></div>
+
+<div class="callout callout-key">
+<p><strong>Lab Goal:</strong> Install Claude Code, interact with your first AI agent, and apply all five CCT pillars to a realistic data exfiltration scenario. You will measure your baseline MTTI and submit a structured threat assessment.</p>
+</div>
+
+<!-- Week 1 Knowledge Check -->
+<div class="quiz-block" id="quiz-w1">
+  <h4>&#x1f4da; Knowledge Check — Before You Start</h4>
+  <p class="quiz-intro">Answer these questions before beginning the lab. If you miss any, review the Week 1 lecture before proceeding.</p>
+
+  <div class="quiz-question" data-qid="w1q1" data-answer="b" data-explain="CCT (Collaborative Critical Thinking) is the structured framework for evidence-based, inclusive, and ethical reasoning in AI-augmented security work. It has five pillars: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, and Ethical Governance.">
+    <p class="q-text">1. What does CCT stand for in this course?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w1q1" value="a"> A) Cloud Computing Technology</label>
+      <label><input type="radio" name="w1q1" value="b"> B) Collaborative Critical Thinking</label>
+      <label><input type="radio" name="w1q1" value="c"> C) Cybersecurity Compliance Testing</label>
+      <label><input type="radio" name="w1q1" value="d"> D) Context-Controlled Triage</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w1q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w1q2" data-answer="c" data-explain="Inclusive Perspective is the pillar that deliberately seeks out viewpoints beyond your immediate discipline — the application owner, network team, HR, compliance — and specifically encourages dissenting voices to prevent groupthink.">
+    <p class="q-text">2. Which CCT pillar focuses on seeking diverse viewpoints and challenging groupthink?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w1q2" value="a"> A) Evidence-Based Analysis</label>
+      <label><input type="radio" name="w1q2" value="b"> B) Strategic Connections</label>
+      <label><input type="radio" name="w1q2" value="c"> C) Inclusive Perspective</label>
+      <label><input type="radio" name="w1q2" value="d"> D) Adaptive Innovation</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w1q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w1q3" data-answer="c" data-explain="CCT means AI agents amplify human judgment, not replace it. Outputs should always be validated using structured human oversight — treating agent conclusions as inputs to your decision process, not final answers.">
+    <p class="q-text">3. An AI agent flags an account for compromise with 90% confidence. What does CCT recommend?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w1q3" value="a"> A) Act immediately — 90% is high confidence</label>
+      <label><input type="radio" name="w1q3" value="b"> B) Disable the agent and handle manually</label>
+      <label><input type="radio" name="w1q3" value="c"> C) Apply structured human oversight to validate with evidence before acting</label>
+      <label><input type="radio" name="w1q3" value="d"> D) Escalate directly to incident commander</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w1q3')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w1q4" data-answer="b" data-explain="MTTI (Mean Time to Investigate) measures how quickly a complete forensic and behavioral analysis is completed — what happened, how, and why. This is one of five key performance metrics you will track throughout the course.">
+    <p class="q-text">4. What does the MTTI metric measure in the AgentForge framework?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w1q4" value="a"> A) Time to deploy a security patch</label>
+      <label><input type="radio" name="w1q4" value="b"> B) Time to complete forensic and behavioral analysis</label>
+      <label><input type="radio" name="w1q4" value="c"> C) Time to notify regulators of a breach</label>
+      <label><input type="radio" name="w1q4" value="d"> D) Time to restore from backup after an incident</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w1q4')">Check Answer</button>
+  </div>
+  <div id="quiz-w1-score"></div>
+</div>
+
+<!-- Week 1 Lab Steps -->
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Meridian Financial Incident Analysis</h4>
+
+  <div class="callout callout-reading" style="margin-bottom:16px;">
+  <p><strong>Scenario:</strong> You are a junior SOC analyst at Meridian Financial. At 2:34 AM EST on March 3, 2026, your SIEM fires: VP John Chen's account (jchen@meridian.local) accessed the production data warehouse from 203.45.12.89 (Singapore proxy), downloaded 47 CSV files (2.3 GB of revenue reports, client balances, transaction histories) in 8 minutes 34 seconds using valid credentials + successful MFA. Leadership requires a preliminary assessment in 30 minutes.</p>
+  </div>
+
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Check each step as you complete it. Your progress is saved automatically.</p>
+
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-w1-1">
+      <label><input type="checkbox" onchange="toggleStep('w1-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Verify Claude Code is installed</div>
+        <div class="step-desc">Open your terminal and confirm Claude Code responds.</div>
+      </div></label>
+      <div class="code-block"><pre><code>claude --version
+# Expected: claude-code/x.x.x</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w1-2">
+      <label><input type="checkbox" onchange="toggleStep('w1-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Create the lab working directory</div>
+        <div class="step-desc">All Unit 1 lab files live here.</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week1
+cd ~/agentforge-labs/unit1/week1</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w1-3">
+      <label><input type="checkbox" onchange="toggleStep('w1-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Create the incident data file</div>
+        <div class="step-desc">Create <code>incident-data.md</code> with the structured Meridian Financial indicators from the scenario above. Include raw indicators, contextual data, and the account's login history.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w1-4">
+      <label><input type="checkbox" onchange="toggleStep('w1-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Launch Claude Code and submit Phase 1 CCT prompt</div>
+        <div class="step-desc">Open Claude Code and paste the structured CCT analysis prompt from the Week 1 lecture (the prompt with all 5 pillars). Observe Claude work through each pillar systematically.</div>
+      </div></label>
+      <div class="code-block"><pre><code>claude
+# Then paste the CCT 5-pillar analysis prompt from the lecture material</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w1-5">
+      <label><input type="checkbox" onchange="toggleStep('w1-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Verify Claude's output contains all 5 pillars</div>
+        <div class="step-desc">Check: Does the response explicitly address Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, and Ethical Governance? If any are missing, ask Claude to add them.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w1-6">
+      <label><input type="checkbox" onchange="toggleStep('w1-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Submit Phase 2 structured JSON analysis prompt</div>
+        <div class="step-desc">Ask Claude to produce the same analysis formatted as JSON with fields: <code>evidence_summary</code>, <code>alternative_hypotheses</code> (array of 3), <code>next_steps</code>, <code>assumptions</code>, <code>confidence_scores</code>.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w1-7">
+      <label><input type="checkbox" onchange="toggleStep('w1-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Save the structured output</div>
+        <div class="step-desc">Copy Claude's JSON output to <code>threat-assessment.json</code>. Verify it is valid JSON with <code>python3 -m json.tool threat-assessment.json</code>.</div>
+      </div></label>
+      <div class="code-block"><pre><code>python3 -m json.tool threat-assessment.json
+# Should print formatted JSON without errors</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w1-8">
+      <label><input type="checkbox" onchange="toggleStep('w1-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Create your metrics log CSV</div>
+        <div class="step-desc">Record timestamps for each phase of your investigation. Calculate your MTTI. This is your Week 1 baseline — you will compare against this in Sprint weeks.</div>
+      </div></label>
+      <div class="code-block"><pre><code># metrics-log.csv
+incident_id,phase,start_time,end_time,duration_min
+MF-2026-0342,data_load,[your time],[your time],
+MF-2026-0342,cct_analysis,[your time],[your time],
+MF-2026-0342,claude_prompt,[your time],[your time],
+MF-2026-0342,review,[your time],[your time],</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 1 Deliverables</h5>
+  <ul>
+    <li><strong>threat-assessment.json</strong> — Claude's structured CCT analysis in valid JSON format</li>
+    <li><strong>CCT Analysis Report</strong> (800–1000 words) — your own write-up applying all 5 pillars, with 3 follow-up questions you would ask before escalating</li>
+    <li><strong>metrics-log.csv</strong> — timestamps for each phase and your calculated MTTI baseline</li>
+    <li><strong>CCT Journal Entry</strong> (500–750 words) — reflect on your first experience using AI as a thinking partner; what did Claude surface that you hadn't considered?</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ===== WEEK 2 ===== -->
+<h2 id="week-2">Week 2 — Cognitive Bias &amp; CCT Deep Dive</h2>
+<div class="week-header"><span class="week-badge">WEEK 2</span><span style="color:var(--text-muted);font-size:14px">Lab: Bias Identification &amp; CCT-Structured Rewrite</span></div>
+
+<div class="callout callout-key">
+<p><strong>Lab Goal:</strong> Identify cognitive biases embedded in a flawed security investigation report, map them to CCT pillars, then use Claude Code to produce a corrected, CCT-structured version. Document how bias reduction changes the investigative conclusion.</p>
+</div>
+
+<div class="quiz-block" id="quiz-w2">
+  <h4>&#x1f4da; Knowledge Check — Week 2</h4>
+  <p class="quiz-intro">Complete before starting the lab exercise.</p>
+
+  <div class="quiz-question" data-qid="w2q1" data-answer="b" data-explain="This is a classic Evidence-Based Analysis failure combined with availability bias. The analyst jumped from 'region of origin' to 'nation-state threat' without evidence layers. Observations (IP geolocation) were conflated with inference (intent, attribution) without any supporting indicators.">
+    <p class="q-text">1. An analyst writes: "This IP is from China, so it's definitely a state-sponsored attack." Which CCT violation does this represent?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w2q1" value="a"> A) Inclusive Perspective — not asking HR</label>
+      <label><input type="radio" name="w2q1" value="b"> B) Evidence-Based Analysis — conflating observation with inference</label>
+      <label><input type="radio" name="w2q1" value="c"> C) Ethical Governance — geographic discrimination</label>
+      <label><input type="radio" name="w2q1" value="d"> D) Strategic Connections — missing second-order effects</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w2q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w2q2" data-answer="b" data-explain="Confirmation bias is the tendency to seek and interpret evidence that confirms a pre-existing belief, while discounting or ignoring disconfirming evidence. It is one of the most common and dangerous biases in security investigations.">
+    <p class="q-text">2. What is confirmation bias in the context of security analysis?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w2q2" value="a"> A) Over-relying on automated tools without verification</label>
+      <label><input type="radio" name="w2q2" value="b"> B) Seeking evidence that confirms a pre-existing hypothesis while ignoring contradictory data</label>
+      <label><input type="radio" name="w2q2" value="c"> C) Only using quantitative metrics in investigations</label>
+      <label><input type="radio" name="w2q2" value="d"> D) Confirming findings with a second analyst</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w2q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w2q3" data-answer="d" data-explain="Adaptive Innovation requires stating your hypothesis clearly AND identifying what evidence would prove you wrong — an 'exit ramp.' It is the CCT pillar that keeps you intellectually nimble and prevents overcommitment to a wrong conclusion.">
+    <p class="q-text">3. Which CCT pillar emphasizes asking 'what evidence would prove me wrong?'</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w2q3" value="a"> A) Strategic Connections</label>
+      <label><input type="radio" name="w2q3" value="b"> B) Inclusive Perspective</label>
+      <label><input type="radio" name="w2q3" value="c"> C) Ethical Governance</label>
+      <label><input type="radio" name="w2q3" value="d"> D) Adaptive Innovation</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w2q3')">Check Answer</button>
+  </div>
+  <div id="quiz-w2-score"></div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Bias Identification &amp; CCT Rewrite</h4>
+
+  <div class="callout callout-warn" style="margin-bottom:16px;">
+  <p><strong>Sample Biased Report to Analyze:</strong> The following report contains multiple cognitive biases. Do NOT show it to Claude Code first — identify biases yourself before comparing with Claude's output.</p>
+  </div>
+
+  <div class="code-block"><pre><code>INCIDENT REPORT — Account Access Anomaly
+Analyst: J. Martinez | Date: March 5, 2026 | Ticket: INC-0455
+
+SUMMARY: Confirmed insider threat. Account belongs to a contractor
+from Eastern Europe (historically high-risk region for our org).
+Downloads occurred at 2 AM, which is suspicious for any normal user.
+The contractor recently had access elevated and has been "acting
+weird" according to teammates. Prior to this incident, no issues —
+but that's likely because they were biding their time.
+
+EVIDENCE:
+- 2:03 AM access from contractor account (bdavis@contractors.local)
+- Downloaded 15 files from the project repository
+- Account elevated to senior access 3 weeks ago by IT
+- Source IP: 92.118.45.201 (Romania, VPN service)
+
+RECOMMENDATION: Immediate termination of employment contract.
+Preserve all evidence for law enforcement referral.
+Do NOT notify the contractor — they will destroy evidence.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-w2-1">
+      <label><input type="checkbox" onchange="toggleStep('w2-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Manual bias identification</div>
+        <div class="step-desc">Create <code>bias-analysis.md</code>. Without using Claude, list every cognitive bias you can identify in the report above. For each: name the bias, quote the offending text, and state why it's a bias.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w2-2">
+      <label><input type="checkbox" onchange="toggleStep('w2-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Map each bias to a CCT pillar</div>
+        <div class="step-desc">For each bias you identified, record which CCT pillar was violated. Example: "Stating the contractor was 'biding their time' without evidence violates Evidence-Based Analysis (inference presented as fact)."</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w2-3">
+      <label><input type="checkbox" onchange="toggleStep('w2-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Use Claude Code for bias audit</div>
+        <div class="step-desc">Open Claude Code and ask: <em>"Review this security incident report for cognitive biases. For each bias found, identify the type of bias, the specific text, the CCT pillar violated, and how it could lead to an incorrect conclusion."</em> Then paste the report.</div>
+      </div></label>
+      <div class="code-block"><pre><code>claude
+# Prompt: "You are an expert in cognitive bias and security analysis.
+# Review this incident report for ALL cognitive biases present.
+# For each bias: (1) name the bias type, (2) quote the exact text,
+# (3) identify which CCT pillar it violates, (4) explain the risk
+# of acting on this conclusion. [paste report]"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w2-4">
+      <label><input type="checkbox" onchange="toggleStep('w2-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Compare your manual list vs. Claude's audit</div>
+        <div class="step-desc">Note any biases Claude found that you missed, and any you found that Claude missed. This gap analysis shows both your blind spots and Claude's. Add these observations to <code>bias-analysis.md</code>.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w2-5">
+      <label><input type="checkbox" onchange="toggleStep('w2-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: CCT-structured rewrite with Claude Code</div>
+        <div class="step-desc">Ask Claude to rewrite the biased report using strict CCT structure: separate Observations (Layer 1) from Inferences (Layer 2) from Hypotheses (Layer 3) from Conclusions (Layer 4). Save as <code>cct-investigation.md</code>.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w2-6">
+      <label><input type="checkbox" onchange="toggleStep('w2-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Does the recommendation change?</div>
+        <div class="step-desc">Compare the original recommendation (immediate termination) to the CCT-structured recommendation. Document: Did removing bias change the action? What additional information does CCT require before a decision can be made?</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w2-7">
+      <label><input type="checkbox" onchange="toggleStep('w2-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Write your 2-page bias reflection</div>
+        <div class="step-desc">Address: Which bias was most dangerous? What is the cost to the contractor if the original recommendation is acted upon without CCT review? How does CCT protect both the organization and the individual?</div>
+      </div></label>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 2 Deliverables</h5>
+  <ul>
+    <li><strong>bias-analysis.md</strong> — manual bias identification with CCT pillar mapping, plus gap analysis comparing your list to Claude's</li>
+    <li><strong>cct-investigation.md</strong> — Claude's CCT-structured rewrite with 4-layer separation</li>
+    <li><strong>2-page reflection</strong> — analysis of how bias removal changes the investigation outcome and the real-world stakes of biased security reports</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ===== WEEK 3 ===== -->
+<h2 id="week-3">Week 3 — Modern AI Landscape for Security</h2>
+<div class="week-header"><span class="week-badge">WEEK 3</span><span style="color:var(--text-muted);font-size:14px">Lab: Model Comparison &amp; Phishing Analysis</span></div>
+
+<div class="callout callout-key">
+<p><strong>Lab Goal:</strong> Empirically compare Claude Sonnet vs. Claude Haiku on a security analysis task. Build a model selection framework based on accuracy, cost, speed, and hallucination risk. Learn how context window size affects analysis quality.</p>
+</div>
+
+<div class="quiz-block" id="quiz-w3">
+  <h4>&#x1f4da; Knowledge Check — Week 3</h4>
+
+  <div class="quiz-question" data-qid="w3q1" data-answer="c" data-explain="AI agents go beyond text generation: they can use tools (APIs, databases, file systems), maintain state across multiple steps, make decisions, and execute complex multi-step workflows autonomously. An LLM in a chat interface does none of this natively.">
+    <p class="q-text">1. What fundamentally distinguishes an AI agent from a basic large language model?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w3q1" value="a"> A) Agents are larger models with more parameters</label>
+      <label><input type="radio" name="w3q1" value="b"> B) Agents are faster and cheaper to run</label>
+      <label><input type="radio" name="w3q1" value="c"> C) Agents can use tools, maintain state, and execute multi-step actions autonomously</label>
+      <label><input type="radio" name="w3q1" value="d"> D) Agents do not require human prompting</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w3q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w3q2" data-answer="c" data-explain="Large context windows (200K+ tokens) allow security teams to load complete incident data — full log files, threat intel reports, runbooks, previous incidents — into a single session. This transforms analysis from 'search for the needle' to 'reason over the entire haystack at once.'">
+    <p class="q-text">2. What key security capability do large context windows (200K+ tokens) enable?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w3q2" value="a"> A) Storing credentials more securely in memory</label>
+      <label><input type="radio" name="w3q2" value="b"> B) Training new threat models without fine-tuning</label>
+      <label><input type="radio" name="w3q2" value="c"> C) Loading complete incident data, runbooks, and threat intel into a single analysis session</label>
+      <label><input type="radio" name="w3q2" value="d"> D) Enabling real-time streaming from security data lakes</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w3q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w3q3" data-answer="a" data-explain="Claude Haiku is optimal for high-volume, latency-sensitive, simple-pattern tasks like log classification. It is significantly cheaper per token and faster. Reserve Sonnet/Opus for complex reasoning and investigation tasks where accuracy is paramount.">
+    <p class="q-text">3. Your SOC needs to classify 50,000 log entries per hour as benign/suspicious. Which model strategy is most appropriate?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w3q3" value="a"> A) Claude Haiku — optimized for high-volume, low-complexity classification</label>
+      <label><input type="radio" name="w3q3" value="b"> B) Claude Opus — use the best model for security tasks</label>
+      <label><input type="radio" name="w3q3" value="c"> C) GPT-4o — external validation improves accuracy</label>
+      <label><input type="radio" name="w3q3" value="d"> D) Model doesn't matter at this scale</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w3q3')">Check Answer</button>
+  </div>
+  <div id="quiz-w3-score"></div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Phishing Email Analysis Comparative Study</h4>
+
+  <div class="code-block"><pre><code># Sample phishing email for analysis (save as phishing-sample.txt):
+
+From: security@microsoft-account-alert.net
+To: employee@yourcompany.com
+Subject: URGENT: Unusual sign-in activity detected on your account
+
+Dear Microsoft Account User,
+
+We have detected unusual sign-in activity on your Microsoft account
+associated with this email address. To prevent unauthorized access
+and protect your data, your account access has been temporarily
+limited.
+
+Verify your identity within 24 hours to restore full access:
+http://microsoft-secure-verify.account-protection.xyz/verify?token=82hX9k
+
+If you do not verify, your account and all associated data (OneDrive,
+Teams, Outlook) will be permanently suspended.
+
+Microsoft Account Security Team
+support@microsoft.com</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-w3-1">
+      <label><input type="checkbox" onchange="toggleStep('w3-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Create lab directory and save the sample</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week3
+cd ~/agentforge-labs/unit1/week3
+# Save the sample above as phishing-sample.txt</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w3-2">
+      <label><input type="checkbox" onchange="toggleStep('w3-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Run detailed analysis with Claude Sonnet</div>
+        <div class="step-desc">Use Claude Code with model claude-sonnet-4-5 (default). Ask for a comprehensive phishing analysis: indicators, confidence level, IoCs, recommended user action, and any false-positive risk.</div>
+      </div></label>
+      <div class="code-block"><pre><code>claude
+# Prompt: "Analyze this email for phishing indicators. For each
+# indicator: type, severity, confidence (0-100%), and explanation.
+# Conclude with: is_phishing (true/false), confidence, user_action,
+# false_positive_risk. Format as JSON."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w3-3">
+      <label><input type="checkbox" onchange="toggleStep('w3-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Run quick analysis with a minimal prompt (speed test)</div>
+        <div class="step-desc">Now submit the same email with only: <em>"Is this email phishing? Answer: yes/no, 3 indicators, confidence %."</em> Record how response quality changes.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w3-4">
+      <label><input type="checkbox" onchange="toggleStep('w3-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Build your model selection comparison matrix</div>
+        <div class="step-desc">Create <code>model-comparison.md</code> with columns: Approach | Indicators Found | Confidence Score | Response Length | False Positive Risk | Estimated Cost (per 1000 emails). Fill in rows for both prompts above.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w3-5">
+      <label><input type="checkbox" onchange="toggleStep('w3-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Test with a legitimate email (false positive check)</div>
+        <div class="step-desc">Create a legitimate-sounding email from your IT team (e.g., routine password reset reminder). Run the same detailed analysis. Does the model correctly identify it as legitimate? How does confidence score differ?</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w3-6">
+      <label><input type="checkbox" onchange="toggleStep('w3-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Calculate cost projections</div>
+        <div class="step-desc">Estimate API cost for your organization's email volume (assume 10,000 emails/day). Compare: detailed prompt vs. quick prompt. How does prompt engineering affect the cost-accuracy trade-off?</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Sonnet pricing (March 2026):
+# Input: $3.00 / 1M tokens | Output: $15.00 / 1M tokens
+# Estimate tokens per email analysis (input + output combined)
+# 10,000 emails/day * [tokens per analysis] * [price per token] = daily cost</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w3-7">
+      <label><input type="checkbox" onchange="toggleStep('w3-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Write your model selection recommendation (1 page)</div>
+        <div class="step-desc">Based on your data: for a SOC phishing triage workflow, what is the right model + prompt combination? Justify using accuracy, cost, and CCT principles (specifically: what is the cost of a false positive? A false negative?).</div>
+      </div></label>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 3 Deliverables</h5>
+  <ul>
+    <li><strong>model-comparison.md</strong> — comparison matrix across approaches, including false positive test results</li>
+    <li><strong>Model Selection Recommendation</strong> (1 page) — justified recommendation with cost analysis</li>
+    <li><strong>CCT Journal Entry</strong> — how did testing force you to think more carefully about the cost of AI errors in security?</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ===== WEEK 4 ===== -->
+<h2 id="week-4">Week 4 — Context Engineering</h2>
+<div class="week-header"><span class="week-badge">WEEK 4</span><span style="color:var(--text-muted);font-size:14px">Lab: Building a Security Analyst System Prompt</span></div>
+
+<div class="callout callout-key">
+<p><strong>Lab Goal:</strong> Apply context engineering principles to build a reusable, high-quality system prompt for a security analyst agent. Empirically measure how engineering the context improves output quality versus a naive approach.</p>
+</div>
+
+<div class="quiz-block" id="quiz-w4">
+  <h4>&#x1f4da; Knowledge Check — Week 4</h4>
+
+  <div class="quiz-question" data-qid="w4q1" data-answer="b" data-explain="Context engineering is the intentional design of ALL aspects of the agent's context: system prompts, tool definitions, memory architecture, output format constraints, and example outputs. It is much broader and more disciplined than 'prompt engineering,' which focuses only on the user message text.">
+    <p class="q-text">1. How does 'context engineering' differ from 'prompt engineering'?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w4q1" value="a"> A) Context engineering just means using longer prompts</label>
+      <label><input type="radio" name="w4q1" value="b"> B) Context engineering is the intentional design of system prompts, tool definitions, memory, and output constraints — not just the user message</label>
+      <label><input type="radio" name="w4q1" value="c"> C) They are the same thing with different names</label>
+      <label><input type="radio" name="w4q1" value="d"> D) Context engineering applies only to RAG systems</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w4q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w4q2" data-answer="c" data-explain="Tool definitions tell the agent what external capabilities it has access to: what APIs it can call, what databases it can query, what actions it can take. They are the mechanism through which agents interact with the real world — making them a critical security surface.">
+    <p class="q-text">2. In the Core Four framework (Prompt, Model, Context, Tools), which component defines what external actions an agent can take?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w4q2" value="a"> A) The system prompt</label>
+      <label><input type="radio" name="w4q2" value="b"> B) The model choice</label>
+      <label><input type="radio" name="w4q2" value="c"> C) Tool definitions</label>
+      <label><input type="radio" name="w4q2" value="d"> D) Temperature settings</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w4q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w4q3" data-answer="c" data-explain="A well-engineered system prompt establishes: (1) the agent's role and expertise, (2) operational constraints (what it will and won't do), (3) required output formats, (4) escalation behavior. It is the governance policy that runs before every interaction — making it critical for security.">
+    <p class="q-text">3. Why is the system prompt critical for security agent governance?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w4q3" value="a"> A) It reduces API latency</label>
+      <label><input type="radio" name="w4q3" value="b"> B) It is cached and reduces token costs</label>
+      <label><input type="radio" name="w4q3" value="c"> C) It defines the agent's identity, constraints, and operating principles — the policy that governs all agent behavior</label>
+      <label><input type="radio" name="w4q3" value="d"> D) It improves grammar and formatting of outputs</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w4q3')">Check Answer</button>
+  </div>
+  <div id="quiz-w4-score"></div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Engineering a Security Analyst System Prompt</h4>
+
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-w4-1">
+      <label><input type="checkbox" onchange="toggleStep('w4-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Create a Version 1 minimal system prompt</div>
+        <div class="step-desc">Create <code>v1-system-prompt.md</code> with only: "You are a security analyst. Analyze security incidents and provide recommendations." Test this against the Meridian Financial incident from Week 1.</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week4
+# Create v1-system-prompt.md with minimal prompt
+# Test in Claude Code by starting with:
+claude
+# Then: "Using system prompt: [v1 text]. Now analyze: [incident data]"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w4-2">
+      <label><input type="checkbox" onchange="toggleStep('w4-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Document V1 output quality</div>
+        <div class="step-desc">Record: Does V1 use CCT structure? Does it separate observations from inferences? Does it ask clarifying questions? Does it flag ethical considerations? Does it produce structured output? Rate each 1-5.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w4-3">
+      <label><input type="checkbox" onchange="toggleStep('w4-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Apply context engineering — build Version 2</div>
+        <div class="step-desc">Create <code>v2-system-prompt.md</code> incorporating: (1) detailed role definition with expertise scope, (2) required CCT structure for all analyses, (3) JSON output schema, (4) explicit constraints (what NOT to do), (5) escalation criteria. See the structure below.</div>
+      </div></label>
+      <div class="code-block"><pre><code># v2-system-prompt.md structure:
+
+## Role
+You are a senior security analyst and incident responder with 10+
+years of experience. You specialize in threat hunting, digital
+forensics, and AI-augmented security operations.
+
+## Operating Principles
+- ALWAYS separate observations (Layer 1) from inferences (Layer 2)
+  from hypotheses (Layer 3) from conclusions (Layer 4)
+- NEVER attribute malicious intent without supporting evidence
+- ALWAYS list what information is missing before concluding
+- ALWAYS provide alternative innocent explanations
+- ALWAYS address ethical implications of your recommendations
+
+## Required Output Format
+{
+  "observations": [],
+  "inferences": [],
+  "top_3_hypotheses": [{"narrative": "", "probability": 0, "supporting_evidence": []}],
+  "missing_information": [],
+  "next_steps": [],
+  "ethical_considerations": "",
+  "recommendation": "",
+  "confidence": 0
+}
+
+## Escalation Criteria
+Escalate to incident commander if: evidence suggests active exfiltration
+in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w4-4">
+      <label><input type="checkbox" onchange="toggleStep('w4-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Test V2 against the same Meridian Financial incident</div>
+        <div class="step-desc">Use the same incident data as Step 1. Apply V2 system prompt in your Claude Code session. Compare the output quality against your V1 ratings.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w4-5">
+      <label><input type="checkbox" onchange="toggleStep('w4-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Rate V2 across the same dimensions</div>
+        <div class="step-desc">Re-rate V2 outputs 1-5 across: CCT structure, observation/inference separation, clarifying questions, ethical considerations, output structure. Calculate improvement delta V1 → V2.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w4-6">
+      <label><input type="checkbox" onchange="toggleStep('w4-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Add tool definition stubs to your system prompt</div>
+        <div class="step-desc">Add a "Available Tools" section to V2 listing: <code>query_siem(time_range, account)</code>, <code>lookup_ip(ip_address)</code>, <code>get_user_profile(username)</code>, <code>query_dlp_logs(account, date_range)</code>. Retest — does Claude now reference these tools in its recommendations?</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w4-7">
+      <label><input type="checkbox" onchange="toggleStep('w4-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Save your context-engineered template</div>
+        <div class="step-desc">Save <code>security-analyst-context-v2.md</code> as your reusable template. You will use this as the foundation for your MCP server system prompt in Unit 2.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w4-8">
+      <label><input type="checkbox" onchange="toggleStep('w4-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Write your context engineering reflection</div>
+        <div class="step-desc">Document: What was the V1 → V2 improvement score? What specific elements of context engineering made the biggest difference? Which of Jaymin West's Core Four (Prompt, Model, Context, Tools) did you modify, and how?</div>
+      </div></label>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 4 Deliverables</h5>
+  <ul>
+    <li><strong>v1-system-prompt.md</strong> and <strong>security-analyst-context-v2.md</strong> — both versions with documented rating scores</li>
+    <li><strong>Context Engineering Report</strong> (1-2 pages) — V1 vs. V2 comparison, what changed, quantified improvement</li>
+    <li><strong>Context Library Template</strong> — your reusable security analyst context file that you will build on throughout the course</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- UNIT COMPLETION -->
+<div class="unit-complete" id="unit-complete">
+  <h3>&#x1f3c6; Unit 1 Complete</h3>
+  <p>You have worked through all four weeks of CCT Foundations &amp; AI Landscape labs.</p>
+  <p style="margin-top:8px;">Next: <a href="lab-s1-unit2.html">Unit 2 Lab Guide — Context Engineering &amp; Tool Design &rarr;</a></p>
+</div>
+
+</div><!-- .content -->
+</main>
+
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s1-unit1.html');
+  initLabPage('lab-s1-unit1');
+</script>
+</body>
+</html>

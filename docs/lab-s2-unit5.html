@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Guide: Unit 5 — Multi-Agent Orchestration | AgentForge</title>
+<link rel="stylesheet" href="labs.css">
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Lab Guide: Unit 5 — Multi-Agent Orchestration for Security</h1>
+<p><strong>CSEC 602 | Weeks 1–4 | Semester 2</strong></p>
+<p>Build, compare, and evaluate multi-agent security systems using Claude Agent SDK, CrewAI, and LangGraph. Produce a quantitative framework comparison for your midyear report.</p>
+
+<div class="lab-progress">
+  <div class="lab-progress-header"><span>Unit 5 Lab Progress</span><span id="prog-text">0 / 26 steps complete</span></div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
+</div>
+<hr>
+
+<!-- ======== WEEK 1 ======== -->
+<h2 id="week-1">Week 1 — Multi-Agent Architecture Patterns</h2>
+<div class="week-header"><span class="week-badge">WEEK 1</span><span class="week-sub">Lab: Pattern Mapping &amp; Supervisor Implementation</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement the Supervisor pattern in Python using the Claude Agent SDK. Map four architecture patterns to concrete security scenarios. Measure coordination overhead vs. single-agent baseline.</p></div>
+
+<div class="quiz-block" id="quiz-u5w1">
+  <h4>&#x1f4da; Knowledge Check — Week 1</h4>
+
+  <div class="quiz-question" data-qid="u5w1q1" data-answer="b" data-explain="The Supervisor pattern has one central agent routing tasks to specialists and aggregating results. Best for incident response because it mirrors real-world command hierarchy (incident commander → specialists). The supervisor maintains situational awareness while specialists focus on their domain.">
+    <p class="q-text">1. When is the Supervisor pattern most appropriate for security operations?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q1" value="a"> A) When all agents need access to the same data simultaneously</label>
+      <label><input type="radio" name="u5w1q1" value="b"> B) When a clear hierarchy exists with a coordinator routing to specialists — mirrors incident command structure</label>
+      <label><input type="radio" name="u5w1q1" value="c"> C) When agents must operate fully independently without communication</label>
+      <label><input type="radio" name="u5w1q1" value="d"> D) When the problem can be solved by a single agent</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w1q2" data-answer="d" data-explain="The Expert Swarm pattern is ideal when a problem benefits from multiple diverse analytical perspectives simultaneously. In threat hunting, different agent perspectives (network, endpoint, behavioral, threat intel) may catch different evidence. High-confidence detections emerge when multiple experts agree; divergence signals areas needing investigation.">
+    <p class="q-text">2. Which pattern is best for threat hunting where diverse analytical perspectives are valuable?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q2" value="a"> A) Pipeline pattern — sequential processing ensures thoroughness</label>
+      <label><input type="radio" name="u5w1q2" value="b"> B) Supervisor pattern — central coordinator ensures quality</label>
+      <label><input type="radio" name="u5w1q2" value="c"> C) Peer-to-peer — equal agents build on each other's work</label>
+      <label><input type="radio" name="u5w1q2" value="d"> D) Expert Swarm — parallel diverse analysis with coordinator synthesis highlights consensus and disagreement</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w1q3" data-answer="a" data-explain="Multi-agent overhead (inter-agent communication, coordination, synthesis) means that for simple tasks, a single well-prompted agent often wins. The rule: add agents when you have coordination bottlenecks, need true parallelism, benefit from specialization, or have hard complexity limits on a single context window.">
+    <p class="q-text">3. When should you NOT use a multi-agent architecture?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q3" value="a"> A) When a single well-prompted agent can solve the problem — coordination overhead exceeds the benefit</label>
+      <label><input type="radio" name="u5w1q3" value="b"> A) When you need high accuracy on security tasks</label>
+      <label><input type="radio" name="u5w1q3" value="c"> C) When the task involves multiple security domains</label>
+      <label><input type="radio" name="u5w1q3" value="d"> D) When team size is larger than two developers</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Supervisor Pattern SOC System</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u5w1-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w1-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Install Claude Agent SDK</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install anthropic
+mkdir -p ~/agentforge-labs/unit5/week1 && cd ~/agentforge-labs/unit5/week1
+# SDK uses: from anthropic import Anthropic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w1-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w1-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Implement the Supervisor Agent</div>
+        <div class="step-desc">Build <code>supervisor.py</code> using Claude Agent SDK. The supervisor receives an alert, analyzes which specialist to route to (threat_analyst, containment_advisor, compliance_checker), calls that specialist as a subagent, and returns a synthesized decision.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Build a Supervisor agent using the Anthropic SDK that:
+# 1. Receives a security alert as input
+# 2. Routes to one of three specialists: threat_analyst, containment_advisor, compliance
+# 3. Each specialist is a separate Claude call with a specialized system prompt
+# 4. Supervisor synthesizes specialist output into final recommendation
+# 5. Returns structured JSON: {routing, specialist_output, synthesis, confidence}"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w1-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w1-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Test with the Meridian Financial incident</div>
+        <div class="step-desc">Run the Supervisor system against the incident from Semester 1. Compare: (1) Does routing make sense? (2) Does the specialist response differ from a generalist? (3) What is the coordination overhead vs. single-agent?</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w1-4">
+      <label><input type="checkbox" onchange="toggleStep('u5w1-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Document pattern selection rationale</div>
+        <div class="step-desc">Create <code>pattern-analysis.md</code> mapping all four patterns (Supervisor, Hierarchical, Peer-to-Peer, Expert Swarm, Pipeline) to specific security use cases with pros/cons. This document becomes part of your Unit 5 Framework Comparison Report.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 2 ======== -->
+<h2 id="week-2">Week 2 — CrewAI for Security Operations</h2>
+<div class="week-header"><span class="week-badge">WEEK 2</span><span class="week-sub">Lab: CrewAI SOC Investigation Team</span></div>
+
+<div class="quiz-block" id="quiz-u5w2">
+  <h4>&#x1f4da; Knowledge Check — Week 2</h4>
+
+  <div class="quiz-question" data-qid="u5w2q1" data-answer="c" data-explain="CrewAI's three core concepts: Agents (role-based entities with backstory, tools, and goals), Tasks (specific work items with descriptions, expected output, and assigned agent), and Crews (organized groups of agents executing tasks with defined process types — sequential or parallel).">
+    <p class="q-text">1. What are CrewAI's three core building blocks?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w2q1" value="a"> A) Models, Prompts, and Workflows</label>
+      <label><input type="radio" name="u5w2q1" value="b"> B) Nodes, Edges, and States</label>
+      <label><input type="radio" name="u5w2q1" value="c"> C) Agents, Tasks, and Crews</label>
+      <label><input type="radio" name="u5w2q1" value="d"> D) Functions, Triggers, and Pipelines</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w2q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w2q2" data-answer="b" data-explain="Process.parallel in CrewAI executes tasks concurrently when they have no dependencies, reducing total execution time. For a SOC investigation, gathering threat intel, checking access logs, and querying the vulnerability database are independent tasks that can run simultaneously.">
+    <p class="q-text">2. What does Process.parallel achieve in a CrewAI security investigation?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w2q2" value="a"> A) Assigns the same task to multiple agents for voting</label>
+      <label><input type="radio" name="u5w2q2" value="b"> B) Executes independent tasks concurrently, reducing total investigation time</label>
+      <label><input type="radio" name="u5w2q2" value="c"> C) Creates parallel branches of the crew for A/B testing</label>
+      <label><input type="radio" name="u5w2q2" value="d"> D) Runs the same crew against multiple incidents simultaneously</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w2q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: CrewAI Security Operations Team</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u5w2-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-1',this.checked)">
+      <div class="step-content"><div class="step-title">Step 1: Install CrewAI</div></div></label>
+      <div class="code-block"><pre><code>pip install crewai crewai-tools
+mkdir -p ~/agentforge-labs/unit5/week2 && cd ~/agentforge-labs/unit5/week2</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Define the SOC Investigation Crew (3 agents)</div>
+        <div class="step-desc">Create <code>soc_crew.py</code> defining three agents: (1) Threat Intelligence Analyst (goal: enrich IoCs from threat intel feeds), (2) Log Forensics Specialist (goal: analyze log patterns for TTPs), (3) Incident Commander (goal: synthesize findings and recommend containment). Each agent has a role, goal, backstory, and tools list.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Build a CrewAI SOC investigation crew with 3 agents:
+# 1. threat_intel_analyst - enriches IoCs using available tools
+# 2. log_forensics_specialist - identifies attack TTPs in log data
+# 3. incident_commander - synthesizes findings, recommends containment
+# Use Process.sequential. The commander runs last, after the other two complete.
+# Each agent should use claude-sonnet-4-5 via LLM config."
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Define the three investigation tasks</div>
+        <div class="step-desc">Create Task objects: (1) IoC Enrichment Task (assigned to threat_intel_analyst, expected_output: structured IoC JSON), (2) Log Analysis Task (assigned to log_forensics, expected_output: MITRE ATT&CK TTP mapping), (3) Synthesis Task (assigned to incident_commander, depends on 1+2, expected_output: incident report with recommendations).</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-4">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Run the crew against a test incident and measure performance</div>
+        <div class="step-desc">Execute <code>crew.kickoff(inputs={'incident': meridian_incident_text})</code>. Record: total execution time, cost (token usage), quality of final output. Compare to your Semester 1 three-agent system. Does CrewAI's abstraction add or remove value?</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-5">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Add parallel execution for the first two tasks</div>
+        <div class="step-desc">Modify to use Process.parallel for the IoC Enrichment and Log Analysis tasks (they're independent). Keep the Synthesis sequential after both complete. Measure the speedup: how much faster is parallel vs sequential?</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 3 ======== -->
+<h2 id="week-3">Week 3 — LangGraph for Stateful Security Workflows</h2>
+<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: LangGraph Incident Response State Machine</span></div>
+
+<div class="quiz-block" id="quiz-u5w3">
+  <h4>&#x1f4da; Knowledge Check — Week 3</h4>
+
+  <div class="quiz-question" data-qid="u5w3q1" data-answer="d" data-explain="LangGraph represents workflows as directed graphs where nodes are agent functions (with access to shared state) and edges define control flow between nodes — either unconditional (always go to next node) or conditional (route based on state evaluation). This enables complex workflows with loops, branching, and human checkpoints.">
+    <p class="q-text">1. In LangGraph, what are nodes and edges?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w3q1" value="a"> A) Nodes are LLM prompts; edges are tool calls</label>
+      <label><input type="radio" name="u5w3q1" value="b"> B) Nodes are databases; edges are API connections</label>
+      <label><input type="radio" name="u5w3q1" value="c"> C) Nodes are Python classes; edges are inheritance relationships</label>
+      <label><input type="radio" name="u5w3q1" value="d"> D) Nodes are agent functions that read/write shared state; edges define conditional or unconditional control flow between nodes</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w3q2" data-answer="b" data-explain="Conditional edges in LangGraph enable dynamic routing: after the triage node runs, a conditional edge can route to 'escalate_to_human' if severity is critical, 'automated_containment' if severity is high, or 'monitor' if severity is low. This is the mechanism for building human-in-the-loop checkpoints.">
+    <p class="q-text">2. How do conditional edges enable human-in-the-loop in LangGraph incident response?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w3q2" value="a"> A) They pause all agent execution until a human clicks 'approve'</label>
+      <label><input type="radio" name="u5w3q2" value="b"> B) After a triage node, they route to different handling paths (human escalation vs automated) based on severity or confidence in state</label>
+      <label><input type="radio" name="u5w3q2" value="c"> C) They require human approval for every node transition</label>
+      <label><input type="radio" name="u5w3q2" value="d"> D) They replace agents with human decision makers</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: LangGraph Incident Response Workflow</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u5w3-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-1',this.checked)">
+      <div class="step-content"><div class="step-title">Step 1: Install LangGraph</div></div></label>
+      <div class="code-block"><pre><code>pip install langgraph langchain-anthropic
+mkdir -p ~/agentforge-labs/unit5/week3 && cd ~/agentforge-labs/unit5/week3</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w3-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Define the IR State schema</div>
+        <div class="step-desc">Create a TypedDict for the incident response state: alert_text, severity (Literal['critical','high','medium','low']), iocs (list), triage_complete (bool), containment_action (str), human_review_required (bool), final_report (str). State is shared across all nodes.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w3-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Build the state machine nodes and conditional routing</div>
+        <div class="step-desc">Build the IR workflow: triage_node → conditional_edge (critical → human_review_node; high/medium → automated_containment_node → report_node; low → monitor_node). Use Claude Code to implement each node function.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Build a LangGraph incident response workflow with:
+# - State: {alert, severity, iocs, containment_action, human_required, report}
+# - Nodes: triage, human_review, auto_containment, monitor, final_report
+# - Conditional routing: critical → human_review, high → auto_containment, low → monitor
+# - All nodes use Claude API via langchain-anthropic
+# - Graph should compile and execute with StateGraph + .compile()"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w3-4">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Test all routing paths</div>
+        <div class="step-desc">Create four test alerts: critical (ransomware detection), high (data exfiltration attempt), medium (suspicious scan), low (failed login spike). Verify each routes to the correct handling path. Capture and display the state at each node transition.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w3-5">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Add persistence with checkpointing</div>
+        <div class="step-desc">Configure LangGraph's MemorySaver to persist state between node executions. This enables: (1) resuming interrupted workflows, (2) human-in-the-loop where a human can inject decisions into the state before the workflow continues. Test with a simulated human approval.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+<hr>
+
+<!-- ======== WEEK 4 ======== -->
+<h2 id="week-4">Week 4 — Agent Evaluation &amp; Framework Comparison</h2>
+<div class="week-header"><span class="week-badge">WEEK 4</span><span class="week-sub">Lab: Quantitative Framework Benchmarking</span></div>
+
+<div class="quiz-block" id="quiz-u5w4">
+  <h4>&#x1f4da; Knowledge Check — Week 4</h4>
+
+  <div class="quiz-question" data-qid="u5w4q1" data-answer="c" data-explain="A well-designed agent evaluation harness tests: accuracy (does output contain correct information?), latency (wall-clock time per execution), cost (token usage per run), reliability (pass rate across N runs), and coverage (does it handle edge cases?). Security-specific evals also test for bias, false positive/negative rates, and hallucination in threat attribution.">
+    <p class="q-text">1. What dimensions should a comprehensive agent evaluation harness measure?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w4q1" value="a"> A) Only accuracy — correct output is all that matters</label>
+      <label><input type="radio" name="u5w4q1" value="b"> B) Speed and cost only — accuracy is subjective</label>
+      <label><input type="radio" name="u5w4q1" value="c"> C) Accuracy, latency, cost, reliability (pass rate), coverage, and security-specific metrics (false positive rate, hallucination rate)</label>
+      <label><input type="radio" name="u5w4q1" value="d"> D) Lines of code and deployment complexity</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w4q1')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Framework Comparison Evaluation</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u5w4-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w4-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Create a standardized test suite (10 security incidents)</div>
+        <div class="step-desc">Create <code>test_incidents.json</code> with 10 diverse security incidents: 2 critical, 3 high, 3 medium, 2 low severity. Each includes: alert text, expected severity, expected IoC count, expected top recommendation. This is your ground truth for evaluation.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w4-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w4-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Run all three frameworks against the test suite</div>
+        <div class="step-desc">Execute your Claude Agent SDK system, CrewAI SOC team, and LangGraph workflow against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w4-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w4-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Build the comparison visualization</div>
+        <div class="step-desc">Use matplotlib/seaborn to create: (1) Accuracy bar chart by framework, (2) Latency violin plot, (3) Cost scatter plot, (4) Radar chart covering all dimensions. Export as PNG. These go in your Unit 5 Framework Comparison Report.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u5w4-4">
+      <label><input type="checkbox" onchange="toggleStep('u5w4-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Write the Framework Comparison Report (Unit 5 Major Deliverable)</div>
+        <div class="step-desc">Write the 10% Framework Comparison Report: executive summary, methodology (test suite + metrics), quantitative results (with visualizations), framework-by-framework analysis (strengths, weaknesses, best use cases), and your recommended framework for each of 3 security operation scenarios.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Unit 5 Major Deliverable</h5>
+  <ul>
+    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Agent SDK, CrewAI, and LangGraph with test suite results, visualizations, and justified recommendations</li>
+    <li><strong>All three framework implementations</strong> — working code repositories for each</li>
+  </ul>
+</div>
+
+<hr>
+<div class="unit-complete">
+  <h3>&#x1f3c6; Unit 5 Complete</h3>
+  <p>You have built multi-agent systems in three frameworks and produced a quantitative comparison report.</p>
+  <p style="margin-top:8px;"><a href="lab-s2-unit6.html">Next: Unit 6 Lab — AI Attacker vs. AI Defender &rarr;</a></p>
+</div>
+
+</div></main>
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s2-unit5.html');
+  initLabPage('lab-s2-unit5');
+</script>
+</body>
+</html>

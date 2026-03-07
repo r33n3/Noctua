@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Guide: Unit 4 — Rapid Prototyping | AgentForge</title>
+<link rel="stylesheet" href="labs.css">
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Lab Guide: Unit 4 — Rapid Prototyping with Agentic Tools</h1>
+<p><strong>CSEC 601 | Weeks 13–16 | Semester 1</strong></p>
+<p>Two sprint-based labs building production-ready security prototypes, culminating in a demo and midyear project presentation. This is where everything comes together.</p>
+
+<div class="lab-progress">
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 24 steps complete</span></div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
+</div>
+<hr>
+
+<!-- ======== WEEK 13 ======== -->
+<h2 id="week-13">Week 13 — Multi-Agent Architecture Deep Dive</h2>
+<div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Multi-Agent SOC System with Worktrees</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a three-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
+
+<div class="quiz-block" id="quiz-w13">
+  <h4>&#x1f4da; Knowledge Check — Week 13</h4>
+
+  <div class="quiz-question" data-qid="w13q1" data-answer="c" data-explain="Git worktrees create parallel working directories on separate branches, enabling teammates to develop different components simultaneously without branch-switching conflicts. For agent development, this means one developer builds the recon agent while another builds the analysis agent — they merge when both are complete.">
+    <p class="q-text">1. Why do worktrees enable parallel agent development without conflicts?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w13q1" value="a"> A) They create copies of the repository in separate locations</label>
+      <label><input type="radio" name="w13q1" value="b"> B) They allow multiple users to share the same branch</label>
+      <label><input type="radio" name="w13q1" value="c"> C) They create parallel working directories on separate branches — developers work on different components simultaneously without stash/switch overhead</label>
+      <label><input type="radio" name="w13q1" value="d"> D) They automatically merge conflicting changes</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w13q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w13q2" data-answer="d" data-explain="The Expert Swarm Pattern (Jaymin West) has multiple specialized agents attack the same problem in parallel from different analytical angles (network, behavioral, threat intel). A coordinator synthesizes results, flagging areas of agreement (high confidence) and disagreement (needs investigation). It's more powerful than routing because diversity catches what any single perspective misses.">
+    <p class="q-text">2. What distinguishes the Expert Swarm Pattern from Hierarchical orchestration?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w13q2" value="a"> A) Swarm agents are cheaper than hierarchical agents</label>
+      <label><input type="radio" name="w13q2" value="b"> B) Hierarchical patterns are always faster</label>
+      <label><input type="radio" name="w13q2" value="c"> C) Swarms require more agents than hierarchical systems</label>
+      <label><input type="radio" name="w13q2" value="d"> D) Swarms have multiple agents analyze the SAME problem in parallel for diverse perspectives; hierarchical routes to ONE specialist at a time</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w13q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w13q3" data-answer="b" data-explain="Specialization reduces per-agent token cost because each agent's system prompt and context only includes what it needs for its specific role. A recon agent doesn't need reporting templates; a reporting agent doesn't need CVE lookup tools. Smaller, focused context = lower cost per invocation.">
+    <p class="q-text">3. Why can multiple specialized agents sometimes cost LESS than one large general agent?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w13q3" value="a"> A) API pricing discounts for multi-agent architectures</label>
+      <label><input type="radio" name="w13q3" value="b"> B) Each specialized agent has a smaller system prompt and context, reducing tokens per invocation; specialization costs less than generalism at scale</label>
+      <label><input type="radio" name="w13q3" value="c"> C) Smaller models can replace larger ones in agent roles</label>
+      <label><input type="radio" name="w13q3" value="d"> D) Agent-to-agent communication avoids API billing</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w13q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Three-Agent SOC System</h4>
+
+  <div class="scenario-box"><strong>Architecture:</strong> Incident arrives → Orchestrator routes to Recon Agent (gathers IoC data via your MCP tools) → Analysis Agent (applies CCT framework to synthesize findings) → Reporting Agent (generates structured JSON + Markdown report). All three run under the Orchestrator's control.</div>
+
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w13-1">
+      <label><input type="checkbox" onchange="toggleStep('w13-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Initialize worktrees for parallel development</div>
+      </div></label>
+      <div class="code-block"><pre><code>cd ~/agentforge-labs
+git init soc-agent-system && cd soc-agent-system
+git commit --allow-empty -m "init"
+# Create worktrees for each agent component
+git worktree add ../soc-recon   -b feature/recon-agent
+git worktree add ../soc-analysis -b feature/analysis-agent
+git worktree add ../soc-reporting -b feature/reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w13-2">
+      <label><input type="checkbox" onchange="toggleStep('w13-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Build the Recon Agent in its worktree</div>
+        <div class="step-desc">In <code>../soc-recon/</code>, use Claude Code to build <code>recon_agent.py</code>: a Claude-backed agent with access to your Unit 2 MCP tools (ip_reputation, query_cve, hash_lookup). Input: raw alert text. Output: structured reconnaissance JSON with all IoCs enriched.</div>
+      </div></label>
+      <div class="code-block"><pre><code>cd ~/soc-recon
+claude
+# Prompt: "Build a recon security agent in Python using the Anthropic SDK.
+# The agent receives raw alert text and must:
+# 1. Extract all IoCs (IPs, hashes, CVEs, domains)
+# 2. Use tool calls to enrich each IoC via the MCP tools
+# 3. Return structured JSON: {iocs: [{type, value, enrichment, severity}], summary}
+# Use claude-sonnet-4-5. Include error handling for failed tool calls."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w13-3">
+      <label><input type="checkbox" onchange="toggleStep('w13-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Build the Analysis Agent</div>
+        <div class="step-desc">In <code>../soc-analysis/</code>, build <code>analysis_agent.py</code>: applies your CCT system prompt (from Week 4) to the Recon Agent's output. Applies 5-pillar CCT analysis, generates top-3 hypotheses with probabilities, and recommends next steps. System prompt is your <code>security-analyst-context-v2.md</code>.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w13-4">
+      <label><input type="checkbox" onchange="toggleStep('w13-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Build the Reporting Agent</div>
+        <div class="step-desc">In <code>../soc-reporting/</code>, build <code>reporting_agent.py</code>: takes Analysis Agent output and generates a validated incident report (using your Week 7 schema) in both JSON and Markdown formats. Calculates MTTI based on timestamps passed from the Orchestrator.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w13-5">
+      <label><input type="checkbox" onchange="toggleStep('w13-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Build the Orchestrator</div>
+        <div class="step-desc">In the main <code>soc-agent-system/</code> branch, build <code>orchestrator.py</code>: receives the alert, calls Recon → Analysis → Reporting in sequence, handles timeouts (30s per agent), and implements graceful degradation (if Recon fails, Analysis works with partial data).</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w13-6">
+      <label><input type="checkbox" onchange="toggleStep('w13-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Merge and end-to-end test</div>
+        <div class="step-desc">Merge all three agent branches into main. Run the full system against the Meridian Financial incident. Verify: (1) Recon enriches all IoCs, (2) Analysis applies CCT and generates 3 hypotheses, (3) Reporting produces valid JSON + Markdown. Record end-to-end MTTI.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w13-7">
+      <label><input type="checkbox" onchange="toggleStep('w13-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Compare against Week 1 MTTI baseline</div>
+        <div class="step-desc">Record the multi-agent system's MTTI for the Meridian Financial incident. Compare to your Week 1 manual MTTI. Calculate the improvement ratio. Consider: what is the cost per investigation (token cost)? Is the improvement worth the cost?</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 13 Deliverables</h5>
+  <ul>
+    <li><strong>soc-agent-system/</strong> — complete multi-agent repository with all three agents and orchestrator</li>
+    <li><strong>Architecture Diagram</strong> — data flow diagram showing alert → Orchestrator → Recon → Analysis → Reporting → output</li>
+    <li><strong>MTTI Comparison</strong> — Week 1 manual vs. Week 13 automated, with cost analysis</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 14 ======== -->
+<h2 id="week-14">Week 14 — Rapid Prototyping Sprint I</h2>
+<div class="week-header"><span class="week-badge">WEEK 14</span><span class="week-sub">Lab: Concept to Working Demo in 3 Hours</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a time-boxed rapid prototyping sprint: 20 minutes for problem scoping and spec, 2 hours for building, 40 minutes for testing and demo prep. You will measure MTTS, MTTP, and MTTSol for your sprint. This prototype becomes the foundation of your midyear project.</p></div>
+
+<div class="quiz-block" id="quiz-w14">
+  <h4>&#x1f4da; Knowledge Check — Week 14</h4>
+
+  <div class="quiz-question" data-qid="w14q1" data-answer="a" data-explain="MTTS (Mean Time to Suppress/Strategy) measures how quickly a team identifies the core security problem and strategic approach — from receiving a challenge to having a validated strategy. In sprint terms, this is your 20-minute scoping phase where you define the problem, solution approach, and agent architecture.">
+    <p class="q-text">1. In the sprint context, what does MTTS measure?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w14q1" value="a"> A) Time from challenge start to validated strategy/approach decision</label>
+      <label><input type="radio" name="w14q1" value="b"> B) Time to deploy the finished system to production</label>
+      <label><input type="radio" name="w14q1" value="c"> C) Time to fix the first bug discovered in testing</label>
+      <label><input type="radio" name="w14q1" value="d"> D) Time for leadership to review and approve the prototype</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w14q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="w14q2" data-answer="c" data-explain="The Plan-Build-Review pattern (Jaymin West) structures rapid prototyping: Plan (clear spec with architecture and constraints, ~20% of time), Build (implement rapidly with Claude Code, ~65% of time), Review (test, iterate, document, ~15% of time). This cycle repeats at production scale when prototypes are selected for delivery.">
+    <p class="q-text">2. What does the Plan-Build-Review pattern from Agentic Engineering prescribe for time allocation?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w14q2" value="a"> A) 50% planning, 30% building, 20% review</label>
+      <label><input type="radio" name="w14q2" value="b"> B) Equal thirds: planning, building, testing</label>
+      <label><input type="radio" name="w14q2" value="c"> C) ~20% plan (clear spec), ~65% build (rapid with Claude Code), ~15% review (test + iterate)</label>
+      <label><input type="radio" name="w14q2" value="d"> D) 10% planning, 80% building, 10% review</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w14q2')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Sprint I — Timed Prototype</h4>
+
+  <div class="callout callout-warn"><p><strong>Timer is active:</strong> The lab instructor will signal the start. Record your exact start time. Each phase is time-boxed — when the phase ends, move on regardless of completion state. Track your metrics honestly.</p></div>
+
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w14-1">
+      <label><input type="checkbox" onchange="toggleStep('w14-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 1 — Plan (20 min): Record your start time and scope the problem</div>
+        <div class="step-desc">Record: Start Time = ___. Choose ONE security problem from: (a) Phishing email triage pipeline, (b) Cloud misconfiguration detector, (c) CVE-to-patch priority ranker, (d) Insider threat alert enricher, (e) Your own idea (approved in advance). Write a 1-page spec: problem, agents required, tools, success criteria, what you will NOT build in this sprint.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w14-2">
+      <label><input type="checkbox" onchange="toggleStep('w14-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 1 — Plan: Record MTTS (end of planning = validated strategy)</div>
+        <div class="step-desc">MTTS = Time from start to moment you have a validated strategy and can begin building. Record: MTTS = ___ minutes.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w14-3">
+      <label><input type="checkbox" onchange="toggleStep('w14-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 2 — Build (120 min): Initialize repo and build core agents</div>
+        <div class="step-desc">Use Claude Code continuously. Start with the core agent loop. Use your MCP server from Unit 2. Apply your context-engineered system prompt from Week 4. Build the minimum viable system that demonstrates the core value — not a perfect system.</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit4/sprint1
+cd ~/agentforge-labs/unit4/sprint1
+git init
+# Start building with Claude Code immediately — spec in context
+claude
+# Prompt: "I am building [your chosen system]. Here is my spec:
+# [paste your 1-page spec]. Let's start with the core agent loop.
+# Build [first component] first."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w14-4">
+      <label><input type="checkbox" onchange="toggleStep('w14-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 2 — Build: Record MTTP (end of build = working plan)</div>
+        <div class="step-desc">When you have a working plan (the system does SOMETHING end-to-end, even if incomplete): MTTP = ___ minutes from start.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w14-5">
+      <label><input type="checkbox" onchange="toggleStep('w14-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 3 — Review (40 min): Test the prototype against the success criteria</div>
+        <div class="step-desc">Run your prototype against 3 test cases. For each: does it produce a useful security output? Record pass/fail. Do NOT add new features — only verify what you built. Fix critical bugs only.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w14-6">
+      <label><input type="checkbox" onchange="toggleStep('w14-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 3 — Review: Record MTTSol and MTTI</div>
+        <div class="step-desc">MTTSol = Time from start to working tested prototype = ___ minutes. Record total token cost from Claude API usage. Create Sprint I metrics summary: MTTS / MTTP / MTTSol / Token Cost / Completion %.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w14-7">
+      <label><input type="checkbox" onchange="toggleStep('w14-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Post-sprint: Write a 5-minute demo script</div>
+        <div class="step-desc">You have 5 minutes to demo this prototype to leadership. Write the script: (1) Problem statement (30s), (2) Live demo (3 min), (3) Value delivered and what's missing (1 min), (4) What you'd build in Sprint II (30s). Practice it.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 14 Deliverables</h5>
+  <ul>
+    <li><strong>Sprint I Prototype</strong> — code repository with README, working end-to-end (even if incomplete)</li>
+    <li><strong>Sprint I Metrics</strong> — MTTS, MTTP, MTTSol, token cost, and completion percentage</li>
+    <li><strong>5-Minute Demo Script</strong> — written and rehearsed presentation for Sprint I showcase</li>
+    <li><strong>AI Methodology Note</strong> — 100-word description of how Claude Code was used in the sprint</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 15 ======== -->
+<h2 id="week-15">Week 15 — Rapid Prototyping Sprint II: Hardening</h2>
+<div class="week-header"><span class="week-badge">WEEK 15</span><span class="week-sub">Lab: Iterate, Harden, and Production-Ready Quality</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Transform your Sprint I prototype into a hardened, documented, and ethically audited system. Apply the full quality checklist: error handling, input validation, logging, CCT analysis, FS-ISAC compliance, performance measurement.</p></div>
+
+<div class="quiz-block" id="quiz-w15">
+  <h4>&#x1f4da; Knowledge Check — Week 15</h4>
+
+  <div class="quiz-question" data-qid="w15q1" data-answer="d" data-explain="Production hardening for agentic systems means: robust error handling (every agent failure is caught and handled gracefully), input validation (all user input and tool outputs validated), structured logging (every tool invocation logged with timestamp, parameters, result), complete documentation (README, API docs, architecture diagram), and ethics compliance (FS-ISAC audit passed).">
+    <p class="q-text">1. What does 'hardening' a security prototype specifically require?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="w15q1" value="a"> A) Converting Python to a compiled language for speed</label>
+      <label><input type="radio" name="w15q1" value="b"> B) Adding more features requested by users</label>
+      <label><input type="radio" name="w15q1" value="c"> C) Moving the system to cloud infrastructure</label>
+      <label><input type="radio" name="w15q1" value="d"> D) Error handling for all failure modes, input validation, structured logging, documentation, and ethics compliance</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('w15q1')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Lab Exercise: Sprint II Hardening Checklist</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w15-1">
+      <label><input type="checkbox" onchange="toggleStep('w15-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Add comprehensive error handling</div>
+        <div class="step-desc">Every agent invocation should be wrapped in try/except with specific error types. Agent timeouts (30s) must be enforced. Failed tool calls must return structured errors, not crash the pipeline. Ask Claude Code: "Review my prototype and add comprehensive error handling for all failure modes."</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w15-2">
+      <label><input type="checkbox" onchange="toggleStep('w15-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Add input validation for all entry points</div>
+        <div class="step-desc">Identify every place user input or external data enters the system. Add validation: type checking, length limits, format validation (regex for IPs/CVEs/hashes), sanitization to prevent injection. Test each validator with invalid inputs.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w15-3">
+      <label><input type="checkbox" onchange="toggleStep('w15-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Implement structured JSON logging</div>
+        <div class="step-desc">Add Python logging configured to output JSON: every agent call, tool invocation, error, and timing data. Each log entry: timestamp (ISO-8601), event_type, agent, tool, input_hash (SHA256 of sanitized input), result_code, duration_ms.</div>
+      </div></label>
+      <div class="code-block"><pre><code>import logging, json, hashlib, time
+
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        return json.dumps({
+            'ts': self.formatTime(record),
+            'level': record.levelname,
+            'event': record.getMessage(),
+            'agent': getattr(record, 'agent', None),
+            'tool': getattr(record, 'tool', None),
+        })
+
+# Use: logger.info("tool_call", extra={'agent':'recon','tool':'ip_lookup'})</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w15-4">
+      <label><input type="checkbox" onchange="toggleStep('w15-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Apply a quick FS-ISAC ethics self-audit</div>
+        <div class="step-desc">Run your Week 9 audit checklist against your prototype. Record compliance for each principle (Full / Partial / Gap). For any Gap, write one concrete remediation action. You don't need to fix all gaps in Sprint II, but you must document them.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w15-5">
+      <label><input type="checkbox" onchange="toggleStep('w15-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: Write the README and architecture documentation</div>
+        <div class="step-desc">Create a README covering: what the system does, architecture diagram, setup instructions, usage examples (with expected outputs), known limitations, ethics compliance status, and performance metrics (MTTS/MTTP/MTTSol comparison Sprint I vs Sprint II).</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w15-6">
+      <label><input type="checkbox" onchange="toggleStep('w15-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Run Sprint II metrics and compare to Sprint I</div>
+        <div class="step-desc">Run your hardened prototype against the same 3 Sprint I test cases. Record new metrics. Calculate: improvement in test pass rate, change in MTTSol, change in token cost, compliance improvement (Sprint I ethics gaps vs. Sprint II). Present as a comparison table.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 15 Deliverables</h5>
+  <ul>
+    <li><strong>Hardened Prototype</strong> — complete code with error handling, validation, logging, and README</li>
+    <li><strong>Sprint II Ethics Audit</strong> — FS-ISAC compliance matrix for the hardened prototype</li>
+    <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
+  </ul>
+</div>
+<hr>
+
+<!-- ======== WEEK 16 ======== -->
+<h2 id="week-16">Week 16 — Midyear Project Presentations</h2>
+<div class="week-header"><span class="week-badge">WEEK 16</span><span class="week-sub">Lab: Demo, Defend, Reflect</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Present your hardened prototype to the class and instructor panel. Defend architectural decisions using CCT. Conduct peer reviews. Reflect on the semester's learning trajectory.</p></div>
+
+<div class="lab-section">
+  <h4>&#x1f52c; Presentation Preparation Checklist</h4>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w16-1">
+      <label><input type="checkbox" onchange="toggleStep('w16-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Preparation: Live demo works end-to-end</div>
+        <div class="step-desc">Test your live demo at least 3 times in the 24 hours before presentation. Have a fallback: if live demo fails, have a screen recording ready. Never apologize for a broken demo — pivot cleanly to the recording.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w16-2">
+      <label><input type="checkbox" onchange="toggleStep('w16-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Preparation: 10-minute presentation structure complete</div>
+        <div class="step-desc">Structure: (1) Problem &amp; motivation — 90 sec, (2) Architecture overview &amp; agent design decisions — 2 min, (3) Live demo — 3 min, (4) Security/ethics audit highlights — 1.5 min, (5) Sprint I vs II metrics — 1 min, (6) What you'd build next — 1 min.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w16-3">
+      <label><input type="checkbox" onchange="toggleStep('w16-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Preparation: CCT defense prepared for three challenge questions</div>
+        <div class="step-desc">Prepare CCT-structured answers for: (1) "Why did you choose this architecture over alternatives?", (2) "What is the most significant security risk in this system?", (3) "What evidence shows this improves analyst efficiency?" Use Evidence-Based Analysis for each.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w16-4">
+      <label><input type="checkbox" onchange="toggleStep('w16-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">During: Peer review feedback submitted</div>
+        <div class="step-desc">For each peer presentation, complete the structured peer review form: (1) What problem did they solve? (2) Most impressive technical achievement? (3) Most significant gap or risk? (4) One specific improvement suggestion? Submit within 24 hours of each presentation.</div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w16-5">
+      <label><input type="checkbox" onchange="toggleStep('w16-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Post-presentation: Semester reflection submitted</div>
+        <div class="step-desc">Write 750-word reflection: How has your thinking about AI security changed from Week 1 to Week 16? Which CCT pillar challenged you most? What would you do differently in Semester 2? What are you most proud of building? Reference specific labs.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 16 Deliverables</h5>
+  <ul>
+    <li><strong>10-Minute Live Demo</strong> — of your hardened Sprint II prototype to the class</li>
+    <li><strong>Peer Review Forms</strong> — one for each teammate's presentation</li>
+    <li><strong>Semester Reflection</strong> (750 words) — learning trajectory from Week 1 to Week 16</li>
+    <li><strong>GitHub Repository</strong> — final, tagged release of your prototype with complete documentation</li>
+  </ul>
+</div>
+
+<hr>
+<div class="unit-complete">
+  <h3>&#x1f3c6; Semester 1 Complete!</h3>
+  <p>You have completed all four units of CSEC 601: CCT Foundations, Context Engineering &amp; Tool Design, Ethical AI, and Rapid Prototyping. You are ready for Semester 2.</p>
+  <p style="margin-top:8px;"><a href="lab-s2-unit5.html">Continue: Semester 2 Lab Guide — Unit 5: Multi-Agent Orchestration &rarr;</a></p>
+</div>
+
+</div></main>
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s1-unit4.html');
+  initLabPage('lab-s1-unit4');
+</script>
+</body>
+</html>

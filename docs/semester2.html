@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semester 2 Syllabus — AgentForge</title>
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === BASE === */
+:root {
+  --bg: #0b0f19;
+  --bg-card: #121929;
+  --bg-sidebar: #060a14;
+  --bg-code: #0f1525;
+  --border: #2a3045;
+  --text: #e8dcc8;
+  --text-muted: #9a8e7a;
+  --accent: #d4a017;
+  --accent-hover: #f0c040;
+  --accent-bg: rgba(212, 160, 23, 0.10);
+  --green: #50c878;
+  --orange: #e67e22;
+  --red: #e74c3c;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --table-header: #151d30;
+  --table-row-alt: #121929;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid rgba(212, 160, 23, 0.15);
+  padding: 24px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
+}
+.sidebar-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+}
+.sidebar a {
+  display: block;
+  padding: 8px 20px 8px 28px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a.sub {
+  padding-left: 42px;
+  font-size: 13px;
+  color: #9a8e7a;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: var(--accent-bg);
+}
+.sidebar a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+.sidebar a.active.sub {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* === MOBILE TOGGLE === */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+
+/* === MAIN CONTENT === */
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-width: 0;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* === TYPOGRAPHY === */
+.content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  letter-spacing: -0.5px;
+}
+.content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
+}
+.content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 32px 0 12px;
+}
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2dd4bf;
+  margin: 24px 0 8px;
+}
+.content p {
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.content em {
+  color: var(--text-muted);
+}
+.content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* === LISTS === */
+.content ul, .content ol {
+  margin: 0 0 16px 24px;
+}
+.content li {
+  margin-bottom: 6px;
+}
+.content li > ul, .content li > ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* === CODE === */
+.content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.content pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 24px;
+  overflow-x: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+.content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+/* === TABLES === */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.content thead {
+  background: var(--table-header);
+}
+.content th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+  font-size: 13px;
+}
+.content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.content tbody tr:nth-child(even) {
+  background: var(--table-row-alt);
+}
+.content tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+/* === BLOCKQUOTE (default) === */
+.content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 14px 24px;
+  margin: 20px 0;
+  background: var(--accent-bg);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+.content blockquote p { color: var(--text-muted); }
+
+/* === CALLOUT CONTAINERS === */
+.callout {
+  padding: 16px 24px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.callout p { margin: 0; color: var(--text); }
+.callout p + p { margin-top: 10px; }
+.callout a { color: var(--accent); }
+.callout code { font-size: 12px; }
+.callout ul, .callout ol { margin: 8px 0 4px 20px; }
+.callout li { margin-bottom: 4px; }
+.callout-key {
+  border-color: var(--accent);
+  background: rgba(212, 160, 23, 0.08);
+}
+.callout-tip {
+  border-color: var(--green);
+  background: rgba(80, 200, 120, 0.08);
+}
+.callout-pitfall {
+  border-color: var(--orange);
+  background: rgba(230, 126, 34, 0.08);
+}
+.callout-remember {
+  border-color: var(--purple);
+  background: rgba(167, 139, 250, 0.08);
+}
+.callout-reading {
+  border-color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.06);
+}
+.callout-discuss {
+  border-color: var(--text-muted);
+  background: rgba(154, 142, 122, 0.08);
+}
+
+/* === HR === */
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .overlay.show {
+    display: block;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .content {
+    padding: 60px 20px 60px;
+  }
+  .content h1 { font-size: 26px; }
+  .content h2 { font-size: 20px; }
+}
+
+/* === MERMAID DIAGRAMS === */
+.mermaid {
+  background: #0f1525;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>AgentForge</h1>
+    <p>AI Security Engineering</p>
+  </div>
+  <div class="nav-section">Overview</div>
+<a href="index.html">Course Overview</a>
+<a href="assessment.html">Design Rationale</a>
+<div class="nav-section">Semester 1: Foundations</div>
+<a href="semester1.html">Semester 1 Overview</a>
+<a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
+<a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
+<a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
+<a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
+<div class="nav-section">Semester 2: Advanced</div>
+<a href="semester2.html" class="active">Semester 2 Overview</a>
+<a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
+<a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
+<a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
+<a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
+<div class="nav-section">Resources</div>
+<a href="frameworks.html">Frameworks & Protocols</a>
+<a href="lab-setup.html">Lab Setup Guide</a>
+<a href="reading.html">Reading List</a>
+
+</nav>
+
+<main class="main">
+  <div class="content">
+    <h1 id="csec-602-agentforge-advanced-agentic-security-engineering">CSEC 602: AgentForge — Advanced Agentic Security Engineering</h1>
+<h2 id="semester-2-syllabus">Semester 2 Syllabus</h2>
+<p><strong>Term:</strong> Semester 2, 2026
+<strong>Credits:</strong> 3 units
+<strong>Duration:</strong> 16 weeks
+<strong>Prerequisite:</strong> CSEC 601
+<strong>Delivery Mode:</strong> Hybrid (lecture + hands-on labs)
+<strong>Lab-to-Theory Ratio:</strong> 70% hands-on, 30% theory</p>
+<hr />
+<h2 id="course-information">Course Information</h2>
+<h3 id="course-overview">Course Overview</h3>
+<p>This course represents the second half of a year-long graduate sequence in advanced agentic security engineering. Building upon the fundamentals established in CSEC 601, this semester shifts focus from individual agent development to multi-agent orchestration, adversarial AI security, and production-ready system design. Students will orchestrate complex multi-agent systems, conduct offensive and defensive security operations with AI agents, and deploy autonomous security engineering systems to production environments.</p>
+<p>The course emphasizes practical hands-on experience with cutting-edge tools in the agentic AI ecosystem, including the Claude Agent SDK, CrewAI, LangGraph, and Model Context Protocol (MCP). Students will build, evaluate, attack, defend, and deploy real agentic systems that solve tangible cybersecurity challenges.</p>
+<h3 id="key-terminology">Key Terminology</h3>
+<ul>
+<li><strong>Collaborative Critical Thinking (CCT):</strong> The systematic application of structured reasoning to design robust agentic systems, considering agent interactions, failure modes, security boundaries, and ethical implications. This is distinct from "prompting" and represents deep architectural and design thinking.</li>
+<li><strong>Context Engineering:</strong> The intentional design and management of information context, instruction clarity, and tool availability to shape agent behavior. This is distinct from "prompt engineering" and encompasses the broader challenge of engineering systems, not just text prompts.</li>
+</ul>
+<h3 id="lab-philosophy">Lab Philosophy</h3>
+<p>Semester 2 labs maximize the capabilities of Claude Max subscriptions and the cutting-edge agentic toolstack:</p>
+<ul>
+<li><strong>Claude Code and Agent SDK:</strong> Students leverage Claude's IDE, real-time code execution, worktrees for branch isolation, and the Agent SDK's subagent capabilities for orchestrating specialized agent teams.</li>
+<li><strong>Multi-Vendor Perspective:</strong> Beyond Claude's ecosystem, students gain hands-on experience with CrewAI, LangGraph, and AutoGen to understand architectural trade-offs across frameworks.</li>
+<li><strong>Autonomous Rapid Prototyping:</strong> By Semester 2, students are expected to be proficient with the agentic toolstack and are expected to prototype complex systems quickly, iterating on design through building rather than extensive planning.</li>
+<li><strong>Production Focus:</strong> Labs shift from "proof of concept" to "production-ready," incorporating observability, error handling, deployment strategies, and operational considerations.</li>
+</ul>
+<hr />
+<h2 id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this course, students will be able to:</p>
+<ol>
+<li>
+<p><strong>Design and implement multi-agent architectures</strong> that orchestrate specialized agents for complex cybersecurity tasks, comparing supervisor, hierarchical, debate, and swarm patterns.</p>
+</li>
+<li>
+<p><strong>Evaluate and select appropriate agentic frameworks</strong> (Claude Agent SDK, CrewAI, LangGraph) based on security requirements, workflow characteristics, and operational constraints.</p>
+</li>
+<li>
+<p><strong>Conduct Collaborative Critical Thinking analysis</strong> to design agent systems that are secure, efficient, and resilient to adversarial manipulation.</p>
+</li>
+<li>
+<p><strong>Execute red team and blue team operations</strong> targeting AI agents, including prompt injection, goal hijacking, tool misuse, and memory poisoning attacks.</p>
+</li>
+<li>
+<p><strong>Implement guardrails, hardening, and defense strategies</strong> to protect AI agents from adversarial manipulation while maintaining operational effectiveness.</p>
+</li>
+<li>
+<p><strong>Apply MITRE ATLAS threat modeling</strong> to identify, prioritize, and mitigate AI-specific cybersecurity risks in autonomous systems.</p>
+</li>
+<li>
+<p><strong>Design and implement supply chain security</strong> for AI systems, including model provenance, dependency management, and training data integrity verification.</p>
+</li>
+<li>
+<p><strong>Govern non-human identities (NHI)</strong> in multi-agent environments through authentication, authorization, and continuous audit mechanisms.</p>
+</li>
+<li>
+<p><strong>Implement observability and monitoring</strong> for agentic systems in production using OpenTelemetry, token tracking, cost management, and anomaly detection.</p>
+</li>
+<li>
+<p><strong>Deploy agentic security systems</strong> to production environments with CI/CD pipelines, containerization, canary deployments, and operational runbooks.</p>
+</li>
+<li>
+<p><strong>Integrate ethical reasoning and responsible AI principles</strong> into the design and operation of autonomous security systems.</p>
+</li>
+<li>
+<p><strong>Build, test, and defend real-world agentic security solutions</strong> that demonstrate mastery of the full system lifecycle from design to operation.</p>
+</li>
+</ol>
+<hr />
+<h2 id="course-structure">Course Structure</h2>
+<h3 id="weekly-format">Weekly Format</h3>
+<p>Each week consists of two class sessions:
+- <strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development
+- <strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</p>
+<h3 id="time-commitment">Time Commitment</h3>
+<ul>
+<li>Day 1 (Theory): 2 hours per week</li>
+<li>Day 2 (Lab): 4-6 hours per week</li>
+<li>Independent work: 4-6 hours per week</li>
+<li><strong>Total:</strong> 10-14 hours per week, 160-224 hours over 16 weeks</li>
+</ul>
+<h3 id="unit-organization">Unit Organization</h3>
+<ul>
+<li><strong>Unit 5 (Weeks 1-4):</strong> Multi-Agent Orchestration for Security</li>
+<li><strong>Unit 6 (Weeks 5-8):</strong> AI Attacker vs. AI Defender</li>
+<li><strong>Unit 7 (Weeks 9-12):</strong> Production Security Engineering</li>
+<li><strong>Unit 8 (Weeks 13-16):</strong> Capstone Projects</li>
+</ul>
+<hr />
+<h2 id="weekly-schedule">Weekly Schedule</h2>
+<h3 id="unit-5-multi-agent-orchestration-for-security-weeks-1-4">Unit 5: Multi-Agent Orchestration for Security (Weeks 1-4)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s2-unit5.html#week-1-multi-agent-architecture-patterns">Week 1: Multi-Agent Architecture Patterns</a></td>
+<td>Single-agent limitations and multi-agent patterns</td>
+</tr>
+<tr>
+<td><a href="s2-unit5.html#week-2-crewai-for-security-operations">Week 2: CrewAI for Security Operations</a></td>
+<td>Role-based multi-agent framework</td>
+</tr>
+<tr>
+<td><a href="s2-unit5.html#week-3-langgraph-for-stateful-security-workflows">Week 3: LangGraph for Stateful Workflows</a></td>
+<td>State machines and incident response</td>
+</tr>
+<tr>
+<td><a href="s2-unit5.html#week-4-agent-evaluation-and-benchmarking">Week 4: Agent Evaluation and Benchmarking</a></td>
+<td>Quantitative metrics and testing</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s2-unit5.html">→ View Full Unit 5 Content</a></p>
+<hr />
+<h3 id="unit-6-ai-attacker-vs-ai-defender-weeks-5-8">Unit 6: AI Attacker vs. AI Defender (Weeks 5-8)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s2-unit6.html#week-5-the-adversarial-ai-threat-landscape">Week 5: Adversarial AI Threat Landscape</a></td>
+<td>Threat modeling with MITRE ATLAS</td>
+</tr>
+<tr>
+<td><a href="s2-unit6.html#week-6-red-teaming-ai-agents--offensive-techniques">Week 6: Red Teaming AI Agents</a></td>
+<td>Offensive security assessment techniques</td>
+</tr>
+<tr>
+<td><a href="s2-unit6.html#week-7-defending-ai-agents--guardrails-and-hardening">Week 7: Defending AI Agents</a></td>
+<td>Guardrails, hardening, and defense strategies</td>
+</tr>
+<tr>
+<td><a href="s2-unit6.html#week-8-ai-attacker-vs-defender-wargame">Week 8: AI Attacker vs. Defender Wargame</a></td>
+<td>Full security competition</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s2-unit6.html">→ View Full Unit 6 Content</a></p>
+<hr />
+<h3 id="unit-7-production-security-engineering-weeks-9-12">Unit 7: Production Security Engineering (Weeks 9-12)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s2-unit7.html#week-9-ai-supply-chain-security">Week 9: AI Supply Chain Security</a></td>
+<td>Model provenance and dependency management</td>
+</tr>
+<tr>
+<td><a href="s2-unit7.html#week-10-non-human-identity-nhi-governance">Week 10: Non-Human Identity Governance</a></td>
+<td>Authentication and authorization for agents</td>
+</tr>
+<tr>
+<td><a href="s2-unit7.html#week-11-observability-cost-management-and-operational-excellence">Week 11: Observability and Cost Management</a></td>
+<td>Production monitoring and optimization</td>
+</tr>
+<tr>
+<td><a href="s2-unit7.html#week-12-deploying-agentic-security-systems">Week 12: Deploying Agentic Systems</a></td>
+<td>CI/CD, containerization, and operations</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s2-unit7.html">→ View Full Unit 7 Content</a></p>
+<hr />
+<h3 id="unit-8-capstone-projects-weeks-13-16">Unit 8: Capstone Projects (Weeks 13-16)</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="s2-unit8.html#week-13-capstone-kickoff-and-architecture-reviews">Week 13: Capstone Kickoff and Architecture Reviews</a></td>
+<td>Proposal and architectural design</td>
+</tr>
+<tr>
+<td><a href="s2-unit8.html#week-14-capstone-development-sprint-i">Week 14: Capstone Development Sprint I</a></td>
+<td>Building the core system</td>
+</tr>
+<tr>
+<td><a href="s2-unit8.html#week-15-capstone-development-sprint-ii-and-red-team-review">Week 15: Capstone Sprint II and Red Team Review</a></td>
+<td>Hardening and peer security assessment</td>
+</tr>
+<tr>
+<td><a href="s2-unit8.html#week-16-capstone-presentations-and-course-wrap">Week 16: Capstone Presentations</a></td>
+<td>Final demo and reflection</td>
+</tr>
+</tbody>
+</table>
+<p><a href="s2-unit8.html">→ View Full Unit 8 Content</a></p>
+<hr />
+<h3 id="detailed-week-content">Detailed Week Content</h3>
+<p>For detailed content including lecture notes, labs, and deliverables for each week, please visit the unit documentation files linked above. The remaining content below focuses on assessment, policies, and course resources.</p>
+<hr />
+<h2 id="assessment-breakdown">Assessment Breakdown</h2>
+<p>Final grade calculation:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>Due Week(s)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lab Exercises (12 labs)</td>
+<td>20%</td>
+<td>1-12</td>
+<td>Weekly lab deliverables and reports</td>
+</tr>
+<tr>
+<td>Framework Comparison Report</td>
+<td>10%</td>
+<td>4</td>
+<td>Unit 5 evaluation comparing Claude Agent SDK, CrewAI, LangGraph</td>
+</tr>
+<tr>
+<td>Red Team Exercise</td>
+<td>8%</td>
+<td>6</td>
+<td>Offensive security assessment of peer system</td>
+</tr>
+<tr>
+<td>Blue Team Exercise</td>
+<td>7%</td>
+<td>7</td>
+<td>Defensive hardening and response</td>
+</tr>
+<tr>
+<td>Capstone Project</td>
+<td>40%</td>
+<td>13-16</td>
+<td>Code, documentation, presentation, reflection</td>
+</tr>
+<tr>
+<td>Peer Red Team Reviews</td>
+<td>10%</td>
+<td>15</td>
+<td>Quality of security review work on peer projects</td>
+</tr>
+<tr>
+<td>Metrics and Improvement Tracking</td>
+<td>5%</td>
+<td>13-16</td>
+<td>Performance metrics throughout development</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Letter Grade Scale:</strong>
+- A: 90-100%
+- B: 80-89%
+- C: 70-79%
+- D: 60-69%
+- F: Below 60%</p>
+<hr />
+<h2 id="course-policies">Course Policies</h2>
+<h3 id="attendance-and-participation">Attendance and Participation</h3>
+<ul>
+<li>Attendance at all lectures is expected</li>
+<li>Active participation in labs and team discussions is required</li>
+<li>Excused absences (illness, family emergency, etc.) should be communicated to instructor as soon as possible</li>
+<li>Unexcused absences may impact participation grade</li>
+</ul>
+<h3 id="assignment-submission">Assignment Submission</h3>
+<ul>
+<li>All assignments due by end of stated deadline</li>
+<li>Late submissions may be accepted with 10% deduction per 24-hour period, up to 3 days late</li>
+<li>Assignments more than 3 days late receive zero credit (exceptions require instructor approval)</li>
+<li>All code must be committed to course repository with clear commit messages</li>
+</ul>
+<h3 id="academic-integrity">Academic Integrity</h3>
+<ul>
+<li>All work must be original</li>
+<li>Collaboration is encouraged for labs, but individual understanding and contribution is required</li>
+<li>Code/documentation must not be copied from external sources without attribution</li>
+<li>Use of large language models (including Claude) is permitted and encouraged for coding assistance, but with proper attribution</li>
+<li>Violations of academic integrity will result in failing the course and possible disciplinary action</li>
+</ul>
+<h3 id="responsible-disclosure">Responsible Disclosure</h3>
+<ul>
+<li>Any vulnerabilities discovered in course assignments or capstone projects must be documented and disclosed only within the course environment</li>
+<li>Findings may not be disclosed publicly or to external parties without instructor approval</li>
+<li>Focus is on building security skills, not finding zero-days</li>
+</ul>
+<h3 id="ethics-of-offensive-security">Ethics of Offensive Security</h3>
+<ul>
+<li>All offensive security techniques (red teaming, exploitation, etc.) are practiced ONLY against course-provided systems or student-built systems</li>
+<li>Absolutely no unauthorized testing against production systems or third-party systems</li>
+<li>Students who violate this policy will fail the course and face disciplinary action</li>
+<li>Focus is on defensive security principles and authorized assessments</li>
+</ul>
+<h3 id="classroom-conduct">Classroom Conduct</h3>
+<ul>
+<li>Respect diverse perspectives and backgrounds</li>
+<li>Constructive criticism of ideas is encouraged; personal attacks are not</li>
+<li>Maintain professional demeanor in all interactions</li>
+<li>Violations of this policy will be addressed according to university conduct standards</li>
+</ul>
+<h3 id="support-and-accommodations">Support and Accommodations</h3>
+<ul>
+<li>Students with documented disabilities should contact disability services and inform the instructor</li>
+<li>Reasonable accommodations will be made to support equitable access to course materials</li>
+<li>Additional tutoring and office hours are available for students needing support</li>
+</ul>
+<h3 id="technology-and-tools">Technology and Tools</h3>
+<ul>
+<li>All students should have access to:</li>
+<li>A computer capable of running Docker, Python, and development tools</li>
+<li>Anthropic Claude API access (Claude Max subscription preferred for full agentic capabilities)</li>
+<li>GitHub account for code repositories</li>
+<li>Cloud computing credits (AWS, GCP, or Azure) for deployment (if needed)</li>
+<li>Cost of tools is student responsibility; financial hardship should be discussed with instructor</li>
+</ul>
+<hr />
+<h2 id="course-resources-and-readings">Course Resources and Readings</h2>
+<h3 id="required-texts-and-documentation">Required Texts and Documentation</h3>
+<ul>
+<li>Claude Agent SDK Documentation: https://docs.anthropic.com/agents</li>
+<li>Model Context Protocol (MCP) Specification: https://modelcontextprotocol.io/</li>
+<li>CrewAI Documentation: https://docs.crewai.com/</li>
+<li>LangGraph Documentation: https://langchain-ai.github.io/langgraph/</li>
+<li>MITRE ATLAS Framework: https://atlas.mitre.org/</li>
+</ul>
+<h3 id="recommended-reading">Recommended Reading</h3>
+<ul>
+<li>"Agentic AI's Impact on Cybersecurity" (arXiv, 2024-2025)</li>
+<li>"Disrupting AI-orchestrated Cyber Espionage" (Anthropic, Sept 2025)</li>
+<li>OWASP Top 10 for LLM Applications</li>
+<li>NIST Cybersecurity Framework and Zero Trust guidance</li>
+<li>"Non-Human Identities: The Silent Threat in Your Infrastructure"</li>
+<li>"The Three Pillars of Observability" and OpenTelemetry documentation</li>
+<li>NIST SP 800-61 Revision 2: Incident Response Lifecycle</li>
+<li>"The Hacker and the State" by Ben Buchanan (selected chapters)</li>
+<li>Papers on agent evaluation and red teaming language models</li>
+<li>Industry case studies on AI security and deployment</li>
+</ul>
+<h3 id="tools-and-frameworks">Tools and Frameworks</h3>
+<ul>
+<li>Claude Code (IDE and code execution)</li>
+<li>Claude Agent SDK (building agentic systems)</li>
+<li>CrewAI (role-based multi-agent framework)</li>
+<li>LangGraph (stateful workflow orchestration)</li>
+<li>OpenTelemetry (observability)</li>
+<li>Docker and containerization tools</li>
+<li>CI/CD platforms (GitHub Actions, GitLab CI, etc.)</li>
+<li>Vulnerability scanning tools (Snyk, OWASP Dependency-Check)</li>
+<li>Monitoring and logging platforms</li>
+<li>Promptfoo and custom evaluation harnesses</li>
+</ul>
+<h3 id="professional-organizations-and-resources">Professional Organizations and Resources</h3>
+<ul>
+<li>SANS Institute: cybersecurity training and resources</li>
+<li>(ISC)²: CISSP and other security certifications</li>
+<li>Cybersecurity and Infrastructure Security Agency (CISA): threat intelligence</li>
+<li>OpenSSF (Open Source Security Foundation): secure development practices</li>
+<li>Anthropic and other AI safety/security research organizations</li>
+</ul>
+<hr />
+<h2 id="contact-and-support">Contact and Support</h2>
+<p><strong>Instructor Office Hours:</strong>
+- Times and location TBD
+- Drop-in availability or by appointment
+- Available for technical questions, capstone guidance, career advice</p>
+<p><strong>Teaching Assistants:</strong>
+- Available for lab support and technical questions
+- Hours TBD</p>
+<p><strong>Course Communication:</strong>
+- Primary: Course management system (Slack, Teams, or similar)
+- Email: For formal communications and grade disputes
+- GitHub Issues: For technical questions and lab setup issues</p>
+<p><strong>Mental Health and Wellness:</strong>
+- University counseling services: [contact information]
+- Peer support groups: [contact information]
+- If you're struggling, reach out to instructor or advisors</p>
+<hr />
+<h2 id="course-modifications">Course Modifications</h2>
+<p>This syllabus represents the instructor's current plans and intentions for this course. The instructor reserves the right to make reasonable adjustments to topics, readings, assessments, and policies during the semester to enhance student learning, address emergent topics in agentic AI security, or accommodate unforeseen circumstances. Students will be notified of any significant changes.</p>
+<hr />
+<p><strong>Course Version:</strong> 1.0
+<strong>Last Updated:</strong> March 4, 2026
+<strong>Next Review:</strong> September 2026</p>
+  </div>
+</main>
+
+<script>
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('show');
+}
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) toggleSidebar();
+  });
+});
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6b4c1e',
+      primaryTextColor: '#e8dcc8',
+      primaryBorderColor: '#d4a017',
+      lineColor: '#9a8e7a',
+      secondaryColor: '#1a1f30',
+      tertiaryColor: '#0f1525',
+      background: '#0f1525',
+      mainBkg: '#6b4c1e',
+      nodeBorder: '#d4a017',
+      clusterBkg: '#0b0f19',
+      clusterBorder: '#2a3045',
+      titleColor: '#d4a017',
+      edgeLabelBackground: '#0f1525',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>

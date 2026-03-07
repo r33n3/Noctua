@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading List — AgentForge</title>
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === BASE === */
+:root {
+  --bg: #0b0f19;
+  --bg-card: #121929;
+  --bg-sidebar: #060a14;
+  --bg-code: #0f1525;
+  --border: #2a3045;
+  --text: #e8dcc8;
+  --text-muted: #9a8e7a;
+  --accent: #d4a017;
+  --accent-hover: #f0c040;
+  --accent-bg: rgba(212, 160, 23, 0.10);
+  --green: #50c878;
+  --orange: #e67e22;
+  --red: #e74c3c;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --table-header: #151d30;
+  --table-row-alt: #121929;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid rgba(212, 160, 23, 0.15);
+  padding: 24px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
+}
+.sidebar-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+}
+.sidebar a {
+  display: block;
+  padding: 8px 20px 8px 28px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a.sub {
+  padding-left: 42px;
+  font-size: 13px;
+  color: #9a8e7a;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: var(--accent-bg);
+}
+.sidebar a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+.sidebar a.active.sub {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* === MOBILE TOGGLE === */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+
+/* === MAIN CONTENT === */
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-width: 0;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* === TYPOGRAPHY === */
+.content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  letter-spacing: -0.5px;
+}
+.content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
+}
+.content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 32px 0 12px;
+}
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2dd4bf;
+  margin: 24px 0 8px;
+}
+.content p {
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.content em {
+  color: var(--text-muted);
+}
+.content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* === LISTS === */
+.content ul, .content ol {
+  margin: 0 0 16px 24px;
+}
+.content li {
+  margin-bottom: 6px;
+}
+.content li > ul, .content li > ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* === CODE === */
+.content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.content pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 24px;
+  overflow-x: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+.content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+/* === TABLES === */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.content thead {
+  background: var(--table-header);
+}
+.content th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+  font-size: 13px;
+}
+.content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.content tbody tr:nth-child(even) {
+  background: var(--table-row-alt);
+}
+.content tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+/* === BLOCKQUOTE (default) === */
+.content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 14px 24px;
+  margin: 20px 0;
+  background: var(--accent-bg);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+.content blockquote p { color: var(--text-muted); }
+
+/* === CALLOUT CONTAINERS === */
+.callout {
+  padding: 16px 24px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.callout p { margin: 0; color: var(--text); }
+.callout p + p { margin-top: 10px; }
+.callout a { color: var(--accent); }
+.callout code { font-size: 12px; }
+.callout ul, .callout ol { margin: 8px 0 4px 20px; }
+.callout li { margin-bottom: 4px; }
+.callout-key {
+  border-color: var(--accent);
+  background: rgba(212, 160, 23, 0.08);
+}
+.callout-tip {
+  border-color: var(--green);
+  background: rgba(80, 200, 120, 0.08);
+}
+.callout-pitfall {
+  border-color: var(--orange);
+  background: rgba(230, 126, 34, 0.08);
+}
+.callout-remember {
+  border-color: var(--purple);
+  background: rgba(167, 139, 250, 0.08);
+}
+.callout-reading {
+  border-color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.06);
+}
+.callout-discuss {
+  border-color: var(--text-muted);
+  background: rgba(154, 142, 122, 0.08);
+}
+
+/* === HR === */
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .overlay.show {
+    display: block;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .content {
+    padding: 60px 20px 60px;
+  }
+  .content h1 { font-size: 26px; }
+  .content h2 { font-size: 20px; }
+}
+
+/* === MERMAID DIAGRAMS === */
+.mermaid {
+  background: #0f1525;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>AgentForge</h1>
+    <p>AI Security Engineering</p>
+  </div>
+  <div class="nav-section">Overview</div>
+<a href="index.html">Course Overview</a>
+<a href="assessment.html">Design Rationale</a>
+<div class="nav-section">Semester 1: Foundations</div>
+<a href="semester1.html">Semester 1 Overview</a>
+<a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
+<a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
+<a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
+<a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
+<div class="nav-section">Semester 2: Advanced</div>
+<a href="semester2.html">Semester 2 Overview</a>
+<a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
+<a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
+<a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
+<a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
+<div class="nav-section">Resources</div>
+<a href="frameworks.html">Frameworks & Protocols</a>
+<a href="lab-setup.html">Lab Setup Guide</a>
+<a href="reading.html" class="active">Reading List</a>
+
+</nav>
+
+<main class="main">
+  <div class="content">
+    <h1 id="agentforge-reading-list-and-resources">AgentForge — Reading List and Resources</h1>
+<p>This reading list is organized into <strong>Core</strong> (required) and <strong>Expanded</strong> (recommended deep-dives) for each topic area. Core readings are assigned weekly; Expanded readings support capstone research and personal exploration.</p>
+<hr />
+<h2 id="critical-thinking-and-cct">Critical Thinking and CCT</h2>
+<h3 id="core">Core</h3>
+<ul>
+<li><strong>Thinking, Fast and Slow</strong> by Daniel Kahneman (2011). Cognitive biases and dual-process thinking. Essential for understanding how humans evaluate claims under uncertainty.</li>
+<li><strong>The Demon-Haunted World</strong> by Carl Sagan (1996). The "Baloney Detection Kit" for evaluating claims and evidence quality. Reference: https://www.themarginalian.org/2014/01/03/baloney-detection-kit-carl-sagan/</li>
+<li><strong>Asking the Right Questions</strong> by M. Neil Browne and Stuart M. Keeley (10th ed., 2017). Structured methodology for identifying assumptions and evaluating arguments.</li>
+</ul>
+<h3 id="expanded">Expanded</h3>
+<ul>
+<li><strong>The Art of Thinking Clearly</strong> by Rolf Dobelli (2013). Practical cognitive bias guide with real-world examples.</li>
+<li><strong>Collaborative Intelligence</strong> by Dawna Markova and Angie McArthur (2015). Collaborative thinking with diverse perspectives — applicable to team-based security analysis.</li>
+<li><strong>You Are Not So Smart</strong> by David McRaney (2011). Accessible guide to self-deception and cognitive bias.</li>
+<li><strong>The Critical Thinking Toolkit</strong> by Foresman, Fosl, and Watson (2015). Pedagogical approaches to teaching critical thinking.</li>
+<li><strong>Critical Thinking Resources</strong> by Richard Paul and Foundation for Critical Thinking. https://www.criticalthinking.org/</li>
+</ul>
+<hr />
+<h2 id="ai-ethics-and-responsible-ai">AI Ethics and Responsible AI</h2>
+<h3 id="core_1">Core</h3>
+<ul>
+<li><strong>FS-ISAC Responsible AI Principles</strong> (FS-ISAC AI Risk Working Group, February 2024). Six principles — security/resiliency, explainability, privacy, fairness, reliability, accountability — for responsible AI in financial services. https://www.fsisac.com/hubfs/Knowledge/AI/FSISAC_ResponsibleAI-Principles.pdf</li>
+<li><strong>Weapons of Math Destruction</strong> by Cathy O'Neil (2016). Algorithmic decision-making systems that perpetuate bias and discrimination.</li>
+<li><strong>The Alignment Problem</strong> by Brian Christian (2020). AI alignment challenges: value specification, robustness, and ensuring systems behave according to human intentions.</li>
+</ul>
+<h3 id="expanded_1">Expanded</h3>
+<ul>
+<li><strong>AI Ethics</strong> by Mark Coeckelbergh (2020). Philosophical and practical frameworks for AI governance.</li>
+<li><strong>The Ethics of Artificial Intelligence and Robotics</strong> edited by Vincent C. Muller (2020). Academic collection on normative issues in AI.</li>
+<li><strong>Power and Prediction</strong> by Agrawal, Gans, and Goldfarb (2023). Economics of AI decision-making and organizational transformation.</li>
+<li><strong>Reasoning Models Don't Always Say What They Think</strong> — Anthropic (2025). Demonstrates that reasoning models don't accurately verbalize their reasoning, challenging chain-of-thought monitoring for safety. https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf</li>
+<li><strong>Missing the Mark: Adoption of Watermarking for Generative AI</strong> (March 2025). Low adoption of watermarking in practice and EU AI Act implications. https://arxiv.org/html/2503.18156v3</li>
+</ul>
+<hr />
+<h2 id="agentic-engineering">Agentic Engineering</h2>
+<h3 id="core_2">Core</h3>
+<ul>
+<li><strong>Agentic Engineering Book</strong> by Jaymin West. The course's core methodology reference for rapid prototyping and production delivery. https://jayminwest.com/agentic-engineering-book</li>
+<li><em>Ch. 1: Foundations &amp; 12 Leverage Points</em> → Unit 1 (CCT Foundations), Unit 4 (Rapid Prototyping)</li>
+<li><em>Ch. 2: Prompt</em> → Unit 2 (Context Engineering)</li>
+<li><em>Ch. 3: Model (Selection, Behavior, Limitations)</em> → Unit 1 (AI Landscape), Unit 6 (Attacker vs. Defender)</li>
+<li><em>Ch. 4: Context (Fundamentals, Strategies, Advanced Patterns)</em> → Unit 2 (Context Engineering), Unit 5 (Multi-Agent Context)</li>
+<li><em>Ch. 5: Tool Use (Design, Selection, Security, Skills)</em> → Unit 2 (Tool Design), Unit 7 (Production Security)</li>
+<li><em>Ch. 6: Patterns (Plan-Build-Review, Orchestrator, Expert Swarm, Multi-Agent)</em> → Unit 4 (Rapid Prototyping), Unit 5 (Multi-Agent Orchestration)</li>
+<li><em>Ch. 7: Practices (Debugging, Evaluation, Cost, Production Concerns)</em> → Unit 7 (Production Security Engineering)</li>
+<li><em>Ch. 8: Mental Models (Pit of Success, Specs as Source Code, Context as Code)</em> → Unit 3 (Ethical AI), Unit 4 (Rapid Prototyping), Unit 8 (Capstone)</li>
+<li><em>Ch. 9: Practitioner Toolkit (Claude Code, IDE Integrations)</em> → Unit 1 (Lab Setup), Unit 4 (Claude Code Deep Dive)</li>
+<li><strong>Effective Context Engineering for AI Agents</strong> — Anthropic. Context window management, prompt structuring, information architecture. https://anthropic.com/engineering/effective-context-engineering-for-ai-agents</li>
+<li><strong>Building Agents with the Claude Agent SDK</strong> — Anthropic. Agent construction with practical examples. https://anthropic.com/engineering/building-agents-with-the-claude-agent-sdk</li>
+</ul>
+<h3 id="expanded_2">Expanded</h3>
+<ul>
+<li><strong>Building Agentic AI Systems</strong> — Packt Publishing (2025). Production patterns for multi-agent systems.</li>
+<li><strong>From RAG to Context: A 2025 Year-End Review</strong> — RAGFlow (December 2025). RAG's evolution into broader "Context Engine" patterns. https://ragflow.io/blog/rag-review-2025-from-rag-to-context</li>
+<li><strong>Context Engineering: A Complete Guide</strong> — CodeConductor (2025). Structured approach to data, knowledge, tools, memory, and structure for LLMs. https://codeconductor.ai/blog/context-engineering</li>
+</ul>
+<hr />
+<h2 id="agentic-ai-security-research-papers">Agentic AI Security — Research Papers</h2>
+<h3 id="core_3">Core</h3>
+<ul>
+<li><strong>"Agentic AI Security: Threats, Defenses, Evaluation, and Open Challenges"</strong> (arXiv:2510.23883, October 2025). Comprehensive survey of threats to autonomous agent systems. https://arxiv.org/abs/2510.23883</li>
+<li><strong>"A Survey of Agentic AI and Cybersecurity"</strong> (arXiv:2601.05293, January 2026). Groups security use cases into Autonomous Cyber Defense, Agentic Threat Intelligence, Enterprise Security Automation, and Simulation/Training. https://arxiv.org/html/2601.05293v1</li>
+<li><strong>"Prompt Injection Attacks on Agentic Coding Assistants"</strong> (arXiv:2601.17548, January 2026). Attack success rates exceeding 85% on Claude Code, Copilot, and Cursor. https://arxiv.org/html/2601.17548v1</li>
+<li><strong>"Securing Agentic AI: A Comprehensive Threat Model"</strong> (arXiv:2504.19956, April 2025). Nine threats across five domains including cognitive architecture vulnerabilities and governance circumvention. https://arxiv.org/abs/2504.19956</li>
+</ul>
+<h3 id="expanded_3">Expanded</h3>
+<ul>
+<li><strong>"The 2025 AI Agent Index"</strong> (arXiv:2602.17753, February 2026). Documents 30 deployed AI agents with safety features. https://arxiv.org/html/2602.17753v1</li>
+<li><strong>"Agentic AI as a Cybersecurity Attack Surface"</strong> (arXiv:2602.19555, February 2026). Runtime supply chain vulnerabilities in agentic systems. https://arxiv.org/html/2602.19555v1</li>
+<li><strong>"The Evolution of Agentic AI in Cybersecurity"</strong> (arXiv:2512.06659, December 2025). Progression from single LLM reasoners to autonomous pipelines. https://arxiv.org/abs/2512.06659</li>
+<li><strong>"When AI Meets the Web: Prompt Injection in Third-Party AI Chatbot Plugins"</strong> (IEEE S&amp;P 2026). Study of 17 plugins on 10,000+ websites. https://arxiv.org/html/2511.05797v1</li>
+<li><strong>"Prompt Injection Attacks in LLMs and AI Agent Systems: A Comprehensive Review"</strong> (MDPI, January 2026). Taxonomy of injection techniques, direct jailbreaking, and indirect injection. https://www.mdpi.com/2078-2469/17/1/54</li>
+</ul>
+<hr />
+<h2 id="red-teaming-and-adversarial-ml">Red Teaming and Adversarial ML</h2>
+<h3 id="core_4">Core</h3>
+<ul>
+<li><strong>"Red Teaming the Mind of the Machine"</strong> (arXiv:2505.04806, May 2025). 45+ defenses evaluated against adaptive attacks. Roleplay injection achieves 89.6% success rate. https://arxiv.org/html/2505.04806v1</li>
+<li><strong>"An End-to-End Overview of Red Teaming for LLMs"</strong> (TrustNLP 2025). Comprehensive methodologies, tools, and systematic approaches. https://aclanthology.org/2025.trustnlp-main.23.pdf</li>
+<li><strong>Adversarial Machine Learning</strong> by Vorobeychik and Kantarcioglu (2022). Foundational evasion, poisoning, and robustness techniques.</li>
+</ul>
+<h3 id="expanded_4">Expanded</h3>
+<ul>
+<li><strong>"M2S: Multi-turn to Single-turn Jailbreak"</strong> (ACL 2025). Consolidating multi-turn attacks into single-turn with 17.5% improvement. https://aclanthology.org/2025.acl-long.805/</li>
+<li><strong>"Jailbreaking Black Box LLMs in Twenty Queries"</strong> (2025). Efficient black-box jailbreak techniques. https://jailbreaking-llms.github.io/</li>
+<li><strong>"Jailbreak Attack with Multimodal Virtual Scenario Hypnosis"</strong> (2025). Multimodal attacks achieving 82% success on VLMs. https://www.sciencedirect.com/science/article/abs/pii/S0031320325010520</li>
+<li><strong>"Jailbreaking LLMs &amp; VLMs: Mechanisms, Evaluation, and Unified Defenses"</strong> (ICLR 2025). Unified framework for text and vision-language model attacks. https://arxiv.org/html/2601.03594v1</li>
+</ul>
+<hr />
+<h2 id="ai-supply-chain-security">AI Supply Chain Security</h2>
+<h3 id="core_5">Core</h3>
+<ul>
+<li><strong>"Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples"</strong> — Anthropic (October 2025). 250 poisoned documents can backdoor LLMs of any size. https://arxiv.org/abs/2510.07192</li>
+<li><strong>"State of MCP Server Security 2025"</strong> — Astrix. Analysis of 5,200+ MCP servers: 88% require credentials, 53% use insecure long-lived secrets. https://astrix.security/learn/blog/state-of-mcp-server-security-2025/</li>
+<li><strong>"A Security Engineer's Guide to MCP"</strong> — Semgrep (2025). Comprehensive security engineering perspective on MCP. https://semgrep.dev/blog/2025/a-security-engineers-guide-to-mcp/</li>
+</ul>
+<h3 id="expanded_5">Expanded</h3>
+<ul>
+<li><strong>"Securing the AI Supply Chain"</strong> (arXiv:2512.23385, December 2025). Developer-reported security issues in AI projects. https://arxiv.org/html/2512.23385v1</li>
+<li><strong>"MCPTox: Evaluating Tool Poisoning Attacks in MCP Ecosystems"</strong> (2025). How malicious tool definitions execute unauthorized actions.</li>
+<li><strong>"Data Poisoning in Training Sets: Hidden Prompts in Code Comments on GitHub"</strong> — Lakera (January 2025). Real-world supply chain attack via GitHub comments. https://www.lakera.ai/blog/training-data-poisoning</li>
+<li><strong>"Revisiting Backdoor Attacks on LLMs"</strong> (OpenReview 2025). Stealthy poisoning via harmless inputs. https://openreview.net/forum?id=EG6K7ZWOwQ</li>
+<li><strong>"LLMs May Be More Vulnerable to Data Poisoning Than We Thought"</strong> — Alan Turing Institute (2025). https://www.turing.ac.uk/blog/llms-may-be-more-vulnerable-data-poisoning-we-thought</li>
+</ul>
+<hr />
+<h2 id="governance-policy-and-compliance-frameworks">Governance, Policy, and Compliance Frameworks</h2>
+<h3 id="core_6">Core</h3>
+<ul>
+<li><strong>NIST Cybersecurity Framework Profile for AI (NIST IR 8596)</strong> — December 2025. Managing AI-related cybersecurity risks. https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8596.iprd.pdf</li>
+<li><strong>OWASP Top 10 for Agentic Applications</strong> — December 2025. First benchmark for agentic security. https://genai.owasp.org/</li>
+<li><strong>OWASP Top 10 for LLM Applications 2025</strong>. Prompt injection #1 for second consecutive year; five new categories added. https://owasp.org/www-project-top-10-for-large-language-model-applications/</li>
+<li><strong>MITRE ATLAS</strong> — October 2025 update. 15 tactics, 66 techniques, 14 new agent-specific techniques. https://atlas.mitre.org/</li>
+<li><strong>NIST AI Risk Management Framework (AI RMF 1.0)</strong>. Governance model for AI risk assessment. https://www.nist.gov/artificial-intelligence</li>
+</ul>
+<h3 id="expanded_6">Expanded</h3>
+<ul>
+<li><strong>AIUC-1: The First AI Agent Standard</strong> — Consortium of 60+ CISOs, founded by former Anthropic security experts with MITRE and Cloud Security Alliance. Six domains: Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society. First accredited auditor: Schellman (2026). https://www.aiuc-1.com/</li>
+<li><strong>OWASP AI Vulnerability Scoring System (AIVSS)</strong> — Extends CVSS for AI-specific vulnerabilities with 10 core risk categories. Crosswalks to AIUC-1 domains for closed-loop risk management. https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system</li>
+<li><strong>AIUC-AIVSS Crosswalk</strong> — Mapping between AIVSS risk categories and AIUC-1 control domains. https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system/blob/main/aiuc-aivss-crosswalk.md</li>
+<li><strong>EU AI Act Implementation</strong> — Full enforcement August 2, 2026. Quality management, risk management, conformity assessments for high-risk AI. https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai</li>
+<li><strong>"The State of Agentic Security and Governance 1.0"</strong> — OWASP GenAI Project (2025). Practical guide to governance for autonomous AI.</li>
+<li><strong>"Principles for Secure Integration of AI in OT"</strong> — CISA + international agencies (December 2025). Joint guidance for critical infrastructure. https://www.cisa.gov/resources-tools/resources/principles-secure-integration-artificial-intelligence-operational-technology</li>
+<li><strong>"AI Governance in the Agentic Era"</strong> — IAPP (2025). Governance challenges including Singapore's Model AI Governance Framework.</li>
+<li><strong>"Frontier AI Risk Management Framework in Practice"</strong> (arXiv:2602.14457, February 2026). Five critical dimensions including cyber offense and self-replication. https://arxiv.org/html/2602.14457v1</li>
+<li><strong>SAFE-AI: A Framework for Securing AI Systems</strong> — MITRE (2025). https://atlas.mitre.org/pdf-files/SAFEAI_Full_Report.pdf</li>
+<li><strong>FS-ISAC Navigating Cyber 2025</strong> — Heightened cyber threats in financial sector. https://www.fsisac.com/navigatingcyber2025</li>
+<li><strong>FS-ISAC Guidance on Generative AI in Financial Services</strong> (2025). 300% increase in AI-generated fraud. https://www.fsisac.com/newsroom/fsisac-releases-guidance-on-the-future-state-of-generative-ai-in-financial-services</li>
+</ul>
+<hr />
+<h2 id="non-human-identity-nhi-security">Non-Human Identity (NHI) Security</h2>
+<h3 id="core_7">Core</h3>
+<ul>
+<li><strong>"2025 State of Non-Human Identities Report"</strong> — Entro Security (2025). 97% of NHIs have excessive privileges; long-lived secrets as root cause.</li>
+<li><strong>"Why Non-Human Identities Are Your Biggest Security Blind Spot in 2026"</strong> — CSO Online (2026). Strategic perspective on NHI risks in the agentic era. https://www.csoonline.com/article/4125156/why-non-human-identities-are-your-biggest-security-blind-spot-in-2026.html</li>
+</ul>
+<h3 id="expanded_7">Expanded</h3>
+<ul>
+<li><strong>OWASP NHI Top 10</strong> — Cloud Security Alliance (June 2025). Standardized NHI security framework.</li>
+<li><strong>PCI DSS 4.0 NHI Requirements</strong> (March 2025). Updated compliance for NHI management.</li>
+</ul>
+<hr />
+<h2 id="ai-in-cybersecurity-operations">AI in Cybersecurity Operations</h2>
+<h3 id="core_8">Core</h3>
+<ul>
+<li><strong>"Disrupting the First Reported AI-Orchestrated Cyber Espionage"</strong> — Anthropic (September 2025). Real-world agentic cyber attack operating at 80-90% autonomy. https://www.anthropic.com/news/disrupting-AI-espionage</li>
+<li><strong>"Introducing Aardvark"</strong> — OpenAI (October 2025). Autonomous agent discovering vulnerabilities at scale (92% recall). https://openai.com/index/introducing-aardvark/</li>
+</ul>
+<h3 id="expanded_8">Expanded</h3>
+<ul>
+<li><strong>"Disrupting Malicious Uses of AI"</strong> — OpenAI (October 2025). Identifying and disrupting malicious AI usage. https://openai.com/global-affairs/disrupting-malicious-uses-of-ai-october-2025/</li>
+<li><strong>"Trusted Access for Cyber: GPT-5.3-Codex"</strong> — OpenAI (February 2026). Identity and trust framework for frontier AI cyber capabilities. https://openai.com/index/trusted-access-for-cyber/</li>
+<li><strong>"Continuously Hardening ChatGPT Atlas Against Prompt Injection"</strong> — OpenAI (2025). https://openai.com/index/hardening-atlas-against-prompt-injection/</li>
+<li><strong>"Why SOCs Are Moving Toward Autonomous Security Operations in 2026"</strong> — Help Net Security (February 2026). https://www.helpnetsecurity.com/2026/02/24/socs-autonomous-security-operations-strategies/</li>
+<li><strong>"Agentic AI: The 2026 Threat Multiplier"</strong> — Barracuda Networks (February 2026). https://blog.barracuda.com/2026/02/27/agentic-ai--the-2026-threat-multiplier-reshaping-cyberattacks</li>
+<li><strong>"AI Agent Attacks in Q4 2025 Signal New Risks for 2026"</strong> — eSecurity Planet (2026). https://www.esecurityplanet.com/artificial-intelligence/ai-agent-attacks-in-q4-2025-signal-new-risks-for-2026/</li>
+</ul>
+<hr />
+<h2 id="cybersecurity-foundations">Cybersecurity Foundations</h2>
+<h3 id="core_9">Core</h3>
+<ul>
+<li><strong>The Hacker and the State</strong> by Ben Buchanan (2020). Cyber conflict and geopolitical implications.</li>
+<li><strong>MITRE ATT&amp;CK Framework</strong>. Adversary tactics and techniques. https://attack.mitre.org/</li>
+</ul>
+<h3 id="expanded_9">Expanded</h3>
+<ul>
+<li><strong>Cybersecurity and Artificial Intelligence</strong> — Springer (Recent Edition). Integrates cybersecurity and AI perspectives.</li>
+</ul>
+<hr />
+<h2 id="rapid-prototyping-and-innovation">Rapid Prototyping and Innovation</h2>
+<h3 id="core_10">Core</h3>
+<ul>
+<li><strong>Sprint</strong> by Jake Knapp, John Zeratsky, and Braden Kowitz (2016). Time-boxed prototyping methodology.</li>
+<li><strong>The Lean Startup</strong> by Eric Ries (2011). Iterative development and validated learning.</li>
+</ul>
+<h3 id="expanded_10">Expanded</h3>
+<ul>
+<li><strong>Creative Confidence</strong> by Tom Kelley and David Kelley (2013). Fostering innovation in teams.</li>
+<li><strong>Good Strategy Bad Strategy</strong> by Richard Rumelt (2011). Strategic frameworks for design decisions.</li>
+</ul>
+<hr />
+<h2 id="agent-protocols-technical-documentation">Agent Protocols — Technical Documentation</h2>
+<ul>
+<li><strong>Model Context Protocol (MCP) Specification</strong> — https://modelcontextprotocol.io/</li>
+<li><strong>Google Agent2Agent Protocol (A2A)</strong> — https://github.com/a2aproject/A2A</li>
+<li><strong>IBM Agent Communication Protocol (ACP)</strong></li>
+<li><strong>Agent Network Protocol (ANP)</strong></li>
+<li><strong>"A Survey of Agent Interoperability Protocols: MCP, ACP, A2A, and ANP"</strong> (arXiv:2505.02279, May 2025)</li>
+<li><strong>"A Survey of AI Agent Protocols"</strong> (arXiv:2504.16736, April 2025)</li>
+</ul>
+<hr />
+<h2 id="framework-and-platform-documentation">Framework and Platform Documentation</h2>
+<ul>
+<li><strong>Claude Agent SDK</strong> — https://platform.claude.com/docs/en/agent-sdk/overview</li>
+<li><strong>CrewAI</strong> — https://docs.crewai.com/</li>
+<li><strong>LangGraph</strong> — https://langchain-ai.github.io/langgraph/</li>
+<li><strong>AutoGen/AG2</strong> — https://microsoft.github.io/autogen/</li>
+<li><strong>Ollama</strong> — https://ollama.ai/</li>
+<li><strong>Garak</strong> (NVIDIA) — https://github.com/NVIDIA/garak</li>
+<li><strong>PyRIT</strong> (Microsoft) — https://github.com/Azure/PyRIT</li>
+<li><strong>Promptfoo</strong> — https://www.promptfoo.dev/</li>
+<li><strong>NeMo Guardrails</strong> (NVIDIA) — https://github.com/NVIDIA-NeMo/Guardrails</li>
+<li><strong>LlamaFirewall</strong> (Meta) — https://github.com/meta-llama/llama-firewall</li>
+<li><strong>Guardrails AI</strong> — https://guardrailsai.com/</li>
+<li><strong>IBM AI Fairness 360</strong> — https://aif360.readthedocs.io/</li>
+<li><strong>Aequitas</strong> — https://github.com/dssg/aequitas</li>
+</ul>
+<hr />
+<h2 id="mechanistic-interpretability-emerging">Mechanistic Interpretability (Emerging)</h2>
+<ul>
+<li><strong>"Mechanistic Interpretability Named MIT's 2026 Breakthrough Technology"</strong> — MIT Technology Review (January 2026). https://www.technologyreview.com/2026/01/12/1130003/mechanistic-interpretability-ai-research-models-2026-breakthrough-technologies/</li>
+<li><strong>Gemma Scope 2</strong> — Google DeepMind (2025). Largest open-source interpretability toolkit.</li>
+<li><strong>"Chain of Thought Monitorability"</strong> — Fabien Roger, Anthropic (2025). Opportunities and fragility of monitoring CoT for safety. https://arxiv.org/pdf/2507.11473</li>
+</ul>
+<hr />
+<h2 id="academic-journals-and-conferences">Academic Journals and Conferences</h2>
+<ul>
+<li><strong>Journal of Cybersecurity</strong> — Oxford University Press. https://academic.oup.com/cybersecurity</li>
+<li><strong>AI and Ethics Journal</strong> — Springer. https://link.springer.com/journal/43681</li>
+<li><strong>ACM Computing Surveys</strong> — Special issues on AI security and agentic systems</li>
+<li><strong>IEEE Security &amp; Privacy Magazine</strong> — AI/ML security track</li>
+<li><strong>IEEE Symposium on Security and Privacy</strong> — https://sp2026.ieee-security.org/</li>
+<li><strong>USENIX Security Symposium</strong> — Annual adversarial ML and AI security papers</li>
+<li><strong>NeurIPS, ICML, ICLR, ACL</strong> — Machine learning conferences with growing AI safety tracks</li>
+</ul>
+<hr />
+<h2 id="supplementary-video-ai-engineer-youtube-channel">Supplementary Video — AI Engineer YouTube Channel</h2>
+<p>Conference talks from the <a href="https://youtube.com/@aiDotEngineer">AI Engineer</a> YouTube channel (260k+ subscribers), curated by topic relevance to course units. All talks are free. The AI Engineer World's Fair and Summit events feature speakers from Anthropic, OpenAI, Google DeepMind, Meta, and leading AI startups.</p>
+<h3 id="unit-12-foundations-context-engineering-tool-design">Unit 1–2: Foundations, Context Engineering &amp; Tool Design</h3>
+<ul>
+<li><strong>Dex Horthy — "No Vibes Allowed: Solving Hard Problems in Complex Codebases"</strong> (AI Engineer Code Summit, 2025). Advanced context engineering for coding agents — frequent intentional compaction, structured context delivery, handling 300k+ line codebases. https://youtube.com/@aiDotEngineer</li>
+<li><strong>Dex Horthy — "12-Factor Agents: Patterns of Reliable LLM Applications"</strong> (AI Engineer, 2025). Production patterns for building dependable agents — the 12 engineering principles that separate prototypes from production systems. https://youtube.com/@aiDotEngineer</li>
+<li><strong>Nico Albanese — "AI SDK Masterclass: Build Your Own Deep Research"</strong> (AI Engineer, 2025). Vercel AI SDK fundamentals + building a Deep Research clone in 30 minutes — demonstrates rapid prototyping methodology. https://youtube.com/@aiDotEngineer</li>
+</ul>
+<h3 id="unit-4-rapid-prototyping-agentic-engineering">Unit 4: Rapid Prototyping &amp; Agentic Engineering</h3>
+<ul>
+<li><strong>Anthropic — "Inside the Claude Agents SDK"</strong> (AI Engineer Summit, 2025). The same agent harness that powers Claude Code — structured agent architectures, tool use patterns, subagent delegation. Key insight: "Agents are models using tools in a loop." https://youtube.com/@aiDotEngineer</li>
+</ul>
+<h3 id="unit-5-multi-agent-orchestration">Unit 5: Multi-Agent Orchestration</h3>
+<ul>
+<li><strong>AI Engineer World's Fair — Multi-Agent Track</strong> (2025). Multiple talks on agent teams, orchestration patterns, state management, and agent-to-agent communication. Conference featured dedicated tracks on Agent Reliability and SWE-Agents. https://youtube.com/@aiDotEngineer</li>
+</ul>
+<h3 id="unit-6-ai-attacker-vs-ai-defender">Unit 6: AI Attacker vs. AI Defender</h3>
+<ul>
+<li><strong>Simon Willison — "2025 in LLMs, Illustrated by Pelicans on Bicycles"</strong> (AI Engineer World's Fair keynote, 2025). Won Best Speaker trophy. Introduces the <strong>Lethal Trifecta</strong> — when AI agents have access to private data, exposure to untrusted content, and ability to communicate externally, a single poisoned input can exfiltrate data. Uses the GitHub MCP exploit as case study. Essential viewing for understanding prompt injection in agentic systems. https://youtube.com/@aiDotEngineer</li>
+<li><strong>Leonard Tang (Haize Labs) — "Scaling Judge-Time Compute with Verdict"</strong> (AI Engineer World's Fair, 2025). Why standard evals fail for AI applications. Introduces Verdict — stacked small models that outperform frontier models at evaluation by 10-20% at a fraction of the cost. Directly applicable to red team evaluation pipelines. https://youtube.com/@aiDotEngineer</li>
+</ul>
+<h3 id="unit-7-production-security-engineering">Unit 7: Production Security Engineering</h3>
+<ul>
+<li><strong>Abhishek Bhardwaj — "Arrakis: How To Build An AI Sandbox From Scratch"</strong> (AI Engineer, 2025). Why the path to safe AI goes through sandboxes — building secure runtimes for agent code execution with MicroVM isolation, automatic port forwarding, and backtracking. https://youtube.com/@aiDotEngineer</li>
+<li><strong>Bobby Tiernay &amp; Kam Sween (Auth0) — "Agent Identity and Delegated Access"</strong> (AI Engineer World's Fair, 2025). How agents need clear identity and properly delegated access to act safely — Auth0 AI for dispatching user notifications for approval on sensitive actions. Directly maps to NHI governance. https://youtube.com/@aiDotEngineer</li>
+<li><strong>AI Engineer World's Fair — Security Track</strong> (2025). Dedicated security track covering MCP security, agent reliability, supply chain risks, and production deployment patterns. https://youtube.com/@aiDotEngineer</li>
+</ul>
+<h3 id="general-cross-cutting">General / Cross-Cutting</h3>
+<ul>
+<li><strong>Swyx — "The Rise of the AI Engineer"</strong> (AI Engineer, 2023-ongoing). The foundational talk defining the AI Engineer role and the "Software 3.0" paradigm — context engineering, tool integration, and the shift from prompt engineering to systems engineering. https://youtube.com/@aiDotEngineer</li>
+</ul>
+<hr />
+<h2 id="online-courses-supplementary">Online Courses (Supplementary)</h2>
+<ul>
+<li><strong>"AI for Everyone"</strong> by Andrew Ng (Coursera). Broad AI literacy baseline.</li>
+<li><strong>"Agentic AI Engineering"</strong> specialization (Coursera). Multi-course agent development sequence.</li>
+<li><strong>DeepLearning.AI Short Courses</strong> — Agents, tool use, multi-agent systems. https://www.deeplearning.ai/</li>
+</ul>
+<hr />
+<h2 id="weekly-reading-schedule">Weekly Reading Schedule</h2>
+<h3 id="semester-1-foundations">Semester 1: Foundations</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+<th>Core Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Threat Landscape</td>
+<td>Anthropic — "Disrupting AI-orchestrated cyber espionage" (2025); Course Assessment</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Critical Thinking</td>
+<td>Kahneman — "Thinking, Fast and Slow" (Ch. 1-7); Sagan — Baloney Detection Kit</td>
+</tr>
+<tr>
+<td>3</td>
+<td>AI Fundamentals</td>
+<td>Anthropic — Claude Model Card; "Attention Is All You Need" summary</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Context Engineering</td>
+<td>Anthropic — "Effective Context Engineering for AI Agents"</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Agent Protocols</td>
+<td>MCP Specification; "A Survey of AI Agent Protocols" (arXiv:2504.16736)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tool Design &amp; GTG-1002</td>
+<td>Anthropic — "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" Full Report (Nov 2025); West — "Agentic Engineering Book" (tool design)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Cyber Threat Framework</td>
+<td>MITRE ATT&amp;CK overview; Buchanan — "The Hacker and the State" (selected)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Risk Management</td>
+<td>NIST AI RMF 1.0 overview</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Responsible AI</td>
+<td>FS-ISAC Responsible AI Principles (full); NIST AI RMF (full)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Agentic Security</td>
+<td>OWASP Top 10 for Agentic Apps; "Agentic AI Security" (arXiv:2510.23883)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Bias and Fairness</td>
+<td>O'Neil — "Weapons of Math Destruction" (selected); IBM AI Fairness 360 docs</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Compliance</td>
+<td>EU AI Act summary; NIST Cyber AI Profile (December 2025); AIUC-1 standard (https://www.aiuc-1.com/)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Implementation</td>
+<td>Claude Agent SDK (full); West — orchestration patterns chapter</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Rapid Prototyping</td>
+<td>Knapp et al. — "Sprint" (prototyping chapters)</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Integration</td>
+<td>OWASP Agentic Top 10 deep review; synthesis</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Review</td>
+<td>No new reading</td>
+</tr>
+</tbody>
+</table>
+<h3 id="semester-2-advanced">Semester 2: Advanced</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+<th>Core Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Multi-Agent Architecture</td>
+<td>"Survey of Agentic AI and Cybersecurity" (arXiv:2601.05293); Agent SDK (subagents)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Orchestration Frameworks</td>
+<td>CrewAI Documentation (full)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Workflow &amp; State</td>
+<td>LangGraph Documentation (full); NIST Incident Response Lifecycle</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Evaluation</td>
+<td>West — evaluation chapter; Promptfoo Documentation</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Threat Landscape</td>
+<td>MITRE ATLAS (full); "Prompt Injection on Agentic Coding Assistants" (arXiv:2601.17548)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Red Teaming</td>
+<td>"Red Teaming the Mind of the Machine" (arXiv:2505.04806); OWASP Agentic Top 10 (deep)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Defense &amp; Guardrails</td>
+<td>NeMo Guardrails docs; LlamaFirewall docs; Guardrails AI docs</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Wargame Prep</td>
+<td>Buchanan — "The Hacker and the State" (full); PeaRL security research docs</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Supply Chain</td>
+<td>"State of MCP Server Security 2025"; "Poisoning Attacks on LLMs" (arXiv:2510.07192)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>NHI Governance</td>
+<td>"2025 State of NHI Report"; Zero Trust for AI (CISA); PeaRL governance docs; AIUC-1 + AIVSS crosswalk</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Observability</td>
+<td>OpenTelemetry docs (AI observability); NIST IR 8596 monitoring sections</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Production Security</td>
+<td>Christian — "The Alignment Problem" (deployment chapters); CISA AI guidance</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>Capstone</td>
+<td>Directed research aligned with project scope</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="document-information">Document Information</h2>
+<p><strong>Course</strong>: AgentForge Graduate Course
+<strong>Academic Year</strong>: 2026
+<strong>Last Updated</strong>: March 2026
+<strong>Reading List Version</strong>: 3.0 — Restructured into Core/Expanded with September 2025 – March 2026 research</p>
+  </div>
+</main>
+
+<script>
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('show');
+}
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) toggleSidebar();
+  });
+});
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6b4c1e',
+      primaryTextColor: '#e8dcc8',
+      primaryBorderColor: '#d4a017',
+      lineColor: '#9a8e7a',
+      secondaryColor: '#1a1f30',
+      tertiaryColor: '#0f1525',
+      background: '#0f1525',
+      mainBkg: '#6b4c1e',
+      nodeBorder: '#d4a017',
+      clusterBkg: '#0b0f19',
+      clusterBorder: '#2a3045',
+      titleColor: '#d4a017',
+      edgeLabelBackground: '#0f1525',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>

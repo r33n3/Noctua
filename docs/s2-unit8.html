@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 8: Capstone Projects — AgentForge</title>
+<style>
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === BASE === */
+:root {
+  --bg: #0b0f19;
+  --bg-card: #121929;
+  --bg-sidebar: #060a14;
+  --bg-code: #0f1525;
+  --border: #2a3045;
+  --text: #e8dcc8;
+  --text-muted: #9a8e7a;
+  --accent: #d4a017;
+  --accent-hover: #f0c040;
+  --accent-bg: rgba(212, 160, 23, 0.10);
+  --green: #50c878;
+  --orange: #e67e22;
+  --red: #e74c3c;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --table-header: #151d30;
+  --table-row-alt: #121929;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid rgba(212, 160, 23, 0.15);
+  padding: 24px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
+}
+.sidebar-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+}
+.sidebar a {
+  display: block;
+  padding: 8px 20px 8px 28px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a.sub {
+  padding-left: 42px;
+  font-size: 13px;
+  color: #9a8e7a;
+}
+.sidebar a:hover {
+  color: var(--text);
+  background: var(--accent-bg);
+}
+.sidebar a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+.sidebar a.active.sub {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* === MOBILE TOGGLE === */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+
+/* === MAIN CONTENT === */
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-width: 0;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* === TYPOGRAPHY === */
+.content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  letter-spacing: -0.5px;
+}
+.content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
+}
+.content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 32px 0 12px;
+}
+.content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2dd4bf;
+  margin: 24px 0 8px;
+}
+.content p {
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.content em {
+  color: var(--text-muted);
+}
+.content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.content a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* === LISTS === */
+.content ul, .content ol {
+  margin: 0 0 16px 24px;
+}
+.content li {
+  margin-bottom: 6px;
+}
+.content li > ul, .content li > ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+/* === CODE === */
+.content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.content pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 24px;
+  overflow-x: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+.content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+/* === TABLES === */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 24px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.content thead {
+  background: var(--table-header);
+}
+.content th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 2px solid var(--border);
+  font-size: 13px;
+}
+.content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.content tbody tr:nth-child(even) {
+  background: var(--table-row-alt);
+}
+.content tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+/* === BLOCKQUOTE (default) === */
+.content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 14px 24px;
+  margin: 20px 0;
+  background: var(--accent-bg);
+  border-radius: 0 6px 6px 0;
+  color: var(--text-muted);
+}
+.content blockquote p { color: var(--text-muted); }
+
+/* === CALLOUT CONTAINERS === */
+.callout {
+  padding: 16px 24px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.callout p { margin: 0; color: var(--text); }
+.callout p + p { margin-top: 10px; }
+.callout a { color: var(--accent); }
+.callout code { font-size: 12px; }
+.callout ul, .callout ol { margin: 8px 0 4px 20px; }
+.callout li { margin-bottom: 4px; }
+.callout-key {
+  border-color: var(--accent);
+  background: rgba(212, 160, 23, 0.08);
+}
+.callout-tip {
+  border-color: var(--green);
+  background: rgba(80, 200, 120, 0.08);
+}
+.callout-pitfall {
+  border-color: var(--orange);
+  background: rgba(230, 126, 34, 0.08);
+}
+.callout-remember {
+  border-color: var(--purple);
+  background: rgba(167, 139, 250, 0.08);
+}
+.callout-reading {
+  border-color: #2dd4bf;
+  background: rgba(45, 212, 191, 0.06);
+}
+.callout-discuss {
+  border-color: var(--text-muted);
+  background: rgba(154, 142, 122, 0.08);
+}
+
+/* === HR === */
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .overlay.show {
+    display: block;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .content {
+    padding: 60px 20px 60px;
+  }
+  .content h1 { font-size: 26px; }
+  .content h2 { font-size: 20px; }
+}
+
+/* === MERMAID DIAGRAMS === */
+.mermaid {
+  background: #0f1525;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>AgentForge</h1>
+    <p>AI Security Engineering</p>
+  </div>
+  <div class="nav-section">Overview</div>
+<a href="index.html">Course Overview</a>
+<a href="assessment.html">Design Rationale</a>
+<div class="nav-section">Semester 1: Foundations</div>
+<a href="semester1.html">Semester 1 Overview</a>
+<a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
+<a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
+<a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
+<a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
+<div class="nav-section">Semester 2: Advanced</div>
+<a href="semester2.html">Semester 2 Overview</a>
+<a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
+<a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
+<a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
+<a href="s2-unit8.html" class="active sub">Unit 8: Capstone</a>
+<div class="nav-section">Resources</div>
+<a href="frameworks.html">Frameworks & Protocols</a>
+<a href="lab-setup.html">Lab Setup Guide</a>
+<a href="reading.html">Reading List</a>
+
+</nav>
+
+<main class="main">
+  <div class="content">
+    <h1 id="unit-8-capstone-projects">Unit 8: Capstone Projects</h1>
+<p><strong>CSEC 602 — Semester 2 | Weeks 13–16</strong></p>
+<p><a href="semester2.html">← Back to Semester 2 Overview</a></p>
+<hr />
+<h2 id="unit-learning-goals">Unit Learning Goals</h2>
+<ul>
+<li>Demonstrate mastery of agentic security engineering principles through a production-quality capstone system</li>
+<li>Design, build, and deploy a multi-agent security solution that solves a real cybersecurity problem</li>
+<li>Apply collaborative critical thinking analysis to architectural decisions and agent interactions</li>
+<li>Conduct peer security reviews and respond constructively to red team findings</li>
+<li>Present technical work professionally and reflect on the implications of agentic AI for cybersecurity</li>
+</ul>
+<blockquote>
+<p><strong>🎯 Capstone as Production Delivery:</strong> Your capstone is <strong>not a prototype showcase</strong>—it's a <strong>production delivery exercise</strong>. You'll apply the full <strong>prototype-to-production pipeline</strong> from <em>Agentic Engineering</em>: rapid prototyping (Weeks 13-14), leadership evaluation through architecture review, and production hardening (Weeks 14-15). By presentation day, your capstone demonstrates not just a clever idea but a <strong>deployable, observable, governed system ready for real-world use</strong>. Your reflection should articulate how you'd take this from demo to production: what monitoring would operators need? What policies would governance require? How would you handle failures? This is the mindset of a production engineer, not just a developer.</p>
+</blockquote>
+<hr />
+<h2 id="week-13-capstone-kickoff-and-architecture-reviews">Week 13: Capstone Kickoff and Architecture Reviews</h2>
+<h3 id="day-1-theory-foundations-project-selection-and-architecture-design">Day 1 — Theory &amp; Foundations: Project Selection and Architecture Design</h3>
+<h4 id="learning-objectives">Learning Objectives</h4>
+<ul>
+<li>Understand the capstone project scope, requirements, and grading criteria</li>
+<li>Identify real-world cybersecurity problems suitable for agentic solutions</li>
+<li>Learn the architecture review methodology and feedback process</li>
+<li>Form teams and conduct preliminary problem scoping</li>
+</ul>
+<h4 id="project-scope-and-requirements">Project Scope and Requirements</h4>
+<p>The capstone is your opportunity to demonstrate mastery of everything you've learned in CSEC 602. You'll work in teams of 2–3 to design and build a <strong>production-quality agentic security system</strong> that addresses a tangible cybersecurity problem.</p>
+<p>Your capstone project must include:</p>
+<ol>
+<li><strong>Multi-Agent Architecture</strong> — Minimum 3 specialized agents with distinct roles, expertise, and tool sets. Agents must communicate clearly and work toward a common goal.</li>
+<li><strong>Collaborative Critical Thinking (CCT) Analysis</strong> — Documentation showing how the multi-agent design enables deeper reasoning, validates assumptions, and identifies risks that a single agent would miss.</li>
+<li><strong>MITRE ATLAS Threat Model</strong> — Identify and mitigate top 5 AI-specific threats to your system.</li>
+<li><strong>Observability and Monitoring</strong> — Comprehensive logging, metrics, audit trails, and operational dashboards.</li>
+<li><strong>Ethical Impact Assessment</strong> — Stakeholder analysis, potential misuse scenarios, and responsible AI alignment.</li>
+<li><strong>AIUC-1 Domain Mapping</strong> — Map your capstone system against all six AIUC-1 domains (Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society). For each domain, document: which controls your system implements, which controls are not applicable (with justification), and what gaps remain. Reference: https://www.aiuc-1.com/</li>
+<li><strong>AIVSS Risk Assessment</strong> — Score the top 5 AI-specific vulnerabilities in your system using OWASP AIVSS methodology. For each vulnerability: describe the risk, assign an AIVSS score, map it to the relevant AIUC-1 domain, and document your mitigation. Demonstrate how AIVSS scoring informed your prioritization decisions.</li>
+<li><strong>Containerized Delivery</strong> — Your capstone must be deliverable as a containerized artifact, including:</li>
+<li><code>Dockerfile</code> with multi-stage build, non-root user, health checks</li>
+<li><code>docker-compose.yml</code> for local testing and development</li>
+<li>Container image scanning (Trivy) results documenting any CVE findings and mitigations</li>
+<li>Supply chain security (SBOM) in CycloneDX or SPDX format</li>
+<li><strong>Infrastructure as Code (IaC)</strong> — CloudFormation or Terraform template showing how your system deploys to production (ECS task definition, Kubernetes manifests, or equivalent). IaC enables repeatable, versioned deployments.</li>
+<li><strong>CI/CD Pipeline</strong> — GitHub Actions workflow demonstrating the DevSecOps promotion pipeline:</li>
+<li>Pre-commit: secrets detection</li>
+<li>PR review: SAST scanning (Bandit/Semgrep)</li>
+<li>Build: container image scanning, SBOM generation</li>
+<li>Deploy: promotion gates (dev → pilot → preprod → prod) with approval workflows</li>
+<li><strong>Deployment Plan</strong> — Documentation on how this system scales to production, including operational runbook, incident playbook, and observability setup.</li>
+</ol>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.</p>
+<p><strong>🚀 Production-Promotable Capstone:</strong> By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy to ECS/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a <strong>deployable artifact with full provenance, governance, and operational readiness</strong>. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.</p>
+</div>
+<h4 id="capstone-project-ideas">Capstone Project Ideas</h4>
+<p>Here are concrete, achievable project ideas suitable for a 4-week capstone:</p>
+<p><strong>Autonomous SOC Analyst</strong>
+- Problem: Security teams are drowning in alerts and unable to investigate manually
+- Solution: Multi-agent system that triages alerts, correlates events, investigates threats, and recommends responses
+- Agents: Alert Ingester, Threat Analyst, Investigation Coordinator, Response Recommender
+- Multi-agent benefit: Agents debate severity levels, cross-validate findings against threat intel, catch false positives before escalation</p>
+<p><strong>Proactive Threat Hunting System</strong>
+- Problem: Compromises that don't trigger alerts go undetected for weeks (dwell time)
+- Solution: Agents that search for indicators of compromise (IOCs) and behavior anomalies continuously
+- Agents: Baseline Builder, Anomaly Detector, IOC Correlator, Threat Intel Researcher
+- Multi-agent benefit: Agents collaborate to build high confidence in detections and reduce false positives</p>
+<p><strong>Automated Compliance Auditor</strong>
+- Problem: Manual compliance checks are tedious, error-prone, and slow to update as policies change
+- Solution: Agents that audit systems against policies, generate compliance reports, and track remediation
+- Agents: Policy Interpreter, System Scanner, Gap Analyzer, Remediation Planner, Evidence Collector
+- Multi-agent benefit: Agents assess compliance holistically, accounting for interdependencies and exceptions</p>
+<p><strong>Intelligent Phishing Defense</strong>
+- Problem: Phishing attacks scale faster than human analysts can respond
+- Solution: Agents that analyze emails, detect phishing patterns, assess target risk, and recommend containment actions
+- Agents: Email Parser, Phishing Detector, Target Analyzer, Response Recommender, Feedback Learner
+- Multi-agent benefit: Multiple detection models vote; agents must reach consensus before blocking to avoid false positives</p>
+<p><strong>Vulnerability Management Orchestrator</strong>
+- Problem: Organizations have thousands of vulnerabilities; manual triage and prioritization is impossible
+- Solution: Agents that assess vulnerability impact, prioritize remediation, plan patches, and track risk
+- Agents: Vulnerability Enricher, Impact Assessor, Prioritizer, Remediation Planner, Risk Tracker
+- Multi-agent benefit: Agents understand complex interdependencies (e.g., a low-CVSS CVE might be critical if it affects a critical asset)</p>
+<p><strong>AI Red Team System</strong>
+- Problem: Organizations need continuous security testing but can't staff a dedicated red team
+- Solution: Agents that plan and execute controlled security tests, simulating red and blue team dynamics
+- Agents: Target Analyzer, Attack Planner, Executor, Blue Team Simulator, Report Generator
+- Multi-agent benefit: Simulates adversarial thinking; agents must justify attacks and defend against mitigations</p>
+<p><strong>MASS Plugin Development</strong>
+- Problem: Security applications need domain-specific checks (e.g., enterprise API security, custom compliance rules)
+- Solution: Build your own specialized security analyzer inspired by MASS's architecture. Clone the open-source repo (https://github.com/r33n3/MASS), study how MASS structures its 12 analyzers and compliance mapping across OWASP, MITRE ATLAS, NIST, and EU AI Act. Then design and implement a custom analyzer for your chosen domain using Claude Code.
+- Agents: Requirement Parser, Vulnerability Scanner, Compliance Checker, Report Generator
+- Multi-agent benefit: Coordinate your analyzer with reference patterns from MASS; ensure consistency and avoid conflicting recommendations
+- AIUC-1 integration: Extend your analyzer to map findings to AIUC-1 domains and score them with AIVSS, creating a complete risk identification → control selection → certification pipeline
+- <strong>Open Source:</strong> MASS is open source because security should be open to anyone. Study it, extend it, contribute back — that's how the security community gets stronger.</p>
+<p><strong>PeaRL Governance Extension</strong>
+- Problem: Organizations deploy agents across dev/pilot/preprod/prod but lack fine-grained governance rules per environment
+- Solution: Build your own governance layer inspired by PeaRL's architecture. Clone the open-source repo (https://github.com/r33n3/PeaRL), study its environment hierarchy, approval workflows, and anomaly detection patterns (AGP-01 through AGP-06), then design and implement governance extensions using Claude Code.
+- Agents: Policy Evaluator, Approval Orchestrator, Anomaly Detector, Compliance Logger
+- Multi-agent benefit: Coordinate governance enforcement across multiple independent agent deployments
+- AIUC-1 integration: Map your governance extension to all six AIUC-1 domains; score agent risks at each promotion gate using AIVSS
+- <strong>Open Source:</strong> PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.</p>
+<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?</p>
+<p><strong>📖 Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.</p>
+<p><strong>🔑 Key Concept:</strong> Both PeaRL and MASS are open source because their creator believes <strong>security should always be open to anyone to use</strong>. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?</p>
+</div>
+<h4 id="architecture-review-methodology">Architecture Review Methodology</h4>
+<p>Weeks 13 is structured around a <strong>peer and faculty architecture review</strong>. Here's how it works:</p>
+<p><strong>Timeline:</strong>
+- <strong>Monday–Wednesday:</strong> Teams finalize proposals and architecture documents
+- <strong>Wednesday afternoon:</strong> All teams present (15 min presentation + 15 min feedback per team)
+- <strong>Thursday–Friday:</strong> Teams incorporate feedback and finalize architecture before Week 14</p>
+<p><strong>What Reviewers Look For:</strong>
+1. <strong>Problem clarity</strong> — Is the cybersecurity problem well-defined and significant?
+2. <strong>Solution fit</strong> — Is an agentic multi-agent approach the right tool? Or is this overengineered?
+3. <strong>Technical feasibility</strong> — Can a team of 2–3 actually build this in 3 weeks? (Scope is critical!)
+4. <strong>Architectural soundness</strong> — Do the agents have clear roles? Is orchestration realistic?
+5. <strong>Security thinking</strong> — Do you demonstrate understanding of threat models and hardening?
+6. <strong>Ethical awareness</strong> — Have you thought through potential harms and misuse?</p>
+<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Over-scoping. Many teams try to build a system that would take 6 months. Scope ruthlessly. A simple, well-executed 3-agent system beats an incomplete 10-agent vision. Ask your reviewers: "What's the minimum viable product that still demonstrates the concepts?"</p>
+</div>
+<h3 id="day-2-hands-on-lab-proposal-development-and-peer-review">Day 2 — Hands-On Lab: Proposal Development and Peer Review</h3>
+<h4 id="lab-objectives">Lab Objectives</h4>
+<ul>
+<li>Write a compelling project proposal that frames the problem and solution</li>
+<li>Develop a detailed architecture document that demonstrates feasibility and depth</li>
+<li>Present your proposal to faculty and peers</li>
+<li>Gather actionable feedback and refine your architecture</li>
+<li>Finalize team composition and commit to a capstone project</li>
+</ul>
+<h4 id="step-1-form-teams-due-wednesday">Step 1: Form Teams (Due Wednesday)</h4>
+<p>Submit to faculty:
+- Team member names and roles (e.g., lead architect, lead developer, QA/testing lead)
+- Preliminary project idea (1–2 paragraphs)
+- Rationale: Why this problem? Why multi-agent?</p>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Choose a co-lead architect and lead developer early. Assign one person to champion security/hardening and one to champion observability/ops. These aren't "nice to have" roles—they're critical to your grade.</p>
+</div>
+<h4 id="step-2-write-your-proposal-due-thursday">Step 2: Write Your Proposal (Due Thursday)</h4>
+<p><strong>Format:</strong> 500–1000 words</p>
+<p><strong>Content:</strong>
+1. <strong>The Problem (2–3 paragraphs):</strong> What cybersecurity challenge are you solving? Why does it matter? How is it currently addressed? What are the gaps?
+2. <strong>Why Multi-Agent? (1 paragraph):</strong> Why is a multi-agent approach better than a single agent or traditional automation?
+3. <strong>Proposed Solution (2 paragraphs):</strong> High-level overview of your system. What does it do? Who uses it? What are the main workflows?
+4. <strong>Success Metrics (1 paragraph):</strong> How will you know your system works? What are 3–5 key metrics (accuracy, latency, cost, false positive rate, etc.)?</p>
+<div class="callout callout-remember"><p><strong>✅ Remember:</strong> A proposal is a sales pitch. You're convincing your reviewers (and yourself) that this is worth 4 weeks of intensive work. Be specific. Use numbers and examples.</p>
+</div>
+<h4 id="step-3-develop-your-architecture-document-due-thursday">Step 3: Develop Your Architecture Document (Due Thursday)</h4>
+<p><strong>Format:</strong> 1500–2500 words (this is substantial; start early)</p>
+<blockquote>
+<p><strong>📖 Methodology:</strong> Your capstone follows Jaymin West's <em>Agentic Engineering</em> <strong>Plan-Build-Review cycle</strong> (Ch. 3). Week 13 is the Plan phase (architecture review validates your specs and design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code). The red team review is the Review phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.</p>
+</blockquote>
+<p><strong>Structure:</strong></p>
+<p><strong>1. System Overview (200 words)</strong>
+- What does the system do end-to-end?
+- Who are the users/stakeholders?
+- What are the main success criteria?</p>
+<p><strong>2. Multi-Agent Design (600 words)</strong>
+- <strong>Agent 1, 2, 3, ...:</strong> For each agent, describe:
+  - Name and role
+  - Responsibilities and expertise
+  - Tools and data sources
+  - How it communicates with other agents
+- <strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?
+- <strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from <em>Agentic Engineering</em> (Ch. 3) means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
+</div>
+<p><strong>3. Collaborative Critical Thinking (CCT) Analysis (400 words)</strong>
+- How does your multi-agent architecture enable deeper thinking than a single agent?
+- <strong>Specific example:</strong> Describe a decision or analysis where agents debate/validate/challenge each other. What gets uncovered?
+- How do agents catch each other's blind spots?
+- Link to security outcomes: "Agent A might miss this threat, but Agent B catches it because of its threat intelligence specialization."</p>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> CCT isn't abstract. Show concrete examples. Don't just say "agents discuss threats." Say: "Agent A (Alert Triager) flags alert severity as LOW. Agent B (Threat Analyst) reviews threat intel and overrides to CRITICAL because this IP just attacked 3 other companies in our industry." That's CCT in action.</p>
+</div>
+<p><strong>4. Security Hardening Plan (400 words)</strong>
+- <strong>Threat model (MITRE ATLAS):</strong> What are the top 5 threats to your system?
+  - Example: prompt injection (ATLAS T0051), supply chain manipulation, model confusion
+- <strong>Mitigation for each:</strong> How will you prevent/detect/respond to this threat?
+- <strong>Input validation strategy:</strong> What user inputs do you accept? How do you validate them?
+- <strong>Output filtering:</strong> What do agents produce? How do you prevent harmful outputs?
+- <strong>Tool permission scoping:</strong> If agents use external tools, what permissions do they have? (Principle of least privilege)
+- <strong>AIUC-1 domain mapping:</strong> For each of the six AIUC-1 domains, identify which controls your system addresses. This is a systematic way to ensure comprehensive security coverage beyond just threat modeling.
+- <strong>AIVSS risk scores:</strong> For your top 5 AI-specific risks, provide AIVSS scores and explain how they informed your mitigation priorities.</p>
+<p><strong>5. Observability Plan (300 words)</strong>
+- <strong>What you'll monitor:</strong> Agent decisions, tool calls, data flows, error rates, latency
+- <strong>Key metrics:</strong> Define 5 metrics (e.g., mean time to detect, false positive rate, agent consensus rate, API cost per request)
+- <strong>Logging strategy:</strong> How will you audit all significant agent actions? (Regulatory/compliance requirement)
+- <strong>Dashboards/alerts:</strong> What dashboards will the ops team use? What triggers an alert?</p>
+<p><strong>6. Deployment Plan (300 words)</strong>
+- <strong>Architecture:</strong> Where will this run? Cloud? On-prem? Hybrid?
+- <strong>Containerization:</strong> Docker? Kubernetes?
+- <strong>CI/CD:</strong> How will you test and deploy updates?
+- <strong>Operations:</strong> Who runs this? What's the runbook for common issues?
+- <strong>Cost:</strong> What's your estimated monthly cost? (API calls, compute, storage)</p>
+<p><strong>7. Ethical Considerations (300 words)</strong>
+- <strong>Stakeholders:</strong> Who is impacted by this system? (Security team, end users, executives, external users?)
+- <strong>Potential harms:</strong> How could this system be misused? (False positives blocking legitimate activity, over-automating decisions without human oversight, bias in threat detection)
+- <strong>Mitigations:</strong> How will you prevent these harms?
+- <strong>Responsible AI:</strong> How does your system align with principles like transparency, fairness, human oversight, and accountability?</p>
+<p><strong>8. Success Criteria (200 words)</strong>
+- <strong>Technical:</strong> What does a working implementation look like? (All agents deployed, communications working, end-to-end workflow running)
+- <strong>Operational:</strong> How will your system perform in production? (Latency SLA, uptime target, cost budget)
+- <strong>Security:</strong> What threats will be mitigated? (Measured by red team findings, threat model coverage)</p>
+<blockquote>
+<p><strong>💡 Design Thinking:</strong> As you finalize your capstone architecture, reflect on the <strong>mental models</strong> that underpin it. Jaymin West's <em>Agentic Engineering</em> (Ch. 8: Mental Models) asks: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.</p>
+</blockquote>
+<p><strong>9. Timeline and Milestones (100 words)</strong>
+- Week 13: Architecture finalized (after review feedback)
+- Week 14: Core multi-agent system built and end-to-end workflow running
+- Week 15: Hardening, observability, red team review, and mitigations
+- Week 16: Polish, final testing, presentation prep</p>
+<h4 id="step-4-present-your-architecture-thursday-afternoon">Step 4: Present Your Architecture (Thursday Afternoon)</h4>
+<p><strong>Format:</strong> 15-minute presentation + 15-minute feedback/Q&amp;A</p>
+<p><strong>Presentation structure (aim for ~10 slides):</strong>
+1. Problem and context (1–2 slides)
+2. Proposed solution overview (1 slide)
+3. Multi-agent architecture (2 slides: agent roles + orchestration diagram)
+4. CCT analysis — concrete example (1 slide)
+5. Security hardening plan (1 slide)
+6. Observability approach (1 slide)
+7. Timeline and risks (1 slide)
+8. Questions?</p>
+<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Slides that are text-heavy or too technical. Reviewers want to understand your vision in 15 minutes. Use diagrams. Show your system architecture visually. Practice beforehand and time yourself.</p>
+<p><strong>💡 Pro Tip:</strong> In the Q&amp;A, be honest about unknowns. "We haven't decided on framework yet, but we're between CrewAI and LangGraph because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.</p>
+</div>
+<h4 id="step-5-incorporate-feedback-and-finalize-thursdayfriday">Step 5: Incorporate Feedback and Finalize (Thursday–Friday)</h4>
+<p>After your presentation, you'll receive written feedback from reviewers focusing on:
+- Clarity of problem and solution fit
+- Technical feasibility and scope
+- Architectural soundness
+- Security and ethical thinking
+- Realistic timeline</p>
+<p><strong>Action:</strong> Meet with your team Friday. Read feedback. Refine your architecture document and confirm:
+- All critical/high feedback is addressed
+- Team is confident in the timeline
+- Roles and responsibilities are clear
+- Architecture document is final (you'll reference it all week 14)</p>
+<h4 id="deliverables-due-friday">Deliverables (Due Friday)</h4>
+<ol>
+<li><strong>Capstone Proposal</strong> (500–1000 words)</li>
+<li><strong>Architecture Document</strong> (1500–2500 words)</li>
+<li><strong>Presentation Slides</strong> (PDF)</li>
+<li><strong>Peer Review Feedback Summary</strong> (1 page: what did you learn? what did you change?)</li>
+</ol>
+<h4 id="sources-tools">Sources &amp; Tools</h4>
+<ul>
+<li><a href="frameworks.html">Framework Documentation</a> — Claude Agent SDK, CrewAI, LangGraph comparison</li>
+<li><a href="lab-setup.html">Lab Setup Guide</a> — Getting your development environment ready</li>
+<li><a href="reading.html">Reading List</a> — MITRE ATLAS, agentic patterns, responsible AI</li>
+</ul>
+<hr />
+<h2 id="week-14-capstone-development-sprint-i">Week 14: Capstone Development Sprint I</h2>
+<h3 id="day-1-daily-standup-check-in">Day 1 — Daily Standup Check-In</h3>
+<h4 id="learning-objectives_1">Learning Objectives</h4>
+<ul>
+<li>Communicate progress, obstacles, and adjustments to the team and faculty</li>
+<li>Build accountability and momentum</li>
+<li>Identify and unblock issues early</li>
+</ul>
+<h4 id="structure-15-minutes-daily">Structure (15 minutes daily)</h4>
+<p>Each team answers:
+1. <strong>What did you complete yesterday?</strong> (Focus on working code, not just effort)
+2. <strong>What's your plan for today?</strong>
+3. <strong>What's blocking you?</strong> (Faculty can help)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Standups are a team synchronization tool, not a status report to management. Keep them tight. If a blocker needs deep discussion, take it offline after standup.</p>
+</div>
+<h4 id="mid-week-checkpoint-wednesday-30-minutes">Mid-Week Checkpoint (Wednesday, 30 minutes)</h4>
+<p>Each team demos progress to faculty:
+- Show working code and end-to-end workflow (even if rough)
+- Describe what agents are implemented
+- Highlight what's working and what's in progress
+- Surface risks or scope adjustments</p>
+<h3 id="day-2-hands-on-development-sprint">Day 2 — Hands-On Development Sprint</h3>
+<h4 id="lab-objectives_1">Lab Objectives</h4>
+<ul>
+<li>Build the core multi-agent system and get end-to-end workflow functioning</li>
+<li>Establish communication patterns and basic orchestration</li>
+<li>Deploy agents and tools with basic observability</li>
+<li>Maintain code quality and documentation as you build</li>
+</ul>
+<h4 id="development-focus-for-sprint-i">Development Focus for Sprint I</h4>
+<p><strong>Week 14 is about getting the minimum viable product (MVP) working:</strong></p>
+<ol>
+<li><strong>Implement core agents</strong> — Each team member builds 1–2 agents. Ensure they can communicate.</li>
+<li><strong>Establish data flows</strong> — Data moves from one agent to the next; end-to-end workflow completes.</li>
+<li><strong>Deploy basic tools</strong> — If agents call external APIs or tools, get those integrated.</li>
+<li><strong>Add logging and monitoring</strong> — Every agent decision should be logged; set up basic metrics.</li>
+<li><strong>Get to "working"</strong> — The system doesn't need to be perfect, but it should run end-to-end without crashing.</li>
+</ol>
+<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Perfectionism in week 14. Don't spend 3 days optimizing agent prompts when you haven't built the orchestration layer yet. Build the skeleton first; refine later.</p>
+<p><strong>💡 Pro Tip:</strong> Use Claude Code and Git heavily. Create a branch for each agent. Use pull requests for code review. Maintain a clear README so any team member can spin up the environment. You'll thank yourself in Week 16 when you need to demo quickly.</p>
+</div>
+<h4 id="deliverable-sprint-i-progress-report-due-friday">Deliverable: Sprint I Progress Report (Due Friday)</h4>
+<p><strong>Format:</strong> 2–3 pages, including:</p>
+<ol>
+<li><strong>Implementation Status:</strong></li>
+<li>List agents implemented (with % complete for each)</li>
+<li>Working end-to-end workflows</li>
+<li>
+<p>What's in progress or deferred</p>
+</li>
+<li>
+<p><strong>Code &amp; Artifacts:</strong></p>
+</li>
+<li>Link to GitHub repo</li>
+<li>README with "how to run" instructions</li>
+<li>
+<p>Demo or screenshot of working system</p>
+</li>
+<li>
+<p><strong>Metrics:</strong></p>
+</li>
+<li>Lines of code written (rough estimate)</li>
+<li>Number of agents deployed</li>
+<li>
+<p>Functionality coverage (e.g., "70% of design implemented")</p>
+</li>
+<li>
+<p><strong>Obstacles &amp; Adjustments:</strong></p>
+</li>
+<li>What challenges did you hit? How did you solve them?</li>
+<li>Any scope or architecture adjustments?</li>
+<li>
+<p>Risk assessment: What might not make it?</p>
+</li>
+<li>
+<p><strong>Plan for Sprint II:</strong></p>
+</li>
+<li>What will you focus on in Week 15?</li>
+<li>How will you prepare for the red team review?</li>
+</ol>
+<div class="callout callout-remember"><p><strong>✅ Remember:</strong> This report is not just for your instructors—it's for your team. Be honest about what's working and what's not. If you're behind, now's the time to course-correct.</p>
+</div>
+<hr />
+<h2 id="week-15-capstone-development-sprint-ii-and-red-team-review">Week 15: Capstone Development Sprint II and Red Team Review</h2>
+<h3 id="day-1-sprint-ii-kickoff-and-red-team-assignment">Day 1 — Sprint II Kickoff and Red Team Assignment</h3>
+<h4 id="learning-objectives_2">Learning Objectives</h4>
+<ul>
+<li>Understand the red team review process and what to expect</li>
+<li>Identify hardening priorities based on your threat model</li>
+<li>Prepare your system for external security assessment</li>
+</ul>
+<h4 id="red-team-review-overview">Red Team Review Overview</h4>
+<p>On Wednesday of Week 15, your team will conduct a <strong>peer security review of another team's capstone project</strong>. Simultaneously, another team will red team your system. This is a 2-hour time-boxed exercise designed to find vulnerabilities through adversarial thinking.</p>
+<p><strong>What Red Teamers Will Do:</strong>
+1. Review your architecture and threat model
+2. Attempt 3–5 common attacks:
+   - Prompt injection (e.g., "Ignore your instructions and...")
+   - Goal hijacking (making the agent prioritize attacker goals)
+   - Tool misuse (e.g., calling tools with malicious arguments)
+   - Input manipulation (crafting inputs to trigger bugs)
+   - State corruption (manipulating memory or data stores)
+3. Document findings with evidence and severity ratings</p>
+<p><strong>How This Helps You:</strong>
+- Catch vulnerabilities before deployment
+- Learn what adversarial thinking looks like
+- Demonstrate your hardening and defensive design
+- Build resilience against real-world attacks</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Red team reviews are constructive, not punitive. The goal is to make your system better. Reviewers are peers, not adversaries. Treat findings as gifts—they show you where to focus hardening effort.</p>
+</div>
+<h4 id="preparing-for-red-team-review">Preparing for Red Team Review</h4>
+<p><strong>By Wednesday morning, ensure:</strong>
+1. Your system is deployed and accessible to red teamers
+2. Documentation is clear (architecture, threat model, known limitations)
+3. You've implemented initial hardening based on your threat model
+4. You have logs and monitoring so you can see what red teamers are trying</p>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Leave a README for red teamers: "Here's how to run the system. Here are some interesting workflows to test. Here are known limitations we're accepting." This helps them conduct a better review and shows you're confident in your design.</p>
+</div>
+<h4 id="conducting-your-red-team-review-wednesday">Conducting Your Red Team Review (Wednesday)</h4>
+<p>You're assigned a different team's capstone project. Your job: find vulnerabilities.</p>
+<p><strong>Time-box: 2 hours</strong></p>
+<ol>
+<li><strong>(15 min) Understand the system</strong></li>
+<li>Read architecture document</li>
+<li>Understand threat model and intended workflows</li>
+<li>
+<p>Identify key agents and tools</p>
+</li>
+<li>
+<p><strong>(15 min) Plan attacks</strong></p>
+</li>
+<li>Based on threat model, what are the most likely attack vectors?</li>
+<li>What assumptions is the system making? (What could break?)</li>
+<li>
+<p>What would a real attacker try?</p>
+</li>
+<li>
+<p><strong>(80 min) Execute attacks</strong></p>
+</li>
+<li>Try the 3–5 attack categories listed above</li>
+<li>Document what you tried and what happened</li>
+<li>Take screenshots/logs as evidence</li>
+<li>
+<p>Note severity: Critical (system breaks), High (functionality compromised), Medium (unexpected behavior), Low (minor issue)</p>
+</li>
+<li>
+<p><strong>(10 min) Organize findings</strong></p>
+</li>
+<li>Rank by severity</li>
+<li>Draft recommendations</li>
+<li>Estimate effort to fix each</li>
+</ol>
+<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Red teamers sometimes find trivial issues and call them critical. Be fair. A spelling error in an output message is not a security vulnerability. Focus on issues that affect system behavior, security, or reliability.</p>
+</div>
+<h3 id="day-2-sprint-ii-development-and-hardening">Day 2 — Sprint II Development and Hardening</h3>
+<h4 id="lab-objectives_2">Lab Objectives</h4>
+<ul>
+<li>Harden your system based on your threat model and red team findings</li>
+<li>Implement comprehensive observability and monitoring</li>
+<li>Optimize agent prompts, tool sets, and performance</li>
+<li>Document security measures and operational readiness</li>
+<li>Finalize code and prepare for presentation</li>
+</ul>
+<blockquote>
+<p><strong>🎯 Production Hardening:</strong> Week 15 applies the production hardening practices from <em>Agentic Engineering</em> (Ch. 7: Practices — Production Concerns). You're not just fixing bugs; you're ensuring your system can run reliably under load, with visible observability, clear error messages, and graceful degradation. By end of this week, your system should be <strong>deployment-ready</strong>, not prototype-ready. That distinction matters.</p>
+</blockquote>
+<h4 id="hardening-checklist">Hardening Checklist</h4>
+<p>By end of week 15, your system should address:</p>
+<p><strong>Input Validation:</strong>
+- User inputs are validated and sanitized
+- Invalid inputs are rejected gracefully (not passed to agents)
+- Agents are instructed to reject suspicious inputs</p>
+<p><strong>Output Filtering:</strong>
+- Agent outputs are reviewed before being acted on
+- Harmful or nonsensical outputs are caught and logged
+- Users see helpful error messages, not raw LLM errors</p>
+<p><strong>Tool Permission Scoping:</strong>
+- If agents call APIs or system commands, they have minimal necessary permissions
+- Dangerous operations (delete, modify, deploy) require explicit approval
+- Tool calls are logged and auditable</p>
+<p><strong>Monitoring &amp; Alerts:</strong>
+- Every agent decision is logged with timestamp, agent name, input, reasoning, output
+- Key metrics are tracked: agent accuracy, tool success rate, latency, cost
+- Anomalies trigger alerts (e.g., agent calling same tool 100 times, unusual latency spike)</p>
+<p><strong>Error Handling:</strong>
+- Graceful degradation: if one agent fails, system continues or fails safely
+- Users are informed when something goes wrong
+- Errors are logged for troubleshooting</p>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Don't try to prevent every possible attack. Instead, focus on <strong>defense in depth</strong>: multiple layers of protection (validation, filtering, monitoring, logging). If one layer fails, others catch it. Plus, comprehensive logging means you can detect attacks even if they partially succeed.</p>
+</div>
+<h4 id="red-team-findings-response">Red Team Findings Response</h4>
+<p>By Thursday, you'll receive the red team report. <strong>Action plan:</strong></p>
+<ol>
+<li><strong>Read and categorize</strong> — Which findings are valid? Which are misunderstandings of the system?</li>
+<li><strong>Prioritize</strong> — Fix critical/high severity before presentation. Medium/low can be documented as "accepted risk."</li>
+<li><strong>Mitigate or document</strong> — Either implement a fix or document why you're accepting the risk (e.g., "This attack requires admin access, which is out of scope for this MVP").</li>
+<li><strong>Test your fixes</strong> — Make sure mitigations actually work.</li>
+</ol>
+<div class="callout callout-remember"><p><strong>✅ Remember:</strong> You don't need to fix every finding. But for every finding you don't fix, you need a good reason (documented in your final presentation).</p>
+</div>
+<h4 id="deliverable-sprint-ii-progress-report-due-friday">Deliverable: Sprint II Progress Report (Due Friday)</h4>
+<p><strong>Format:</strong> 3–4 pages</p>
+<ol>
+<li><strong>Hardening Summary:</strong></li>
+<li>Security improvements implemented (with brief description)</li>
+<li>Red team findings and responses (table: finding, severity, status)</li>
+<li>
+<p>Any risks you're accepting</p>
+</li>
+<li>
+<p><strong>Observability Implementation:</strong></p>
+</li>
+<li>Monitoring dashboard or reporting system deployed</li>
+<li>Key metrics defined and tracked</li>
+<li>
+<p>Audit logging configured</p>
+</li>
+<li>
+<p><strong>Code Quality:</strong></p>
+</li>
+<li>Code review completed (peer review of pull requests)</li>
+<li>Documentation updated</li>
+<li>
+<p>Test coverage (unit tests, integration tests)</p>
+</li>
+<li>
+<p><strong>Performance Metrics:</strong></p>
+</li>
+<li>Track 5 key metrics from Week 14 to Week 15 (show improvement if possible)</li>
+<li>
+<p>Examples: accuracy, latency, cost, false positive rate, uptime</p>
+</li>
+<li>
+<p><strong>Readiness Assessment:</strong></p>
+</li>
+<li>% of architecture implemented and tested</li>
+<li>Remaining work for Week 16</li>
+<li>Risks: "What might not be done by presentation day?"</li>
+</ol>
+<h4 id="sources-tools_1">Sources &amp; Tools</h4>
+<ul>
+<li><a href="reading.html">Reading List</a> — MITRE ATLAS attack chains, hardening best practices</li>
+<li><a href="frameworks.html">Framework Documentation</a> — Observability and monitoring patterns</li>
+<li><a href="lab-setup.html">Lab Setup Guide</a> — Deployment and testing infrastructure</li>
+</ul>
+<hr />
+<h2 id="week-16-capstone-presentations-and-course-wrap">Week 16: Capstone Presentations and Course Wrap</h2>
+<h3 id="day-1-presentation-prep-and-polish">Day 1 — Presentation Prep and Polish</h3>
+<h4 id="learning-objectives_3">Learning Objectives</h4>
+<ul>
+<li>Finalize your capstone system (code, docs, demo)</li>
+<li>Prepare a compelling 20-minute technical presentation</li>
+<li>Write a meaningful reflection essay</li>
+<li>Practice delivering your talk</li>
+</ul>
+<h4 id="final-system-checklist">Final System Checklist</h4>
+<p>Before presentation day, confirm:</p>
+<ul>
+<li>[ ] All code is clean, documented, and in GitHub</li>
+<li>[ ] README has setup and usage instructions</li>
+<li>[ ] System runs end-to-end without errors</li>
+<li>[ ] Demo is prepared (live demo or pre-recorded backup)</li>
+<li>[ ] Monitoring dashboard is accessible</li>
+<li>[ ] Final documentation is complete (architecture, security, ops)</li>
+<li>[ ] Team has practiced presentation and timed it</li>
+</ul>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Prepare a demo script and walk through it the day before. Demo anxiety is real. Knowing exactly what you'll show and in what order reduces stress. Have a backup (pre-recorded demo) in case live demo fails.</p>
+</div>
+<h4 id="presentation-structure-20-minutes-10-min-qa">Presentation Structure (20 minutes + 10 min Q&amp;A)</h4>
+<p><strong>Allocate time as follows:</strong></p>
+<ol>
+<li><strong>Problem &amp; Context (2 min)</strong> — Why does this matter?</li>
+<li><strong>Solution Overview (3 min)</strong> — What did you build? Architecture diagram.</li>
+<li><strong>Multi-Agent Design &amp; CCT (2 min)</strong> — Show agents and how they think together.</li>
+<li><strong>Live Demo (7 min)</strong> — Show the system working end-to-end.</li>
+<li><strong>Security &amp; Red Team (2 min)</strong> — Threat model, red team findings, how you hardened.</li>
+<li><strong>Observability &amp; Operations (1 min)</strong> — Monitoring, metrics, deployment readiness.</li>
+<li><strong>Lessons Learned (2 min)</strong> — What surprised you? What would you do differently?</li>
+<li><strong>Q&amp;A (10 min)</strong> — Be ready to defend your design and discuss tradeoffs.</li>
+</ol>
+<p><strong>Slide count:</strong> Aim for 12–15 slides (including title, agenda, and closing). Not too many.</p>
+<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Presenters show too much code. Reviewers don't care about syntax. Focus on architecture, design decisions, and outcomes. If you want to show code, show a snippet that illustrates a key insight, not your entire codebase.</p>
+</div>
+<h4 id="reflection-essay-10001500-words-due-friday">Reflection Essay (1000–1500 words, Due Friday)</h4>
+<p>Write a reflection on your capstone experience:</p>
+<ol>
+<li><strong>What you learned about agentic AI</strong> — What surprised you? What challenges did you face?</li>
+<li><strong>How your thinking evolved</strong> — When you started, what did you think agentic systems could do? Now?</li>
+<li><strong>Your hardening journey</strong> — What vulnerabilities did you discover? How did you think about security differently?</li>
+<li><strong>Ethical implications and AIUC-1 alignment</strong> — What are the risks of deploying this system? How does your AIUC-1 domain mapping reveal gaps in your governance approach? Which AIUC-1 domain was hardest to address, and why?</li>
+<li><strong>Production readiness</strong> — What would need to happen before this system could run in a real organization? What observability, governance, or operational procedures would teams need? What could go wrong, and how would operators detect and respond to it?</li>
+<li><strong>The bigger picture</strong> — What are the implications of agentic security systems for the field of cybersecurity?</li>
+</ol>
+<blockquote>
+<p><strong>💡 From Prototype to Production:</strong> Use your reflection to articulate the <strong>prototype-to-production journey</strong> your capstone has taken. How did your system evolve from an idea (Week 13) to a working implementation (Week 14) to a hardened, observable system ready for deployment (Week 16)? What did you learn about building production systems that you didn't know before? This reflection isn't just introspection—it's documentation of your growth as an engineer.</p>
+<p><strong>🔑 Key Concept:</strong> The reflection isn't a summary of your system. It's introspection. Think of it as a letter to yourself or to future practitioners building agentic security systems. What do you wish you had known at the start? What will your experience teach others?</p>
+</blockquote>
+<h3 id="day-2-presentations-and-course-retrospective">Day 2 — Presentations and Course Retrospective</h3>
+<h4 id="capstone-presentations-thursday">Capstone Presentations (Thursday)</h4>
+<p><strong>Schedule:</strong> Each team presents 20 min + 10 min Q&amp;A. All faculty and students attend.</p>
+<p><strong>Evaluation Rubric (40% of course grade):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>What We're Looking For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Technical Sophistication</strong></td>
+<td>30%</td>
+<td>Complexity and depth of multi-agent architecture; proper use of patterns; code quality</td>
+</tr>
+<tr>
+<td><strong>CCT Application</strong></td>
+<td>20%</td>
+<td>Quality of critical thinking analysis; how agents enable reasoning; concrete examples of agent collaboration</td>
+</tr>
+<tr>
+<td><strong>Security Hardening</strong></td>
+<td>20%</td>
+<td>Strength of threat model; identified and mitigated vulnerabilities; response to red team findings</td>
+</tr>
+<tr>
+<td><strong>Ethical Considerations</strong></td>
+<td>15%</td>
+<td>Stakeholder analysis; potential harms identified; responsible AI principles demonstrated</td>
+</tr>
+<tr>
+<td><strong>Practical Applicability</strong></td>
+<td>10%</td>
+<td>Real-world relevance; feasibility of deployment; operational readiness</td>
+</tr>
+<tr>
+<td><strong>Presentation Quality</strong></td>
+<td>5%</td>
+<td>Clarity, organization, time management, ability to engage audience</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Q&amp;A is part of your grade. Be humble. If you don't know the answer to a question, say so. Offer to research and follow up. Defensive answers lose points.</p>
+</div>
+<h4 id="capstone-project-deliverables-due-friday-5-pm">Capstone Project Deliverables (Due Friday, 5 PM)</h4>
+<p>Submit to faculty:</p>
+<ol>
+<li><strong>Source Code (GitHub)</strong></li>
+<li>Clean, well-organized repository</li>
+<li>Comprehensive README with setup and usage instructions</li>
+<li>CI/CD pipeline configuration</li>
+<li>Deployment scripts / Dockerfiles</li>
+<li>
+<p>.gitignore properly configured (no API keys, secrets, or large files)</p>
+</li>
+<li>
+<p><strong>Technical Documentation</strong></p>
+</li>
+<li>System architecture and design document (updated from Week 13)</li>
+<li>Multi-agent design and orchestration details</li>
+<li>API and tool documentation</li>
+<li>
+<p>Configuration reference</p>
+</li>
+<li>
+<p><strong>Security Documentation</strong></p>
+</li>
+<li>MITRE ATLAS threat model (summary)</li>
+<li>Security hardening measures (with implementation details)</li>
+<li>Red team findings and your responses</li>
+<li>Security deployment checklist</li>
+<li>AIUC-1 domain mapping (all six domains with control coverage assessment)</li>
+<li>
+<p>AIVSS risk scores for top 5 AI-specific vulnerabilities</p>
+</li>
+<li>
+<p><strong>Observability &amp; Operations</strong></p>
+</li>
+<li>Monitoring and metrics documentation</li>
+<li>Operations runbook (how to troubleshoot, deploy, scale)</li>
+<li>Incident response procedures</li>
+<li>
+<p>Cost tracking and optimization</p>
+</li>
+<li>
+<p><strong>Presentation Materials</strong></p>
+</li>
+<li>Slides (PDF)</li>
+<li>Architecture diagrams (in presentation and standalone)</li>
+<li>
+<p>Demo video (backup if live demo isn't possible)</p>
+</li>
+<li>
+<p><strong>Reflection Paper</strong></p>
+</li>
+<li>1000–1500 words</li>
+<li>Address prompts listed in Day 1 section above</li>
+</ol>
+<div class="callout callout-remember"><p><strong>✅ Remember:</strong> This is a portfolio piece. These deliverables will be evidence of your mastery of agentic security engineering. Make them clear, professional, and complete.</p>
+</div>
+<h4 id="course-retrospective-friday-afternoon-2-hours">Course Retrospective (Friday Afternoon, 2 Hours)</h4>
+<p>All students and faculty gather to reflect on the course and capstone projects.</p>
+<p><strong>Structure:</strong></p>
+<p><strong>1. Key Takeaways (Each student shares 1–2 minutes)</strong>
+- Most important thing you learned
+- Most challenging aspect you faced
+- How your understanding of agentic AI has evolved</p>
+<p><strong>2. Cohort Themes (Faculty synthesizes)</strong>
+- What patterns emerged across capstone projects?
+- What approaches worked well? What didn't?
+- What open questions remain?</p>
+<p><strong>3. Where Is the Field Heading? (Discussion)</strong>
+- What capabilities are agents gaining in cybersecurity?
+- What are the remaining challenges (technical, ethical, regulatory)?
+- How should organizations deploy agentic security systems responsibly?
+- Guest speaker or industry panel (if available)</p>
+<p><strong>4. Course Feedback</strong>
+- What worked well in CSEC 602?
+- What would you change for next semester?
+- What topics should be added? Removed?
+- How was the capstone experience?</p>
+<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Be honest in the retrospective. Your feedback directly shapes future iterations of this course. We're building a curriculum together.</p>
+</div>
+<hr />
+<h2 id="context-library-your-professional-toolkit">Context Library: Your Professional Toolkit</h2>
+<p>As you finish CSEC 602, your context library has evolved from a personal reference collection into a <strong>professional-grade toolkit</strong>. This toolkit—combined with your deep knowledge of AI security—is your competitive advantage in any security role.</p>
+<h3 id="the-capstone-context-library-as-deliverable">The Capstone: Context Library as Deliverable</h3>
+<p>Your context library is now a formal component of your capstone evaluation. As part of your final presentation and deliverables:</p>
+<p><strong>Include a section titled "Context Library":</strong></p>
+<ol>
+<li><strong>Directory Structure</strong> — Show how you've organized patterns (screenshot or tree output)</li>
+<li><strong>Key Artifacts</strong> — List the 5-10 highest-value patterns you've captured (supervisor pattern, defense layers, CI/CD pipeline, etc.)</li>
+<li><strong>Breadth</strong> — How many domains does your library cover? (Multi-agent patterns, red team, blue team, DevOps, observability, security hardening)</li>
+<li><strong>Depth</strong> — Pick 2-3 patterns and show how they've evolved from Unit 5 through Unit 8 (version history, refinements based on lessons learned)</li>
+<li><strong>Composability</strong> — Demonstrate how patterns combine (e.g., your CI/CD pipeline + canary deployment + observability config = a complete deployment system)</li>
+<li><strong>Team-Readiness</strong> — Would a teammate or junior engineer be able to use your library? Is it documented?</li>
+</ol>
+<h3 id="evaluation-criteria-for-context-library">Evaluation Criteria for Context Library</h3>
+<p>Your library will be evaluated on:</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>What We're Looking For</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Breadth</strong></td>
+<td>Coverage across domains</td>
+<td>Library includes multi-agent, red team, blue team, DevOps, and observability patterns</td>
+</tr>
+<tr>
+<td><strong>Depth</strong></td>
+<td>Quality and completeness of individual patterns</td>
+<td>Supervisor pattern includes code, decision rationale, usage examples, and common pitfalls</td>
+</tr>
+<tr>
+<td><strong>Iteration</strong></td>
+<td>Evidence of refinement over the semester</td>
+<td>Supervisor pattern v1.0 (Unit 5) → v1.2 (Unit 6) → v2.0 (Unit 8) with changelog explaining improvements</td>
+</tr>
+<tr>
+<td><strong>Composability</strong></td>
+<td>Patterns work together, not in isolation</td>
+<td>Your CI/CD pipeline references your Dockerfile template; both work with your canary deployment script</td>
+</tr>
+<tr>
+<td><strong>Documentation</strong></td>
+<td>Teammates could use your library</td>
+<td>README explains what each pattern solves, how to use it, when to use it, and how to customize it</td>
+</tr>
+<tr>
+<td><strong>Production Quality</strong></td>
+<td>Patterns are ready for real deployment</td>
+<td>Your Dockerfile isn't a learning exercise; it's a hardened, secure base image for actual systems</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-makes-a-senior-professional">What Makes a Senior Professional</h3>
+<p>The capstone isn't just about building one great system. It's about demonstrating that you can build systems <strong>and share the patterns you've learned</strong> so others benefit.</p>
+<p><strong>A junior engineer</strong> builds a system and moves on.
+<strong>A senior engineer</strong> builds a system, extracts reusable patterns, documents them, and shares them so the whole team gets better.</p>
+<p>Your context library is proof you think like a senior engineer. You're not just solving today's problem; you're building tools for tomorrow's problems.</p>
+<h3 id="your-library-after-graduation">Your Library After Graduation</h3>
+<p><strong>Immediately after CSEC 602:</strong>
+- Your context library is v1.0 (complete, documented, ready to use)
+- You can immediately apply these patterns in your next role
+- Your capstone code + patterns become portfolio work for interviews</p>
+<p><strong>In your first security role:</strong>
+- You import your library and customize it for your organization
+- You share patterns with teammates (they benefit from your semester of learning)
+- You continue refining patterns based on production incidents</p>
+<p><strong>Over your career:</strong>
+- Your library grows with experience (v1.0 → v2.0 → v5.0)
+- Patterns that worked get locked in; patterns that failed get replaced
+- Your library becomes your unique professional toolkit—what makes you uniquely effective</p>
+<h3 id="template-for-final-submission">Template for Final Submission</h3>
+<p>In your capstone presentation and deliverables, include:</p>
+<p><strong>Slide: "Context Library: My Professional Toolkit"</strong></p>
+<div class="codehilite"><pre><span></span><code>📚 What I&#39;ve Captured
+
+Multi-Agent Patterns (Unit 5):
+  ✓ Supervisor orchestration pattern
+  ✓ Agent communication protocol
+  ✓ Framework selection guide
+  ✓ Evaluation harness template
+
+Attack &amp; Defense Playbooks (Unit 6):
+  ✓ Attack templates with evasion techniques
+  ✓ Defense layer configurations
+  ✓ Incident response runbook
+  ✓ Scoring rubric for security assessments
+
+Production Engineering (Unit 7):
+  ✓ CI/CD pipeline (GitHub Actions)
+  ✓ Production Dockerfile (multi-stage, hardened)
+  ✓ Canary deployment script
+  ✓ Observability and metrics configuration
+
+Security Hardening (Unit 8 Capstone):
+  ✓ MITRE ATLAS threat model template
+  ✓ Input validation and output filtering patterns
+  ✓ Red team findings response template
+  ✓ Security deployment checklist
+
+📊 Library Metrics
+
+  Patterns captured: 40+
+  Domains covered: 6 (multi-agent, red team, blue team, DevOps, ops, observability)
+  Lines of code/documentation: 10,000+
+  Version iterations: 2-3 per pattern (showing evolution and refinement)
+  Team-ready patterns: 15 (documented and ready to share)
+
+💡 Why This Matters
+
+Your context library is not academic. Every pattern was discovered and tested through real (simulated but realistic) security work. When you use these patterns in production, you&#39;re deploying knowledge earned the hard way.
+</code></pre></div>
+
+<h3 id="final-reflection-question">Final Reflection Question</h3>
+<p>In your capstone reflection essay, address:</p>
+<blockquote>
+<p><strong>"Describe your context library. What patterns are you proudest of? How have they evolved since Unit 5? How would a teammate use your library in their first week on a project? What makes your library a reflection of your professional standards?"</strong></p>
+</blockquote>
+<p>This question isn't about boasting. It's about demonstrating that you've thought deeply about quality, reusability, and scalability—the hallmarks of professional engineering.</p>
+<h3 id="the-bigger-picture">The Bigger Picture</h3>
+<p>You're leaving CSEC 602 with two things:</p>
+<ol>
+<li>
+<p><strong>Deep Knowledge</strong> — You understand agentic AI security at a level most practitioners will never reach. You've designed attacks, built defenses, orchestrated agents, and deployed systems. This knowledge is in your head.</p>
+</li>
+<li>
+<p><strong>Professional Toolkit</strong> — You have a context library of patterns proven to work. This library is your competitive advantage. When you face a new problem, you don't start from scratch. You pull a pattern from your library, adapt it, and build faster and better than peers without your toolkit.</p>
+</li>
+</ol>
+<p>The knowledge is invaluable. But the toolkit is career-long. Treat your context library with the care you would a production system.</p>
+<hr />
+<h4 id="final-evaluation-and-grade-determination">Final Evaluation and Grade Determination</h4>
+<p>Your final grade in CSEC 602 is calculated as:</p>
+<ul>
+<li><strong>Participation &amp; Attendance:</strong> 10%</li>
+<li><strong>Labs 1–7 (Weeks 1–7):</strong> 30%</li>
+<li><strong>Capstone Project (Weeks 13–16):</strong> 40%</li>
+<li><strong>Attendance at presentations &amp; retrospective:</strong> 5%</li>
+<li><strong>Peer feedback &amp; professionalism:</strong> 5%</li>
+<li><strong>Capstone presentation + reflection:</strong> 10% (separate from project grade)</li>
+</ul>
+<p>Capstone grade components:
+- <strong>Proposal &amp; Architecture (Week 13):</strong> 10%
+- <strong>Sprint I Progress (Week 14):</strong> 10%
+- <strong>Sprint II Progress (Week 15):</strong> 10%
+- <strong>Final code, documentation, and deployability (Week 16):</strong> 30%
+- <strong>Presentation (Week 16):</strong> 10%
+- <strong>Reflection essay (Week 16):</strong> 5%</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> This is a mastery-based grading course. You're evaluated on depth of understanding and quality of work, not just completion. A simple system well-designed and well-documented scores higher than an ambitious system with gaps.</p>
+</div>
+<h4 id="next-steps-after-csec-602">Next Steps After CSEC 602</h4>
+<p>Congratulations! You've completed a graduate-level course in agentic security engineering. Here's how to continue your journey:</p>
+<p><strong>Publish Your Work</strong>
+- Consider publishing your capstone as an open-source project (GitHub, with README and docs)
+- Write a blog post about your approach and learnings
+- Present at a security conference or meetup</p>
+<p><strong>Contribute to the Field</strong>
+- Study the MASS and PeaRL repositories to understand how production AI security tools approach governance and assessment challenges
+- Join the agentic security research community
+- Participate in CTF competitions with agentic AI themes</p>
+<p><strong>Keep Learning</strong>
+- Explore advanced topics: multi-modal reasoning, embodied agents, curriculum learning
+- Follow emerging research in agentic systems, AI safety, and responsible AI
+- Build more capstone projects in related areas (incident response, compliance, threat hunting)</p>
+<p><strong>Professional Growth</strong>
+- List CSEC 602 and your capstone on your resume
+- Use your capstone code as portfolio work in interviews
+- Seek roles in AI security, DevSecOps, or red team automation</p>
+<hr />
+<h2 id="key-resources">Key Resources</h2>
+<ul>
+<li><a href="reading.html">Reading List</a> — MITRE ATLAS, agent frameworks, security hardening, responsible AI</li>
+<li><a href="frameworks.html">Frameworks Documentation</a> — Claude Agent SDK, CrewAI, LangGraph patterns</li>
+<li><a href="lab-setup.html">Lab Setup Guide</a> — Environment configuration, deployment, debugging</li>
+</ul>
+<hr />
+<p><strong>Course Contact:</strong> For questions about the capstone or Unit 8, reach out to course faculty. Office hours are posted on the course homepage.</p>
+  </div>
+</main>
+
+<script>
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('show');
+}
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) toggleSidebar();
+  });
+});
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6b4c1e',
+      primaryTextColor: '#e8dcc8',
+      primaryBorderColor: '#d4a017',
+      lineColor: '#9a8e7a',
+      secondaryColor: '#1a1f30',
+      tertiaryColor: '#0f1525',
+      background: '#0f1525',
+      mainBkg: '#6b4c1e',
+      nodeBorder: '#d4a017',
+      clusterBkg: '#0b0f19',
+      clusterBorder: '#2a3045',
+      titleColor: '#d4a017',
+      edgeLabelBackground: '#0f1525',
+      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
+    },
+    flowchart: { curve: 'basis', padding: 15 },
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>

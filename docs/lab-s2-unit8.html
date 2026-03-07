@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit 8: Capstone Projects | CyberMinds-2026</title>
+  <link rel="stylesheet" href="labs.css">
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main">
+  <div class="content">
+
+    <!-- Header -->
+    <div class="unit-header">
+      <div class="unit-badge">CSEC 602 — Semester 2</div>
+      <h1>Unit 8: Capstone Projects</h1>
+      <p class="unit-subtitle">Weeks 13–16 &nbsp;|&nbsp; Production-Quality Agentic Security Systems</p>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill">0%</div>
+        </div>
+        <span class="progress-label" id="progress-label">0 of 32 items complete</span>
+      </div>
+    </div>
+
+    <!-- Unit Goals -->
+    <div class="callout callout-key">
+      <strong>Unit Learning Goals</strong>
+      <ul>
+        <li>Demonstrate mastery of agentic security engineering through a production-quality capstone system</li>
+        <li>Design, build, and deploy a multi-agent solution that solves a real cybersecurity problem</li>
+        <li>Apply collaborative critical thinking to architectural decisions and agent interactions</li>
+        <li>Conduct peer security reviews and respond constructively to red team findings</li>
+        <li>Present technical work professionally and reflect on agentic AI implications for cybersecurity</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>Capstone as Production Delivery</strong>
+      <p>Your capstone is <strong>not a prototype showcase</strong>—it's a <strong>production delivery exercise</strong>. By presentation day, your capstone must demonstrate a deployable, observable, governed system ready for real-world use. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- WEEK 13 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="week-section" id="week13">
+      <div class="week-header">
+        <span class="week-badge">Week 13</span>
+        <h2>Capstone Kickoff &amp; Architecture Reviews</h2>
+      </div>
+
+      <p>This week launches your capstone. You will select a project, form a team, write a formal proposal, produce an architecture document, and defend your design in a peer and faculty review. By Friday, your architecture is locked and you begin building.</p>
+
+      <!-- Knowledge Check -->
+      <div class="quiz-block">
+        <h3 class="quiz-title">Knowledge Check — Week 13</h3>
+
+        <div class="quiz-question" id="q-u8-w13-1">
+          <p class="question-text">1. Your capstone must include a minimum of how many specialized agents?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="b">
+              <input type="radio" name="q-u8-w13-1" value="b"> 3 agents with distinct roles, expertise, and tool sets
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="a">
+              <input type="radio" name="q-u8-w13-1" value="a"> 2 agents — one orchestrator and one worker
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="c">
+              <input type="radio" name="q-u8-w13-1" value="c"> 5 agents — one per AIUC-1 domain
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="d">
+              <input type="radio" name="q-u8-w13-1" value="d"> No minimum — the right number for the problem
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-1', 'b', 'The capstone requires a minimum of 3 specialized agents with distinct roles, expertise, and tool sets. Agents must communicate clearly and work toward a common goal.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w13-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w13-2">
+          <p class="question-text">2. The AIUC-1 framework covers how many domains?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="c">
+              <input type="radio" name="q-u8-w13-2" value="c"> Six — Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="a">
+              <input type="radio" name="q-u8-w13-2" value="a"> Four — matching the NIST AI RMF stages
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="b">
+              <input type="radio" name="q-u8-w13-2" value="b"> Five — matching the FS-ISAC principles
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="d">
+              <input type="radio" name="q-u8-w13-2" value="d"> Ten — matching the OWASP Top 10 for Agentic Apps
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-2', 'c', 'AIUC-1 covers six domains: Data &amp; Privacy, Security, Safety, Reliability, Accountability, and Society. You must map your capstone to all six, documenting controls implemented, non-applicable controls, and gaps.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w13-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w13-3">
+          <p class="question-text">3. The "Pit of Success" principle from <em>Agentic Engineering</em> means:</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="b">
+              <input type="radio" name="q-u8-w13-3" value="b"> Right behavior emerges naturally from the architecture, not from constant oversight
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="a">
+              <input type="radio" name="q-u8-w13-3" value="a"> Agents should compete with each other to reach the best solution
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="c">
+              <input type="radio" name="q-u8-w13-3" value="c"> Always default to the simplest single-agent solution
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="d">
+              <input type="radio" name="q-u8-w13-3" value="d"> Human operators must approve every significant agent decision
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-3', 'b', 'The Pit of Success means designing your multi-agent system so that correct behavior—agents respecting role boundaries, escalating appropriately, handling failures gracefully—emerges naturally from the architecture itself, without requiring constant human supervision.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w13-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w13-4">
+          <p class="question-text">4. During the architecture review, what is identified as the most common pitfall?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="d">
+              <input type="radio" name="q-u8-w13-4" value="d"> Over-scoping — teams attempt to build a system that would take 6 months
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="a">
+              <input type="radio" name="q-u8-w13-4" value="a"> Under-documenting — insufficient architecture documentation
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="b">
+              <input type="radio" name="q-u8-w13-4" value="b"> Poor team formation — unbalanced skill sets across roles
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="c">
+              <input type="radio" name="q-u8-w13-4" value="c"> Choosing the wrong framework — mismatching orchestration pattern
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-4', 'd', 'Over-scoping is the most common pitfall. Scope ruthlessly. A simple, well-executed 3-agent system beats an incomplete 10-agent vision. The minimum viable product that demonstrates the concepts is always the right target for a 4-week capstone.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w13-4"></div>
+        </div>
+      </div>
+
+      <!-- Lab Steps -->
+      <h3>Lab Steps — Week 13</h3>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-1" onchange="toggleStep('step-u8-13-1', this.checked)">
+        <label for="step-u8-13-1"><strong>Step 1:</strong> Form your team (2–3 members). Assign roles: Lead Architect, Lead Developer, and Security/Ops Lead. Submit names to faculty by Wednesday.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-2" onchange="toggleStep('step-u8-13-2', this.checked)">
+        <label for="step-u8-13-2"><strong>Step 2:</strong> Choose a capstone project from the ideas below (or propose your own). Complete a 1–2 paragraph problem statement answering: What problem? Why multi-agent?</label>
+      </div>
+
+      <div class="callout callout-tip">
+        <strong>Capstone Project Ideas</strong>
+        <ul>
+          <li><strong>Autonomous SOC Analyst</strong> — Multi-agent alert triage, correlation, investigation, and response recommendation</li>
+          <li><strong>Proactive Threat Hunting System</strong> — Continuous IOC and anomaly search with collaborative high-confidence detection</li>
+          <li><strong>Automated Compliance Auditor</strong> — Policy interpretation, system scanning, gap analysis, and remediation planning</li>
+          <li><strong>Intelligent Phishing Defense</strong> — Email analysis, phishing detection consensus, target risk assessment, containment</li>
+          <li><strong>Vulnerability Management Orchestrator</strong> — Enrichment, impact scoring, prioritization, patch planning, risk tracking</li>
+          <li><strong>AI Red Team System</strong> — Controlled attack planning, execution, blue team simulation, and report generation</li>
+          <li><strong>MASS Plugin Development</strong> — Custom security analyzer extending the open-source MASS framework</li>
+          <li><strong>PeaRL Governance Extension</strong> — Fine-grained governance layer extending the open-source PeaRL framework</li>
+        </ul>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-3" onchange="toggleStep('step-u8-13-3', this.checked)">
+        <label for="step-u8-13-3"><strong>Step 3:</strong> Write your formal proposal (500–1,000 words) covering: The Problem, Why Multi-Agent, Proposed Solution, and Success Metrics. Due Thursday.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-4" onchange="toggleStep('step-u8-13-4', this.checked)">
+        <label for="step-u8-13-4"><strong>Step 4:</strong> Write your architecture document (1,500–2,500 words). Use the structure below.</label>
+      </div>
+
+      <div class="callout callout-tip">
+        <strong>Architecture Document Structure</strong>
+        <ol>
+          <li><strong>System Overview (200 words)</strong> — End-to-end description, users/stakeholders, success criteria</li>
+          <li><strong>Multi-Agent Design (600 words)</strong> — Agent name/role/tools/comms for each agent + orchestration pattern + framework choice rationale</li>
+          <li><strong>CCT Analysis (400 words)</strong> — How agents enable deeper reasoning; specific decision where agents debate/validate</li>
+          <li><strong>MITRE ATLAS Threat Model (300 words)</strong> — Top 5 AI-specific threats with DREAD scores and mitigations</li>
+          <li><strong>AIUC-1 Domain Mapping (400 words)</strong> — All 6 domains: controls implemented, N/A controls (justified), gaps</li>
+          <li><strong>AIVSS Risk Assessment (300 words)</strong> — Top 5 vulnerabilities with AIVSS scores mapped to AIUC-1 domains</li>
+          <li><strong>Observability Plan (200 words)</strong> — Metrics, traces, logs, dashboards, alerting thresholds</li>
+          <li><strong>Ethical Impact Assessment (200 words)</strong> — Stakeholder analysis, misuse scenarios, responsible AI alignment</li>
+          <li><strong>Feasibility &amp; Risk (100 words)</strong> — What's the MVP? What gets cut if you run out of time?</li>
+        </ol>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-5" onchange="toggleStep('step-u8-13-5', this.checked)">
+        <label for="step-u8-13-5"><strong>Step 5:</strong> Present your architecture on Wednesday (15 min presentation + 15 min Q&amp;A). Incorporate feedback by Friday.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-6" onchange="toggleStep('step-u8-13-6', this.checked)">
+        <label for="step-u8-13-6"><strong>Step 6:</strong> Initialize your capstone repository with this structure:</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Initialize capstone repository structure
+mkdir -p capstone/{agents,tools,tests,docs,infra,observability}
+cd capstone
+
+# Initialize git
+git init
+echo "# Capstone: [Your Project Name]" > README.md
+echo "__pycache__/" > .gitignore
+echo ".env" >> .gitignore
+echo "*.pyc" >> .gitignore
+
+# Project structure
+mkdir -p agents tests/unit tests/integration docs/architecture
+
+# Create initial files
+cat > docs/architecture/README.md << 'EOF'
+# Architecture Overview
+## System: [Project Name]
+## Team: [Names]
+## Date: $(date +%Y-%m-%d)
+
+## Quick Start
+## Agents
+## Data Flow
+## Security Controls
+EOF
+
+cat > requirements.txt << 'EOF'
+anthropic>=0.40.0
+crewai>=0.28.0  # or langgraph>=0.1.0
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+cyclonedx-bom>=4.0.0
+pytest>=7.4.0
+EOF
+
+git add .
+git commit -m "chore: initialize capstone project structure"
+echo "Repository initialized. Architecture locked — begin Sprint I on Monday."</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-7" onchange="toggleStep('step-u8-13-7', this.checked)">
+        <label for="step-u8-13-7"><strong>Step 7:</strong> Complete your AIUC-1 domain mapping table. For each of the 6 domains, document: which controls your system implements, which are N/A (with justification), and what gaps remain.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-13-8" onchange="toggleStep('step-u8-13-8', this.checked)">
+        <label for="step-u8-13-8"><strong>Step 8 (Deliverable — 15%):</strong> Submit final architecture document incorporating review feedback by end of Week 13.</label>
+      </div>
+
+      <div class="deliverables-box">
+        <h4>Week 13 Deliverables</h4>
+        <ul>
+          <li>Team formation submission with roles (Wednesday)</li>
+          <li>Formal proposal 500–1,000 words (Thursday)</li>
+          <li>Architecture document 1,500–2,500 words with AIUC-1 mapping (Thursday)</li>
+          <li>Architecture review presentation 15 min (Wednesday afternoon)</li>
+          <li>Revised architecture incorporating feedback (Friday) — <strong>15% of capstone grade</strong></li>
+          <li>Initialized capstone repository committed to GitHub</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- WEEK 14 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="week-section" id="week14">
+      <div class="week-header">
+        <span class="week-badge">Week 14</span>
+        <h2>Sprint I — Core Agent System Build</h2>
+      </div>
+
+      <p>Sprint I is your primary build phase. You have one week to implement the core multi-agent system. Use Claude Code as your primary development environment. The goal: a working system that demonstrates your core value proposition, even if rough around the edges.</p>
+
+      <!-- Knowledge Check -->
+      <div class="quiz-block">
+        <h3 class="quiz-title">Knowledge Check — Week 14</h3>
+
+        <div class="quiz-question" id="q-u8-w14-1">
+          <p class="question-text">5. When building with Claude Code during Sprint I, the recommended approach for agent system scaffolding is:</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="a">
+              <input type="radio" name="q-u8-w14-1" value="a"> Describe the architecture in a PROMPT.md and use Claude Code to generate the scaffolding in one structured session
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="b">
+              <input type="radio" name="q-u8-w14-1" value="b"> Write all agents manually to ensure full understanding before using AI assistance
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="c">
+              <input type="radio" name="q-u8-w14-1" value="c"> Start with a single working agent and add agents one at a time only after full testing
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="d">
+              <input type="radio" name="q-u8-w14-1" value="d"> Copy the Unit 5 multi-agent examples directly and modify agent names
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-1', 'a', 'The recommended approach is to describe the full architecture in a PROMPT.md (including agent roles, tools, orchestration pattern, and data flow), then use Claude Code to generate the complete scaffolding. This is faster and produces more coherent code than building incrementally without a plan.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w14-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w14-2">
+          <p class="question-text">6. Which of the following is the correct priority order for Sprint I?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="c">
+              <input type="radio" name="q-u8-w14-2" value="c"> Core agent logic → inter-agent communication → basic logging → tests
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="a">
+              <input type="radio" name="q-u8-w14-2" value="a"> Observability → agents → UI → tests
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="b">
+              <input type="radio" name="q-u8-w14-2" value="b"> CI/CD pipeline → Dockerfile → agents → tests
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="d">
+              <input type="radio" name="q-u8-w14-2" value="d"> Documentation → architecture → agents → observability
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-2', 'c', 'Sprint I priority is: core agent logic first (prove the value proposition), then inter-agent communication (prove the multi-agent design works), then basic structured logging (needed for Sprint II hardening), then tests to validate correctness. CI/CD and Dockerfile come in Sprint II.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w14-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w14-3">
+          <p class="question-text">7. Git worktrees are useful for capstone development because:</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="b">
+              <input type="radio" name="q-u8-w14-3" value="b"> Multiple team members can work on different agents simultaneously without branch conflicts
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="a">
+              <input type="radio" name="q-u8-w14-3" value="a"> They eliminate the need for pull requests in small teams
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="c">
+              <input type="radio" name="q-u8-w14-3" value="c"> They allow you to run agents without a Python virtual environment
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="d">
+              <input type="radio" name="q-u8-w14-3" value="d"> They make it easier to deploy to Docker without a Dockerfile
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-3', 'b', 'Git worktrees allow multiple team members to check out different branches simultaneously in separate directories. During Sprint I, one developer can work on agent-1 in a worktree while another works on agent-2, without the overhead of constant branch switching and merge conflicts.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w14-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w14-4">
+          <p class="question-text">8. What constitutes the Sprint I "Definition of Done"?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="d">
+              <input type="radio" name="q-u8-w14-4" value="d"> All agents running and communicating end-to-end with at least one realistic test case producing meaningful output
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="a">
+              <input type="radio" name="q-u8-w14-4" value="a"> All agents individually tested with 100% unit test coverage
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="b">
+              <input type="radio" name="q-u8-w14-4" value="b"> Dockerfile and CI/CD pipeline operational in GitHub Actions
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="c">
+              <input type="radio" name="q-u8-w14-4" value="c"> Complete AIUC-1 audit with zero gaps documented
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-4', 'd', 'Sprint I Definition of Done: all agents are running and communicating end-to-end, and the system produces meaningful output for at least one realistic test case. Hardening, full test coverage, CI/CD, and containerization come in Sprint II. If your system runs end-to-end, Sprint I is done.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w14-4"></div>
+        </div>
+      </div>
+
+      <!-- Lab Steps -->
+      <h3>Lab Steps — Week 14</h3>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-1" onchange="toggleStep('step-u8-14-1', this.checked)">
+        <label for="step-u8-14-1"><strong>Step 1:</strong> Create <code>PROMPT.md</code> — your Claude Code architecture prompt. Include agent roles, tools, orchestration pattern, data flow, and success criteria. This is what you hand to Claude Code to generate scaffolding.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># PROMPT.md — Capstone Architecture Prompt for Claude Code
+# Edit this template for your specific project
+
+## System: [Your Project Name]
+## Goal: [One-sentence problem statement]
+
+## Agents
+
+### Agent 1: [Name]
+- Role: [Primary responsibility]
+- Tools: [Tool 1, Tool 2, Tool 3]
+- Input: [What data/signals it receives]
+- Output: [What it produces]
+- Framework: anthropic Claude API (claude-sonnet-4-6)
+
+### Agent 2: [Name]
+- Role: [Primary responsibility]
+- Tools: [Tool 1, Tool 2]
+- Input: [Receives output from Agent 1]
+- Output: [What it produces]
+
+### Agent 3: [Name]
+- Role: [Orchestrator / final decision maker]
+- Tools: [Tool 1]
+- Input: [Synthesizes Agent 1 + 2 outputs]
+- Output: [Final result / action / report]
+
+## Orchestration Pattern
+[Sequential / Hierarchical / Debate / Feedback loop]
+Describe the coordination flow step by step.
+
+## Data Flow
+1. Input arrives as [format]
+2. Agent 1 processes → produces [format]
+3. Agent 2 receives → produces [format]
+4. Agent 3 synthesizes → produces [final format]
+
+## Tools Needed
+- [tool_name]: [description, input, output]
+- [tool_name]: [description, input, output]
+
+## Success Criteria
+- [ ] All 3 agents run and communicate
+- [ ] Realistic test input produces meaningful output
+- [ ] Structured JSON logging from all agents
+- [ ] At least 1 integration test passes</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-2" onchange="toggleStep('step-u8-14-2', this.checked)">
+        <label for="step-u8-14-2"><strong>Step 2:</strong> Set up git worktrees for parallel development. Each team member takes an agent branch.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Team lead: create feature branches
+git checkout -b main
+git push -u origin main
+
+# Create worktrees for parallel agent development
+git worktree add ../capstone-agent1 -b feature/agent1
+git worktree add ../capstone-agent2 -b feature/agent2
+git worktree add ../capstone-agent3 -b feature/agent3
+
+# Each team member works in their directory
+# Developer 1: cd ../capstone-agent1 && code .
+# Developer 2: cd ../capstone-agent2 && code .
+# Developer 3: cd ../capstone-agent3 && code .
+
+# List active worktrees
+git worktree list
+
+# When an agent is ready, merge to main
+git checkout main
+git merge feature/agent1 --no-ff -m "feat: implement Agent 1 - [name]"</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-3" onchange="toggleStep('step-u8-14-3', this.checked)">
+        <label for="step-u8-14-3"><strong>Step 3:</strong> Scaffold your agent system using Claude Code. Use your PROMPT.md as the context. Generate all agent files, tool definitions, and orchestrator in one session.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Example scaffold for a 3-agent system using Claude Agent SDK
+
+# agents/base.py
+import anthropic
+import json
+import logging
+import datetime
+
+logger = logging.getLogger(__name__)
+
+class BaseAgent:
+    """Base class for all capstone agents with structured logging."""
+
+    def __init__(self, name: str, role: str, tools: list):
+        self.name = name
+        self.role = role
+        self.tools = tools
+        self.client = anthropic.Anthropic()
+        self.model = "claude-sonnet-4-6"
+
+    def _log(self, event: str, data: dict):
+        """Emit structured JSON log for observability."""
+        record = {
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "agent": self.name,
+            "event": event,
+            **data
+        }
+        logger.info(json.dumps(record))
+
+    def run(self, input_data: dict) -> dict:
+        raise NotImplementedError("Each agent must implement run()")
+
+
+# agents/agent1.py
+from .base import BaseAgent
+
+class AnalysisAgent(BaseAgent):
+    """Agent 1: Analyzes input and extracts key signals."""
+
+    def __init__(self):
+        tools = [
+            {
+                "name": "analyze_input",
+                "description": "Analyze the input data and extract key security signals",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "data": {"type": "string", "description": "Raw input data"},
+                        "context": {"type": "string", "description": "Additional context"}
+                    },
+                    "required": ["data"]
+                }
+            }
+        ]
+        super().__init__("AnalysisAgent", "Input analysis and signal extraction", tools)
+
+    def run(self, input_data: dict) -> dict:
+        self._log("agent_start", {"input_keys": list(input_data.keys())})
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=2048,
+            tools=self.tools,
+            system=f"You are the {self.name}. {self.role}. Be thorough and structured.",
+            messages=[{
+                "role": "user",
+                "content": f"Analyze this input: {json.dumps(input_data)}"
+            }]
+        )
+
+        # Process tool calls and return structured output
+        result = {"agent": self.name, "analysis": response.content[0].text if response.content else ""}
+        self._log("agent_complete", {"output_keys": list(result.keys())})
+        return result
+
+
+# orchestrator.py
+from agents.agent1 import AnalysisAgent
+from agents.agent2 import AssessmentAgent  # you'll build this
+from agents.agent3 import ReportAgent     # you'll build this
+
+class Orchestrator:
+    def __init__(self):
+        self.agent1 = AnalysisAgent()
+        self.agent2 = AssessmentAgent()
+        self.agent3 = ReportAgent()
+
+    def run(self, input_data: dict) -> dict:
+        # Sequential orchestration
+        analysis = self.agent1.run(input_data)
+        assessment = self.agent2.run({**input_data, "analysis": analysis})
+        report = self.agent3.run({**input_data, "analysis": analysis, "assessment": assessment})
+        return report
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    orchestrator = Orchestrator()
+
+    # Test with a realistic scenario
+    test_input = {"type": "security_event", "data": "Simulated test input"}
+    result = orchestrator.run(test_input)
+    print(json.dumps(result, indent=2))</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-4" onchange="toggleStep('step-u8-14-4', this.checked)">
+        <label for="step-u8-14-4"><strong>Step 4:</strong> Write integration tests for the full agent pipeline. At minimum: one happy-path test with realistic input, one error-handling test with malformed input.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># tests/integration/test_pipeline.py
+import pytest
+import json
+from orchestrator import Orchestrator
+
+class TestCapstonePipeline:
+    """Integration tests for the full capstone agent pipeline."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.orchestrator = Orchestrator()
+
+    def test_happy_path_realistic_input(self):
+        """System should produce structured output for realistic input."""
+        test_input = {
+            "type": "security_event",
+            "severity": "high",
+            "data": "Simulated realistic security scenario matching your domain"
+        }
+        result = self.orchestrator.run(test_input)
+
+        # Assert result has required structure
+        assert isinstance(result, dict), "Result must be a dictionary"
+        assert "agent" in result or len(result) > 0, "Result must not be empty"
+        print(f"\nPipeline output:\n{json.dumps(result, indent=2)}")
+
+    def test_error_handling_malformed_input(self):
+        """System should handle malformed input gracefully, not crash."""
+        malformed_input = {}  # empty input
+        try:
+            result = self.orchestrator.run(malformed_input)
+            # Should produce an error result, not raise an exception
+            assert isinstance(result, dict)
+        except Exception as e:
+            pytest.fail(f"System crashed on empty input: {e}")
+
+    def test_all_agents_produce_logs(self, capfd):
+        """Each agent should emit at least one structured JSON log entry."""
+        test_input = {"type": "test", "data": "log verification test"}
+        self.orchestrator.run(test_input)
+        # Verify no crashes — log verification done via log file review</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-5" onchange="toggleStep('step-u8-14-5', this.checked)">
+        <label for="step-u8-14-5"><strong>Step 5:</strong> Run your integration test and capture the output. Commit working code with the tag <code>sprint1-complete</code>.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Run integration tests
+pip install -r requirements.txt
+pytest tests/integration/ -v --tb=short
+
+# If tests pass, commit and tag
+git add .
+git commit -m "feat: Sprint I complete - core multi-agent pipeline working
+
+- Agent 1 (AnalysisAgent): input analysis and signal extraction
+- Agent 2 (AssessmentAgent): risk scoring and assessment
+- Agent 3 (ReportAgent): synthesis and structured output
+- Integration tests passing
+- Structured JSON logging from all agents"
+
+git tag sprint1-complete
+git push origin main --tags
+echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-14-6" onchange="toggleStep('step-u8-14-6', this.checked)">
+        <label for="step-u8-14-6"><strong>Step 6 (Deliverable — 25%):</strong> Submit Sprint I build: working code tagged <code>sprint1-complete</code>, integration test results, and a 300-word sprint retrospective covering what was built, what was cut, and why.</label>
+      </div>
+
+      <div class="deliverables-box">
+        <h4>Week 14 Deliverables</h4>
+        <ul>
+          <li>PROMPT.md capstone architecture prompt committed to repository</li>
+          <li>All agents implemented and running end-to-end</li>
+          <li>Integration test suite with at least 2 passing tests</li>
+          <li>Structured JSON logging from all agents</li>
+          <li>Git tag <code>sprint1-complete</code> pushed to GitHub</li>
+          <li>300-word sprint retrospective — <strong>25% of capstone grade</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- WEEK 15 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="week-section" id="week15">
+      <div class="week-header">
+        <span class="week-badge">Week 15</span>
+        <h2>Sprint II — Production Hardening &amp; Peer Red Team</h2>
+      </div>
+
+      <p>Sprint II transforms your working prototype into a production-ready system. You'll harden the system with full observability, containerization, CI/CD, and an IaC template. Simultaneously, peer teams will red team your system using the top 5 MITRE ATLAS techniques from your threat model.</p>
+
+      <!-- Knowledge Check -->
+      <div class="quiz-block">
+        <h3 class="quiz-title">Knowledge Check — Week 15</h3>
+
+        <div class="quiz-question" id="q-u8-w15-1">
+          <p class="question-text">9. During peer red team review, which sources define the attack techniques you must test?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="a">
+              <input type="radio" name="q-u8-w15-1" value="a"> The top 5 MITRE ATLAS techniques identified in the target team's architecture document threat model
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="b">
+              <input type="radio" name="q-u8-w15-1" value="b"> Any 5 techniques from OWASP Top 10 for LLMs that seem applicable
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="c">
+              <input type="radio" name="q-u8-w15-1" value="c"> The 6 Unit 6 red team scenarios from the course wargame
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="d">
+              <input type="radio" name="q-u8-w15-1" value="d"> Whatever the red team considers most interesting or creative
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-1', 'a', 'The peer red team uses the top 5 MITRE ATLAS techniques that the target team identified in their own architecture document threat model. This ensures the red team focuses on known, documented risks rather than arbitrary attacks. The target team wrote the threat model as a self-assessment; the red team validates whether those threats were actually mitigated.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w15-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w15-2">
+          <p class="question-text">10. A multi-stage Dockerfile is required for the capstone. What is the primary security benefit?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="c">
+              <input type="radio" name="q-u8-w15-2" value="c"> The final production image excludes build tools, compilers, and dev dependencies, reducing the attack surface
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="a">
+              <input type="radio" name="q-u8-w15-2" value="a"> It makes the build faster by caching layers more aggressively
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="b">
+              <input type="radio" name="q-u8-w15-2" value="b"> It enables running multiple agents in separate containers from one Dockerfile
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="d">
+              <input type="radio" name="q-u8-w15-2" value="d"> It removes the need for a docker-compose.yml file
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-2', 'c', 'Multi-stage Docker builds separate the build environment (with compilers, pip, dev tools) from the production runtime image. Only the compiled artifacts and runtime dependencies are copied to the final stage. This dramatically reduces the attack surface — the final image has no build tools an attacker could abuse.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w15-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w15-3">
+          <p class="question-text">11. The GitHub Actions CI/CD pipeline must enforce which promotion gates?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="b">
+              <input type="radio" name="q-u8-w15-3" value="b"> Secrets detection → SAST scanning → container image scanning + SBOM → promotion with approval
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="a">
+              <input type="radio" name="q-u8-w15-3" value="a"> Lint → unit tests → integration tests → deploy
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="c">
+              <input type="radio" name="q-u8-w15-3" value="c"> Build → push to registry → notify team → done
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="d">
+              <input type="radio" name="q-u8-w15-3" value="d"> Static analysis → dynamic testing → pen test → deploy
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-3', 'b', 'The required CI/CD DevSecOps pipeline: pre-commit secrets detection (gitleaks/trufflehog) → PR SAST scanning (Bandit/Semgrep) → build container image scanning (Trivy) + SBOM generation (cyclonedx-bom) → deploy with promotion gates (dev → pilot → preprod → prod) with approval workflows.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w15-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w15-4">
+          <p class="question-text">12. After receiving peer red team findings, the target team must:</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="d">
+              <input type="radio" name="q-u8-w15-4" value="d"> Score findings with AIVSS, prioritize by score, implement patches, and document the patch-and-retest cycle
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="a">
+              <input type="radio" name="q-u8-w15-4" value="a"> Dispute all findings that were already covered in the architecture document threat model
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="b">
+              <input type="radio" name="q-u8-w15-4" value="b"> Accept all findings and rebuild the affected agents from scratch
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="c">
+              <input type="radio" name="q-u8-w15-4" value="c"> Present the findings to faculty without taking action — they are for grading purposes only
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-4', 'd', 'After receiving red team findings: score each finding with AIVSS, prioritize by score (highest first), implement targeted patches (not full rebuilds), and document the patch-and-retest cycle. The retest proves the patch actually closed the vulnerability. This is the standard vulnerability remediation workflow used in production security engineering.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w15-4"></div>
+        </div>
+      </div>
+
+      <!-- Lab Steps -->
+      <h3>Lab Steps — Week 15</h3>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-1" onchange="toggleStep('step-u8-15-1', this.checked)">
+        <label for="step-u8-15-1"><strong>Step 1:</strong> Add full OpenTelemetry instrumentation to all agents. Traces must span across agents for end-to-end visibility.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># observability/tracing.py
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+import functools
+
+def setup_tracing(service_name: str):
+    """Initialize OpenTelemetry tracing for the capstone system."""
+    resource = Resource.create({"service.name": service_name})
+    provider = TracerProvider(resource=resource)
+    provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+    trace.set_tracer_provider(provider)
+    return trace.get_tracer(service_name)
+
+def traced(operation_name: str = None):
+    """Decorator to automatically trace agent methods."""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            tracer = trace.get_tracer(self.name)
+            op_name = operation_name or f"{self.name}.{func.__name__}"
+            with tracer.start_as_current_span(op_name) as span:
+                span.set_attribute("agent.name", self.name)
+                span.set_attribute("agent.role", self.role)
+                try:
+                    result = func(self, *args, **kwargs)
+                    span.set_attribute("result.success", True)
+                    return result
+                except Exception as e:
+                    span.set_attribute("result.success", False)
+                    span.set_attribute("error.message", str(e))
+                    span.record_exception(e)
+                    raise
+        return wrapper
+    return decorator
+
+
+# Update agents/base.py to use tracing
+from observability.tracing import setup_tracing, traced
+
+class BaseAgent:
+    def __init__(self, name: str, role: str, tools: list):
+        self.name = name
+        self.role = role
+        self.tools = tools
+        self.client = anthropic.Anthropic()
+        self.model = "claude-sonnet-4-6"
+        self.tracer = setup_tracing(name)
+
+    @traced()
+    def run(self, input_data: dict) -> dict:
+        raise NotImplementedError()</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-2" onchange="toggleStep('step-u8-15-2', this.checked)">
+        <label for="step-u8-15-2"><strong>Step 2:</strong> Build the multi-stage Dockerfile and docker-compose.yml.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Dockerfile — Multi-stage build for capstone
+FROM python:3.12-slim AS builder
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+FROM python:3.12-slim AS runtime
+# Security: non-root user
+RUN groupadd -r agentuser && useradd -r -g agentuser agentuser
+WORKDIR /app
+
+# Copy only runtime dependencies from builder
+COPY --from=builder /root/.local /home/agentuser/.local
+COPY --chown=agentuser:agentuser . .
+
+USER agentuser
+ENV PATH=/home/agentuser/.local/bin:$PATH
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import agents; print('healthy')" || exit 1
+
+ENTRYPOINT ["python", "orchestrator.py"]</code></pre>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># docker-compose.yml — Local development and testing
+services:
+  capstone:
+    build:
+      context: .
+      target: runtime
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - LOG_LEVEL=INFO
+      - OTEL_SERVICE_NAME=capstone-system
+    volumes:
+      - ./logs:/app/logs
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # Optional: Jaeger for trace visualization
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-3" onchange="toggleStep('step-u8-15-3', this.checked)">
+        <label for="step-u8-15-3"><strong>Step 3:</strong> Build and scan your container image with Trivy. Document all CVEs found and your mitigations.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Build and scan
+docker build -t capstone:latest .
+
+# Install Trivy if not available
+# https://aquasecurity.github.io/trivy/latest/getting-started/installation/
+
+# Scan for vulnerabilities
+trivy image --format table --severity HIGH,CRITICAL capstone:latest
+
+# Generate JSON report for documentation
+trivy image --format json --output trivy-report.json capstone:latest
+
+# Generate SBOM in CycloneDX format
+pip install cyclonedx-bom
+cyclonedx-py requirements requirements.txt --format json -o sbom.json
+
+# Validate SBOM
+python -c "import json; sbom = json.load(open('sbom.json')); print(f'SBOM: {len(sbom.get(\"components\", []))} components')"
+
+# Document findings
+cat > docs/security/container-scan-results.md << 'EOF'
+# Container Security Scan Results
+Date: $(date +%Y-%m-%d)
+Image: capstone:latest
+
+## Trivy Findings
+[Paste trivy output here]
+
+## Mitigations
+| CVE | Severity | Component | Mitigation | Status |
+|-----|----------|-----------|------------|--------|
+| CVE-XXXX | HIGH | [pkg] | Upgraded to [version] | Fixed |
+
+## SBOM
+- Format: CycloneDX JSON
+- Components: [count]
+- Generated: sbom.json
+EOF</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-4" onchange="toggleStep('step-u8-15-4', this.checked)">
+        <label for="step-u8-15-4"><strong>Step 4:</strong> Create the GitHub Actions CI/CD pipeline with all required DevSecOps gates.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># .github/workflows/devsecops.yml
+name: DevSecOps Promotion Pipeline
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  secrets-scan:
+    name: "Gate 1: Secrets Detection"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast-scan:
+    name: "Gate 2: SAST Scanning"
+    runs-on: ubuntu-latest
+    needs: secrets-scan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install bandit semgrep
+      - name: Bandit SAST
+        run: bandit -r agents/ orchestrator.py -f json -o bandit-results.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sast-results
+          path: bandit-results.json
+
+  container-build:
+    name: "Gate 3: Build, Scan & SBOM"
+    runs-on: ubuntu-latest
+    needs: sast-scan
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container
+        run: docker build -t capstone:${{ github.sha }} .
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: capstone:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 0  # Don't fail — document findings
+      - name: Generate SBOM
+        run: |
+          pip install cyclonedx-bom
+          cyclonedx-py requirements requirements.txt --format json -o sbom.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-artifacts
+          path: |
+            trivy-results.sarif
+            sbom.json
+
+  promote-dev:
+    name: "Deploy: dev"
+    runs-on: ubuntu-latest
+    needs: container-build
+    if: github.ref == 'refs/heads/main'
+    environment: dev
+    steps:
+      - name: Deploy to dev
+        run: echo "Deploying to dev environment"
+
+  promote-preprod:
+    name: "Deploy: preprod (manual approval required)"
+    runs-on: ubuntu-latest
+    needs: promote-dev
+    environment: preprod
+    steps:
+      - name: Deploy to preprod
+        run: echo "Deploying to preprod environment"</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-5" onchange="toggleStep('step-u8-15-5', this.checked)">
+        <label for="step-u8-15-5"><strong>Step 5 (Red Team):</strong> As a red team, access the peer team's repository and execute attacks against their top 5 MITRE ATLAS techniques from their architecture document. Document each test.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code"># Red Team Report Template
+# docs/security/red-team-report.md
+
+# Peer Red Team Report
+## Target: [Team Name] — [Project Name]
+## Red Team: [Your Team Name]
+## Date: $(date +%Y-%m-%d)
+
+## Scope
+Testing the top 5 MITRE ATLAS techniques identified in target team's
+threat model (from their architecture document).
+
+## Findings
+
+### Finding 1: [Technique ID] — [Technique Name]
+- **MITRE ATLAS ID:** AML.TXXXX
+- **AIVSS Score:** [score]/10
+- **AIVSS Vector:** [vector string]
+- **Description:** What was tested and what was found
+- **Evidence:** Reproduction steps
+  ```
+  # Command or payload used
+  ```
+- **Impact:** What an attacker could accomplish
+- **Recommendation:** Specific mitigation steps
+
+### Finding 2: [Technique ID] — [Technique Name]
+[repeat structure]
+
+## Summary Table
+| # | ATLAS ID | Technique | AIVSS Score | Status |
+|---|----------|-----------|-------------|--------|
+| 1 | AML.TXXXX | [name] | X.X | Confirmed / Not reproduced |
+| 2 | AML.TXXXX | [name] | X.X | Confirmed / Not reproduced |
+
+## After-Action Assessment
+- Strongest security controls observed:
+- Most critical gaps found:
+- Recommended priority for remediation:</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-6" onchange="toggleStep('step-u8-15-6', this.checked)">
+        <label for="step-u8-15-6"><strong>Step 6 (Blue Team response):</strong> Score all red team findings with AIVSS, prioritize by score, implement patches, and document the patch-and-retest cycle.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-7" onchange="toggleStep('step-u8-15-7', this.checked)">
+        <label for="step-u8-15-7"><strong>Step 7:</strong> Create your IaC template (CloudFormation or Terraform) and operational runbook.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># infra/cloudformation.yaml — ECS Task Definition example
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Capstone Agent System - ECS Deployment'
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [dev, preprod, prod]
+  ImageTag:
+    Type: String
+    Description: Container image tag (git SHA)
+
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub 'capstone-${Environment}'
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      Cpu: '512'
+      Memory: '1024'
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: capstone
+          Image: !Sub '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/capstone:${ImageTag}'
+          Essential: true
+          ReadonlyRootFilesystem: true
+          User: '1000:1000'
+          Secrets:
+            - Name: ANTHROPIC_API_KEY
+              ValueFrom: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:capstone/${Environment}/api-key'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub '/capstone/${Environment}'
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: capstone
+          HealthCheck:
+            Command: ['CMD-SHELL', 'python -c "import agents" || exit 1']
+            Interval: 30
+            Timeout: 10
+            Retries: 3</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-15-8" onchange="toggleStep('step-u8-15-8', this.checked)">
+        <label for="step-u8-15-8"><strong>Step 8 (Deliverable — 20%):</strong> Submit: red team report (red team role), remediation report with patch evidence (blue team role), container scan + SBOM artifacts, and working CI/CD pipeline link.</label>
+      </div>
+
+      <div class="deliverables-box">
+        <h4>Week 15 Deliverables</h4>
+        <ul>
+          <li>OpenTelemetry instrumentation across all agents</li>
+          <li>Multi-stage Dockerfile + docker-compose.yml</li>
+          <li>Trivy container scan report + CVE mitigations documented</li>
+          <li>SBOM in CycloneDX format (sbom.json)</li>
+          <li>GitHub Actions CI/CD pipeline with 4 security gates</li>
+          <li>IaC template (CloudFormation or Terraform)</li>
+          <li>Red team report with 5 MITRE ATLAS findings + AIVSS scores</li>
+          <li>Remediation report with patch evidence and retest results</li>
+          <li>Git tag <code>sprint2-complete</code> — <strong>20% of capstone grade</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- WEEK 16 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="week-section" id="week16">
+      <div class="week-header">
+        <span class="week-badge">Week 16</span>
+        <h2>Final Presentations &amp; Course Completion</h2>
+      </div>
+
+      <p>The final week is your showcase. You will deliver a polished, professional presentation of your production-ready capstone system, demonstrate a live system run, defend your architectural decisions under faculty and peer questioning, and submit all final deliverables. This is not a demo day — it's a production handoff review.</p>
+
+      <!-- Knowledge Check -->
+      <div class="quiz-block">
+        <h3 class="quiz-title">Knowledge Check — Week 16</h3>
+
+        <div class="quiz-question" id="q-u8-w16-1">
+          <p class="question-text">13. The capstone presentation must include which live demonstration?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="b">
+              <input type="radio" name="q-u8-w16-1" value="b"> A realistic end-to-end system run with live agent traces visible in the observability dashboard
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="a">
+              <input type="radio" name="q-u8-w16-1" value="a"> A walkthrough of all code files and agent implementations
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="c">
+              <input type="radio" name="q-u8-w16-1" value="c"> A simulated attack against the system to show red team techniques
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="d">
+              <input type="radio" name="q-u8-w16-1" value="d"> A live GitHub Actions pipeline run from commit to deployment
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-1', 'b', 'The live demo must show the system running end-to-end with a realistic scenario, and agent traces must be visible in the observability dashboard (showing inter-agent communication, latency, and cost metrics). This proves the system works and is observable — two core production requirements.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w16-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w16-2">
+          <p class="question-text">14. The capstone course reflection must address:</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="c">
+              <input type="radio" name="q-u8-w16-2" value="c"> How you'd take this from demo to production: what monitoring operators need, what governance policies apply, and how you'd handle failures
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="a">
+              <input type="radio" name="q-u8-w16-2" value="a"> What you would build differently if you had unlimited time and resources
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="b">
+              <input type="radio" name="q-u8-w16-2" value="b"> A comparison of your system against all existing commercial alternatives
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="d">
+              <input type="radio" name="q-u8-w16-2" value="d"> Personal reflections on the most interesting AI research papers read during the course
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-2', 'c', 'The reflection must demonstrate the production engineer mindset: what monitoring would operators need? What policies would governance require? How would you handle failures? How does this scale? This is explicitly what makes a capstone production-quality vs. a demo — the reflection proves you understand the operational realities beyond just the code.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w16-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w16-3">
+          <p class="question-text">15. The final capstone deliverable package must include which complete artifact set?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="a">
+              <input type="radio" name="q-u8-w16-3" value="a"> Working code, Dockerfile, docker-compose.yml, CI/CD pipeline, IaC template, observability runbook, and ethical impact assessment
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="b">
+              <input type="radio" name="q-u8-w16-3" value="b"> Working code and a slide deck
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="c">
+              <input type="radio" name="q-u8-w16-3" value="c"> Architecture document and code only — production infrastructure is out of scope
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="d">
+              <input type="radio" name="q-u8-w16-3" value="d"> Code plus a 10-page research paper on agentic AI security
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-3', 'a', 'The complete capstone deliverable is a production-ready artifact package: working code with all agents, Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD with 4 security gates, IaC template (CloudFormation/Terraform), observability runbook (metrics/traces/alerts), and ethical impact assessment (stakeholder analysis, misuse scenarios, responsible AI alignment).')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w16-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q-u8-w16-4">
+          <p class="question-text">16. The CSEC 601/602 program spans a full academic year. What is its central thesis?</p>
+          <div class="quiz-options">
+            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="d">
+              <input type="radio" name="q-u8-w16-4" value="d"> Agentic AI creates both new attack surfaces and new defensive capabilities — mastering both requires collaborative critical thinking and production engineering discipline
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="a">
+              <input type="radio" name="q-u8-w16-4" value="a"> AI will replace human security analysts within 5 years and this course prepares you for that transition
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="b">
+              <input type="radio" name="q-u8-w16-4" value="b"> Python programming proficiency is the core skill needed for AI security engineering
+            </label>
+            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="c">
+              <input type="radio" name="q-u8-w16-4" value="c"> Large language models are fundamentally insecure and should not be used in production security systems
+            </label>
+          </div>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-4', 'd', 'The central thesis of CyberMinds-2026: agentic AI creates both new attack surfaces (MITRE ATLAS, OWASP Top 10 for Agentic Apps) and new defensive capabilities (multi-agent SOC systems, automated threat hunting, continuous compliance). Mastering both — as an attacker, defender, and builder — requires the collaborative critical thinking framework and production engineering rigor developed across all 8 units.')">Check Answer</button>
+          <div class="quiz-feedback" id="feedback-q-u8-w16-4"></div>
+        </div>
+      </div>
+
+      <!-- Lab Steps -->
+      <h3>Lab Steps — Week 16</h3>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-1" onchange="toggleStep('step-u8-16-1', this.checked)">
+        <label for="step-u8-16-1"><strong>Step 1:</strong> Write your operational runbook. Document: how to deploy, how to monitor, key metrics and their alert thresholds, and the incident response playbook.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># docs/operations/runbook.md template
+
+# Operational Runbook — [Capstone System Name]
+**Version:** 1.0
+**Date:** $(date +%Y-%m-%d)
+**Team:** [Team Names]
+
+## System Overview
+[Brief description — 2 sentences]
+
+## Deployment
+### Prerequisites
+- Docker and docker-compose installed
+- ANTHROPIC_API_KEY environment variable set
+- Minimum 2GB RAM, 1 CPU core
+
+### Deploy (Local)
+```bash
+git clone [repo-url]
+cd capstone
+cp .env.example .env  # set ANTHROPIC_API_KEY
+docker-compose up -d
+docker-compose logs -f capstone
+```
+
+### Deploy (Production / ECS)
+```bash
+# Apply IaC template
+aws cloudformation deploy \
+    --stack-name capstone-prod \
+    --template-file infra/cloudformation.yaml \
+    --parameter-overrides Environment=prod ImageTag=[SHA]
+```
+
+## Key Metrics
+| Metric | Description | Alert Threshold |
+|--------|-------------|-----------------|
+| agent.latency_ms | Per-agent response time | >5000ms |
+| pipeline.cost_usd | Total API cost per run | >$0.50 |
+| pipeline.error_rate | Failed agent runs / total | >5% |
+| agent.tool_calls | Tools invoked per agent run | >20 (runaway detection) |
+
+## Incident Response Playbook
+
+### P1: Agent not responding
+1. Check container health: `docker inspect capstone | jq '.[0].State.Health'`
+2. Check logs: `docker logs capstone --tail 100`
+3. Restart: `docker-compose restart capstone`
+4. Escalate if not resolved in 15 minutes
+
+### P2: Cost alert triggered
+1. Check current spend: review OpenTelemetry cost metric
+2. Identify runaway agent from trace spans
+3. Kill current run: `docker-compose stop capstone`
+4. Review agent loop for termination condition bugs
+5. Redeploy after fix
+
+### P3: Red team indicator detected
+1. Isolate system: `docker network disconnect bridge capstone`
+2. Preserve logs: `docker logs capstone > incident-$(date +%s).log`
+3. Notify security lead
+4. Follow incident response plan in docs/security/incident-plan.md</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-2" onchange="toggleStep('step-u8-16-2', this.checked)">
+        <label for="step-u8-16-2"><strong>Step 2:</strong> Write your final ethical impact assessment. Cover: stakeholder analysis, potential misuse scenarios, FS-ISAC responsible AI principles alignment, and open questions for future governance.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-3" onchange="toggleStep('step-u8-16-3', this.checked)">
+        <label for="step-u8-16-3"><strong>Step 3:</strong> Rehearse your presentation. 20 minutes total: 12 min presentation, 5 min live demo, 3 min buffer for questions. Practice the CCT defense — faculty will challenge architectural decisions.</label>
+      </div>
+
+      <div class="callout callout-tip">
+        <strong>Presentation Structure (12 minutes)</strong>
+        <ol>
+          <li><strong>Problem Statement (2 min)</strong> — What cybersecurity problem? Why does it matter? Why now?</li>
+          <li><strong>Multi-Agent Architecture (3 min)</strong> — Agent roles, orchestration pattern, why this design?</li>
+          <li><strong>Live Demo (5 min)</strong> — End-to-end run with realistic scenario; show observability traces</li>
+          <li><strong>Security Posture (2 min)</strong> — Top 3 threats, red team findings, how you patched them</li>
+          <li><strong>Production Readiness (2 min)</strong> — CI/CD pipeline, container security, IaC, operational readiness</li>
+          <li><strong>Reflection &amp; Future Work (1 min)</strong> — What you'd do differently; path from demo to production</li>
+        </ol>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Expected Faculty CCT Defense Questions</strong>
+        <ul>
+          <li>"Why did you choose [framework] over [alternative]? What would break if you switched?"</li>
+          <li>"Walk me through what happens when Agent 2 fails mid-pipeline. How does the system recover?"</li>
+          <li>"Your AIVSS score for [vulnerability] was [X]. How did you arrive at that score? What would change it?"</li>
+          <li>"The red team found [issue]. Your patch addressed the symptom — but what's the root cause?"</li>
+          <li>"If you deployed this Monday, what's the first thing that would break in production?"</li>
+          <li>"Which AIUC-1 domain has the largest unmitigated gap? What would closing it require?"</li>
+        </ul>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-4" onchange="toggleStep('step-u8-16-4', this.checked)">
+        <label for="step-u8-16-4"><strong>Step 4:</strong> Complete your course reflection (1,000–1,500 words). Address: what you built, how it evolved through the semesters, what the production engineer mindset means to you, and implications of agentic AI for the cybersecurity profession.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-5" onchange="toggleStep('step-u8-16-5', this.checked)">
+        <label for="step-u8-16-5"><strong>Step 5:</strong> Tag final deliverable as <code>capstone-final</code> and ensure repository is complete with all required artifacts.</label>
+      </div>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Final repository checklist and tagging
+
+# Verify repository structure is complete
+echo "=== Final Capstone Repository Checklist ==="
+
+check_exists() {
+    if [ -e "$1" ]; then
+        echo "  [OK] $1"
+    else
+        echo "  [MISSING] $1"
+    fi
+}
+
+# Code
+check_exists "agents/"
+check_exists "orchestrator.py"
+check_exists "requirements.txt"
+
+# Tests
+check_exists "tests/integration/"
+
+# Security
+check_exists "docs/security/container-scan-results.md"
+check_exists "sbom.json"
+check_exists "docs/security/red-team-report.md"
+check_exists "docs/security/remediation-report.md"
+
+# Infrastructure
+check_exists "Dockerfile"
+check_exists "docker-compose.yml"
+check_exists "infra/"
+check_exists ".github/workflows/devsecops.yml"
+
+# Documentation
+check_exists "docs/architecture/"
+check_exists "docs/operations/runbook.md"
+check_exists "docs/ethics/impact-assessment.md"
+check_exists "docs/reflection.md"
+
+# Observability
+check_exists "observability/"
+
+echo ""
+echo "If all items show [OK], tag and push:"
+echo "  git tag capstone-final"
+echo "  git push origin main --tags"
+echo ""
+echo "Congratulations — CSEC 602 complete."</code></pre>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-6" onchange="toggleStep('step-u8-16-6', this.checked)">
+        <label for="step-u8-16-6"><strong>Step 6:</strong> Deliver your final presentation. Answer CCT defense questions using the structured CCT approach: restate the question, identify assumptions, provide evidence, consider alternatives, give your conclusion.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-7" onchange="toggleStep('step-u8-16-7', this.checked)">
+        <label for="step-u8-16-7"><strong>Step 7:</strong> Complete peer evaluation forms for the other capstone teams. Evaluate: problem significance, architecture soundness, production readiness, security posture, and presentation quality.</label>
+      </div>
+
+      <div class="lab-step">
+        <input type="checkbox" id="step-u8-16-8" onchange="toggleStep('step-u8-16-8', this.checked)">
+        <label for="step-u8-16-8"><strong>Step 8 (Final Deliverable — 40%):</strong> Submit complete capstone package: repository tagged <code>capstone-final</code>, slide deck PDF, and course reflection document.</label>
+      </div>
+
+      <div class="deliverables-box">
+        <h4>Week 16 Final Deliverables — Capstone Complete</h4>
+        <ul>
+          <li>GitHub repository tagged <code>capstone-final</code> with all artifacts</li>
+          <li>Operational runbook covering deploy, monitor, and incident response</li>
+          <li>Final ethical impact assessment with FS-ISAC alignment</li>
+          <li>Presentation slide deck (PDF export)</li>
+          <li>Live presentation with demo — 20 minutes</li>
+          <li>Peer evaluation forms submitted</li>
+          <li>Course reflection 1,000–1,500 words</li>
+          <li>Final capstone grade — <strong>40% of capstone grade</strong> (15% arch + 25% sprint1 + 20% sprint2 + 40% final)</li>
+        </ul>
+      </div>
+
+      <!-- Course Completion Badge -->
+      <div class="completion-badge" id="completion-badge" style="display:none;">
+        <div class="badge-inner">
+          <div class="badge-icon">&#127942;</div>
+          <h3>CyberMinds-2026 Complete</h3>
+          <p>CSEC 601 &amp; CSEC 602 — AgentForge</p>
+          <p class="badge-subtitle">Agentic Security Engineering | Production Graduate</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Course Summary -->
+    <section class="week-section" id="course-summary">
+      <div class="week-header">
+        <span class="week-badge" style="background:#27ae60;">Complete</span>
+        <h2>CyberMinds-2026 — AgentForge Course Summary</h2>
+      </div>
+
+      <div class="callout callout-key">
+        <strong>What You've Built Across 8 Units</strong>
+        <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:0.9rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left; padding:8px;">Unit</th>
+              <th style="text-align:left; padding:8px;">Core Skill</th>
+              <th style="text-align:left; padding:8px;">Key Deliverable</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px;">S1 U1</td><td style="padding:8px;">Collaborative Critical Thinking</td><td style="padding:8px;">CCT 5-pillar incident analysis</td></tr>
+            <tr><td style="padding:8px;">S1 U2</td><td style="padding:8px;">MCP + Context Engineering</td><td style="padding:8px;">Multi-tool MCP server with audit logging</td></tr>
+            <tr><td style="padding:8px;">S1 U3</td><td style="padding:8px;">Ethical AI + Bias Analysis</td><td style="padding:8px;">AI Security Policy + Fairness audit</td></tr>
+            <tr><td style="padding:8px;">S1 U4</td><td style="padding:8px;">Rapid Prototyping</td><td style="padding:8px;">3-agent SOC system Sprint + presentation</td></tr>
+            <tr><td style="padding:8px;">S2 U5</td><td style="padding:8px;">Multi-Agent Orchestration</td><td style="padding:8px;">Framework comparison (SDK/CrewAI/LangGraph)</td></tr>
+            <tr><td style="padding:8px;">S2 U6</td><td style="padding:8px;">AI Attacker vs Defender</td><td style="padding:8px;">Red/Blue wargame + MITRE ATLAS threat model</td></tr>
+            <tr><td style="padding:8px;">S2 U7</td><td style="padding:8px;">Production Security Engineering</td><td style="padding:8px;">SBOM + NHI + OpenTelemetry + CI/CD pipeline</td></tr>
+            <tr><td style="padding:8px;">S2 U8</td><td style="padding:8px;">Capstone Production Delivery</td><td style="padding:8px;">Production-ready agentic security system</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-reading">
+        <strong>The Production Engineer Mindset</strong>
+        <p>You began this course asking: "How do I build AI agents?" You're finishing it asking: "How do I deploy, observe, govern, and secure AI agents at scale?" That shift — from developer to production engineer — is the core transformation of CyberMinds-2026.</p>
+        <p>The security landscape is changing faster than any single practitioner can track. The practitioners who thrive will be those who can <strong>think critically with AI</strong>, <strong>build defensively with AI</strong>, and <strong>attack intelligently against AI</strong> — all simultaneously. That's what you've practiced across these 32 weeks.</p>
+        <p>The capstone isn't the end. It's the beginning of your practice.</p>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<script src="labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-s2-unit8.html');
+  initLabPage('lab-s2-unit8');
+
+  // Show completion badge when all steps done
+  function checkCompletion() {
+    const badge = document.getElementById('completion-badge');
+    if (badge) {
+      const pct = parseInt(document.getElementById('progress-fill').textContent);
+      badge.style.display = pct === 100 ? 'block' : 'none';
+    }
+  }
+  // Hook into progress updates
+  const origUpdate = window.updateProgress;
+  window.updateProgress = function() {
+    origUpdate && origUpdate();
+    checkCompletion();
+  };
+</script>
+
+</body>
+</html>
