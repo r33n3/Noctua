@@ -114,6 +114,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(212,160,23,0.15); color: var(--accent); border: 1px solid rgba(212,160,23,0.3); padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
 .copy-btn:hover { background: rgba(212,160,23,0.28); }
 
+/* === PROMPT BLOCKS (copyable callout prompts) === */
+.prompt-block { position: relative; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 10px 52px 10px 14px; margin: 10px 0; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--text); }
+.prompt-block .copy-btn { top: 6px; right: 6px; }
+
 /* === DELIVERABLES === */
 .deliverables { background: rgba(167,139,250,0.06); border-left: 3px solid var(--purple); border-radius: 0 6px 6px 0; padding: 14px 18px; margin: 18px 0; }
 .deliverables h5 { color: var(--purple); margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }

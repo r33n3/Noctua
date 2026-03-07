@@ -156,7 +156,9 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="callout callout-reading">
   <strong>Build a Skill — Shortcut This Workflow Forever</strong>
   <p>You just built your first reusable MCP tool. This is exactly what <strong>Claude Code Skills</strong> are designed for. A skill is a custom <code>/command</code> you create once and reuse in any project. Create a <code>/register-cve-server</code> skill so any future session can spin up and connect your MCP server in one command — no re-explaining, no copy-pasting setup steps.</p>
-  <p>Skills live in <code>~/.claude/skills/</code> or your project's <code>.claude/skills/</code> directory. Use this prompt: <em>"Write a Claude Code skill file called register-cve-server.md that spins up my CVE lookup MCP server, registers it in Claude Code, and confirms it's responding to tool calls."</em> Then <code>/register-cve-server</code> becomes a one-liner for every future session.</p>
+  <p>Skills live in <code>~/.claude/skills/</code> or your project's <code>.claude/skills/</code> directory. Use this prompt:</p>
+  <div class="prompt-block">Write a Claude Code skill file called register-cve-server.md that spins up my CVE lookup MCP server, registers it in Claude Code, and confirms it's responding to tool calls.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p>Then <code>/register-cve-server</code> becomes a one-liner for every future session.</p>
 </div>
 
 <div class="deliverables">

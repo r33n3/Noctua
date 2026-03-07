@@ -120,17 +120,28 @@ function updateProgress() {
 }
 
 function copyCode(btn) {
-  const block = btn.closest('.code-block');
-  const code = block ? block.querySelector('code') : null;
-  if (!code) return;
-  navigator.clipboard.writeText(code.textContent.trim()).then(() => {
+  const block = btn.closest('.code-block, .prompt-block');
+  if (!block) return;
+  const code = block.querySelector('code');
+  let text;
+  if (code) {
+    text = code.textContent.trim();
+  } else {
+    // Prompt block: copy all text content except the button itself
+    text = Array.from(block.childNodes)
+      .filter(n => n !== btn)
+      .map(n => n.textContent)
+      .join('')
+      .trim();
+  }
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
     const orig = btn.textContent;
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = orig; }, 2000);
   }).catch(() => {
-    // fallback: select text
     const range = document.createRange();
-    range.selectNode(code);
+    range.selectNode(block);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
   });

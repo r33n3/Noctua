@@ -368,6 +368,9 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
+/* === PROMPT BLOCKS === */
+.prompt-block { position: relative; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 10px 52px 10px 14px; margin: 10px 0; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--text); }
+.prompt-block .copy-btn { top: 6px; right: 6px; }
 </style>
 </head>
 <body>
@@ -1653,7 +1656,9 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <p>Over the next four units, you'll build a personal <strong>context library</strong>—a curated collection of patterns, templates, prompts, and code snippets that you've refined with Claude Code. Think of it as a playbook of your best work.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Every time Claude Code generates something you like—a system prompt that works, an analysis framework that's clear, a tool definition that's reusable—extract it. Store it in your context library. In future sessions, feed your library back to Claude as context. This teaches the model YOUR style, YOUR standards, and YOUR architectural preferences. You get increasingly consistent, personalized outputs.</p>
 </div>
-<div class="callout callout-tip"><p><strong>💡 Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, say: <em>"Based on what you just produced, write a reusable context library entry—a template or prompt—that would reliably reproduce this quality of output for similar scenarios."</em> Claude has full visibility into its own reasoning and can articulate the pattern more precisely than you can by inspecting the output alone. The entry it writes becomes your starting point; you refine it over time as you learn what consistently works.</p>
+<div class="callout callout-tip"><p><strong>💡 Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, use this prompt:</p>
+<div class="prompt-block">Based on what you just produced, write a reusable context library entry—a template or prompt—that would reliably reproduce this quality of output for similar scenarios.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<p>Claude has full visibility into its own reasoning and can articulate the pattern more precisely than you can by inspecting the output alone. The entry it writes becomes your starting point; you refine it over time as you learn what consistently works.</p>
 </div>
 <p><strong>Why This Matters:</strong>
 - <strong>Context Engineering at Meta-Level:</strong> You learn what makes good context by curating your own
@@ -2276,6 +2281,19 @@ document.querySelectorAll('.sidebar a').forEach(a => {
     if (window.innerWidth <= 900) toggleSidebar();
   });
 });
+function copyCode(btn) {
+  const block = btn.closest('.code-block, .prompt-block');
+  if (!block) return;
+  const code = block.querySelector('code');
+  const text = code ? code.textContent.trim() :
+    Array.from(block.childNodes).filter(n => n !== btn).map(n => n.textContent).join('').trim();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
+}
 </script>
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
