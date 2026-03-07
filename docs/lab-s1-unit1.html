@@ -126,9 +126,25 @@ cd ~/agentforge-labs/unit1/week1</code></pre><button class="copy-btn" onclick="c
     <div class="lab-step" id="step-w1-3">
       <label><input type="checkbox" onchange="toggleStep('w1-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Create the incident data file</div>
-        <div class="step-desc">Create <code>incident-data.md</code> with the structured Meridian Financial indicators from the scenario above. Include raw indicators, contextual data, and the account's login history.</div>
+        <div class="step-title">Step 3: Download the incident data file</div>
+        <div class="step-desc">Download <code>incident-data.md</code> — the pre-built Meridian Financial incident report with full SIEM alert, authentication logs, data warehouse session detail, file inventory, contextual intelligence, and known unknowns. Save it to your lab directory.</div>
       </div></label>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">
+        <a href="incident-data.md" download="incident-data.md"
+           style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;border:none;transition:opacity 0.15s;"
+           onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+          &#11123; Download incident-data.md
+        </a>
+        <a href="incident-data.md" target="_blank"
+           style="display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;"
+           onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">
+          &#128065; View in browser
+        </a>
+      </div>
+      <div class="code-block" style="margin-top:10px;"><pre><code>mkdir -p ~/agentforge-labs/unit1/week1
+cp ~/Downloads/incident-data.md ~/agentforge-labs/unit1/week1/
+# Or if viewing locally from the course docs folder:
+cp ./incident-data.md ~/agentforge-labs/unit1/week1/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w1-4">
