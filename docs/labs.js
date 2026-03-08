@@ -159,7 +159,9 @@ function _save() {
 }
 
 // Build standard sidebar HTML and inject it
-function buildSidebar(activeLink) {
+// pathPrefix: optional prefix for all hrefs (e.g. '../' for pages in subdirectories)
+function buildSidebar(activeLink, pathPrefix) {
+  pathPrefix = pathPrefix || '';
   const nav = [
     ['nav-section', 'Overview'],
     ['link', 'index.html', 'Course Overview'],
@@ -188,6 +190,7 @@ function buildSidebar(activeLink) {
     ['link', 'frameworks.html', 'Frameworks &amp; Protocols'],
     ['link', 'lab-setup.html', 'Lab Setup Guide'],
     ['link', 'reading.html', 'Reading List'],
+    ['link', 'skills/index.html', '&#x26a1; Claude Code Skills'],
   ];
 
   let html = '<div class="sidebar-header"><h1>AgentForge</h1><p>AI Security Engineering</p></div>\n';
@@ -195,9 +198,11 @@ function buildSidebar(activeLink) {
     if (item[0] === 'nav-section') {
       html += '<div class="nav-section">' + item[1] + '</div>\n';
     } else {
-      const href = item[1];
+      const rawHref = item[1];
+      const href = pathPrefix + rawHref;
       const label = item[2];
-      const cls = (item[0] === 'sublink' ? 'sub' : '') + (href === activeLink ? ' active' : '');
+      const isActive = rawHref === activeLink;
+      const cls = (item[0] === 'sublink' ? 'sub' : '') + (isActive ? ' active' : '');
       html += '<a href="' + href + '"' + (cls ? ' class="' + cls.trim() + '"' : '') + '>' + label + '</a>\n';
     }
   });

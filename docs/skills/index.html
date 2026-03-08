@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Skills | AgentForge</title>
+  <link rel="stylesheet" href="../labs.css">
+</head>
+<body>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Course Skills</h1>
+<p>These are starter Claude Code skills built for this course. Install one, try it, then make it yours.</p>
+
+<div class="callout callout-key">
+  <strong>What is a Claude Code Skill?</strong>
+  <p>A skill is a markdown file you place in <code>~/.claude/skills/</code> (global) or <code>.claude/skills/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
+  <p>Skills are just text files. You can read them, edit them, fork them, and share them. The four below are starting points — not finished products.</p>
+</div>
+
+<div class="callout callout-tip">
+  <strong>The Goal: Build Your Own Workflow</strong>
+  <p>Don't just install these and run them as-is. Use them a few times, notice what's missing for your specific work, and modify them. Add your team's output format. Add security-specific checklists. Remove sections you never use. Over time your skills reflect <em>your</em> way of working — and every Claude Code session starts from that baseline.</p>
+  <p>Share what you build. Post your modified skills as GitHub gists. The security practitioner who needs a <code>/think-threatmodel</code> or a <code>/retro-soc</code> skill is out there right now, and you could already have the thing they need.</p>
+</div>
+
+<h2>Installation (all skills)</h2>
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>mkdir -p ~/.claude/skills
+
+# Download all four skills at once (run from your terminal)
+curl -o ~/.claude/skills/think.md         https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/think.md
+curl -o ~/.claude/skills/spec.md          https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/spec.md
+curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/worktree-setup.md
+curl -o ~/.claude/skills/retro.md         https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/retro.md
+
+# Verify
+ls ~/.claude/skills/</code></pre>
+</div>
+
+<hr>
+
+<h2 id="think">/think — Critical Analysis Before Acting</h2>
+<p>Stop and think before touching code or making a decision. Surfaces assumptions, risks, alternatives, and unknowns. The starting point of every cycle.</p>
+<p><strong>Best used in:</strong> Unit 1 (CCT incident analysis), Unit 3 (ethical AI assessments), Unit 6 (threat modeling), Unit 8 (architecture review), any time a problem feels ambiguous.</p>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="think.md" download="think.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download think.md</a>
+  <a href="think.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/skills/think.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/think.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications for security work:</strong>
+  <ul>
+    <li>Add a "MITRE ATLAS relevance" section that always checks if a threat is in ATLAS</li>
+    <li>Add "FS-ISAC principles check" for ethical AI decisions</li>
+    <li>Create <code>/think-incident</code> that pre-populates CCT 5-pillar headings</li>
+    <li>Add a confidence-to-action rule: "If confidence is Low, always run /spec before any build"</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="spec">/spec — Specification Before Building</h2>
+<p>Write a formal spec before writing a line of code. Defines agents, tools, data flow, success criteria, and scope. The shared contract for every build.</p>
+<p><strong>Best used in:</strong> Unit 2 (MCP server design), Unit 4 (sprint planning), Unit 5 (multi-agent architecture), Unit 8 (capstone architecture document).</p>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
+  <a href="spec.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/skills/spec.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/spec.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add an AIUC-1 domain mapping table directly into your default spec template</li>
+    <li>Add a "Grading checklist" section for course deliverables</li>
+    <li>Fork into <code>/spec-mcp</code> (tuned for MCP servers) and <code>/spec-agent</code> (tuned for multi-agent systems)</li>
+    <li>Add a "Peer review required before build" gate that outputs a checklist for a teammate</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="worktree-setup">/worktree-setup — Parallel Development Setup</h2>
+<p>Configures git worktrees for isolated parallel development. Each component gets its own branch and directory. Multiple developers or Claude Code sessions build simultaneously without conflicts.</p>
+<p><strong>Best used in:</strong> Unit 4 (sprint I with 3-agent SOC), Unit 5 (multi-agent framework builds), Unit 8 (capstone team development).</p>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="worktree-setup.md" download="worktree-setup.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download worktree-setup.md</a>
+  <a href="worktree-setup.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/worktree-setup.md</code></pre>
+</div>
+
+<hr>
+
+<h2 id="retro">/retro — Structured Retrospective</h2>
+<p>Closes every cycle with an honest review: what was built vs. the spec, what worked, what didn't, what to carry forward. The retro output feeds the next <code>/think</code>.</p>
+<p><strong>Best used in:</strong> Unit 4 (sprint retros, Weeks 15–16), Unit 8 (capstone sprint retros), any session where something went differently than expected.</p>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="retro.md" download="retro.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download retro.md</a>
+  <a href="retro.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/skills/retro.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/retro.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add your team's standard metrics (MTTI, MTTR, cost-per-run)</li>
+    <li>Create <code>/retro-light</code> — a 5-minute version for quick end-of-session capture</li>
+    <li>Add a "Share with community" prompt that extracts reusable patterns into a GitHub gist</li>
+    <li>Link retro output automatically to a CHANGELOG.md entry</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2>Build Your Own</h2>
+<div class="callout callout-reading">
+  <strong>What skill would make your workflow 10x faster?</strong>
+  <p>Think about the tasks you repeat every session. Every time you find yourself doing the same thing — structuring an analysis, setting up a project, writing a certain type of report — that's a skill waiting to be built. Use this prompt:</p>
+</div>
+<div class="prompt-block">I keep doing [task] repeatedly in my security work. Write a Claude Code skill file for it — a markdown file I can save as ~/.claude/skills/[name].md — that automates the setup and structure so I can invoke it as /[name] in any future session.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+<p style="margin-top:16px;">Share your skills. Post them as GitHub gists, tag them <code>claude-code-skills</code> and <code>security</code>. The security community benefits when practitioners share what works — including the small workflow automations that save 20 minutes a day.</p>
+
+</div></main>
+
+<script src="../labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('skills/index.html', '../');
+  function copyCode(btn) {
+    const block = btn.closest('.code-block, .prompt-block');
+    if (!block) return;
+    const code = block.querySelector('code');
+    const text = code ? code.textContent.trim() :
+      Array.from(block.childNodes).filter(n => n !== btn).map(n => n.textContent).join('').trim();
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
