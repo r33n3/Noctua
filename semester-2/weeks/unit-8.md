@@ -175,7 +175,7 @@ Submit to faculty:
 
 **Format:** 1500–2500 words (this is substantial; start early)
 
-> **📖 Methodology:** Your capstone follows Jaymin West's *Agentic Engineering* **Plan-Build-Review cycle** (Ch. 3). Week 13 is the Plan phase (architecture review validates your specs and design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code). The red team review is the Review phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.
+> **📖 Methodology:** Your capstone follows the **Think → Spec → Build → Retro cycle**. Week 13 is the Think + Spec phase (critical analysis, architecture review, and formal specification of your design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code using `/worktree-setup` for isolated parallel work). The red team review closes the Retro phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.
 
 **Structure:**
 
@@ -237,7 +237,7 @@ Submit to faculty:
 - **Operational:** How will your system perform in production? (Latency SLA, uptime target, cost budget)
 - **Security:** What threats will be mitigated? (Measured by red team findings, threat model coverage)
 
-> **💡 Design Thinking:** As you finalize your capstone architecture, reflect on the **mental models** that underpin it. Jaymin West's *Agentic Engineering* (Ch. 8: Mental Models) asks: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.
+> **💡 Design Thinking:** As you finalize your capstone architecture, reflect on the **mental models** that underpin it. Agentic Engineering principles ask: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.
 
 **9. Timeline and Milestones (100 words)**
 - Week 13: Architecture finalized (after review feedback)

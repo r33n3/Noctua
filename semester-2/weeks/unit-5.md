@@ -10,7 +10,7 @@
 
 In Semester 1, you mastered building single autonomous agents with Claude Code and MCP. In Unit 5, you'll orchestrate teams of specialized agents to tackle complex security operations. You'll learn three major frameworks—Claude Agent SDK, CrewAI, and LangGraph—and discover when each excels. By week's end, you'll have built a production-grade SOC triage system, an automated incident response engine, and the evaluation framework to compare them.
 
-> **📖 Methodology:** This unit is grounded in Jaymin West's *Agentic Engineering* and applies its **Core Four Pillars** (Prompt, Model, Context, Tools) and **Plan-Build-Review Pattern** to multi-agent security orchestration. You'll plan agent architectures with clear responsibilities, build rapidly using Claude Code, and review through comparative evaluation. The Orchestrator and Expert Swarm patterns from Ch. 6 form the backbone of multi-agent design in this course.
+> **📖 Methodology:** This unit applies this course's agentic development methodology and the **Core Four Pillars** (Prompt, Model, Context, Tools) and **Think → Spec → Build → Retro cycle** to multi-agent security orchestration. You'll think critically about agent architectures, spec clear responsibilities, build rapidly using Claude Code, and review through comparative evaluation. The Orchestrator and Expert Swarm patterns form the backbone of multi-agent design in this course.
 
 ---
 
@@ -255,9 +255,9 @@ Real systems mix patterns:
 - Avoid tool duplication (if two agents need threat intel, share a tool or have one agent call the other)
 - Think about data dependencies (if Agent B needs outputs from Agent A, make that explicit in orchestration)
 
-> **📖 Further Reading:** Jaymin West's *Agentic Engineering* (Ch. 6: Patterns) covers the **Orchestrator Pattern** (one supervisor coordinates specialized agents) and the **Expert Swarm Pattern** (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See [Frameworks Documentation](resources/FRAMEWORKS.md) for implementation examples.
+> **📖 Further Reading:** See the Agentic Engineering additional reading on orchestration patterns for coverage of the **Orchestrator Pattern** (one supervisor coordinates specialized agents) and the **Expert Swarm Pattern** (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See [Frameworks Documentation](resources/FRAMEWORKS.md) for implementation examples.
 
-> **🔑 Key Concept:** **Context Isolation and Sharing** — Multi-agent systems require careful management of what context each agent can access. *Agentic Engineering* (Ch. 4, Section 4) covers how to design context so agents have sufficient information to act without unnecessary exposure to sensitive data. Your SOC system uses this principle: the Analyst agent sees threat intel but not full customer PII; the Response Recommender sees severity but not raw logs.
+> **🔑 Key Concept:** **Context Isolation and Sharing** — Multi-agent systems require careful management of what context each agent can access. Agentic Engineering practice covers how to design context so agents have sufficient information to act without unnecessary exposure to sensitive data. Your SOC system uses this principle: the Analyst agent sees threat intel but not full customer PII; the Response Recommender sees severity but not raw logs.
 
 ---
 
@@ -686,7 +686,7 @@ The supervisor agent:
 - Checks results and decides next steps
 - Handles exceptions and retries
 
-This architecture implements the **Orchestrator Pattern** from Jaymin West's *Agentic Engineering* (Ch. 6: Patterns), where a central coordinator supervises specialized sub-agents with clear responsibilities. The pattern ensures that complex workflows (like multi-stage threat analysis) don't bottleneck in a single agent but are distributed across experts.
+This architecture implements the **Orchestrator Pattern** from Agentic Engineering practice, where a central coordinator supervises specialized sub-agents with clear responsibilities. The pattern ensures that complex workflows (like multi-stage threat analysis) don't bottleneck in a single agent but are distributed across experts.
 
 **Workflow Decision Points:**
 - After ingestion: Proceed to analysis? (Usually yes, but validate normalization)

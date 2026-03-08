@@ -439,9 +439,9 @@ body {
 <p><strong>Pipeline:</strong> Agents operate in sequence, each transforming input and passing to the next. Best for: processing workflows (sanitization → analysis → reporting).</p>
 </li>
 </ol>
-<p>An advanced variant is the <strong>Expert Swarm Pattern</strong> from Jaymin West's <em>Agentic Engineering</em>: multiple specialized agents attack the same problem in parallel, each bringing unique expertise, and a coordinator synthesizes their findings. Rather than routing (as in hierarchical), swarm patterns emphasize diversity. In security: a threat detection swarm might include agents specialized in network analysis, behavioral profiling, code analysis, and threat intelligence. Each independently analyzes the same incident and provides output. The coordinator merges findings, identifying where experts agree (high confidence) and where they diverge (investigate further).</p>
+<p>An advanced variant is the <strong>Expert Swarm Pattern</strong> from Agentic Engineering principles: multiple specialized agents attack the same problem in parallel, each bringing unique expertise, and a coordinator synthesizes their findings. Rather than routing (as in hierarchical), swarm patterns emphasize diversity. In security: a threat detection swarm might include agents specialized in network analysis, behavioral profiling, code analysis, and threat intelligence. Each independently analyzes the same incident and provides output. The coordinator merges findings, identifying where experts agree (high confidence) and where they diverge (investigate further).</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Multi-agent systems trade simplicity for specialization. A single large model might be faster, but multiple smaller specialized agents are more auditable, cheaper per task, and easier to swap/upgrade. This is the agentic equivalent of "Unix philosophy: do one thing well."</p>
-<p><strong>📖 Further Reading:</strong> Jaymin West's <em>Agentic Engineering</em>, Chapter 6 (Patterns) covers the Expert Swarm pattern and when it outperforms hierarchical orchestration.</p>
+<p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on orchestration patterns for coverage of the Expert Swarm pattern and when it outperforms hierarchical orchestration.</p>
 </div>
 <p><strong>Cost &amp; Token Economics</strong></p>
 <p>A critical insight: using multiple agents isn't necessarily more expensive. Why?</p>
@@ -810,14 +810,14 @@ Show working Python code with error handling.
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The best prototype is the one that runs and answers the question, not the most architecturally elegant one. A tool that works in 3 hours and gets 80% accuracy is infinitely better than a beautiful design that's 60% complete.</p>
 </div>
 <p><strong>Finding Your Leverage Points</strong></p>
-<p>When scoping your 3-hour sprint, don't waste time optimizing every part equally. From Jaymin West's <em>Agentic Engineering</em>, the <strong>12 Leverage Points</strong> framework identifies where small changes produce outsized improvements. In a security context:</p>
+<p>When scoping your 3-hour sprint, don't waste time optimizing every part equally. The <strong>12 Leverage Points</strong> framework from Agentic Engineering practice identifies where small changes produce outsized improvements. In a security context:</p>
 <ul>
 <li><strong>High Leverage:</strong> Improving the system prompt (how clearly you specify the agent's role), choosing the right model size for the task, adding one critical tool that was missing</li>
 <li><strong>Medium Leverage:</strong> Fine-tuning parameters, optimizing data flow between subagents</li>
 <li><strong>Low Leverage:</strong> Code style, UI polish, comprehensive error messages (defer to Week 15)</li>
 </ul>
 <p>In your 60-minute build window, spend 50 minutes on high-leverage improvements and 10 minutes on essentials. This is how you get 80% of the value in 20% of the time.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Jaymin West's <em>Agentic Engineering</em>, Chapter 1 (Foundations &amp; the 12 Leverage Points) teaches you how to systematically identify where to focus effort in any agentic system. Understanding leverage is what separates fast prototypers from those who get stuck.</p>
+<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for how to systematically identify where to focus effort in any agentic system. Understanding leverage is what separates fast prototypers from those who get stuck.</p>
 </div>
 <p><strong>MVP Design Thinking</strong></p>
 <p>MVP = Minimum Viable Product. It's the smallest, simplest version that solves the core problem.</p>
@@ -828,15 +828,16 @@ Show working Python code with error handling.
 - Output a simple list (IP, finding, severity), not a full report
 - No authentication hardening yet (that's Week 15)</p>
 <p>The MVP is 10x faster to build and gets 80% of the value.</p>
-<p><strong>The Plan-Build-Review Pattern</strong></p>
-<p>This 3-hour sprint implements Jaymin West's <strong>Plan-Build-Review</strong> cycle from <em>Agentic Engineering</em>:</p>
+<p><strong>The Think → Spec → Build → Retro Cycle</strong></p>
+<p>This 3-hour sprint implements the <strong>Think → Spec → Build → Retro</strong> cycle, powered by four Claude Code skills:</p>
 <ol>
-<li><strong>Plan (15 min):</strong> Specify the agent's role, inputs, outputs, tools, and success criteria. Think of this as your "specification as code"—precise, measurable, executable.</li>
-<li><strong>Build (60 min):</strong> Use Claude Code to implement the agent and tools rapidly. You have one hour; cut anything that doesn't directly serve the specification.</li>
-<li><strong>Review (20 min):</strong> Test against success criteria. Did it meet MTTS/MTTP targets? Does the output parse correctly? Where is it failing? Document issues for Week 15.</li>
+<li><strong>Think (~15 min):</strong> Use <code>/think</code> to critically analyze the problem, surface assumptions, identify risks, and consider alternatives before writing any spec.</li>
+<li><strong>Spec (~20 min):</strong> Use <code>/spec</code> to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.</li>
+<li><strong>Build (~50 min):</strong> Use Claude Code and <code>/worktree-setup</code> to implement the agent and tools rapidly in an isolated git worktree. Cut anything that doesn't directly serve the specification.</li>
+<li><strong>Retro (~15 min):</strong> Use <code>/retro</code> to review what was built against the spec, capture what worked, what didn't, and what to carry into the next cycle.</li>
 </ol>
-<p>This cycle repeats every sprint. Week 14 is your first Plan-Build-Review cycle. Week 15 iterates on failures. By the capstone (Unit 8), you're running multiple cycles per week.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Jaymin West's <em>Agentic Engineering</em>, Chapter 6 (Patterns) introduces Plan-Build-Review and other rapid iteration patterns that compress development timelines.</p>
+<p>This cycle repeats every sprint. Week 14 is your first Think → Spec → Build → Retro cycle. Week 15 iterates on failures. By the capstone (Unit 8), you're running multiple cycles per week.</p>
+<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on rapid iteration patterns for coverage of orchestration patterns that compress development timelines.</p>
 </div>
 <p><strong>The Prototype-to-Production Delivery Pipeline</strong></p>
 <p>As you move through Unit 4 and into Units 7–8, understand the full delivery pipeline:</p>
@@ -2022,23 +2023,23 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 ✓ Present technical work clearly to technical and non-technical audiences
 ✓ Reflect critically on your own development process and learning</p>
 <hr />
-<h2 id="agentic-engineering-book-references">Agentic Engineering Book References</h2>
-<p>Unit 4 is built on the foundation of Jaymin West's <em>Agentic Engineering</em>, which provides the core methodology for rapid agentic development. Throughout this unit, you've applied:</p>
+<h2 id="agentic-engineering-book-references">Agentic Engineering References</h2>
+<p>Unit 4 applies this course's agentic development methodology and the Think → Spec → Build → Retro cycle for rapid agentic development. Throughout this unit, you've applied:</p>
 <ul>
-<li><strong>Chapter 1 (Foundations &amp; the 12 Leverage Points):</strong> Understanding where to focus effort to maximize agent quality and speed. Critical for Week 14 scoping and prioritization.</li>
-<li><strong>Chapter 6 (Patterns):</strong> Orchestration patterns (hierarchical, peer-to-peer, pipeline, expert swarm), Plan-Build-Review cycle, and composable agent design. Foundation for Week 13 multi-agent systems.</li>
-<li><strong>Chapter 7 (Practices):</strong> Rapid iteration, testing strategies, hardening patterns, and continuous improvement. Direct application in Week 15 hardening phase.</li>
-<li><strong>Chapter 8 (Mental Models — Specs as Source Code):</strong> Treating agent specifications as executable artifacts that guide development. Core to planning and review phases.</li>
-<li><strong>Chapter 9 (Practitioner Toolkit):</strong> Practical tools, templates, and debugging techniques for agentic development. Reference for your context library and future projects.</li>
+<li><strong>12 Leverage Points:</strong> Understanding where to focus effort to maximize agent quality and speed. Critical for Week 14 scoping and prioritization.</li>
+<li><strong>Orchestration Patterns:</strong> Hierarchical, peer-to-peer, pipeline, expert swarm, and composable agent design. Foundation for Week 13 multi-agent systems.</li>
+<li><strong>Think → Spec → Build → Retro cycle:</strong> Rapid iteration, testing strategies, hardening patterns, and continuous improvement. Direct application in Week 15 hardening phase.</li>
+<li><strong>Specs as Source Code:</strong> Treating agent specifications as executable artifacts that guide development. Core to the Think and Spec phases.</li>
+<li><strong>Claude Code Practitioner Toolkit:</strong> Practical tools, templates, and debugging techniques for agentic development. Reference for your context library and future projects.</li>
 </ul>
-<p>These chapters are your reference as you move into Units 7–8 and Semester 2. The practices you've learned aren't limited to security; they're universal patterns for building and deploying agentic systems at scale.</p>
+<p>These practices are your reference as you move into Units 7–8 and Semester 2. The patterns you've learned aren't limited to security; they're universal patterns for building and deploying agentic systems at scale.</p>
 <hr />
 <h2 id="resources">Resources</h2>
 <ul>
 <li><a href="reading.html">Reading List</a> — Recommended papers on agentic systems, rapid prototyping, security</li>
 <li><a href="frameworks.html">Frameworks</a> — Templates for system design, sprint planning, hardening checklists</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Instructions for Claude Code, worktrees, and API setup</li>
-<li><strong>Jaymin West's <em>Agentic Engineering</em></strong> — Core reference for methodology, patterns, and practices</li>
+<li><strong><em>Agentic Engineering Book</em></strong> by Jaymin West — Additional reading; original source for many agentic engineering patterns used in this course.</li>
 </ul>
 <hr />
   </div>

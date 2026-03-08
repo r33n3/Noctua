@@ -44,16 +44,8 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 ### Core
 
-- **Agentic Engineering Book** by Jaymin West. The course's core methodology reference for rapid prototyping and production delivery. https://jayminwest.com/agentic-engineering-book
-  - *Ch. 1: Foundations & 12 Leverage Points* → Unit 1 (CCT Foundations), Unit 4 (Rapid Prototyping)
-  - *Ch. 2: Prompt* → Unit 2 (Context Engineering)
-  - *Ch. 3: Model (Selection, Behavior, Limitations)* → Unit 1 (AI Landscape), Unit 6 (Attacker vs. Defender)
-  - *Ch. 4: Context (Fundamentals, Strategies, Advanced Patterns)* → Unit 2 (Context Engineering), Unit 5 (Multi-Agent Context)
-  - *Ch. 5: Tool Use (Design, Selection, Security, Skills)* → Unit 2 (Tool Design), Unit 7 (Production Security)
-  - *Ch. 6: Patterns (Plan-Build-Review, Orchestrator, Expert Swarm, Multi-Agent)* → Unit 4 (Rapid Prototyping), Unit 5 (Multi-Agent Orchestration)
-  - *Ch. 7: Practices (Debugging, Evaluation, Cost, Production Concerns)* → Unit 7 (Production Security Engineering)
-  - *Ch. 8: Mental Models (Pit of Success, Specs as Source Code, Context as Code)* → Unit 3 (Ethical AI), Unit 4 (Rapid Prototyping), Unit 8 (Capstone)
-  - *Ch. 9: Practitioner Toolkit (Claude Code, IDE Integrations)* → Unit 1 (Lab Setup), Unit 4 (Claude Code Deep Dive)
+- **Agentic Engineering Book** by Jaymin West. Additional reading — original source for many agentic engineering patterns used in this course. https://jayminwest.com/agentic-engineering-book
+  Credit: The agentic engineering patterns taught in this course build on foundational work in the field, including Jaymin West's Agentic Engineering.
 - **Effective Context Engineering for AI Agents** — Anthropic. Context window management, prompt structuring, information architecture. https://anthropic.com/engineering/effective-context-engineering-for-ai-agents
 - **Building Agents with the Claude Agent SDK** — Anthropic. Agent construction with practical examples. https://anthropic.com/engineering/building-agents-with-the-claude-agent-sdk
 
@@ -307,14 +299,14 @@ Conference talks from the [AI Engineer](https://youtube.com/@aiDotEngineer) YouT
 | 3 | AI Fundamentals | Anthropic — Claude Model Card; "Attention Is All You Need" summary |
 | 4 | Context Engineering | Anthropic — "Effective Context Engineering for AI Agents" |
 | 5 | Agent Protocols | MCP Specification; "A Survey of AI Agent Protocols" (arXiv:2504.16736) |
-| 6 | Tool Design & GTG-1002 | Anthropic — "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" Full Report (Nov 2025); West — "Agentic Engineering Book" (tool design) |
+| 6 | Tool Design & GTG-1002 | Anthropic — "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" Full Report (Nov 2025); "Agentic Engineering Book" (tool design) |
 | 7 | Cyber Threat Framework | MITRE ATT&CK overview; Buchanan — "The Hacker and the State" (selected) |
 | 8 | Risk Management | NIST AI RMF 1.0 overview |
 | 9 | Responsible AI | FS-ISAC Responsible AI Principles (full); NIST AI RMF (full) |
 | 10 | Agentic Security | OWASP Top 10 for Agentic Apps; "Agentic AI Security" (arXiv:2510.23883) |
 | 11 | Bias and Fairness | O'Neil — "Weapons of Math Destruction" (selected); IBM AI Fairness 360 docs |
 | 12 | Compliance | EU AI Act summary; NIST Cyber AI Profile (December 2025); AIUC-1 standard (https://www.aiuc-1.com/) |
-| 13 | Implementation | Claude Agent SDK (full); West — orchestration patterns chapter |
+| 13 | Implementation | Claude Agent SDK (full); "Agentic Engineering Book" — orchestration patterns chapter |
 | 14 | Rapid Prototyping | Knapp et al. — "Sprint" (prototyping chapters) |
 | 15 | Integration | OWASP Agentic Top 10 deep review; synthesis |
 | 16 | Review | No new reading |
@@ -326,7 +318,7 @@ Conference talks from the [AI Engineer](https://youtube.com/@aiDotEngineer) YouT
 | 1 | Multi-Agent Architecture | "Survey of Agentic AI and Cybersecurity" (arXiv:2601.05293); Agent SDK (subagents) |
 | 2 | Orchestration Frameworks | CrewAI Documentation (full) |
 | 3 | Workflow & State | LangGraph Documentation (full); NIST Incident Response Lifecycle |
-| 4 | Evaluation | West — evaluation chapter; Promptfoo Documentation |
+| 4 | Evaluation | "Agentic Engineering Book" — evaluation chapter; Promptfoo Documentation |
 | 5 | Threat Landscape | MITRE ATLAS (full); "Prompt Injection on Agentic Coding Assistants" (arXiv:2601.17548) |
 | 6 | Red Teaming | "Red Teaming the Mind of the Machine" (arXiv:2505.04806); OWASP Agentic Top 10 (deep) |
 | 7 | Defense & Guardrails | NeMo Guardrails docs; LlamaFirewall docs; Guardrails AI docs |

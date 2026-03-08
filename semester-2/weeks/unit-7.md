@@ -16,7 +16,7 @@ This unit transforms security concepts into **production-ready systems**. You'll
 - Deploy production observability and cost tracking for agentic systems
 - Automate secure deployment with CI/CD, containerization, and runbooks
 
-> **🎯 Prototype-to-Production Pipeline:** This unit is where **selected prototypes become production systems**. If leadership selects your work from Unit 4, Unit 5, or Unit 6 for delivery, Unit 7 is where you transform it from a working proof-of-concept into a hardened, observable, governed, and deployable system. Jaymin West's *Agentic Engineering* (Ch. 7: Practices — Production Concerns, Cost and Latency, Workflow Coordination) provides the methodology for this transformation. The **Pit of Success** principle applies here: design your systems so secure, compliant deployment is the easy path, not the exception.
+> **🎯 Prototype-to-Production Pipeline:** This unit is where **selected prototypes become production systems**. If leadership selects your work from Unit 4, Unit 5, or Unit 6 for delivery, Unit 7 is where you transform it from a working proof-of-concept into a hardened, observable, governed, and deployable system. This course's agentic development methodology — including the Think → Spec → Build → Retro cycle — provides the framework for this transformation. The **Pit of Success** principle applies here: design your systems so secure, compliant deployment is the easy path, not the exception.
 
 ---
 

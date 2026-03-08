@@ -1406,9 +1406,9 @@ An AI Security Policy should address:
 13. **AIVSS Risk Scoring:** How are AI-specific vulnerabilities scored and prioritized?
 14. **Appeal Mechanisms:** How can users or stakeholders challenge AI decisions?
 
-> **🔑 Key Concept:** Governance policies should be **Specs as Source Code**—not prose documents gathering dust on a server. From Jaymin West's *Agentic Engineering*, "Specs as Source Code" means that policy requirements are executable, testable, and machine-readable. Policies written this way can be integrated into deployment pipelines: "Deploy this agent only if the policy checklist passes." This transforms governance from a compliance checkbox into a design requirement that shapes how agents are built.
+> **🔑 Key Concept:** Governance policies should be **Specs as Source Code**—not prose documents gathering dust on a server. From Agentic Engineering practice, "Specs as Source Code" means that policy requirements are executable, testable, and machine-readable. Policies written this way can be integrated into deployment pipelines: "Deploy this agent only if the policy checklist passes." This transforms governance from a compliance checkbox into a design requirement that shapes how agents are built.
 
-> **📖 Further Reading:** See Jaymin West's *Agentic Engineering*, Chapter 8 (Mental Models — Specs as Source Code) for how to translate governance policies into executable specifications that guide agent development and deployment decisions.
+> **📖 Further Reading:** See the Agentic Engineering additional reading on mental models for how to translate governance policies into executable specifications that guide agent development and deployment decisions.
 
 ---
 

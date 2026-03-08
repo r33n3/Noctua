@@ -549,7 +549,7 @@ body {
 <h4 id="step-3-develop-your-architecture-document-due-thursday">Step 3: Develop Your Architecture Document (Due Thursday)</h4>
 <p><strong>Format:</strong> 1500–2500 words (this is substantial; start early)</p>
 <blockquote>
-<p><strong>📖 Methodology:</strong> Your capstone follows Jaymin West's <em>Agentic Engineering</em> <strong>Plan-Build-Review cycle</strong> (Ch. 3). Week 13 is the Plan phase (architecture review validates your specs and design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code). The red team review is the Review phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.</p>
+<p><strong>📖 Methodology:</strong> Your capstone follows the <strong>Think → Spec → Build → Retro cycle</strong>. Week 13 is the Think + Spec phase (critical analysis, architecture review, and formal specification of your design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code using <code>/worktree-setup</code> for isolated parallel work). The red team review closes the Retro phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.</p>
 </blockquote>
 <p><strong>Structure:</strong></p>
 <p><strong>1. System Overview (200 words)</strong>
@@ -564,7 +564,7 @@ body {
   - How it communicates with other agents
 - <strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?
 - <strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from <em>Agentic Engineering</em> (Ch. 3) means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from Agentic Engineering principles means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
 </div>
 <p><strong>3. Collaborative Critical Thinking (CCT) Analysis (400 words)</strong>
 - How does your multi-agent architecture enable deeper thinking than a single agent?
@@ -603,7 +603,7 @@ body {
 - <strong>Operational:</strong> How will your system perform in production? (Latency SLA, uptime target, cost budget)
 - <strong>Security:</strong> What threats will be mitigated? (Measured by red team findings, threat model coverage)</p>
 <blockquote>
-<p><strong>💡 Design Thinking:</strong> As you finalize your capstone architecture, reflect on the <strong>mental models</strong> that underpin it. Jaymin West's <em>Agentic Engineering</em> (Ch. 8: Mental Models) asks: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.</p>
+<p><strong>💡 Design Thinking:</strong> As you finalize your capstone architecture, reflect on the <strong>mental models</strong> that underpin it. Agentic Engineering principles ask: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.</p>
 </blockquote>
 <p><strong>9. Timeline and Milestones (100 words)</strong>
 - Week 13: Architecture finalized (after review feedback)

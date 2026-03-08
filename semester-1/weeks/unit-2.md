@@ -413,9 +413,9 @@ Modern secure tool design rests on five interdependent principles:
    - What the response was
    - Any errors or exceptions
 
-> **🔑 Key Concept:** "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the **Pit of Success** from Jaymin West's *Agentic Engineering*—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but *the easiest path for the agent to follow*.
+> **🔑 Key Concept:** "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the **Pit of Success** from Agentic Engineering practice—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but *the easiest path for the agent to follow*.
 
-> **📖 Further Reading:** See Jaymin West's *Agentic Engineering*, Chapter 5 (Tool Use) for deeper discussion of tool design principles and the Pit of Success pattern.
+> **📖 Further Reading:** See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.
 
 #### The Service Layer Pattern: API First, MCP Second
 
@@ -1909,17 +1909,17 @@ Now Claude answers: "Our security policy (Section 3.2, last updated Jan 15 2025)
 
 #### Context Engineering & the Capability Capacity Model
 
-Beyond RAG, strategic context management is fundamental to agent reliability. Jaymin West's *Agentic Engineering* introduces the **Capability Capacity Model**: when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.
+Beyond RAG, strategic context management is fundamental to agent reliability. The **Capability Capacity Model** from Agentic Engineering practice establishes that when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.
 
 Context engineering means:
-- **Systematically structuring** context in predictable formats (West's ACE Playbook pattern)
+- **Systematically structuring** context in predictable formats (the ACE Playbook pattern)
 - **Measuring context fill** at each stage and staying below the 40% threshold
 - **Prioritizing** which context to include based on task relevance
 - **Deferring** auxiliary information to tool calls or retrieval systems rather than embedding it in every prompt
 
 RAG is one mechanism; others include MCP tool servers, structured examples, and dynamic context selection.
 
-> **📖 Further Reading:** See Jaymin West's *Agentic Engineering*, Chapter 4 (Context) for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.
+> **📖 Further Reading:** See the Agentic Engineering additional reading on context engineering for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.
 
 #### RAG Architecture: The Complete Pipeline
 

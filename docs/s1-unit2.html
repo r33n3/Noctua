@@ -794,8 +794,8 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
    - How long it took
    - What the response was
    - Any errors or exceptions</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the <strong>Pit of Success</strong> from Jaymin West's <em>Agentic Engineering</em>—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but <em>the easiest path for the agent to follow</em>.</p>
-<p><strong>📖 Further Reading:</strong> See Jaymin West's <em>Agentic Engineering</em>, Chapter 5 (Tool Use) for deeper discussion of tool design principles and the Pit of Success pattern.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the <strong>Pit of Success</strong> from Agentic Engineering practice—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but <em>the easiest path for the agent to follow</em>.</p>
+<p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.</p>
 </div>
 <h4 id="the-service-layer-pattern-api-first-mcp-second">The Service Layer Pattern: API First, MCP Second</h4>
 <p>In production environments, the most resilient tool architectures follow a critical principle: <strong>build the REST API first, then layer the MCP server on top as a consumption client.</strong> This pattern decouples core business logic from the AI integration layer.</p>
@@ -2132,14 +2132,14 @@ For each integration, show me: What data goes in? What format? What could go wro
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> RAG is not a replacement for LLMs; it's a pattern that augments LLM capabilities with retrieval. The LLM's role shifts from "know everything" to "synthesize retrieved information." This is a more honest and verifiable approach to AI in security.</p>
 </div>
 <h4 id="context-engineering-the-capability-capacity-model">Context Engineering &amp; the Capability Capacity Model</h4>
-<p>Beyond RAG, strategic context management is fundamental to agent reliability. Jaymin West's <em>Agentic Engineering</em> introduces the <strong>Capability Capacity Model</strong>: when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.</p>
+<p>Beyond RAG, strategic context management is fundamental to agent reliability. The <strong>Capability Capacity Model</strong> from Agentic Engineering practice establishes that when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.</p>
 <p>Context engineering means:
-- <strong>Systematically structuring</strong> context in predictable formats (West's ACE Playbook pattern)
+- <strong>Systematically structuring</strong> context in predictable formats (the ACE Playbook pattern)
 - <strong>Measuring context fill</strong> at each stage and staying below the 40% threshold
 - <strong>Prioritizing</strong> which context to include based on task relevance
 - <strong>Deferring</strong> auxiliary information to tool calls or retrieval systems rather than embedding it in every prompt</p>
 <p>RAG is one mechanism; others include MCP tool servers, structured examples, and dynamic context selection.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See Jaymin West's <em>Agentic Engineering</em>, Chapter 4 (Context) for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.</p>
+<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on context engineering for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.</p>
 </div>
 <h4 id="rag-architecture-the-complete-pipeline">RAG Architecture: The Complete Pipeline</h4>
 <p>RAG consists of five stages:</p>

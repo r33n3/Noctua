@@ -37,11 +37,11 @@ What was aspirational in 2023 is now operational. Agentic engineering tools (Cla
 
 But prototyping is only half the story. This course teaches the **full delivery pipeline**: rapid prototype → leadership evaluation → production hardening → deployment. When leadership selects a prototype for delivery, students learn to accelerate that prototype into production-ready code — adding observability, security controls, CI/CD, governance gates, and operational runbooks. The goal is not just "build fast" but "build fast, then ship."
 
-This pipeline follows the **Plan-Build-Review** pattern from Jaymin West's Agentic Engineering methodology: plan the architecture with clear specs, build rapidly using Claude Code and agentic workflows, review through structured evaluation — then repeat at production scale when a prototype is selected for delivery.
+This pipeline follows the **Think → Spec → Build → Retro** cycle as its delivery framework: think critically about the architecture before writing any spec, produce a formal spec before building, build rapidly using Claude Code and agentic workflows, and run a structured retrospective — then repeat at production scale when a prototype is selected for delivery.
 
 ### 4. Agentic Engineering
 
-The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course adopts Jaymin West's Agentic Engineering methodology as its delivery framework, built on the **Core Four Pillars** — Prompt, Model, Context, and Tools — and operationalized through patterns that accelerate both prototyping and production delivery:
+The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course applies the **Think → Spec → Build → Retro** development cycle as its delivery framework, powered by four Claude Code skills — `/think`, `/spec`, `/worktree-setup`, and `/retro` — and built on the **Core Four Pillars** — Prompt, Model, Context, and Tools — operationalized through patterns that accelerate both prototyping and production delivery:
 
 - **Context Engineering** — Managing context windows, system prompts, memory, and retrieval. Students build personal context libraries that compound across projects.
 - **Tool Design** — Defining agent capabilities through MCP servers, structured tool definitions, and the "Pit of Success" principle (make the right thing easy, the wrong thing hard).
@@ -249,7 +249,7 @@ Admission to this course requires:
 - **Richard Paul's Critical Thinking Frameworks** — Structured approaches to evaluating arguments and evidence
 
 ### Agentic Engineering & AI Systems
-- **"Agentic Engineering Book"** by Jaymin West (jayminwest.com/agentic-engineering-book) — Essential reference for this course
+- **"Agentic Engineering Book"** by Jaymin West (jayminwest.com/agentic-engineering-book) — Additional reading — original source for many agentic engineering patterns used in this course.
 - **Anthropic — "Building Agents with the Claude Agent SDK"** (anthropic.com/engineering) — Official SDK documentation and patterns
 - **Anthropic — "Effective Context Engineering for AI Agents"** — Managing context windows and semantic retrieval
 - **"Designing AI Agents"** (emerging body of work from multiple researchers) — Agent architecture patterns

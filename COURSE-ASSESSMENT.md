@@ -430,7 +430,7 @@ Modern AI development and security labs require:
 - Adversarial testing (how does it respond to attacks?)
 - Scalability and performance testing
 
-**Design Decision:** The curriculum includes dedicated "Agentic Engineering" modules that cover this discipline comprehensively. The course materials reference Jaymin West's work on agentic systems and the emerging body of knowledge in this field.
+**Design Decision:** The curriculum includes dedicated "Agentic Engineering" modules that cover this discipline comprehensively. The course materials reference foundational work on agentic systems and the emerging body of knowledge in this field.
 
 ---
 
@@ -628,7 +628,7 @@ MCP has become the standard interface for agent-tool communication, analogous to
 
 **Academic and Practitioner Foundation:**
 
-Building on work from researchers like Jaymin West, the community is developing shared frameworks for agentic engineering. The curriculum should reference and teach from:
+Building on foundational work in agentic engineering, the community is developing shared frameworks for agentic systems. The curriculum should reference and teach from:
 
 - **Agent Evaluation Frameworks:** How do we measure whether an agent is doing what we want?
 - **Tool Design Best Practices:** What makes a good tool interface for agents?
