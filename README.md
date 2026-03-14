@@ -1,5 +1,7 @@
 # Noctua: AI Security Engineering
 
+Site:r33n3.github.io/Noctua
+
 **Build-First AI Security — From Prototype to Production**
 
 A year-long graduate-level program where students forge their own agentic security tools using Claude Code, the Claude Agent SDK, and context engineering — then ship them to production.
