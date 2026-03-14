@@ -455,13 +455,13 @@ body {
 <h3 id="4-ai-attacker-vs-ai-defender-scenarios">4. AI Attacker vs. AI Defender Scenarios</h3>
 <p><strong>Original Approach:</strong> Hypothetical scenarios exploring how AI systems could be weaponized or misused; how defenders should respond.</p>
 <p><strong>2026 Validation: URGENT</strong></p>
-<p>The original course framed this as exploratory thinking. It is now operational reality. In September 2025, Anthropic publicly disclosed the first confirmed instance of an AI-orchestrated cyberattack achieving 80-90% autonomy without human operators. This attack:
-- Mapped network infrastructure
-- Identified vulnerabilities
-- Escalated privileges
-- Moved laterally across systems
-- Exfiltrated sensitive data</p>
-<p>The attacker AI made independent decisions based on real-time situational assessment. Human operators intervened only at critical junctures.</p>
+<p>The original course framed this as exploratory thinking. It is now operational reality. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) used Claude Code to autonomously conduct:
+- Reconnaissance and network mapping
+- Vulnerability discovery
+- Credential harvesting
+- Lateral movement across systems
+- Data exfiltration against approximately 30 targets</p>
+<p>The campaign operated at 80–90% autonomy without human intervention, with human operators intervening only at critical junctures.</p>
 <p>This is not hypothetical. It is the new threat model.</p>
 <p><strong>Implication:</strong> AI defender scenarios are no longer thought exercises. They are essential operational security knowledge. Students must understand:
 - How to design agents that resist prompt injection and goal hijacking
@@ -488,7 +488,7 @@ body {
 <p><strong>Design Decision:</strong> These metrics have been integrated into the observability and monitoring section. Students learn how to instrument agentic systems to measure and optimize these metrics in production, with connections to OpenTelemetry standards throughout the labs.</p>
 <hr />
 <h3 id="6-ethical-ai-and-responsible-ai-principles">6. Ethical AI and Responsible AI Principles</h3>
-<p><strong>Original Approach:</strong> Ethical framework aligned with NIST AI Risk Management Framework (AI RMF), covering fairness, explainability, robustness, accountability. These principles were subsequently formalized as the <strong>FS-ISAC Responsible AI Principles</strong> (February 2024), published by the FS-ISAC AI Risk Working Group as an industry-standard framework for responsible AI deployment in financial services.</p>
+<p><strong>Current Approach:</strong> Ethical and governance framework aligned with the <strong>AIUC-1 Standard</strong> — the first security, safety, and reliability standard specifically designed for AI agents. AIUC-1 operationalizes NIST AI RMF, ISO 42001, MITRE ATLAS, and OWASP LLM Top 10 into six auditable domains (Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society) with concrete controls, quarterly technical testing, and third-party certification. This agent-specific framing replaces the earlier FS-ISAC Responsible AI Principles (2024), which addressed general AI in financial services but lacked the agent-specific controls, technical testing requirements, and certification model that AIUC-1 provides.</p>
 <p><strong>2026 Validation and Evolution:</strong></p>
 <p>The original emphasis on ethical AI remains sound and has been validated by industry adoption. The frameworks have matured considerably:</p>
 <ul>
@@ -523,7 +523,7 @@ body {
 <p><strong>2026 Reality:</strong></p>
 <p>The model landscape has evolved dramatically. GPT-2 and GPT-3 are now historical references (interesting for understanding progression but not relevant for current development). The current landscape includes:</p>
 <p><strong>Frontier Models:</strong>
-- Claude Opus 4.5, Claude Sonnet 4.5, Claude Haiku 4.5 (Anthropic)
+- Claude Opus 4.6, Claude Sonnet 4.6, Claude Haiku 4.5 (Anthropic)
 - GPT-4o and o3 series (OpenAI)
 - Gemini 2.5 (Google)</p>
 <p><strong>Strong Open-Weight Models:</strong>
@@ -539,7 +539,7 @@ body {
 - Cost-performance tradeoffs
 - When to use open-weight vs. proprietary models
 - How to evaluate model trustworthiness and provenance</p>
-<p><strong>Design Decision:</strong> All model references have been updated. Claude Opus 4.5 is used as the primary example throughout the course given its current state-of-the-art reasoning capabilities and safety focus. Sections on model evaluation criteria relevant to security-critical applications are integrated throughout.</p>
+<p><strong>Design Decision:</strong> All model references have been updated. Claude Opus 4.6 is used as the primary example throughout the course given its current state-of-the-art reasoning capabilities and safety focus. Sections on model evaluation criteria relevant to security-critical applications are integrated throughout.</p>
 <hr />
 <h3 id="2-prompt-engineering-context-engineering">2. Prompt Engineering → Context Engineering</h3>
 <p><strong>Original Approach:</strong> Focused on crafting effective prompts for ChatGPT/OpenAI Playground. Techniques included zero-shot, few-shot, chain-of-thought, role-based prompting.</p>
@@ -791,7 +791,7 @@ body {
 <p><strong>Design Decision:</strong> An "AI Supply Chain Security" module has been added to the curriculum. The course emphasizes that security is not just about what your system does, but about all the components it depends on.</p>
 <hr />
 <h3 id="5-non-human-identity-nhi-governance">5. Non-Human Identity (NHI) Governance</h3>
-<p><strong>Emerging Reality:</strong> In 2026, non-human identities (AI agents, service accounts, API tokens, etc.) outnumber human identities 50:1 in many enterprises.</p>
+<p><strong>Emerging Reality:</strong> In 2026, non-human identities (AI agents, service accounts, API tokens, etc.) outnumber human identities by ratios typically ranging from 25:1 to over 100:1 in many enterprises.</p>
 <p><strong>Identity Management Challenges:</strong></p>
 <ul>
 <li><strong>Lifecycle Management:</strong> How do we provision, manage, and deprovision non-human identities?</li>
@@ -823,9 +823,9 @@ body {
 <h3 id="6-real-world-case-studies-and-current-threat-landscape">6. Real-World Case Studies and Current Threat Landscape</h3>
 <p><strong>Critical Addition:</strong> Ground the curriculum in real-world incidents.</p>
 <p><strong>Case Studies:</strong></p>
-<p><strong>Anthropic's AI-Orchestrated Cyberattack Disclosure (September 2025):</strong>
-- Describe the attack (80-90% autonomous)
-- Techniques used (what made it possible?)
+<p><strong>Anthropic's GTG-1002 Espionage Campaign Disclosure (November 2025, detection: September 2025):</strong>
+- Describe the campaign: first reported AI-orchestrated cyber espionage, operating at 80–90% autonomy
+- Techniques used: autonomous reconnaissance, vulnerability discovery, credential harvesting, data exfiltration (~30 targets)
 - Detection and response
 - Implications for security posture
 - Lessons learned</p>

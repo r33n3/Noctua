@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Lifecycle Governance Framework</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header { margin-bottom: 28px; border-bottom: 1px solid #333; padding-bottom: 18px; }
+  .header-tag { font-size: 10px; letter-spacing: 4px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+  .header h1 {
+    font-size: 22px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, #e94560, #533483, #2b6777);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-sub { font-size: 11px; color: #888; margin-top: 6px; }
+
+  /* Filter buttons */
+  .filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-btn {
+    background: #1a1a2e; color: #888; border: 1px solid #333;
+    padding: 5px 14px; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; border-radius: 2px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: #555; color: #ccc; }
+  .filter-btn.active { background: #e94560; color: #fff; border-color: #e94560; }
+
+  /* Stage timeline */
+  .timeline { display: flex; gap: 0; margin-bottom: 24px; }
+  .timeline-item { display: flex; align-items: stretch; flex: 1; min-width: 0; }
+  .stage-btn {
+    flex: 1; background: #111118; border: 1px solid #222;
+    padding: 12px 8px; cursor: pointer; text-align: center;
+    position: relative; transition: all 0.2s; font-family: inherit;
+  }
+  .stage-btn:hover { border-color: #444; }
+  .stage-btn.active { border-width: 2px; border-bottom-width: 3px; }
+  .stage-label { font-size: 9px; letter-spacing: 2px; color: #666; transition: color 0.2s; }
+  .stage-btn.active .stage-label { color: #fff; }
+  .stage-title { font-size: 11px; font-weight: 600; color: #aaa; margin-top: 4px; line-height: 1.3; transition: color 0.2s; }
+  .stage-btn.active .stage-title { color: #fff; }
+  .extension-badge {
+    position: absolute; top: 3px; right: 5px;
+    font-size: 7px; color: #e94560; letter-spacing: 1px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .gate-diamond {
+    width: 36px; display: flex; align-items: center; justify-content: center;
+    background: #0a0a0f; flex-shrink: 0;
+  }
+  .diamond {
+    width: 22px; height: 22px; border: 2px solid #555;
+    transform: rotate(45deg); display: flex;
+    align-items: center; justify-content: center; background: #0a0a0f;
+  }
+  .diamond span { transform: rotate(-45deg); font-size: 9px; }
+
+  /* Detail panel */
+  .detail { padding: 20px; margin-bottom: 20px; border: 1px solid #333; transition: all 0.3s; }
+  .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .detail-title { font-size: 18px; font-weight: 700; color: #fff; }
+  .detail-note { font-size: 10px; margin-top: 4px; letter-spacing: 1px; }
+  .skills-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .skill-tag {
+    background: #222; border: 1px solid #444;
+    padding: 2px 8px; font-size: 10px; color: #e94560; font-weight: 600;
+  }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .detail-section { background: #0a0a12; padding: 14px; border: 1px solid #222; }
+  .section-label {
+    font-size: 9px; letter-spacing: 2px; color: #888;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .activity-item { font-size: 11px; color: #ccc; margin-bottom: 6px; padding-left: 14px; position: relative; }
+  .activity-item::before { content: '›'; position: absolute; left: 0; font-weight: 700; }
+
+  .gov-block { margin-bottom: 8px; }
+  .gov-label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .gov-value { font-size: 11px; color: #ccc; margin-top: 2px; line-height: 1.4; }
+
+  /* Defense layers */
+  .defense-strip { margin-top: 16px; background: #0a0a12; padding: 14px; border: 1px solid #222; }
+  .defense-layers { display: flex; gap: 4px; }
+  .defense-layer {
+    flex: 1; padding: 8px 6px; text-align: center;
+    border: 1px solid #1a1a1a; background: #111; transition: all 0.3s;
+  }
+  .defense-layer.active { opacity: 1; }
+  .defense-layer.inactive { opacity: 0.25; }
+  .layer-name { font-size: 9px; font-weight: 700; }
+  .layer-desc { font-size: 8px; color: #666; margin-top: 4px; }
+
+  /* Gate out */
+  .gate-out {
+    margin-top: 16px; padding: 12px;
+    border: 1px dashed #555; background: rgba(255,255,255,0.02);
+  }
+  .gate-out-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+  .gate-out-desc { font-size: 11px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+
+  /* Registries */
+  .registries { border: 1px solid #222; background: #111118; padding: 16px; margin-bottom: 20px; }
+  .reg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 700px) { .reg-grid { grid-template-columns: 1fr 1fr; } }
+  .reg-card { padding: 10px; background: #0a0a12; border: 1px solid #222; }
+  .reg-name { font-size: 12px; font-weight: 600; color: #e94560; }
+  .reg-desc { font-size: 10px; color: #777; margin-top: 4px; line-height: 1.4; }
+
+  /* Flow */
+  .flow-bar { border: 1px solid #222; background: #111118; padding: 16px; }
+  .flow-items { display: flex; align-items: center; gap: 0; font-size: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .flow-step {
+    padding: 6px 10px; text-align: center; min-width: 70px; flex-shrink: 0;
+  }
+  .flow-step-label { font-weight: 700; color: #fff; font-size: 10px; }
+  .flow-step-sub { font-size: 8px; color: #ccc; margin-top: 2px; }
+  .flow-arrow { color: #444; font-size: 14px; padding: 0 4px; flex-shrink: 0; }
+  .flow-contract { border: 2px solid #fff; }
+  .flow-note { font-size: 9px; color: #555; margin-top: 10px; text-align: center; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Extending AWS Prescriptive Guidance (GLOE)</div>
+  <h1>AI Lifecycle Governance Framework</h1>
+  <div class="header-sub">GLOE + PeaRL + AIUC-1 + Engineering Assessment Stack</div>
+</div>
+
+<div class="filters" id="filters"></div>
+<div class="timeline" id="timeline"></div>
+<div id="detail"></div>
+<div id="registries-section"></div>
+<div id="flow-section"></div>
+
+<script>
+const stages = [
+  {
+    id: "stage0", label: "STAGE 0", title: "Design, Scoping & Experimentation",
+    color: "#1a1a2e", accent: "#e94560", isExtension: true,
+    gloeNote: "Extends GLOE — not in AWS framework",
+    skills: ["/think", "/spec", "/worktree"],
+    activities: [
+      "Use case ideation & intake",
+      "Rapid prototyping in isolated worktrees",
+      "Model benchmarking & comparison",
+      "Tool & approach experimentation",
+      "Fail fast — kill or proceed"
+    ],
+    governance: [
+      { label: "PeaRL", value: "Project scoping state — no active governance yet" },
+      { label: "AIUC-1", value: "Compliance frameworks identified (not evaluated)" },
+      { label: "Gate Controls", value: "Lightweight guardrails only" },
+      { label: "Defense Layer", value: "AI Gateway (basic): PII scanning, cost limits, identity, no prod access" }
+    ],
+    defenseLayers: [true, false, false, false],
+    gateOut: { name: "USE CASE CONTRACT", desc: "Evidence-based declaration: models, tools, agents, data, compliance requirements — governance committee reviews", color: "#e94560" }
+  },
+  {
+    id: "stage1", label: "STAGE 1", title: "Development (PoC & Build)",
+    color: "#16213e", accent: "#0f3460", isExtension: false,
+    gloeNote: "Aligns with GLOE Stage 1: Development",
+    skills: ["/think", "/spec", "/worktree", "/retro"],
+    activities: [
+      "Build to use case contract",
+      "Context engineering & prompt lifecycle",
+      "Model selection (per contract)",
+      "MCP server development",
+      "Evaluation loops & quality testing",
+      "Deviations → quick approval update"
+    ],
+    governance: [
+      { label: "PeaRL", value: "Active governance — developer MCP profile, findings generate" },
+      { label: "AIUC-1", value: "Domains B (Security) & E (Accountability) — foundational controls" },
+      { label: "Gate Controls", value: "Role gates, API auth, input validation" },
+      { label: "Defense Layer", value: "Layers 1–2: Soft controls + Application controls" }
+    ],
+    defenseLayers: [true, true, false, false],
+    gateOut: { name: "PeaRL GATE 1: Dev → Preprod", desc: "Contract fulfilled? Findings resolved? CI/CD security validation passed? All exceptions reviewer-approved?", color: "#0f3460" }
+  },
+  {
+    id: "stage2", label: "STAGE 2", title: "Preproduction (Validation & Hardening)",
+    color: "#1a1a2e", accent: "#533483", isExtension: false,
+    gloeNote: "Aligns with GLOE Stage 2: Preproduction",
+    skills: ["/spec", "/retro"],
+    activities: [
+      "Contract locked — no deviations",
+      "Adversarial testing (red team)",
+      "Guardrail validation",
+      "Multi-layered testing framework",
+      "AI gateway hardened",
+      "Deep observability & tracing",
+      "CI/CD pipeline security gates"
+    ],
+    governance: [
+      { label: "PeaRL", value: "Reviewer oversight — all exceptions must be decided" },
+      { label: "AIUC-1", value: "Domains A, B, D full depth + C, F validation" },
+      { label: "Gate Controls", value: "PreToolUse hooks, behavioral monitoring (AGP-01–05)" },
+      { label: "Defense Layer", value: "Layers 2–3: Application + Execution environment controls" }
+    ],
+    defenseLayers: [true, true, true, false],
+    gateOut: { name: "PeaRL GATE 2: Preprod → Prod", desc: "All AIUC-1 domains validated? Red team passed? Behavioral monitoring active? Guardrails held?", color: "#533483" }
+  },
+  {
+    id: "stage3", label: "STAGE 3", title: "Production (Deploy & Monitor)",
+    color: "#16213e", accent: "#2b6777", isExtension: false,
+    gloeNote: "Aligns with GLOE Stage 3: Production",
+    skills: [],
+    activities: [
+      "Deploy governed system",
+      "Continuous monitoring & drift detection",
+      "Feedback loops & improvement cycles",
+      "Shadow testing for updates",
+      "Cost tracking & optimization",
+      "Periodic governance reassessment",
+      "Incident response procedures"
+    ],
+    governance: [
+      { label: "PeaRL", value: "JWT-only auth — no local-mode flags, architectural isolation" },
+      { label: "AIUC-1", value: "All 6 domains at full depth — continuous compliance" },
+      { label: "Gate Controls", value: "Full AI gateway: rate limiting, content moderation, anomaly alerting" },
+      { label: "Defense Layer", value: "Layers 3–4: Execution environment + Infrastructure controls" }
+    ],
+    defenseLayers: [true, true, true, true],
+    gateOut: null
+  }
+];
+
+const registries = [
+  { name: "Model Registry", desc: "Approved models, versions, cost profiles, data classification clearance", icon: "◆" },
+  { name: "MCP/Tool Registry", desc: "Available tool servers, capabilities, access scopes, owners", icon: "◇" },
+  { name: "Agent Registry", desc: "Existing agents, autonomy levels, capabilities, governance status", icon: "△" },
+  { name: "Skill/Prompt Registry", desc: "Validated prompts, skills, eval scores, context cost", icon: "○" }
+];
+
+const defenseLayerDefs = [
+  { name: "L1: Soft Controls", desc: "CLAUDE.md, prompts, docs" },
+  { name: "L2: Application", desc: "Role gates, 403s, auth" },
+  { name: "L3: Exec Environment", desc: "PreToolUse hooks, AGP" },
+  { name: "L4: Infrastructure", desc: "chmod, containers, Vault" }
+];
+
+const flowSteps = [
+  { text: "Ideation", sub: "/think /spec", bg: "#e94560" },
+  { arrow: "→" },
+  { text: "Prototype", sub: "/worktree", bg: "#e94560" },
+  { arrow: "→" },
+  { text: "Viable?", sub: "fail fast", bg: "#e94560" },
+  { arrow: "→" },
+  { text: "Contract", sub: "use case", bg: "#e94560", border: true },
+  { arrow: "⬥" },
+  { text: "Dev", sub: "build to contract", bg: "#0f3460" },
+  { arrow: "⬥" },
+  { text: "Preprod", sub: "validate & harden", bg: "#533483" },
+  { arrow: "⬥" },
+  { text: "Prod", sub: "monitor & govern", bg: "#2b6777" }
+];
+
+let activeStage = "stage0";
+let activeFilter = "all";
+
+function setStage(id) {
+  activeStage = id;
+  render();
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  render();
+}
+
+function render() {
+  const stage = stages.find(s => s.id === activeStage);
+
+  // Filters
+  const filtersEl = document.getElementById("filters");
+  filtersEl.innerHTML = ["all", "activities", "governance", "defense", "registries"].map(f =>
+    `<button class="filter-btn ${activeFilter === f ? 'active' : ''}" onclick="setFilter('${f}')">${f}</button>`
+  ).join("");
+
+  // Timeline
+  const timelineEl = document.getElementById("timeline");
+  timelineEl.innerHTML = stages.map((s, i) => {
+    const isActive = activeStage === s.id;
+    const btnStyle = isActive
+      ? `background:${s.accent};border-color:${s.accent};border-width:2px;border-bottom-width:3px;`
+      : '';
+    return `
+      <div class="timeline-item">
+        <button class="stage-btn ${isActive ? 'active' : ''}" style="${btnStyle}" onclick="setStage('${s.id}')">
+          ${s.isExtension ? '<div class="extension-badge">EXTENSION</div>' : ''}
+          <div class="stage-label">${s.label}</div>
+          <div class="stage-title">${s.title}</div>
+        </button>
+        ${s.gateOut ? `
+          <div class="gate-diamond">
+            <div class="diamond" style="border-color:${s.gateOut.color}">
+              <span style="color:${s.gateOut.color}">⬥</span>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join("");
+
+  // Detail
+  const detailEl = document.getElementById("detail");
+  const showAct = activeFilter === "all" || activeFilter === "activities";
+  const showGov = activeFilter === "all" || activeFilter === "governance";
+  const showDef = activeFilter === "all" || activeFilter === "defense";
+
+  const noteColor = stage.isExtension ? "#e94560" : "#6c6";
+  const noteIcon = stage.isExtension ? "⬥" : "✓";
+
+  detailEl.innerHTML = `
+    <div class="detail" style="border-color:${stage.accent};background:${stage.color}">
+      <div class="detail-header">
+        <div>
+          <div class="detail-title">${stage.title}</div>
+          <div class="detail-note" style="color:${noteColor}">${noteIcon} ${stage.gloeNote}</div>
+        </div>
+        ${stage.skills.length ? `
+          <div class="skills-row">
+            ${stage.skills.map(s => `<span class="skill-tag">${s}</span>`).join("")}
+          </div>
+        ` : ''}
+      </div>
+
+      ${showAct || showGov ? `
+        <div class="detail-grid">
+          ${showAct ? `
+            <div class="detail-section">
+              <div class="section-label">Key Activities</div>
+              ${stage.activities.map(a => `
+                <div class="activity-item" style="color:#ccc;">${a}</div>
+              `).join("")}
+            </div>
+          ` : ''}
+          ${showGov ? `
+            <div class="detail-section">
+              <div class="section-label">Governance Controls</div>
+              ${stage.governance.map(g => `
+                <div class="gov-block">
+                  <div class="gov-label">${g.label}</div>
+                  <div class="gov-value">${g.value}</div>
+                </div>
+              `).join("")}
+            </div>
+          ` : ''}
+        </div>
+      ` : ''}
+
+      ${showDef ? `
+        <div class="defense-strip">
+          <div class="section-label">Defense in Depth — Active Layers</div>
+          <div class="defense-layers">
+            ${defenseLayerDefs.map((l, i) => {
+              const isOn = stage.defenseLayers[i];
+              return `
+                <div class="defense-layer ${isOn ? 'active' : 'inactive'}"
+                     style="${isOn ? `background:${stage.accent}22;border-color:${stage.accent}` : ''}">
+                  <div class="layer-name" style="color:${isOn ? stage.accent : '#444'}">${l.name}</div>
+                  <div class="layer-desc">${l.desc}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      ` : ''}
+
+      ${stage.gateOut ? `
+        <div class="gate-out" style="border-color:${stage.gateOut.color};background:${stage.gateOut.color}11">
+          <div class="gate-out-title" style="color:${stage.gateOut.color}">⬥ GATE: ${stage.gateOut.name}</div>
+          <div class="gate-out-desc">${stage.gateOut.desc}</div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  // Registries
+  const regEl = document.getElementById("registries-section");
+  if (activeFilter === "all" || activeFilter === "registries") {
+    regEl.innerHTML = `
+      <div class="registries">
+        <div class="section-label">Registries — Persistent Across All Stages</div>
+        <div class="reg-grid">
+          ${registries.map(r => `
+            <div class="reg-card">
+              <div class="reg-name">${r.icon} ${r.name}</div>
+              <div class="reg-desc">${r.desc}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else {
+    regEl.innerHTML = "";
+  }
+
+  // Flow
+  const flowEl = document.getElementById("flow-section");
+  flowEl.innerHTML = `
+    <div class="flow-bar">
+      <div class="section-label">Lifecycle Flow</div>
+      <div class="flow-items">
+        ${flowSteps.map(s => {
+          if (s.arrow) return `<span class="flow-arrow">${s.arrow}</span>`;
+          return `
+            <div class="flow-step ${s.border ? 'flow-contract' : ''}" style="background:${s.bg}">
+              <div class="flow-step-label">${s.text}</div>
+              ${s.sub ? `<div class="flow-step-sub">${s.sub}</div>` : ''}
+            </div>
+          `;
+        }).join("")}
+      </div>
+      <div class="flow-note">
+        ⬥ = PeaRL governance gate &nbsp;|&nbsp; Stage 0 (red) extends GLOE &nbsp;|&nbsp; Stages 1–3 align with AWS GLOE framework
+      </div>
+    </div>
+  `;
+}
+
+// Keyboard navigation
+document.addEventListener("keydown", function(e) {
+  const idx = stages.findIndex(s => s.id === activeStage);
+  if (e.key === "ArrowRight" && idx < stages.length - 1) {
+    setStage(stages[idx + 1].id);
+  } else if (e.key === "ArrowLeft" && idx > 0) {
+    setStage(stages[idx - 1].id);
+  }
+});
+
+render();
+</script>
+</body>
+</html>

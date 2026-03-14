@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""
+AgentForge Keystore — Encrypted local secret management for AI development.
+
+Secrets are encrypted with AES-256-GCM using a master password derived through
+PBKDF2 (100K iterations). The encrypted vault lives at ~/.agentforge/vault.enc.
+No secret ever touches disk in plaintext.
+
+Usage:
+    agentforge-keys init                    # Create vault with master password
+    agentforge-keys add ANTHROPIC_API_KEY   # Add a secret (prompts for value)
+    agentforge-keys get ANTHROPIC_API_KEY   # Retrieve a secret
+    agentforge-keys list                    # List all key names (not values)
+    agentforge-keys delete ANTHROPIC_API_KEY # Remove a secret
+    agentforge-keys export                  # Print export statements for shell
+    agentforge-keys env                     # Print .env format (for reference only)
+    agentforge-keys rotate                  # Change master password
+    agentforge-keys check                   # Verify vault integrity
+
+Shell integration (add to ~/.bashrc or ~/.zshrc):
+    eval $(agentforge-keys export)
+
+MCP server integration (in .mcp.json, reference env vars set by export):
+    { "env": { "API_KEY": "${THREAT_INTEL_KEY}" } }
+"""
+
+import argparse
+import base64
+import getpass
+import hashlib
+import json
+import os
+import sys
+import secrets as sec_module
+from pathlib import Path
+
+# --- Crypto layer (uses only standard library + minimal dependencies) ---
+
+VAULT_DIR = Path.home() / ".agentforge"
+VAULT_FILE = VAULT_DIR / "vault.enc"
+SALT_FILE = VAULT_DIR / "vault.salt"
+ITERATIONS = 100_000
+KEY_LENGTH = 32  # AES-256
+
+def _ensure_dir():
+    """Create vault directory with restricted permissions."""
+    VAULT_DIR.mkdir(mode=0o700, exist_ok=True)
+
+def _derive_key(password: str, salt: bytes) -> bytes:
+    """Derive AES key from master password using PBKDF2."""
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, ITERATIONS, dklen=KEY_LENGTH)
+
+def _encrypt(data: bytes, key: bytes) -> bytes:
+    """Encrypt data with AES-256-GCM. Returns nonce + tag + ciphertext."""
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        nonce = sec_module.token_bytes(12)
+        aesgcm = AESGCM(key)
+        ct = aesgcm.encrypt(nonce, data, None)
+        return nonce + ct  # nonce(12) + ciphertext+tag
+    except ImportError:
+        _fallback_crypto_error()
+
+def _decrypt(data: bytes, key: bytes) -> bytes:
+    """Decrypt AES-256-GCM data. Input is nonce + tag + ciphertext."""
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        nonce = data[:12]
+        ct = data[12:]
+        aesgcm = AESGCM(key)
+        return aesgcm.decrypt(nonce, ct, None)
+    except ImportError:
+        _fallback_crypto_error()
+
+def _fallback_crypto_error():
+    print("ERROR: 'cryptography' package required.", file=sys.stderr)
+    print("Install: pip install cryptography --break-system-packages", file=sys.stderr)
+    sys.exit(1)
+
+# --- Vault operations ---
+
+def _get_password(confirm=False) -> str:
+    """Prompt for master password."""
+    pw = getpass.getpass("Master password: ")
+    if confirm:
+        pw2 = getpass.getpass("Confirm password: ")
+        if pw != pw2:
+            print("Passwords don't match.", file=sys.stderr)
+            sys.exit(1)
+    return pw
+
+def _load_vault(password: str) -> dict:
+    """Load and decrypt the vault. Returns dict of key-value pairs."""
+    if not VAULT_FILE.exists() or not SALT_FILE.exists():
+        print("No vault found. Run: agentforge-keys init", file=sys.stderr)
+        sys.exit(1)
+    
+    salt = SALT_FILE.read_bytes()
+    key = _derive_key(password, salt)
+    
+    try:
+        encrypted = VAULT_FILE.read_bytes()
+        decrypted = _decrypt(encrypted, key)
+        return json.loads(decrypted.decode())
+    except Exception:
+        print("Failed to decrypt vault. Wrong password?", file=sys.stderr)
+        sys.exit(1)
+
+def _save_vault(vault: dict, password: str):
+    """Encrypt and save the vault."""
+    salt = SALT_FILE.read_bytes()
+    key = _derive_key(password, salt)
+    
+    data = json.dumps(vault, indent=2).encode()
+    encrypted = _encrypt(data, key)
+    
+    VAULT_FILE.write_bytes(encrypted)
+    os.chmod(VAULT_FILE, 0o600)
+
+# --- Commands ---
+
+def cmd_init(args):
+    """Initialize a new vault."""
+    _ensure_dir()
+    
+    if VAULT_FILE.exists():
+        response = input("Vault already exists. Overwrite? (yes/no): ")
+        if response.lower() != "yes":
+            print("Aborted.")
+            return
+    
+    password = _get_password(confirm=True)
+    
+    # Generate random salt
+    salt = sec_module.token_bytes(32)
+    SALT_FILE.write_bytes(salt)
+    os.chmod(SALT_FILE, 0o600)
+    
+    # Create empty vault
+    _save_vault({}, password)
+    
+    print(f"Vault created at {VAULT_FILE}")
+    print(f"Permissions: {oct(VAULT_FILE.stat().st_mode)[-3:]}")
+    print()
+    print("Next steps:")
+    print("  agentforge-keys add ANTHROPIC_API_KEY")
+    print("  agentforge-keys add OPENAI_API_KEY")
+    print()
+    print("To load keys into your shell, add to ~/.bashrc or ~/.zshrc:")
+    print('  eval $(agentforge-keys export)')
+
+def cmd_add(args):
+    """Add or update a secret."""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    name = args.name.upper().replace("-", "_")
+    
+    if name in vault:
+        response = input(f"'{name}' exists. Overwrite? (yes/no): ")
+        if response.lower() != "yes":
+            print("Aborted.")
+            return
+    
+    if args.value:
+        value = args.value
+    else:
+        value = getpass.getpass(f"Value for {name}: ")
+    
+    if not value.strip():
+        print("Empty value. Aborted.", file=sys.stderr)
+        sys.exit(1)
+    
+    vault[name] = value.strip()
+    _save_vault(vault, password)
+    
+    print(f"Stored: {name}")
+    print(f"Vault now contains {len(vault)} secret(s)")
+
+def cmd_get(args):
+    """Retrieve a secret value. Prints to stdout for shell capture."""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    name = args.name.upper().replace("-", "_")
+    
+    if name not in vault:
+        print(f"'{name}' not found in vault.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Print ONLY the value (no newline issues) for shell capture:
+    # export KEY=$(agentforge-keys get KEY)
+    sys.stdout.write(vault[name])
+
+def cmd_list(args):
+    """List all secret names (never values)."""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    if not vault:
+        print("Vault is empty.")
+        return
+    
+    print(f"Vault contains {len(vault)} secret(s):")
+    print()
+    for name in sorted(vault.keys()):
+        # Show key name and masked value (first 4 chars + asterisks)
+        val = vault[name]
+        masked = val[:4] + "*" * min(len(val) - 4, 20) if len(val) > 4 else "****"
+        print(f"  {name:30s}  {masked}")
+
+def cmd_delete(args):
+    """Remove a secret from the vault."""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    name = args.name.upper().replace("-", "_")
+    
+    if name not in vault:
+        print(f"'{name}' not found.", file=sys.stderr)
+        sys.exit(1)
+    
+    response = input(f"Delete '{name}'? (yes/no): ")
+    if response.lower() != "yes":
+        print("Aborted.")
+        return
+    
+    del vault[name]
+    _save_vault(vault, password)
+    print(f"Deleted: {name}")
+
+def cmd_export(args):
+    """Print export statements for shell sourcing.
+    
+    Usage: eval $(agentforge-keys export)
+    This loads all vault secrets as environment variables.
+    """
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    for name, value in sorted(vault.items()):
+        # Escape single quotes in value for safe shell export
+        safe_value = value.replace("'", "'\\''")
+        print(f"export {name}='{safe_value}'")
+
+def cmd_env(args):
+    """Print .env format (for reference — DO NOT save to file)."""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    print("# WARNING: This output is for reference only.")
+    print("# DO NOT redirect to a file. Use 'export' command instead.")
+    print()
+    for name, value in sorted(vault.items()):
+        print(f"{name}={value}")
+
+def cmd_rotate(args):
+    """Change the master password."""
+    print("Enter current password:")
+    old_password = _get_password()
+    vault = _load_vault(old_password)
+    
+    print("Enter new password:")
+    new_password = _get_password(confirm=True)
+    
+    # Generate new salt
+    new_salt = sec_module.token_bytes(32)
+    SALT_FILE.write_bytes(new_salt)
+    
+    _save_vault(vault, new_password)
+    print("Master password rotated successfully.")
+
+def cmd_check(args):
+    """Verify vault integrity — can we decrypt it?"""
+    password = _get_password()
+    vault = _load_vault(password)
+    
+    print(f"Vault OK — {len(vault)} secret(s)")
+    print(f"Location: {VAULT_FILE}")
+    print(f"Permissions: {oct(VAULT_FILE.stat().st_mode)[-3:]}")
+    
+    # Check permissions
+    mode = VAULT_FILE.stat().st_mode & 0o777
+    if mode != 0o600:
+        print(f"WARNING: Vault permissions are {oct(mode)}, should be 600")
+    
+    salt_mode = SALT_FILE.stat().st_mode & 0o777
+    if salt_mode != 0o600:
+        print(f"WARNING: Salt permissions are {oct(salt_mode)}, should be 600")
+
+# --- CLI ---
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="agentforge-keys",
+        description="AgentForge Keystore — Encrypted local secret management"
+    )
+    sub = parser.add_subparsers(dest="command", help="Command")
+    
+    sub.add_parser("init", help="Create a new vault")
+    
+    p_add = sub.add_parser("add", help="Add or update a secret")
+    p_add.add_argument("name", help="Secret name (e.g., ANTHROPIC_API_KEY)")
+    p_add.add_argument("--value", "-v", help="Secret value (prompted if omitted)")
+    
+    p_get = sub.add_parser("get", help="Retrieve a secret value")
+    p_get.add_argument("name", help="Secret name")
+    
+    sub.add_parser("list", help="List all secret names")
+    
+    p_del = sub.add_parser("delete", help="Remove a secret")
+    p_del.add_argument("name", help="Secret name")
+    
+    sub.add_parser("export", help="Print shell export statements")
+    sub.add_parser("env", help="Print .env format (reference only)")
+    sub.add_parser("rotate", help="Change master password")
+    sub.add_parser("check", help="Verify vault integrity")
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
+    commands = {
+        "init": cmd_init, "add": cmd_add, "get": cmd_get,
+        "list": cmd_list, "delete": cmd_delete, "export": cmd_export,
+        "env": cmd_env, "rotate": cmd_rotate, "check": cmd_check,
+    }
+    
+    commands[args.command](args)
+
+if __name__ == "__main__":
+    main()

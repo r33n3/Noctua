@@ -85,14 +85,14 @@ This is not incremental improvement—it is categorical change. RapidP is no lon
 
 **2026 Validation: URGENT**
 
-The original course framed this as exploratory thinking. It is now operational reality. In September 2025, Anthropic publicly disclosed the first confirmed instance of an AI-orchestrated cyberattack achieving 80-90% autonomy without human operators. This attack:
-- Mapped network infrastructure
-- Identified vulnerabilities
-- Escalated privileges
-- Moved laterally across systems
-- Exfiltrated sensitive data
+The original course framed this as exploratory thinking. It is now operational reality. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) used Claude Code to autonomously conduct:
+- Reconnaissance and network mapping
+- Vulnerability discovery
+- Credential harvesting
+- Lateral movement across systems
+- Data exfiltration against approximately 30 targets
 
-The attacker AI made independent decisions based on real-time situational assessment. Human operators intervened only at critical junctures.
+The campaign operated at 80–90% autonomy without human intervention, with human operators intervening only at critical junctures.
 
 This is not hypothetical. It is the new threat model.
 
@@ -133,7 +133,7 @@ The metrics have evolved from static SLA measurements into real-time observabili
 
 ### 6. Ethical AI and Responsible AI Principles
 
-**Original Approach:** Ethical framework aligned with NIST AI Risk Management Framework (AI RMF), covering fairness, explainability, robustness, accountability. These principles were subsequently formalized as the **FS-ISAC Responsible AI Principles** (February 2024), published by the FS-ISAC AI Risk Working Group as an industry-standard framework for responsible AI deployment in financial services.
+**Current Approach:** Ethical and governance framework aligned with the **AIUC-1 Standard** — the first security, safety, and reliability standard specifically designed for AI agents. AIUC-1 operationalizes NIST AI RMF, ISO 42001, MITRE ATLAS, and OWASP LLM Top 10 into six auditable domains (Data & Privacy, Security, Safety, Reliability, Accountability, Society) with concrete controls, quarterly technical testing, and third-party certification. This agent-specific framing replaces the earlier FS-ISAC Responsible AI Principles (2024), which addressed general AI in financial services but lacked the agent-specific controls, technical testing requirements, and certification model that AIUC-1 provides.
 
 **2026 Validation and Evolution:**
 
@@ -187,7 +187,7 @@ The original course was correct that these are non-technical issues requiring hu
 The model landscape has evolved dramatically. GPT-2 and GPT-3 are now historical references (interesting for understanding progression but not relevant for current development). The current landscape includes:
 
 **Frontier Models:**
-- Claude Opus 4.5, Claude Sonnet 4.5, Claude Haiku 4.5 (Anthropic)
+- Claude Opus 4.6, Claude Sonnet 4.6, Claude Haiku 4.5 (Anthropic)
 - GPT-4o and o3 series (OpenAI)
 - Gemini 2.5 (Google)
 
@@ -207,7 +207,7 @@ The model landscape has evolved dramatically. GPT-2 and GPT-3 are now historical
 - When to use open-weight vs. proprietary models
 - How to evaluate model trustworthiness and provenance
 
-**Design Decision:** All model references have been updated. Claude Opus 4.5 is used as the primary example throughout the course given its current state-of-the-art reasoning capabilities and safety focus. Sections on model evaluation criteria relevant to security-critical applications are integrated throughout.
+**Design Decision:** All model references have been updated. Claude Opus 4.6 is used as the primary example throughout the course given its current state-of-the-art reasoning capabilities and safety focus. Sections on model evaluation criteria relevant to security-critical applications are integrated throughout.
 
 ---
 
@@ -557,7 +557,7 @@ MCP has become the standard interface for agent-tool communication, analogous to
 
 ### 5. Non-Human Identity (NHI) Governance
 
-**Emerging Reality:** In 2026, non-human identities (AI agents, service accounts, API tokens, etc.) outnumber human identities 50:1 in many enterprises.
+**Emerging Reality:** In 2026, non-human identities (AI agents, service accounts, API tokens, etc.) outnumber human identities by ratios typically ranging from 25:1 to over 100:1, with some environments exceeding 500:1 (ManageEngine, 2026; Silverfort, 2025; Entro, 2025).
 
 **Identity Management Challenges:**
 
@@ -595,9 +595,9 @@ MCP has become the standard interface for agent-tool communication, analogous to
 
 **Case Studies:**
 
-**Anthropic's AI-Orchestrated Cyberattack Disclosure (September 2025):**
-- Describe the attack (80-90% autonomous)
-- Techniques used (what made it possible?)
+**Anthropic's GTG-1002 Espionage Campaign Disclosure (November 2025, detection: September 2025):**
+- Describe the campaign: first reported AI-orchestrated cyber espionage, operating at 80–90% autonomy
+- Techniques used: autonomous reconnaissance, vulnerability discovery, credential harvesting, data exfiltration (~30 targets)
 - Detection and response
 - Implications for security posture
 - Lessons learned
@@ -760,6 +760,44 @@ The 2026 version of AgentForge:
 The 2023 CyberMinds course was ahead of its time. In 2026, its foundational insights are more relevant than ever, and the tactical knowledge required to implement those insights has evolved dramatically. The 2026 course is a comprehensive rebuild that preserves the original vision while incorporating agentic engineering as the execution discipline. The field is moving faster than any curriculum can track, but the principles implemented in AgentForge will endure.
 
 ---
+
+## Verification and Validation Discipline Assessment
+
+V&V Discipline is assessed progressively across both semesters:
+
+**Semester 1:**
+- Lab deliverables include V&V documentation (which claims were verified, how, results)
+- CCT journals should reflect growing V&V awareness (entries about verification habits, trust calibration insights)
+- Midyear prototype must include at least one verification step in its workflow
+
+**Semester 2:**
+- Multi-agent systems must include inter-agent verification mechanisms
+- Red team exercises must include attacks targeting V&V processes
+- Defense implementations must include verification as an explicit layer
+- Capstone must document V&V architecture with automated verification
+
+**Progression indicators:**
+- Week 1-4: Student manually verifies agent outputs when reminded
+- Week 5-8: Student designs tools that produce verifiable outputs (citations, sources, confidence basis)
+- Week 9-12: Student applies V&V to governance and compliance assessment
+- Semester 2 Week 1-4: Student builds inter-agent verification into multi-agent systems
+- Semester 2 Week 5-8: Student attacks and defends verification mechanisms
+- Semester 2 Week 9-12: Student automates V&V in production pipelines
+- Capstone: Student's system includes V&V as a first-class architectural concern
+
+### V&V Rubric Line Item
+
+For every lab deliverable across both semesters, a V&V line item is included in the rubric:
+
+| V&V Discipline | 10% | Did the student verify key AI-generated claims? Is trust calibration appropriate to the output type? Are verification methods documented? |
+
+**NOTE:** This means adjusting existing rubric weights for each lab. The 10% can come from reducing other categories proportionally. Review each lab's existing rubric and adjust accordingly — do not simply add 10% on top of existing weights. Recommend taking proportionally from the largest category in each rubric.
+
+### Capstone V&V Requirements
+
+The capstone project must include a **V&V Architecture** deliverable: document your system's verification approach. For each agent in your system — what outputs does it produce, how are those outputs verified before action is taken, and what happens when verification fails? Include at least one automated verification mechanism. Map your V&V approach to the four dimensions (Output Verification, Calibrated Trust, Failure Imagination, Adversarial Assumption) and identify which dimensions are addressed and which remain as known gaps.
+
+**V&V Implementation** is assessed as part of the capstone evaluation: Does the system include meaningful verification of AI outputs? Is verification proportional to consequence severity? Are verification failures handled gracefully? Is the V&V approach documented and justified?
 
 ---
 

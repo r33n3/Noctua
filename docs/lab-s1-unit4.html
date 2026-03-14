@@ -303,12 +303,12 @@ claude
 <h2 id="week-15">Week 15 — Rapid Prototyping Sprint II: Hardening</h2>
 <div class="week-header"><span class="week-badge">WEEK 15</span><span class="week-sub">Lab: Iterate, Harden, and Production-Ready Quality</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Transform your Sprint I prototype into a hardened, documented, and ethically audited system. Apply the full quality checklist: error handling, input validation, logging, CCT analysis, FS-ISAC compliance, performance measurement.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Transform your Sprint I prototype into a hardened, documented, and ethically audited system. Apply the full quality checklist: error handling, input validation, logging, CCT analysis, AIUC-1 compliance, performance measurement.</p></div>
 
 <div class="quiz-block" id="quiz-w15">
   <h4>&#x1f4da; Knowledge Check — Week 15</h4>
 
-  <div class="quiz-question" data-qid="w15q1" data-answer="d" data-explain="Production hardening for agentic systems means: robust error handling (every agent failure is caught and handled gracefully), input validation (all user input and tool outputs validated), structured logging (every tool invocation logged with timestamp, parameters, result), complete documentation (README, API docs, architecture diagram), and ethics compliance (FS-ISAC audit passed).">
+  <div class="quiz-question" data-qid="w15q1" data-answer="d" data-explain="Production hardening for agentic systems means: robust error handling (every agent failure is caught and handled gracefully), input validation (all user input and tool outputs validated), structured logging (every tool invocation logged with timestamp, parameters, result), complete documentation (README, API docs, architecture diagram), and ethics compliance (AIUC-1 audit passed).">
     <p class="q-text">1. What does 'hardening' a security prototype specifically require?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="w15q1" value="a"> A) Converting Python to a compiled language for speed</label>
@@ -364,8 +364,8 @@ class JSONFormatter(logging.Formatter):
     <div class="lab-step" id="step-w15-4">
       <label><input type="checkbox" onchange="toggleStep('w15-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Apply a quick FS-ISAC ethics self-audit</div>
-        <div class="step-desc">Run your Week 9 audit checklist against your prototype. Record compliance for each principle (Full / Partial / Gap). For any Gap, write one concrete remediation action. You don't need to fix all gaps in Sprint II, but you must document them.</div>
+        <div class="step-title">Step 4: Apply a quick AIUC-1 ethics self-audit</div>
+        <div class="step-desc">Run your Week 9 audit checklist against your prototype. Record compliance for each domain (Full / Partial / Gap). For any Gap, write one concrete remediation action. You don't need to fix all gaps in Sprint II, but you must document them.</div>
       </div></label>
     </div>
 
@@ -391,7 +391,7 @@ class JSONFormatter(logging.Formatter):
   <h5>Week 15 Deliverables</h5>
   <ul>
     <li><strong>Hardened Prototype</strong> — complete code with error handling, validation, logging, and README</li>
-    <li><strong>Sprint II Ethics Audit</strong> — FS-ISAC compliance matrix for the hardened prototype</li>
+    <li><strong>Sprint II Ethics Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
     <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
   </ul>
 </div>

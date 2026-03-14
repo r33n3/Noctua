@@ -225,6 +225,26 @@ safety check --json > vulnerability-report.json
 
 ---
 
+### V&V Lens: Automated Verification in Production
+
+In production, V&V can't be manual — it must be automated. Your supply chain audit scanner is a V&V tool: it automatically verifies that dependencies are safe, models are authentic, and SBOMs are complete.
+
+Apply this pattern everywhere in your production systems:
+- **Dependency verification:** Automated scanning on every build (you build this in today's lab)
+- **Model verification:** Signature checking on every model load
+- **Output verification:** Automated cross-referencing of agent outputs against known-good data
+- **Drift verification:** Continuous monitoring for model performance degradation
+
+Production V&V is the engineering realization of the discipline you've been practicing all year. The instinct to verify before trusting — now encoded in pipelines, not just habits.
+
+---
+
+> **🧠 Domain Assist:** Supply chain security, SBOMs, and the SLSA framework come from the DevOps/platform engineering world. If you've never built a CI/CD pipeline or generated an SBOM, the concepts can feel foreign. Get oriented first:
+>
+> "I'm a security engineer about to build a supply chain audit scanner. I need to understand: 1) What is an SBOM and why would I care about one for an AI project specifically? 2) What does a dependency scanner actually do — what's it checking and against what? 3) What is model provenance and why does it matter if I can't verify where a model came from? 4) What does SLSA Level 2 mean practically — what do I need to implement? 5) What are the real-world supply chain attacks on AI/ML systems that I should understand?"
+
+---
+
 ### Day 2 — Hands-On Lab: AI Supply Chain Audit Tool
 
 **Lab Objectives:**
@@ -552,6 +572,10 @@ If recommendations are too generic, ask: "For a CRITICAL dependency vulnerabilit
 - Syft: https://github.com/anchore/syft (SBOM generation)
 - Cosign: https://github.com/sigstore/cosign (Model signing)
 - Safety: https://pyup.io/safety/ (Python vulnerability scanning)
+
+---
+
+> **🛠️ Skill Opportunity:** Your supply chain audit scanner wraps three tools (Safety, Syft, model provenance). Package it as a `/supply-chain-audit` skill with the scanner scripts and a reference doc mapping findings to AIUC-1 controls. This is the kind of skill your future employer would value.
 
 ---
 
@@ -933,6 +957,14 @@ flowchart TD
   }
 }
 ```
+
+---
+
+> **🧠 Domain Assist:** Non-Human Identity governance requires understanding cloud IAM, OAuth flows, API key lifecycle, and credential management — topics that live in the infrastructure/identity engineering space. Most security students have used API keys but haven't managed identity infrastructure.
+>
+> Before building your NHI governance system, ask Claude Chat:
+>
+> "I'm building a governance system for AI agent identities. Help me understand: 1) What types of credentials do AI agents typically use? (API keys, OAuth tokens, service accounts, IAM roles) 2) What's the lifecycle of each — creation, rotation, revocation? 3) What does 'least privilege' look like for an AI agent that needs to query a database, read from S3, and call external APIs? 4) What goes wrong when NHI governance is weak? Give me real-world examples. 5) How do NHIs differ from human identities in terms of governance challenges?"
 
 ---
 
@@ -1819,6 +1851,12 @@ if result["status"] == "escalated":
 ```
 
 > **💡 Discussion Prompt:** If an agent is in "degraded mode" (using fallback rules), should you notify the user? What if it succeeds anyway—was the notification necessary?
+
+---
+
+> **🧠 Domain Assist:** Observability — metrics, dashboards, alerting, cost management — is the SRE/platform engineering domain. If you've never set up OpenTelemetry or built a Prometheus dashboard, get oriented first:
+>
+> "I'm a security engineer about to implement observability for a multi-agent AI system. I need to understand: 1) What is OpenTelemetry and how does it differ from traditional logging? 2) What's the difference between traces, metrics, and logs — and when do I need each? 3) What does a useful dashboard for an AI agent system look like — what metrics would an operator actually check? 4) What are SLOs and how do I write ones that are useful vs. ones that are just checkbox compliance? 5) What are the common mistakes engineers make when instrumenting AI systems for the first time?"
 
 ---
 
@@ -3271,6 +3309,14 @@ kubectl get hpa agent-system -w
 
 ---
 
+> **🧠 Domain Assist:** Infrastructure as Code (Terraform, CloudFormation), container orchestration (ECS, Kubernetes), and CI/CD pipeline design are specialized skills. If you've never written a Dockerfile or a Terraform template, you're not alone — most security professionals haven't.
+>
+> Get oriented before building:
+>
+> "I'm a security engineer who needs to containerize and deploy a multi-agent security system. I've never written Terraform or a Dockerfile. Help me understand: 1) What is a Dockerfile — conceptually, what am I doing when I write one? 2) What is Terraform — what problem does it solve and what does a basic template look like? 3) What's the difference between ECS and Kubernetes, and which is simpler for a first deployment? 4) What does a CI/CD pipeline look like for an AI agent system — what steps should it include? 5) What are the security-specific concerns when containerizing AI agents?"
+
+---
+
 ### Day 2 — Hands-On Lab: Deployment and Operations
 
 **Lab Objectives:**
@@ -3787,6 +3833,22 @@ After this course, when you deploy AI security systems:
 - **Your observability setup** catches problems before they become crises
 
 The patterns you document now become the foundation of your organization's production standards.
+
+---
+
+### Dark Factory Gradient: Decision Authority Spectrum
+
+Not every decision should be automated, and not every decision needs a human. The art of production deployment is drawing the line:
+
+| Decision Type | Autonomy Level | Example | Rationale |
+|---|---|---|---|
+| **Informational** | Full autonomy | Log enrichment, alert classification | Low consequence; wrong answer wastes analyst time, doesn't cause harm |
+| **Protective — reversible** | Autonomy + notification | Add firewall rule, increase monitoring | Easily reversed; notification ensures human awareness |
+| **Protective — hard to reverse** | Human approval required | Quarantine production server, disable user account | Business impact if wrong; human judgment needed |
+| **Destructive** | Human approval required | Wipe compromised system, terminate instance | Irreversible; must verify before acting |
+| **External communication** | Human only | Notify regulators, contact law enforcement, issue customer disclosure | Legal/reputational consequences; AI cannot own this decision |
+
+Your capstone should explicitly document where on this spectrum each agent decision falls and what the override mechanism is. This IS your dark factory governance policy.
 
 ---
 

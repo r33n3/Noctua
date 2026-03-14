@@ -88,7 +88,7 @@ This is a starting point. Adapt it to your workflow:
 - Add a "CCT pillars check" section if you want to tie this to the
   five-pillar framework from Unit 1
 - Create a `/think-security` variant that always includes threat modeling
-- Create a `/think-ethics` variant that always surfaces FS-ISAC principles
+- Create a `/think-ethics` variant that always surfaces AIUC-1 domain requirements
 
 The best version of this skill is the one you've shaped for your context.
 

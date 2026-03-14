@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Features — AgentSecForge Cheat Sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f7f5ee;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+
+  /* Claude brand colors */
+  :root {
+    --claude-tan: #f7f5ee;
+    --claude-warm: #e8e0d0;
+    --claude-orange: #da7756;
+    --claude-brown: #6b5b4e;
+    --claude-dark: #2d2118;
+    --claude-cream: #faf8f3;
+    --core: #b5593a;
+    --ext: #3a6fb5;
+    --auto: #3a8f6f;
+    --prod: #7a5ab5;
+    --tag-bg: #f0ece3;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  /* Header */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 20px; margin-bottom: 28px;
+    border-bottom: 2px solid var(--claude-warm);
+  }
+  .header h1 {
+    font-size: 28px; font-weight: 700; color: var(--claude-dark);
+    letter-spacing: -0.5px;
+  }
+  .header h1 span { color: var(--claude-orange); }
+  .header-sub { font-size: 13px; color: var(--claude-brown); margin-top: 4px; }
+  .header-badge {
+    font-size: 11px; background: var(--claude-dark); color: var(--claude-tan);
+    padding: 4px 12px; border-radius: 4px; font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* Filter tabs */
+  .filters {
+    display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap;
+    position: sticky; top: 0; background: var(--claude-tan);
+    padding: 12px 0; z-index: 10;
+    border-bottom: 1px solid var(--claude-warm);
+  }
+  .filter-btn {
+    padding: 6px 14px; border: 1.5px solid var(--claude-warm);
+    background: var(--claude-cream); color: var(--claude-brown);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    border-radius: 6px; font-family: inherit; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--claude-orange); color: var(--claude-dark); }
+  .filter-btn.active {
+    background: var(--claude-dark); color: var(--claude-tan);
+    border-color: var(--claude-dark);
+  }
+  .result-count { font-size: 11px; color: var(--claude-brown); align-self: center; margin-left: 8px; }
+
+  /* Cards grid */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--claude-cream);
+    border: 1.5px solid var(--claude-warm);
+    border-radius: 10px;
+    padding: 18px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .card:hover { border-color: var(--claude-orange); box-shadow: 0 2px 12px rgba(218,119,86,0.08); }
+  .card.hidden { display: none; }
+
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; font-weight: 500; color: var(--claude-dark);
+  }
+  .card-cat {
+    font-size: 9px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 3px;
+    white-space: nowrap;
+  }
+  .cat-core { background: #f5e0d8; color: var(--core); }
+  .cat-ext { background: #d8e5f5; color: var(--ext); }
+  .cat-auto { background: #d8f0e5; color: var(--auto); }
+  .cat-prod { background: #e5d8f0; color: var(--prod); }
+
+  .card-desc { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+
+  .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tag {
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    background: var(--tag-bg); border-radius: 3px; color: var(--claude-brown);
+  }
+
+  .card-course {
+    font-size: 12px; color: var(--claude-brown);
+    padding-top: 10px; border-top: 1px solid var(--claude-warm);
+    line-height: 1.5;
+  }
+  .card-course strong { color: var(--claude-dark); font-weight: 600; }
+  .card-course .week {
+    display: inline-block; background: var(--claude-orange);
+    color: #fff; font-size: 10px; font-weight: 600;
+    padding: 1px 6px; border-radius: 3px; margin-right: 2px;
+  }
+  .na-badge {
+    display: inline-block; background: #e8e0d0; color: #999;
+    font-size: 10px; font-weight: 500; padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 20px; font-size: 11px; color: var(--claude-brown);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  .footer {
+    margin-top: 32px; padding-top: 16px;
+    border-top: 1px solid var(--claude-warm);
+    font-size: 11px; color: #999; text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <div>
+    <h1><span>Claude Code</span> Features</h1>
+    <div class="header-sub">AgentSecForge Cheat Sheet — Complete feature inventory with course mapping</div>
+  </div>
+  <div class="header-badge">Updated March 2026</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--core)"></div> Core — Built-in tools & commands</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--ext)"></div> Extension — Skills, MCP, subagents</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--auto)"></div> Automation — Loops, hooks, scheduling</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--prod)"></div> Production — CI/CD, multi-provider, teams</div>
+</div>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" onclick="filter('all')">All</button>
+  <button class="filter-btn" onclick="filter('core')">Core</button>
+  <button class="filter-btn" onclick="filter('ext')">Extensions</button>
+  <button class="filter-btn" onclick="filter('auto')">Automation</button>
+  <button class="filter-btn" onclick="filter('prod')">Production</button>
+  <button class="filter-btn" onclick="filter('applicable')">Course Applicable</button>
+  <span class="result-count" id="count"></span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="footer">
+  AgentSecForge · Claude Code Feature Reference · Features verified against official docs and release notes as of March 12, 2026
+</div>
+
+</div>
+
+<script>
+const features = [
+  // === CORE ===
+  {
+    name: "CLAUDE.md",
+    cat: "core",
+    desc: "Persistent project context loaded every session. Define coding conventions, project architecture, team practices, and agent constraints. Hierarchy: project root > subdirectories > user-level (~/.claude/CLAUDE.md).",
+    tags: ["always-on", "context", "Week 1"],
+    course: true,
+    courseNote: '<span class="week">W1</span> Foundation — first file students create. Project conventions, security policies, governance constraints. Referenced by PeaRL case study (L5 attack read CLAUDE.md).'
+  },
+  {
+    name: "Prompts & Context Engineering",
+    cat: "core",
+    desc: "System prompts, structured output schemas, context window management. Prompt versioning, /compact for context management, /clear for reset. Foundation of every interaction.",
+    tags: ["prompts", "structured-output", "context-window"],
+    course: true,
+    courseNote: '<span class="week">W2</span> Core skill — context engineering is the primary teaching focus. Structured output, prompt lifecycle, token economics.'
+  },
+  {
+    name: "Built-in Tools",
+    cat: "core",
+    desc: "File operations (Read, Write, Edit, Glob, Grep), Bash execution, WebSearch, WebFetch. These are the default tools available in every session without configuration.",
+    tags: ["files", "bash", "web", "built-in"],
+    course: true,
+    courseNote: '<span class="week">W1</span> Students use from day one. Bash tool is key for security operations. File tools for building. Web tools for research.'
+  },
+  {
+    name: "Slash Commands",
+    cat: "core",
+    desc: "Built-in: /think, /plan, /compact, /clear, /cost, /stats, /model, /config, /resume, /continue, /fork, /hooks, /agents, /context, /ide. Custom commands via .claude/commands/ directory.",
+    tags: ["commands", "workflow", "built-in"],
+    course: true,
+    courseNote: '<span class="week">W1</span> /think and /plan from day one. /cost for SDK tracking. Custom commands for course workflows (/think, /spec, /retro).'
+  },
+  {
+    name: "Model Selection",
+    cat: "core",
+    desc: "Switch between Opus, Sonnet, Haiku within a session via /model. Different tiers for different tasks. Subagents can use different models than the parent session.",
+    tags: ["models", "cost", "right-sizing"],
+    course: true,
+    courseNote: '<span class="week">W2</span> Engineering Assessment Stack Layer 3. Students compare model tiers empirically. Right-sizing becomes muscle memory.'
+  },
+  {
+    name: "Extended Thinking",
+    cat: "core",
+    desc: "Enable deep reasoning with thinking token budgets. /think for inline reasoning. Ultrathink for maximum depth. Thinking tokens billed as output tokens.",
+    tags: ["reasoning", "thinking", "analysis"],
+    course: true,
+    courseNote: '<span class="week">W1</span> /think is the CCT analysis tool. Extended thinking for complex incident analysis where reasoning transparency matters.'
+  },
+  {
+    name: "Plan Mode",
+    cat: "core",
+    desc: "Switch Claude to planning-only mode — proposes changes without executing. Review before committing. Plan subagent researches codebase for planning context.",
+    tags: ["planning", "review", "safety"],
+    course: true,
+    courseNote: '<span class="week">W2</span> Spec verification step. After /spec produces the package, Plan mode verifies Claude Code interpreted it correctly before building.'
+  },
+  {
+    name: "Session Management",
+    cat: "core",
+    desc: "--resume picks up a previous session. --continue restarts the most recent. /fork creates a branch of the current conversation. Sessions persist across terminal closures.",
+    tags: ["sessions", "persistence", "workflow"],
+    course: true,
+    courseNote: '<span class="week">W3+</span> Resume long-running projects across lab sessions. Fork to experiment without losing main context.'
+  },
+  {
+    name: "Permissions System",
+    cat: "core",
+    desc: "Three modes: ask (default), auto-accept (acceptEdits), plan. Fine-grained tool allowlists and blocklists. disallowedBashCommands for restricting dangerous operations.",
+    tags: ["security", "permissions", "governance"],
+    course: true,
+    courseNote: '<span class="week">W1</span> Security from day one. disallowedBashCommands is the first hard control students implement. PeaRL case study connection to L7.'
+  },
+  {
+    name: "Context Window Tools",
+    cat: "core",
+    desc: "/compact summarizes and compresses conversation. /context shows token usage breakdown (tools, MCP, skills). /clear resets conversation. Critical for long sessions.",
+    tags: ["context", "tokens", "management"],
+    course: true,
+    courseNote: '<span class="week">W2</span> Context engineering fundamentals. Students learn to monitor and manage their context budget. /context reveals where tokens go.'
+  },
+  {
+    name: "Voice Mode",
+    cat: "core",
+    desc: "Push-to-talk voice input for dictating instructions to Claude Code. Rebindable activation key. Speech-to-text transcription.",
+    tags: ["voice", "accessibility", "input"],
+    course: false,
+    courseNote: '<span class="na-badge">Optional</span> Accessibility feature. Not required for course but available for students who prefer voice input.'
+  },
+
+  // === EXTENSIONS ===
+  {
+    name: "Skills 2.0",
+    cat: "ext",
+    desc: "Programmable markdown workflows with frontmatter config. Subagent spawning, tool restriction, model override, lifecycle hooks, dynamic context injection. Two types: Capability Uplift (model gap-filling) and Workflow (process enforcement). Skill Creator for building and evaluating.",
+    tags: ["skills", "workflows", "programmable", "Skills 2.0"],
+    course: true,
+    courseNote: '<span class="week">W6</span> Core architecture. Students build /think, /spec, /audit-aiuc1, /tool-select skills. Skills 2.0 upgrades: subagent spawning from skills, tool restriction per skill, model override.'
+  },
+  {
+    name: "MCP Servers",
+    cat: "ext",
+    desc: "Model Context Protocol connects Claude to external services. stdio (local) and SSE (remote) transports. Tool definitions with input schemas. Tool Search Tool for progressive disclosure with large tool libraries.",
+    tags: ["MCP", "tools", "integrations", "API"],
+    course: true,
+    courseNote: '<span class="week">W3-4</span> Students build MCP servers for CVE lookup, SIEM queries, threat intel. Tool Search Tool taught as context optimization technique.'
+  },
+  {
+    name: "Custom Subagents",
+    cat: "ext",
+    desc: "Specialized AI agents with own system prompt, tool access, model selection, and isolated context window. Built-in: Explore (read-only codebase), Plan (research for planning), general-purpose. Custom via .claude/agents/ YAML files or /agents command.",
+    tags: ["subagents", "isolation", "delegation", "parallel"],
+    course: true,
+    courseNote: '<span class="week">W9</span> Multi-agent week. Students build security-specific subagents (recon, analysis, reporting) with scoped permissions and right-sized models.'
+  },
+  {
+    name: "Agent Teams",
+    cat: "ext",
+    desc: "Multiple independent Claude sessions that coordinate, message each other, and divide work in parallel. Lead agent handles orchestration. Teammates inherit permissions. Configured through prompt, not YAML. Launched Feb 2026 with Opus 4.6.",
+    tags: ["teams", "parallel", "orchestration", "multi-agent"],
+    course: true,
+    courseNote: '<span class="week">W9-10</span> Full agent team orchestration. Students build SOC agent teams with parallel execution across worktrees.'
+  },
+  {
+    name: "Plugins & Marketplaces",
+    cat: "ext",
+    desc: "Bundle skills, hooks, subagents, and MCP servers into installable packages. Plugins are Git repos. Marketplaces are collections of plugins. Namespaced commands (/plugin:command). /plugin install from marketplace.",
+    tags: ["plugins", "packaging", "sharing", "distribution"],
+    course: true,
+    courseNote: '<span class="week">W6</span> Students package their skills as plugins. Plugin architecture connects to skill/prompt registry concept. Sharing validated tools across the class.'
+  },
+  {
+    name: "Task Tool (Subagent Spawning)",
+    cat: "ext",
+    desc: "Spawn isolated subagents via the Task tool for parallel work. Each gets own context window. Returns summary to parent. Subagents cannot spawn sub-subagents (no recursion). Can specify subagent_type for built-in specialists.",
+    tags: ["Task", "spawning", "parallel", "isolation"],
+    course: true,
+    courseNote: '<span class="week">W9</span> Primary mechanism for agent teams. Students use Task tool to spawn specialist agents for parallel security operations.'
+  },
+  {
+    name: "Multi-Provider (Ollama / OpenRouter)",
+    cat: "ext",
+    desc: "Run Claude Code against local models via Ollama (set ANTHROPIC_BASE_URL to localhost). Also supports OpenRouter, LM Studio, llama.cpp. Subagents can route to different providers. Data stays local when needed.",
+    tags: ["local-models", "Ollama", "privacy", "cost"],
+    course: true,
+    courseNote: '<span class="week">W9+</span> Data classification requires local models for some agents. Students learn multi-provider architecture. Connects to Engineering Assessment Stack model selection.'
+  },
+
+  // === AUTOMATION ===
+  {
+    name: "/loop (Recurring Tasks)",
+    cat: "auto",
+    desc: "Schedule recurring prompts at intervals: /loop 5m check the deploy. Cron expressions under the hood. Up to 50 concurrent tasks per session. 3-day auto-expiry. Session-scoped — stops when terminal closes. Can compose with skills: /loop 2h /review-pr.",
+    tags: ["loop", "cron", "recurring", "monitoring"],
+    course: true,
+    courseNote: '<span class="week">W10</span> Continuous monitoring automation. Students build SOC monitoring loops. Dark factory concept: /loop running overnight = autonomous operation. 3-day expiry is a governance guardrail.'
+  },
+  {
+    name: "One-Shot Scheduled Tasks",
+    cat: "auto",
+    desc: "Schedule single-fire reminders in natural language. Claude converts to cron, fires once, then self-deletes. For example: \"remind me to check the build at 3pm\".",
+    tags: ["reminders", "scheduling", "one-shot"],
+    course: true,
+    courseNote: '<span class="week">W10+</span> Lightweight automation. Time-boxed agent tasks that self-cleanup.'
+  },
+  {
+    name: "Desktop Scheduled Tasks",
+    cat: "auto",
+    desc: "Persistent scheduling via Claude Code Desktop. Survives restarts, runs while computer is awake. More durable than session-scoped /loop. For long-term recurring automation.",
+    tags: ["desktop", "persistent", "scheduling"],
+    course: true,
+    courseNote: '<span class="week">S2</span> Production automation. Progression from session /loop (dies on exit) → Desktop scheduling (survives) → GitHub Actions (infrastructure-level).'
+  },
+  {
+    name: "Hooks",
+    cat: "auto",
+    desc: "Deterministic scripts at lifecycle events. PreToolUse (block before execution), PostToolUse (react after), SessionStart, PermissionRequest, Compact, and more. Configured in settings.json or /hooks command. Not AI — pure code execution.",
+    tags: ["hooks", "lifecycle", "governance", "deterministic"],
+    course: true,
+    courseNote: '<span class="week">W9</span> Governance enforcement. PreToolUse blocks dangerous commands (PeaRL bash_guard). PostToolUse for auto-linting. SessionStart for context loading. THE mechanism for hard controls.'
+  },
+  {
+    name: "Git Worktrees",
+    cat: "auto",
+    desc: "Branch-isolated parallel working directories. Each agent/developer works in their own worktree without merge conflicts during development. Claude Code uses worktrees natively for agent parallel execution.",
+    tags: ["git", "worktrees", "isolation", "parallel"],
+    course: true,
+    courseNote: '<span class="week">W9</span> Three layers: human parallel dev, agent parallel execution, human+agent combined. tmux/cmux provides visibility across worktrees.'
+  },
+  {
+    name: "Remote Control",
+    cat: "auto",
+    desc: "External triggering of Claude Code sessions. API-driven automation from CI/CD pipelines or external services. Poll-based connection with 10-minute intervals when idle.",
+    tags: ["remote", "API", "CI/CD", "external"],
+    course: true,
+    courseNote: '<span class="week">W15</span> Production integration. Trigger Claude Code from GitHub Actions, CI/CD pipelines, or monitoring alerts.'
+  },
+
+  // === PRODUCTION ===
+  {
+    name: "Headless / --print Mode",
+    cat: "prod",
+    desc: "Non-interactive execution: claude --print \"task\" for single-shot operations. claude -p for piped input. Essential for CI/CD integration, GitHub Actions, automated pipelines.",
+    tags: ["headless", "CI/CD", "non-interactive", "automation"],
+    course: true,
+    courseNote: '<span class="week">W15</span> Pipeline integration. Students run Claude Code in headless mode for automated security scanning in CI/CD.'
+  },
+  {
+    name: "Cost Tracking (/cost, SDK)",
+    cat: "prod",
+    desc: "/cost shows session token usage and cost. SDK provides total_cost_usd, per-model modelUsage breakdowns, cache read/write tracking. Workspace spend limits in Console.",
+    tags: ["cost", "tokens", "billing", "SDK"],
+    course: true,
+    courseNote: '<span class="week">W2+</span> Tracked from Week 2 onwards. /cost after every lab. SDK cost tracking in agent teams for per-agent cost optimization.'
+  },
+  {
+    name: "Claude Agent SDK (TypeScript/Python)",
+    cat: "prod",
+    desc: "Build custom agent experiences outside the terminal. Same tools and permissions framework. TypeScript SDK has per-step token breakdowns and per-model cost. Python SDK has cumulative totals.",
+    tags: ["SDK", "TypeScript", "Python", "custom-agents"],
+    course: true,
+    courseNote: '<span class="week">S2</span> Semester 2 deep dive. Students build custom agent workflows with the SDK. Compare SDK approach vs Claude Code native.'
+  },
+  {
+    name: "GitHub Actions Integration",
+    cat: "prod",
+    desc: "Run Claude Code in CI/CD via GitHub Actions. Automated code review (Code Review dispatches agent teams on every PR). Security scanning. Automated fixes. Infrastructure-level scheduling.",
+    tags: ["GitHub", "CI/CD", "code-review", "automation"],
+    course: true,
+    courseNote: '<span class="week">W15</span> Production deployment. Automated security scanning on every PR. Claude Code Review as reference implementation.'
+  },
+  {
+    name: "Bedrock / Vertex / Foundry",
+    cat: "prod",
+    desc: "Run Claude Code through AWS Bedrock, Google Vertex AI, or Microsoft Foundry. Enterprise deployment with cloud-native auth, billing, and compliance. Same features, different infrastructure.",
+    tags: ["enterprise", "AWS", "Google", "Azure"],
+    course: true,
+    courseNote: '<span class="week">S2</span> Enterprise deployment options. Students understand multi-cloud model access and when each provider makes sense.'
+  },
+  {
+    name: "Code Review (Agent Teams)",
+    cat: "prod",
+    desc: "Anthropic's Code Review dispatches specialized agent teams on every PR. Multiple agents probe for data-handling errors, off-by-one, API misuse in parallel. $15-25 per review. Findings ranked by severity.",
+    tags: ["code-review", "PR", "security", "quality"],
+    course: true,
+    courseNote: '<span class="week">W15</span> Reference implementation of multi-agent security scanning in production CI/CD. Students study the architecture as a design pattern.'
+  },
+  {
+    name: "Prompt Caching (Automatic)",
+    cat: "prod",
+    desc: "Claude API automatically caches static prompt portions. Cache reads cost 10% of base input price. 5-minute default TTL, 1-hour extended. Structure prompts: static first, variable last for optimal cache hits.",
+    tags: ["caching", "cost", "optimization", "tokens"],
+    course: true,
+    courseNote: '<span class="week">W2</span> Taught as context engineering optimization. Students measure cache hit rates through SDK. Designing for cacheability becomes a skill.'
+  },
+  {
+    name: "IDE Integration (VS Code)",
+    cat: "prod",
+    desc: "Claude Code integrates with VS Code via /ide command. Spark icon in activity bar lists sessions. Sessions open as full editors. Teleport for seamless transition between terminal and IDE.",
+    tags: ["VS Code", "IDE", "editor"],
+    course: false,
+    courseNote: '<span class="na-badge">Optional</span> Students may use VS Code but course focuses on terminal-native workflow with tmux/cmux. IDE integration is a productivity enhancement, not a requirement.'
+  },
+  {
+    name: "Compaction & Long Sessions",
+    cat: "prod",
+    desc: "/compact compresses conversation history while preserving key context. Automatic compaction in long sessions. Images preserved for cache reuse. Critical for multi-hour agent sessions.",
+    tags: ["compaction", "long-sessions", "context"],
+    course: true,
+    courseNote: '<span class="week">W7</span> Break Everything week — students discover context degradation in long sessions. Compaction strategies for maintaining agent quality over time.'
+  },
+  {
+    name: "LSP Support",
+    cat: "prod",
+    desc: "Language Server Protocol integration gives Claude Code access to language intelligence: go-to-definition, find-references, diagnostics. Better code understanding without manual grepping.",
+    tags: ["LSP", "language", "code-intelligence"],
+    course: false,
+    courseNote: '<span class="na-badge">Background</span> Improves Claude Code\'s code understanding automatically. Students benefit without needing to configure it.'
+  }
+];
+
+let activeFilter = 'all';
+
+function filter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().toLowerCase().replace(' ', '') === f || 
+      (f === 'all' && b.textContent.trim() === 'All') ||
+      (f === 'applicable' && b.textContent.trim() === 'Course Applicable'));
+  });
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  let visible = 0;
+
+  grid.innerHTML = features.map(f => {
+    let show = false;
+    if (activeFilter === 'all') show = true;
+    else if (activeFilter === 'applicable') show = f.course;
+    else show = f.cat === activeFilter;
+
+    if (show) visible++;
+
+    const catClass = `cat-${f.cat}`;
+    const catLabel = { core: 'Core', ext: 'Extension', auto: 'Automation', prod: 'Production' }[f.cat];
+
+    return `
+      <div class="card ${show ? '' : 'hidden'}">
+        <div class="card-top">
+          <div class="card-name">${f.name}</div>
+          <div class="card-cat ${catClass}">${catLabel}</div>
+        </div>
+        <div class="card-desc">${f.desc}</div>
+        <div class="card-meta">
+          ${f.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+        <div class="card-course">
+          <strong>Course:</strong> ${f.courseNote}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('count').textContent = `${visible} feature${visible !== 1 ? 's' : ''}`;
+}
+
+render();
+</script>
+</body>
+</html>

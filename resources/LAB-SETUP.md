@@ -6,6 +6,120 @@ The AgentForge lab environment is designed for graduate students to build real a
 
 You will develop autonomous security agents capable of threat detection, incident response, vulnerability assessment, and security architecture using Claude's Agent SDK, MCP servers, and agent teams. This practical approach prepares you to build production-ready security systems in enterprise environments.
 
+## Tool Selection Guide
+
+This course uses three Claude tools, each optimized for different types of work:
+
+### Claude Chat (+ /think skill)
+**Access:** claude.ai or Claude desktop app
+**Use for:** Incident analysis, threat modeling, brainstorming, applying CCT frameworks, exploring hypotheses, learning concepts, reflecting on results
+**Key feature:** The `/think` skill provides structured reasoning output — use it when you need to systematically work through a problem before acting
+
+**When you'll use it:**
+- Week 1: Analyzing the Meridian Financial incident
+- Week 2: Team-based CCT analysis discussions
+- Week 3: Comparing model outputs and evaluating quality
+- Week 4: Designing context engineering approaches before building them
+- Throughout: CCT journal reflections, threat modeling, design thinking
+
+### Cowork
+**Access:** Claude desktop app
+**Use for:** Writing reports, organizing lab deliverables, creating policy documents, managing files, formatting audit reports, compiling structured documentation
+**Key feature:** File-aware — Cowork can help you organize, format, and manage multiple deliverables
+
+**When you'll use it:**
+- Week 1: Organizing your CCT analysis report and metrics log
+- Week 9: Structuring your ethics/AIUC-1 audit report
+- Week 12: Writing your AI Security Policy document
+- Throughout: Formatting and polishing lab deliverables
+
+### Claude Code
+**Access:** Terminal/CLI (`claude` command)
+**Use for:** Building MCP servers, writing Python scripts, creating multi-agent systems, engineering security tools, implementing RAG pipelines, CI/CD pipelines
+**Key feature:** Can read, write, and execute code in your development environment
+
+**When you'll use it:**
+- Week 4: Building context-engineered analysis systems
+- Weeks 5-6: Building MCP servers
+- Weeks 7-8: Building structured output generators and RAG systems
+- Weeks 13-15: Rapid prototyping sprints
+- Semester 2: Multi-agent systems, red team tools, defense tools, production pipelines
+
+### The Switch Pattern
+Most labs follow this flow:
+1. **Think in Chat** — Analyze the problem, apply CCT, explore approaches
+2. **Spec in Cowork** — Organize your thinking into requirements or deliverable structure
+3. **Build in Code** — Implement the solution
+4. **Retro in Chat** — Reflect on what worked, what didn't, what you'd change
+
+Not every lab uses all three tools. Some are Chat-only (analysis exercises). Some are Code-only (building sprints). The skill is knowing which tool fits each phase of the work.
+
+### Domain Assist Pattern
+
+Many labs require domain expertise beyond core security (database administration, legal compliance, data science, DevOps, executive communication). When you see a **🧠 Domain Assist** callout, this means:
+
+1. **Open Claude Chat** before starting that section
+2. **Ask Claude to brief you** on the domain perspective needed
+3. **Apply CCT** to what Claude tells you — don't take it at face value
+4. **Proceed with the lab** armed with domain context you didn't have before
+
+Example prompts for Domain Assist:
+
+- "I'm about to audit an AI system for fairness. I've never done this before. Brief me on what fairness metrics matter, what auditors look for, and common pitfalls."
+- "I need to write a Terraform deployment template for an ECS task. I've never written Terraform. Walk me through the key concepts I need to understand."
+- "I'm scoring a vulnerability using CVSS. Explain the scoring methodology and walk me through how to assess each dimension for an AI agent prompt injection vulnerability."
+
+The goal isn't to become an expert — it's to acquire enough context to do the lab meaningfully and learn from the experience.
+
+---
+
+## Platform Setup
+
+### Claude Setup
+- Create Claude account at claude.ai
+- Claude Max subscription activation (per course fee)
+- Install Claude Code CLI: `npm install -g @anthropic-ai/claude-code`
+- Verify: `claude --version`
+
+### OpenAI Platform Setup
+- Create account at platform.openai.com
+- API key generation and environment variable setup: `export OPENAI_API_KEY=your_key_here`
+- Install OpenAI Python SDK: `pip install openai`
+- Verify: `python -c "import openai; print(openai.__version__)"`
+- Budget management: Set spending limits in your OpenAI account dashboard to avoid surprise charges
+
+### AWS Setup (for open-source models and production labs)
+- AWS Academy account activation (provided by institution) OR AWS Free Tier account with course-provided credits
+- Region: us-east-1 (recommended for consistency)
+- Services used: EC2 (GPU instances for Ollama), ECS (Unit 7 deployment), S3 (artifact storage)
+- Ollama on AWS: Launch an EC2 GPU instance, install Ollama, pull your chosen model
+- Cost estimation: ~$20-40/month with provided credits
+
+### Anthropic SDK Installation
+Install the Anthropic Python SDK for building API-integrated tools in labs:
+
+```bash
+pip install anthropic
+```
+
+Verify:
+```bash
+python -c "import anthropic; print(anthropic.__version__)"
+```
+
+The SDK is required starting Week 4 (Context Engineering) and used throughout the remainder of the course. It provides access to token usage data and cost tracking via the `response.usage` object.
+
+### Local Machine Specifications
+| Component | Minimum | Recommended | Notes |
+|-----------|---------|-------------|-------|
+| RAM | 8 GB | 16 GB+ | 16GB needed for running Mistral 7B locally |
+| CPU | 4 cores | Apple M2+ or modern x86 | Apple Silicon runs Ollama models efficiently |
+| GPU | None | NVIDIA 8GB+ VRAM | Required for local model hosting; AWS alternative available |
+| Storage | 50 GB free | 100 GB free | Model files are 4-15 GB each |
+| OS | macOS 12+, Ubuntu 22+, Win 11 | macOS (Apple Silicon) | Best Claude Code experience on macOS |
+
+---
+
 ## Required Accounts and Subscriptions
 
 ### Claude Max Subscription (Primary)

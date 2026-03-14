@@ -54,10 +54,16 @@ Your capstone project must include:
    - Build: container image scanning, SBOM generation
    - Deploy: promotion gates (dev → pilot → preprod → prod) with approval workflows
 11. **Deployment Plan** — Documentation on how this system scales to production, including operational runbook, incident playbook, and observability setup.
+12. **V&V Architecture** — Document your system's verification approach. For each agent in your system: what outputs does it produce, how are those outputs verified before action is taken, and what happens when verification fails? Include at least one automated verification mechanism. Map your V&V approach to the four dimensions (Output Verification, Calibrated Trust, Failure Imagination, Adversarial Assumption) and identify which dimensions are addressed and which remain as known gaps.
+13. **Skills Library** — Package at least 3 reusable skills developed during your capstone project. Document what each skill does, when to use it, and how it connects to the larger system. If your skills form a natural workflow, package them as a plugin with a `plugin.md` orchestration file.
 
 > **🔑 Key Concept:** The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.
 
 > **🚀 Production-Promotable Capstone:** By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy to ECS/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a **deployable artifact with full provenance, governance, and operational readiness**. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.
+
+> **💡 Pro Tip:** Define your target organization before designing your system. Who are they? What do they do? What data do they process? What's their regulatory environment? What's their security maturity? A well-defined organizational context makes your architecture decisions more grounded and your capstone more convincing.
+
+> **V&V Implementation grading:** Does the system include meaningful verification of AI outputs? Is verification proportional to consequence severity? Are verification failures handled gracefully? Is the V&V approach documented and justified? This criterion accounts for 10% of the capstone grade.
 
 #### Capstone Project Ideas
 
@@ -120,6 +126,14 @@ Here are concrete, achievable project ideas suitable for a 4-week capstone:
 > **📖 Further Reading:** Review [Framework documentation](resources/FRAMEWORKS.md) to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.
 
 > **🔑 Key Concept:** Both PeaRL and MASS are open source because their creator believes **security should always be open to anyone to use**. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?
+
+> **🧠 Domain Assist:** Presenting and defending technical architecture to reviewers is a professional skill that takes practice. If you've never presented an architecture review, ask Claude Chat:
+>
+> "I'm presenting a multi-agent security system architecture to faculty reviewers. Help me prepare: 1) What do architecture reviewers typically look for — what impresses them and what concerns them? 2) How do I structure a 15-minute architecture presentation — what goes in and what stays out? 3) What are the common questions reviewers ask about multi-agent systems? 4) How do I defend a design trade-off? What's the right framing for 'I chose X instead of Y because...'? 5) What are the red flags that make reviewers lose confidence in a design?"
+>
+> Also use Claude to stress-test your architecture before the review: "Here's my system architecture: [describe it]. Play the role of a skeptical reviewer. Ask me the hardest questions you can think of about this design. Challenge my assumptions."
+
+---
 
 #### Architecture Review Methodology
 
@@ -546,6 +560,14 @@ By Thursday, you'll receive the red team report. **Action plan:**
 - Prepare a compelling 20-minute technical presentation
 - Write a meaningful reflection essay
 - Practice delivering your talk
+
+> **🧠 Domain Assist:** Your capstone presentation targets a mixed audience — technical peers, faculty, and potentially industry practitioners. Tailoring technical content for different audiences is a skill most engineers need to develop deliberately.
+>
+> Before your final presentation, ask Claude Chat:
+>
+> "I built a [describe your capstone system]. I need to present it in 20 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present threat model findings and AIUC-1 compliance to a mixed audience? 4) How do I demonstrate impact — what metrics or demonstrations are most compelling? 5) What questions should I expect and how should I prepare for them?"
+
+---
 
 #### Final System Checklist
 

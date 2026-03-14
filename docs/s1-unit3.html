@@ -408,82 +408,76 @@ body {
 <p><strong>CSEC 601 — Semester 1 | Weeks 9–12</strong></p>
 <p><a href="semester1.html">← Back to Semester 1 Overview</a></p>
 <hr />
-<h2 id="week-9-fs-isac-responsible-ai-principles-for-security-applications">Week 9: FS-ISAC Responsible AI Principles for Security Applications</h2>
+<h2 id="week-9-aiuc-1-standard-for-ai-agent-security">Week 9: AIUC-1 Standard for AI Agent Security</h2>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
 <h4 id="learning-objectives">Learning Objectives</h4>
 <ul>
-<li>Understand the six FS-ISAC Responsible AI Principles and their application to security systems</li>
-<li>Analyze how ethical frameworks map to technical security requirements</li>
-<li>Identify real-world failures when organizations deploy AI systems without ethical guardrails</li>
-<li>Connect FS-ISAC principles to NIST AI RMF governance stages</li>
-<li>Evaluate how responsible AI principles reduce organizational risk and regulatory exposure</li>
+<li>Understand the six AIUC-1 domains and their application to AI agent security systems</li>
+<li>Analyze how AIUC-1 converts abstract principles into concrete, auditable controls</li>
+<li>Identify real-world failures when organizations deploy AI agents without proper governance</li>
+<li>Connect AIUC-1 domains to NIST AI RMF governance stages, MITRE ATLAS, and OWASP LLM Top 10</li>
+<li>Evaluate how AIUC-1 certification reduces organizational risk, accelerates procurement, and enables insurance coverage</li>
+<li>Understand how AIUC-1 treats AI agents as non-human actors within the enterprise control environment</li>
 </ul>
 <h4 id="lecture-content">Lecture Content</h4>
-<p>The <strong>FS-ISAC Responsible AI Principles for Financial Services</strong> (2024) represent a mature ethical framework developed by the Financial Services Information Sharing and Analysis Center in collaboration with industry security leaders and AI researchers. Originally developed for the financial services sector—where AI failures can result in systemic risk, regulatory penalties, and consumer harm—these principles are broadly applicable to security systems across all industries.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The FS-ISAC framework bridges the gap between abstract AI ethics and concrete security engineering. Rather than treating ethics as separate from security, it embeds ethical requirements into every stage of AI system deployment: design, testing, deployment, and monitoring.</p>
+<p>The <strong>AIUC-1 Standard</strong> (2025) is the first security, safety, and reliability standard specifically designed for AI agents. Developed by the Artificial Intelligence Underwriting Company (AIUC) with technical contributors including MITRE, Cloud Security Alliance, Stanford Trustworthy AI Research Lab, MIT, Cisco, and Orrick, AIUC-1 addresses a critical gap: traditional governance frameworks tell organizations <em>what to care about</em>, but AIUC-1 tells them <em>what to test and how to verify it</em>. This is the difference between aspiration and verification.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> AIUC-1 bridges the gap between abstract AI ethics and concrete security engineering. Where principle-based frameworks say "be secure," AIUC-1 says "implement adversarial testing (B001), detect adversarial input (B002), and implement real-time input filtering (B005) — and prove it through independent third-party testing." Certification includes 5,000+ adversarial simulations and quarterly updates to keep pace with the evolving threat landscape.</p>
 </div>
-<p><strong>The Six Principles:</strong></p>
+<p><strong>The Six AIUC-1 Domains:</strong></p>
 <ol>
-<li><strong>Safe, Secure, and Resilient</strong></li>
-<li>AI systems must not cause harm through direct failure or degraded operation</li>
-<li>Security defenses protecting the AI system itself must be robust</li>
-<li>Systems must degrade gracefully under attack, rather than catastrophically failing or amplifying harm</li>
+<li><strong>A. Data &amp; Privacy</strong></li>
+<li>Data governance, consent, training data usage, and PII protection</li>
+<li>Controls cover data minimization, differential privacy, federated learning, and preventing model inversion attacks</li>
 <li>
-<p>Example in practice: A threat detection agent should never recommend isolation actions that, if wrong, would cause unrecoverable damage. Instead, it should escalate uncertain decisions to human analysts.</p>
+<p>Example: An agent system must demonstrate that customer data used for threat analysis cannot be reconstructed from model outputs.</p>
 </li>
 <li>
-<p><strong>Explainable and Interpretable</strong></p>
+<p><strong>B. Security</strong></p>
 </li>
-<li>Human stakeholders must understand <em>why</em> an AI system made a decision</li>
-<li>Explanations must be traceable to evidence and reasoning, not post-hoc rationalizations</li>
-<li>Different audiences (security analysts, executives, regulators) need explanations tailored to their expertise</li>
+<li>Adversarial robustness, input filtering, access control, and endpoint protection</li>
+<li>The most technically dense domain with controls B001-B009: third-party adversarial testing, detect adversarial input, manage technical detail release, prevent endpoint scraping, real-time input filtering, limit agent system access, enforce user access privileges, protect model deployment environment, limit output over-exposure</li>
 <li>
-<p>Example: An access control AI should be able to explain to a user why their request was denied, and to a compliance officer, what evidence triggered that denial.</p>
-</li>
-<li>
-<p><strong>Privacy-Enhanced</strong></p>
-</li>
-<li>Data minimization: Collect only data necessary for the security task</li>
-<li>Apply differential privacy techniques to protect individual privacy while maintaining model utility</li>
-<li>Consider federated learning to train models on distributed data without centralizing sensitive logs</li>
-<li>Ensure that model outputs cannot be inverted to reconstruct PII or reveal individual behaviors</li>
-<li>
-<p>Example: A threat scoring system should not retain detailed logs of individual user actions; aggregate statistics are sufficient.</p>
+<p>Example: An agent deployed for SOC triage must pass adversarial testing (B001) proving it resists prompt injection, have real-time input filtering (B005), and limit its system access to only what's needed (B006).</p>
 </li>
 <li>
-<p><strong>Fair and Bias-Managed</strong></p>
+<p><strong>C. Safety</strong></p>
 </li>
-<li>AI systems must not discriminate against individuals, organizations, or groups based on protected characteristics</li>
-<li>Bias in security systems creates real harm: unfair threat scoring leads to discriminatory access controls; biased anomaly detection over-flags certain user populations</li>
-<li>Fairness must be measured actively through stratified evaluation and fairness metrics</li>
+<li>Harmful output prevention, risk taxonomy, pre-deployment testing, and real-time monitoring</li>
+<li>Controls require defining a risk taxonomy specific to your application, testing against it before deployment, and monitoring in production</li>
 <li>
-<p>Example: A DLP system trained mostly on enterprise data from Western companies may flag legitimate business practices from Asia-Pacific companies as high-risk, leading to operational friction and unfair policy enforcement.</p>
-</li>
-<li>
-<p><strong>Valid and Reliable</strong></p>
-</li>
-<li>AI outputs must be accurate and statistically valid</li>
-<li>Models must be tested on diverse data and validated before deployment</li>
-<li>Reliability includes consistency (the same input produces the same output) and robustness to distribution shift</li>
-<li>
-<p>Example: A malware classifier trained on threats from 2023 may fail on novel polymorphic variants in 2026; continuous validation is required.</p>
+<p>Example: A threat detection agent must not recommend isolation actions that could cause unrecoverable damage — and this must be tested, not assumed.</p>
 </li>
 <li>
-<p><strong>Accountable and Transparent</strong></p>
+<p><strong>D. Reliability</strong></p>
 </li>
-<li>Every AI decision must be auditable: complete logs showing inputs, reasoning, and outputs</li>
-<li>Clear ownership: Who is responsible when an AI system makes a bad decision? Who can explain it to regulators or harmed parties?</li>
-<li>Transparency includes documentation of system limitations, failure modes, and known biases</li>
-<li>Example: A financial crime detection system flagging suspicious transactions must be able to reconstruct the reasoning for auditors, and allow customers to appeal decisions.</li>
+<li>System uptime, failure handling, performance consistency, and graceful degradation</li>
+<li>Covers model drift, distribution shift, and continuous validation to maintain accuracy over time</li>
+<li>
+<p>Example: A malware classifier trained on 2023 threats must be continuously validated against 2026 variants, with drift detection triggering retraining.</p>
+</li>
+<li>
+<p><strong>E. Accountability</strong></p>
+</li>
+<li>Audit trails, decision logging, ownership, explainability, and appeal mechanisms</li>
+<li>Every AI decision must be auditable with complete logs. Clear ownership of who is responsible when an agent makes a bad decision</li>
+<li>
+<p>Example: A financial crime detection agent must reconstruct its reasoning for auditors and allow customers to appeal decisions.</p>
+</li>
+<li>
+<p><strong>F. Society</strong></p>
+</li>
+<li>Fairness, bias mitigation, non-discrimination, and societal impact</li>
+<li>AI agents must not discriminate based on protected characteristics. Fairness must be actively measured through stratified evaluation and fairness metrics</li>
+<li>Example: A DLP system must not disproportionately flag legitimate business practices from certain regions or populations.</li>
 </ol>
-<h4 id="financial-services-context">Financial Services Context</h4>
-<p>The FS-ISAC principles emerged from real incidents in the financial sector where AI systems caused significant harm:</p>
+<h4 id="aiuc-1-context">AIUC-1 Context</h4>
+<p>AIUC-1 emerged because enterprises could not reliably assess AI agent security. Traditional frameworks provide governance structure but don't validate that safeguards actually work through testing. Phil Venables (former Google Cloud CISO) described the need as "a SOC 2 for AI agents." AIUC-1 fills this gap with mandatory third-party technical testing. The agent-specific focus matters because autonomous agents create risks that general AI governance doesn't address: delegated authority, tool access, memory persistence, and multi-agent trust boundaries. Real incidents that motivated the framework:</p>
 <ul>
 <li>
 <p><strong>Algorithmic Discrimination in Credit Scoring:</strong> In the early 2000s, several financial institutions deployed automated credit scoring systems that, while not explicitly using race as a feature, used proxy variables (zip code, transaction patterns) that correlated strongly with race, resulting in systematic denial of credit to communities of color. These systems were not auditable—customers could not understand why they were denied credit.</p>
 </li>
 <li>
-<p><strong>Flash Crash (2010):</strong> AI-driven trading algorithms amplified market volatility, causing a temporary $1 trillion loss in market value in minutes. The algorithms operated with insufficient safeguards and no human oversight, demonstrating the need for resilience principles and human-in-the-loop controls.</p>
+<p><strong>Flash Crash (2010):</strong> automated high-frequency trading (HFT) algorithms amplified market volatility, causing a temporary $1 trillion loss in market value in minutes. The algorithms operated with insufficient safeguards and no human oversight, demonstrating the need for resilience principles and human-in-the-loop controls.</p>
 </li>
 <li>
 <p><strong>Model Drift in Fraud Detection:</strong> Banks deployed fraud models that performed well in 2020 but degraded significantly by 2023 as criminal tactics evolved. Without continuous validation, these systems flagged legitimate transactions as fraudulent, frustrating customers and damaging trust.</p>
@@ -492,45 +486,45 @@ body {
 <div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?</p>
 </div>
 <h4 id="mapping-to-nist-ai-rmf">Mapping to NIST AI RMF</h4>
-<p>The NIST AI Risk Management Framework (RMF) organizes AI governance into four stages: <strong>Govern, Map, Measure, Manage</strong>. The FS-ISAC principles align with NIST as follows:</p>
+<p>The NIST AI Risk Management Framework (RMF) organizes AI governance into four stages: <strong>Govern, Map, Measure, Manage</strong>. The AIUC-1 domains align with NIST as follows:</p>
 <table>
 <thead>
 <tr>
-<th>FS-ISAC Principle</th>
+<th>AIUC-1 Domain</th>
 <th>NIST RMF Stage</th>
 <th>Implementation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Safe/Secure/Resilient</td>
+<td>A. Data &amp; Privacy</td>
 <td>Govern + Manage</td>
-<td>Risk assessment, resilience testing, incident response procedures</td>
+<td>Data governance policy, privacy-impact assessment, consent management, training data controls</td>
 </tr>
 <tr>
-<td>Explainable/Interpretable</td>
+<td>B. Security</td>
+<td>Govern + Manage</td>
+<td>Adversarial testing program, input filtering, access control, endpoint protection</td>
+</tr>
+<tr>
+<td>C. Safety</td>
 <td>Map + Measure</td>
-<td>System documentation, decision logging, interpretability techniques (LIME, SHAP)</td>
+<td>Risk taxonomy definition, pre-deployment testing, harmful output prevention, real-time monitoring</td>
 </tr>
 <tr>
-<td>Privacy-Enhanced</td>
-<td>Govern + Manage</td>
-<td>Data governance policy, privacy-impact assessment, differential privacy implementation</td>
-</tr>
-<tr>
-<td>Fair/Bias-Managed</td>
+<td>D. Reliability</td>
 <td>Measure</td>
-<td>Fairness metrics, stratified evaluation, bias monitoring dashboards</td>
+<td>Validation datasets, performance monitoring, drift detection, graceful degradation testing</td>
 </tr>
 <tr>
-<td>Valid/Reliable</td>
-<td>Measure</td>
-<td>Validation datasets, performance monitoring, drift detection</td>
-</tr>
-<tr>
-<td>Accountable/Transparent</td>
+<td>E. Accountability</td>
 <td>Govern + Manage</td>
-<td>Audit trails, ownership structures, appeal mechanisms</td>
+<td>Audit trails, decision logging, ownership structures, appeal mechanisms, explainability</td>
+</tr>
+<tr>
+<td>F. Society</td>
+<td>Measure</td>
+<td>Fairness metrics, stratified evaluation, bias monitoring, non-discrimination testing</td>
 </tr>
 </tbody>
 </table>
@@ -538,19 +532,19 @@ body {
 </div>
 <h4 id="real-world-case-studies">Real-World Case Studies</h4>
 <p><strong>Case 1: COMPAS Recidivism Algorithm</strong></p>
-<p>ProPublica's 2016 investigation revealed that the COMPAS algorithm, widely used in the U.S. criminal justice system to predict recidivism, had significant racial bias. For the same criminal history, Black defendants were rated as higher risk than white defendants. The system failed on multiple FS-ISAC principles:</p>
+<p>ProPublica's 2016 investigation revealed that the COMPAS algorithm, widely used in the U.S. criminal justice system to predict recidivism, had significant racial bias. For the same criminal history, Black defendants were rated as higher risk than white defendants. The system failed on multiple AIUC-1 domains:</p>
 <ul>
-<li><strong>Fair/Bias-Managed:</strong> Systematic disparate impact against Black defendants</li>
-<li><strong>Explainable/Interpretable:</strong> The proprietary algorithm's reasoning was opaque; defendants and courts could not appeal or understand decisions</li>
-<li><strong>Accountable/Transparent:</strong> No public accountability; the vendor treated the algorithm as a trade secret</li>
+<li><strong>F. Society:</strong> Systematic disparate impact against Black defendants</li>
+<li><strong>E. Accountability:</strong> The proprietary algorithm's reasoning was opaque; defendants and courts could not appeal or understand decisions</li>
+<li><strong>E. Accountability:</strong> No public accountability; the vendor treated the algorithm as a trade secret</li>
 </ul>
 <p><em>Security application:</em> A threat-scoring system with similar properties might systematically rate threats from certain organizations or geographies as higher-risk without transparent justification, leading to unfair access controls and regulatory exposure.</p>
 <p><strong>Case 2: Amazon's Recruiting AI</strong></p>
 <p>Amazon built a machine learning system to automate resume screening. The system was trained on historical hiring data from the tech industry, where male engineers dominated. The system learned to penalize resumes containing the word "women's" (as in "women's chess club"), systematically downranking female candidates. The system failed on:</p>
 <ul>
-<li><strong>Fair/Bias-Managed:</strong> Proxy discrimination based on gender-correlated features</li>
-<li><strong>Valid/Reliable:</strong> The system was not validated on diverse datasets before deployment</li>
-<li><strong>Accountable/Transparent:</strong> Amazon discovered the bias only through internal auditing; no external accountability mechanism existed</li>
+<li><strong>F. Society:</strong> Proxy discrimination based on gender-correlated features</li>
+<li><strong>D. Reliability:</strong> The system was not validated on diverse datasets before deployment</li>
+<li><strong>E. Accountability:</strong> Amazon discovered the bias only through internal auditing; no external accountability mechanism existed</li>
 </ul>
 <p><em>Security application:</em> A security tools authorization system might systematically deprioritize security requests from certain teams or regions based on biased historical patterns.</p>
 <div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Many teams assume that "just remove the sensitive variable" (e.g., gender, race) will eliminate bias. But proxy variables—features that correlate with the sensitive attribute—create disparate impact anyway. Fairness requires active measurement and mitigation, not just feature engineering.</p>
@@ -558,29 +552,29 @@ body {
 <p><strong>Case 3: Healthcare Algorithms and Racial Bias</strong></p>
 <p>In 2019, researchers discovered that a widely-used algorithm for determining patient care allocation in the healthcare system was systematically biased against Black patients. The algorithm used healthcare spending as a proxy for health needs, but because of systemic racism and lower healthcare access in Black communities, the proxy was biased. Black patients with the same health needs received lower care scores than white patients. This algorithm failed on:</p>
 <ul>
-<li><strong>Fair/Bias-Managed:</strong> Proxy discrimination based on race-correlated features (spending patterns)</li>
-<li><strong>Valid/Reliable:</strong> The algorithm was not validated on subgroups before deployment</li>
-<li><strong>Safe/Secure/Resilient:</strong> The algorithm caused direct harm through unfair resource allocation</li>
+<li><strong>F. Society:</strong> Proxy discrimination based on race-correlated features (spending patterns)</li>
+<li><strong>D. Reliability:</strong> The algorithm was not validated on subgroups before deployment</li>
+<li><strong>C. Safety:</strong> The algorithm caused direct harm through unfair resource allocation</li>
 </ul>
 <p><em>Security application:</em> A security investigation prioritization system might systematically deprioritize incidents affecting less-resourced teams or regions, creating unfair risk exposure.</p>
-<h4 id="the-business-case-for-responsible-ai-in-security">The Business Case for Responsible AI in Security</h4>
-<p>Organizations implementing FS-ISAC principles realize tangible benefits:</p>
+<h4 id="the-business-case-for-aiuc-1-certification">The Business Case for AIUC-1 Certification</h4>
+<p>Organizations implementing AIUC-1 realize tangible benefits beyond those of principle-based frameworks:</p>
 <ul>
-<li><strong>Regulatory Compliance:</strong> The EU AI Act (2024) requires risk-based governance and transparency. Organizations following FS-ISAC principles are better positioned for compliance.</li>
-<li><strong>Risk Mitigation:</strong> AI failures that cause harm are expensive. A biased threat detection system might flag innocent users, causing customer churn. An unexplainable decision might trigger regulatory investigation.</li>
-<li><strong>Stakeholder Trust:</strong> Security analysts trust AI tools more when they understand and can explain decisions. Customers trust organizations more when they can appeal AI decisions affecting them.</li>
-<li><strong>Competitive Advantage:</strong> In regulated industries (finance, healthcare, utilities), the ability to demonstrate responsible AI governance is a market differentiator.</li>
-<li><strong>Operational Efficiency:</strong> Systems designed with explainability and fairness in mind are easier to debug, monitor, and improve.</li>
+<li><strong>Regulatory Compliance:</strong> AIUC-1 operationalizes the EU AI Act, NIST AI RMF, and ISO 42001. Organizations with AIUC-1 certification are positioned for compliance across multiple regulatory frameworks simultaneously.</li>
+<li><strong>Procurement Acceleration:</strong> AIUC-1 certification is a trust signal that accelerates vendor assessment and contract signing — buyers don't need to re-assess security posture from scratch.</li>
+<li><strong>Insurance Coverage:</strong> Certified systems can obtain AI-specific insurance covering risks from hallucinations, data leaks, and agent failures (ElevenLabs precedent).</li>
+<li><strong>Risk Mitigation:</strong> Third-party technical testing validates that safeguards actually work, not just that policies exist. A biased threat detection system might flag innocent users; an unexplainable decision might trigger regulatory investigation.</li>
+<li><strong>Competitive Advantage:</strong> Certification differentiates vendors in a market where enterprises can't otherwise assess AI agent security. In regulated industries, demonstrating rigorous governance is a market differentiator.</li>
 </ul>
 <hr />
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives">Lab Objectives</h4>
 <ul>
-<li>Audit an existing security tool or system against the six FS-ISAC Responsible AI Principles</li>
-<li>Identify gaps and weaknesses in ethical and security design</li>
-<li>Quantify risk and propose concrete mitigations</li>
+<li>Audit an existing security tool or system against the six AIUC-1 domains</li>
+<li>Map specific AIUC-1 controls (B001-B009 for Security, C001+ for Safety) to technical requirements</li>
+<li>Identify gaps using the AIUC-1 control framework and score risks using OWASP AIVSS</li>
+<li>Quantify risk and propose concrete mitigations tied to specific AIUC-1 controls</li>
 <li>Present findings in a format suitable for non-technical stakeholders</li>
-<li>Practice peer review of AI systems using the ethical framework</li>
 </ul>
 <h4 id="lab-content">Lab Content</h4>
 <p><strong>Part 1: Audit Preparation (30 minutes)</strong></p>
@@ -698,7 +692,7 @@ body {
 </ol>
 <h4 id="sources-tools">Sources &amp; Tools</h4>
 <ul>
-<li><a href="https://www.fsisac.com/hubfs/Knowledge/AI/FSISAC_ResponsibleAI-Principles.pdf">FS-ISAC Responsible AI Principles</a></li>
+<li><a href="https://www.aiuc-1.com/">AIUC-1 Standard — The First AI Agent Security, Safety, and Reliability Standard</a></li>
 <li><a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf">NIST AI Risk Management Framework 1.0</a></li>
 <li><a href="https://standards.ieee.org/industry-connections/ec/autonomous-systems.html">IEEE Standards for AI Ethics and Autonomous Systems</a></li>
 <li><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689">EU AI Act — Title III: Regulatory Approach Based on Risk</a></li>
@@ -712,7 +706,7 @@ body {
 <li>Analyze real attack scenarios and how agents can be manipulated</li>
 <li>Map OWASP risks to concrete threat models and defenses</li>
 <li>Evaluate agent designs for excessive autonomy, insufficient guardrails, and prompt injection vulnerabilities</li>
-<li>Connect OWASP Top 10 to the FS-ISAC Responsible AI Principles and NIST AI RMF</li>
+<li>Connect OWASP Top 10 to the AIUC-1 Standard domains and NIST AI RMF</li>
 </ul>
 <h4 id="lecture-content_1">Lecture Content</h4>
 <p><strong>The OWASP Top 10 for Agentic Applications</strong> (2026) represents the security community's consensus on the highest-impact risks in systems where AI agents make autonomous decisions or recommendations. Unlike traditional software Top 10 risks (injection, broken authentication, etc.), agentic risks emerge from the <em>interaction between AI reasoning and external tool access</em>.</p>
@@ -823,66 +817,66 @@ body {
 <span class="mf">7.</span><span class="w"> </span><span class="n">Access</span><span class="w"> </span><span class="n">Controls</span><span class="p">:</span><span class="w"> </span><span class="n">Limit</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="n">permissions</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">what</span><span class="s1">&#39;s necessary</span>
 </code></pre></div>
 
-<h4 id="owasp-top-10-vs-fs-isac-principles">OWASP Top 10 vs. FS-ISAC Principles</h4>
-<p>These two frameworks are complementary:</p>
+<h4 id="owasp-top-10-vs-aiuc-1-domains">OWASP Top 10 vs. AIUC-1 Domains</h4>
+<p>These two frameworks are complementary — OWASP identifies the risks, AIUC-1 provides the auditable controls to address them:</p>
 <table>
 <thead>
 <tr>
-<th>OWASP Risk</th>
-<th>FS-ISAC Principle</th>
+<th>OWASP Agentic Risk</th>
+<th>AIUC-1 Domain</th>
 <th>Connection</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Excessive Agency</td>
-<td>Safe/Secure/Resilient</td>
-<td>Autonomy must be bounded to prevent harm</td>
-</tr>
-<tr>
-<td>Insufficient Guardrails</td>
-<td>Safe/Secure/Resilient</td>
-<td>Constraints prevent unsafe behavior</td>
-</tr>
-<tr>
-<td>Insecure Tool Integration</td>
-<td>Safe/Secure/Resilient</td>
-<td>Tool inputs/outputs must be validated</td>
-</tr>
-<tr>
-<td>Lack of Output Validation</td>
-<td>Valid/Reliable</td>
-<td>Outputs must be accurate before use</td>
-</tr>
-<tr>
 <td>Prompt Injection</td>
-<td>Safe/Secure/Resilient</td>
-<td>System must resist manipulation</td>
+<td>B. Security (B001, B002, B005)</td>
+<td>Adversarial robustness testing, input detection, real-time filtering</td>
 </tr>
 <tr>
-<td>Memory Poisoning</td>
-<td>Valid/Reliable</td>
-<td>Data integrity must be maintained</td>
+<td>Tool Misuse</td>
+<td>B. Security (B006)</td>
+<td>Limit AI agent system access; enforce least privilege</td>
+</tr>
+<tr>
+<td>Excessive Agency</td>
+<td>B. Security (B006) + E. Accountability</td>
+<td>Limit system access + audit trail for all agent actions</td>
+</tr>
+<tr>
+<td>Unsafe Output Handling</td>
+<td>C. Safety (C001+)</td>
+<td>Prevent harmful outputs; flag high-risk outputs</td>
+</tr>
+<tr>
+<td>Insecure Output Handling</td>
+<td>B. Security (B009)</td>
+<td>Limit output over-exposure</td>
 </tr>
 <tr>
 <td>Supply Chain Vulnerabilities</td>
-<td>Safe/Secure/Resilient</td>
-<td>Dependencies must be trustworthy</td>
+<td>B. Security (B008)</td>
+<td>Protect model deployment environment</td>
 </tr>
 <tr>
-<td>Insufficient Logging</td>
-<td>Accountable/Transparent</td>
-<td>Decisions must be auditable</td>
+<td>System Prompt Leakage</td>
+<td>B. Security (B003)</td>
+<td>Manage public release of technical details</td>
 </tr>
 <tr>
-<td>Over-reliance on AI</td>
-<td>Accountable/Transparent</td>
-<td>Humans must maintain oversight</td>
+<td>Data Exfiltration</td>
+<td>A. Data &amp; Privacy + B. Security</td>
+<td>Data governance + endpoint protection</td>
 </tr>
 <tr>
-<td>Inadequate IAM</td>
-<td>Safe/Secure/Resilient</td>
-<td>Permissions must be minimal and auditable</td>
+<td>Overreliance</td>
+<td>D. Reliability + E. Accountability</td>
+<td>Continuous validation + human oversight mechanisms</td>
+</tr>
+<tr>
+<td>Model Denial of Service</td>
+<td>D. Reliability</td>
+<td>System uptime, graceful degradation</td>
 </tr>
 </tbody>
 </table>
@@ -2025,7 +2019,7 @@ and the key risks/mitigations.
 <hr />
 <h2 id="context-library-governance-compliance-templates">Context Library: Governance &amp; Compliance Templates</h2>
 <p>In Unit 3, you've explored ethical AI, responsible principles, governance frameworks, and data handling. Now it's time to capture the governance patterns and decision frameworks that emerge—not just code patterns, but <strong>organizational decision templates, audit checklists, bias testing configurations, regulatory mapping matrices</strong>. These are reusable across organizations and projects.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Your context library isn't just code. It's your personal reference for governance too. When you design an audit checklist that works, save it. When you build a privacy impact assessment template, capture it. When you map FS-ISAC principles to technical controls, extract that mapping. Next project, you don't start from scratch—you adapt your proven templates.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Your context library isn't just code. It's your personal reference for governance too. When you design an audit checklist that works, save it. When you build a privacy impact assessment template, capture it. When you map AIUC-1 domains to technical controls, extract that mapping. Next project, you don't start from scratch—you adapt your proven templates.</p>
 </div>
 <p><strong>Why This Matters for Unit 3 Specifically:</strong>
 - <strong>Governance is Reusable:</strong> Unlike project-specific code, governance frameworks apply across organizations. Your Unit 3 work—policy templates, audit checklists, compliance matrices—is gold.
@@ -2042,7 +2036,7 @@ mkdir -p ~/context-library/governance/bias-testing
 <ol>
 <li><strong>Policy Template Structure:</strong> The sections and content that make a good AI Security Policy</li>
 <li><strong>Audit Checklist:</strong> Questions and criteria for evaluating AI system compliance</li>
-<li><strong>Regulatory Mapping:</strong> How frameworks like FS-ISAC, NIST AI RMF, EU AI Act, GDPR translate to technical controls</li>
+<li><strong>Regulatory Mapping:</strong> How frameworks like AIUC-1, NIST AI RMF, EU AI Act, GDPR translate to technical controls</li>
 <li><strong>Bias Testing Configuration:</strong> Test cases, metrics, and evaluation criteria for fairness</li>
 </ol>
 <p><strong>Capture These Patterns:</strong></p>
@@ -2062,10 +2056,10 @@ mkdir -p ~/context-library/governance/bias-testing
 <p>Add to <code>context-library/governance/audit-checklists/ai-system-audit.md</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="cp"># AI System Compliance Audit Checklist</span>
 
-<span class="cp">## FS-ISAC Responsible AI Principles</span>
-<span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">Safe</span><span class="p">,</span><span class="w"> </span><span class="n">Secure</span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">Resilient</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">specific</span><span class="w"> </span><span class="n">questions</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">ask</span><span class="p">]</span><span class="w"></span>
-<span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">Fair</span><span class="p">,</span><span class="w"> </span><span class="n">Accountable</span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">Transparent</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">evaluation</span><span class="w"> </span><span class="n">criteria</span><span class="p">]</span><span class="w"></span>
-<span class="o">-</span><span class="w"> </span><span class="p">[...</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">principles</span><span class="p">]</span><span class="w"></span>
+<span class="cp">## AIUC-1 Domains</span>
+<span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="w"> </span><span class="n">Data</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Privacy</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">data</span><span class="w"> </span><span class="n">minimization</span><span class="p">,</span><span class="w"> </span><span class="n">PII</span><span class="w"> </span><span class="n">protection</span><span class="p">,</span><span class="w"> </span><span class="n">consent</span><span class="w"> </span><span class="n">questions</span><span class="p">]</span><span class="w"></span>
+<span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">.</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="p">(</span><span class="n">B001</span><span class="o">-</span><span class="n">B009</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">adversarial</span><span class="w"> </span><span class="n">robustness</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="n">filtering</span><span class="p">,</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">control</span><span class="p">]</span><span class="w"></span>
+<span class="o">-</span><span class="w"> </span><span class="p">[...]</span><span class="w"> </span><span class="n">C</span><span class="p">.</span><span class="w"> </span><span class="n">Safety</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">.</span><span class="w"> </span><span class="n">Reliability</span><span class="p">,</span><span class="w"> </span><span class="n">E</span><span class="p">.</span><span class="w"> </span><span class="n">Accountability</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="p">.</span><span class="w"> </span><span class="n">Society</span><span class="p">]</span><span class="w"></span>
 
 <span class="cp">## OWASP Top 10 for Agentic Applications</span>
 <span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">Excessive</span><span class="w"> </span><span class="n">Agency</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">how</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">verify</span><span class="w"> </span><span class="n">human</span><span class="w"> </span><span class="n">oversight</span><span class="p">]</span><span class="w"></span>
@@ -2076,13 +2070,13 @@ mkdir -p ~/context-library/governance/bias-testing
 <span class="p">[</span><span class="n">How</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">document</span><span class="w"> </span><span class="n">findings</span><span class="p">,</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="n">severity</span><span class="p">,</span><span class="w"> </span><span class="n">track</span><span class="w"> </span><span class="n">remediation</span><span class="p">]</span><span class="w"></span>
 </code></pre></div>
 
-<p>Add to <code>context-library/governance/compliance-mappings/FS-ISAC-to-Technical.md</code>:</p>
-<div class="codehilite"><pre><span></span><code># <span class="nv">FS</span><span class="o">-</span><span class="nv">ISAC</span> <span class="nv">Principles</span> → <span class="nv">Technical</span> <span class="nv">Controls</span> <span class="nv">Mapping</span>
+<p>Add to <code>context-library/governance/compliance-mappings/AIUC-1-to-Technical.md</code>:</p>
+<div class="codehilite"><pre><span></span><code># <span class="nv">AIUC</span><span class="o">-</span><span class="mi">1</span> <span class="nv">Domains</span> → <span class="nv">Technical</span> <span class="nv">Controls</span> <span class="nv">Mapping</span>
 
-<span class="o">|</span> <span class="nv">Principle</span> <span class="o">|</span> <span class="nv">Definition</span> <span class="o">|</span> <span class="nv">Technical</span> <span class="nv">Control</span> <span class="o">|</span> <span class="nv">How</span> <span class="nv">to</span> <span class="nv">Verify</span> <span class="o">|</span>
-<span class="o">|-----------|-----------|-------------------|---------------|</span>
-<span class="o">|</span> <span class="nv">Safe</span>, <span class="nv">Secure</span>, <span class="nv">Resilient</span> <span class="o">|</span> <span class="nv">No</span> <span class="nv">harm</span> <span class="nv">through</span> <span class="nv">failure</span> <span class="o">|</span> <span class="nv">Error</span> <span class="nv">handling</span>, <span class="nv">fallback</span> <span class="nv">logic</span>, <span class="nv">monitoring</span> <span class="o">|</span> <span class="nv">Test</span> <span class="nv">failures</span><span class="c1">; review logs |</span>
-<span class="o">|</span> <span class="nv">Fair</span>, <span class="nv">Accountable</span>, <span class="nv">Transparent</span> <span class="o">|</span> <span class="nv">Auditable</span> <span class="nv">decisions</span> <span class="o">|</span> <span class="nv">Structured</span> <span class="nv">logging</span>, <span class="nv">reasoning</span> <span class="nv">traces</span> <span class="o">|</span> <span class="nv">Audit</span> <span class="nv">logs</span> <span class="k">show</span> <span class="nv">reasoning</span> <span class="o">|</span>
+<span class="o">|</span> <span class="nv">Domain</span> <span class="o">|</span> <span class="nv">Control</span> <span class="o">|</span> <span class="nv">Technical</span> <span class="nv">Control</span> <span class="o">|</span> <span class="nv">How</span> <span class="nv">to</span> <span class="nv">Verify</span> <span class="o">|</span>
+<span class="o">|--------|---------|-------------------|---------------|</span>
+<span class="o">|</span> <span class="nv">B</span>. <span class="nv">Security</span> <span class="o">|</span> <span class="nv">B001</span> <span class="o">|</span> <span class="nv">Adversarial</span> <span class="nv">robustness</span> <span class="nv">testing</span> <span class="o">|</span> <span class="nv">Third</span><span class="o">-</span><span class="nv">party</span> <span class="nv">test</span> <span class="nv">results</span> <span class="o">|</span>
+<span class="o">|</span> <span class="nv">E</span>. <span class="nv">Accountability</span> <span class="o">|</span> <span class="nv">E001</span> <span class="o">|</span> <span class="nv">Structured</span> <span class="nv">logging</span>, <span class="nv">reasoning</span> <span class="nv">traces</span> <span class="o">|</span> <span class="nv">Audit</span> <span class="nv">logs</span> <span class="k">show</span> <span class="nv">reasoning</span> <span class="o">|</span>
 <span class="o">|</span> ... <span class="o">|</span> ... <span class="o">|</span> ... <span class="o">|</span> ... <span class="o">|</span>
 
 [<span class="nv">Complete</span> <span class="nv">mapping</span> <span class="nv">from</span> <span class="nv">Unit</span> <span class="mi">3</span>]
@@ -2124,7 +2118,7 @@ mkdir -p ~/context-library/governance/bias-testing
 <span class="w">    </span><span class="err">├──</span><span class="w"> </span><span class="n">audit</span><span class="o">-</span><span class="n">checklists</span><span class="o">/</span><span class="w"></span>
 <span class="w">    </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">ai</span><span class="o">-</span><span class="k">system</span><span class="o">-</span><span class="n">audit</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
 <span class="w">    </span><span class="err">├──</span><span class="w"> </span><span class="n">compliance</span><span class="o">-</span><span class="n">mappings</span><span class="o">/</span><span class="w"></span>
-<span class="w">    </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">FS</span><span class="o">-</span><span class="n">ISAC</span><span class="o">-</span><span class="k">to</span><span class="o">-</span><span class="n">Technical</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
+<span class="w">    </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">AIUC</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="k">to</span><span class="o">-</span><span class="n">Technical</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
 <span class="w">    </span><span class="err">└──</span><span class="w"> </span><span class="n">bias</span><span class="o">-</span><span class="n">testing</span><span class="o">/</span><span class="w"></span>
 <span class="w">        </span><span class="err">└──</span><span class="w"> </span><span class="n">fairness</span><span class="o">-</span><span class="n">evaluation</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
 </code></pre></div>
@@ -2190,7 +2184,7 @@ Use these as the foundation for documenting this tool.
 <hr />
 <h2 id="unit-3-references-further-reading">Unit 3 — References &amp; Further Reading</h2>
 <ul>
-<li><strong>FS-ISAC Responsible AI Principles:</strong> https://www.fsisac.com/hubfs/Knowledge/AI/FSISAC_ResponsibleAI-Principles.pdf</li>
+<li><strong>AIUC-1 Standard — The First AI Agent Security, Safety, and Reliability Standard:</strong> https://www.aiuc-1.com/</li>
 <li><strong>OWASP Top 10 for Agentic Applications:</strong> https://owasp.org/www-project-top-10-for-large-language-model-applications/</li>
 <li><strong>NIST AI Risk Management Framework:</strong> https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf</li>
 <li><strong>EU AI Act:</strong> https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689</li>

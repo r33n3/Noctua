@@ -4,6 +4,24 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 ---
 
+## Course Case Studies and Field Guides
+
+- **The PeaRL Governance Bypass: When Your Own Agent Attacks Your Own Governance System** (Course Instructor, 2026). Original research documenting a seven-level autonomous agent attack chain against the PeaRL governance platform. Required reading — referenced throughout both semesters. See `resources/case-studies/pearl-governance-bypass.md`
+
+- **Dark Factory Stage Assessment Field Guide** (Course Instructor, 2026). Three-phase methodology for identifying an organization's autonomous AI maturity stage: public signal analysis, structured interview questions, and first-week observation framework. Includes scoring rubric, say/reality gap patterns, and Assessment Report Template. Required reading Week 1; used as the foundation for the Week 14–15 Security Maturity Assessment Deliverable. See `resources/dark-factory-stage-assessment.md`
+
+- **The Dark Factory Roadmap — From Ad-Hoc AI to Autonomous Operations** (AI Engineering Leadership Playbook, 2026). Defines the six-stage maturity model, nine anti-patterns, six pillars of dark factory operations, governance deep-dive (23 evaluation metrics, design-time and runtime controls), and four-tier agent regulatory classification. Source document for all dark factory concepts in this course. See `C:\Users\bradj\Development\Dark_Factory_Research\dark-factory-roadmap.html`
+
+---
+
+## Verification and Validation
+
+- **"Trust, but Verify: The Challenge of AI Output Verification in Security Operations"** — Emerging body of work on V&V for AI-augmented security workflows
+- **AIUC-1 Standard — Technical Testing Requirements** — How AIUC-1 implements organizational V&V through third-party adversarial testing. https://www.aiuc-1.com/
+- **OWASP AIVSS** — AI Vulnerability Scoring System for quantifying risks in agentic systems. V&V discipline informs how scores are validated. https://aivss.owasp.org/
+
+---
+
 ## Critical Thinking and CCT
 
 ### Core
@@ -26,7 +44,9 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 ### Core
 
-- **FS-ISAC Responsible AI Principles** (FS-ISAC AI Risk Working Group, February 2024). Six principles — security/resiliency, explainability, privacy, fairness, reliability, accountability — for responsible AI in financial services. https://www.fsisac.com/hubfs/Knowledge/AI/FSISAC_ResponsibleAI-Principles.pdf
+- **AIUC-1 Standard** (Artificial Intelligence Underwriting Company, 2025). The first security, safety, and reliability standard for AI agents. Six domains — Data & Privacy, Security, Safety, Reliability, Accountability, Society — with auditable controls, quarterly technical testing, and third-party certification. Operationalizes NIST AI RMF, ISO 42001, MITRE ATLAS, OWASP LLM Top 10, and EU AI Act. Technical contributors include MITRE, Cloud Security Alliance, Stanford, MIT, and Cisco. https://www.aiuc-1.com/
+- **AIUC-1 Framework Crosswalk** — Detailed mapping showing how AIUC-1 controls map to NIST AI RMF, ISO 42001, MITRE ATLAS, OWASP Top 10, and CSA AICM. https://www.aiuc-1.com/
+- **OWASP AIVSS Integration with AIUC-1** — How the AI Vulnerability Scoring System maps to AIUC-1 controls for risk quantification and prioritization. https://aivss.owasp.org/
 - **Weapons of Math Destruction** by Cathy O'Neil (2016). Algorithmic decision-making systems that perpetuate bias and discrimination.
 - **The Alignment Problem** by Brian Christian (2020). AI alignment challenges: value specification, robustness, and ensuring systems behave according to human intentions.
 
@@ -155,7 +175,7 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 ### Core
 
-- **"Disrupting the First Reported AI-Orchestrated Cyber Espionage"** — Anthropic (September 2025). Real-world agentic cyber attack operating at 80-90% autonomy. https://www.anthropic.com/news/disrupting-AI-espionage
+- **"Disrupting the First Reported AI-Orchestrated Cyber Espionage"** — Anthropic (November 2025, detection: September 2025). Real-world agentic cyber espionage campaign (GTG-1002) operating at 80-90% autonomy against ~30 targets. https://www.anthropic.com/news/disrupting-AI-espionage
 - **"Introducing Aardvark"** — OpenAI (October 2025). Autonomous agent discovering vulnerabilities at scale (92% recall). https://openai.com/index/introducing-aardvark/
 
 ### Expanded
@@ -302,7 +322,7 @@ Conference talks from the [AI Engineer](https://youtube.com/@aiDotEngineer) YouT
 | 6 | Tool Design & GTG-1002 | Anthropic — "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" Full Report (Nov 2025); "Agentic Engineering Book" (tool design) |
 | 7 | Cyber Threat Framework | MITRE ATT&CK overview; Buchanan — "The Hacker and the State" (selected) |
 | 8 | Risk Management | NIST AI RMF 1.0 overview |
-| 9 | Responsible AI | FS-ISAC Responsible AI Principles (full); NIST AI RMF (full) |
+| 9 | AIUC-1 Standard | AIUC-1 Standard (full review of all six domains); NIST AI RMF (full); AIUC-1/NIST crosswalk |
 | 10 | Agentic Security | OWASP Top 10 for Agentic Apps; "Agentic AI Security" (arXiv:2510.23883) |
 | 11 | Bias and Fairness | O'Neil — "Weapons of Math Destruction" (selected); IBM AI Fairness 360 docs |
 | 12 | Compliance | EU AI Act summary; NIST Cyber AI Profile (December 2025); AIUC-1 standard (https://www.aiuc-1.com/) |

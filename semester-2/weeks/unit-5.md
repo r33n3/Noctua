@@ -261,6 +261,35 @@ Real systems mix patterns:
 
 ---
 
+### V&V Lens: Verification as an Architectural Pattern
+
+In multi-agent systems, V&V can be embedded as a structural pattern:
+
+**Consensus Verification:** Multiple agents independently analyze the same data. Where they agree, confidence is high. Where they disagree, the system flags for human review. This is the Debate pattern applied as V&V infrastructure.
+
+**Pipeline Verification:** Each agent in a pipeline includes a verification step for the previous agent's output. The analysis agent doesn't just consume the recon agent's findings — it spot-checks them.
+
+**Dedicated Verifier Agent:** A specialized agent whose sole job is verification. It receives findings from other agents and attempts to confirm or refute them using different tools and methods. This is expensive but appropriate for high-consequence decisions.
+
+Choose your V&V architecture based on consequence severity:
+- Low consequence (informational alerts): Pipeline verification is sufficient
+- Medium consequence (investigation triggers): Consensus verification adds confidence
+- High consequence (automated response actions): Dedicated verifier agent required
+
+---
+
+> **🧠 Domain Assist:** When designing agent personas for your SOC team, you need to understand what each role actually does day-to-day. Most of you haven't worked in every SOC role. Use Claude Chat to build realistic personas:
+>
+> "I'm designing an AI agent that acts as a Threat Intelligence Researcher in a SOC. Help me understand: 1) What does a real Threat Intel Researcher do on a typical day? 2) What tools do they use? What data sources do they consult? 3) What's their mental model when they see a new IOC? What's their workflow? 4) What expertise do they have that other SOC roles don't? 5) What frustrates them? What do they wish other teams understood about their work?"
+>
+> Do this for each persona you're designing. An agent briefed like a real professional ("I check VirusTotal, correlate with MITRE ATT&CK, cross-reference historical incidents, and assess whether this matches known APT campaigns") will behave more realistically than one with a vague backstory.
+
+---
+
+> **🛠️ Skill Opportunity:** The agent persona definitions you created (Malware Analyst, Threat Intel Researcher, etc.) are reusable. Package them as a `/soc-personas` skill with each persona in `references/`. Next time you build a multi-agent system, you can invoke `/soc-personas` to get pre-designed roles.
+
+---
+
 ## Day 2 — Hands-On Lab
 
 ### Lab Objectives
@@ -2606,6 +2635,33 @@ By end of Semester 2, your context library won't just be reference material—it
 - OWASP LLM Top 10 (for adversarial test case ideas)
 
 ---
+
+---
+
+### From Skills to Plugins
+
+A skill is a single capability. A plugin is a coordinated group of skills that share context and work together.
+
+By now you've built several skills that you tend to use in sequence. For example, when assessing a system you might run `/threat-model` → `/score-vuln` → `/map-aiuc1` → `/generate-report`. That sequence, with shared references and data flow between skills, is a plugin:
+
+```
+threat-assessment/
+├── plugin.md                 # Orchestration — which skills, in what order
+├── skills/
+│   ├── threat-model/SKILL.md
+│   ├── score-vuln/SKILL.md
+│   ├── map-aiuc1/SKILL.md
+│   └── generate-report/SKILL.md
+├── references/               # Shared across all skills
+│   ├── aiuc1-domains.md
+│   └── atlas-techniques.md
+└── scripts/                  # Shared utilities
+    └── evidence-collector.py
+```
+
+The `plugin.md` orchestrates the workflow — defining data flow between skills, shared context, and the overall pipeline. This mirrors the multi-agent orchestration patterns from this unit, applied at the tooling level.
+
+Real-world examples: MASS is essentially a plugin — 12 specialized analyzers coordinated by an orchestration layer. PeaRL is another — policy evaluation, approval workflows, and anomaly detection sharing governance context.
 
 ---
 

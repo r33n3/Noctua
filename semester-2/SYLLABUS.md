@@ -13,21 +13,39 @@
 ## Course Information
 
 ### Course Overview
-This course represents the second half of a year-long graduate sequence in advanced agentic security engineering. Building upon the fundamentals established in CSEC 601, this semester shifts focus from individual agent development to multi-agent orchestration, adversarial AI security, and production-ready system design. Students will orchestrate complex multi-agent systems, conduct offensive and defensive security operations with AI agents, and deploy autonomous security engineering systems to production environments.
+This course represents the second half of a year-long graduate sequence in advanced agentic security engineering. Students arrive from CSEC 601 having already built multi-agent security systems (Weeks 9-10), conducted basic red teaming (Weeks 13-14), containerized a prototype (Week 15), and internalized AIUC-1 through embedded week-by-week exposure. Semester 2 assumes all of this — it does not re-teach Docker basics, MCP fundamentals, or AIUC-1 introduction.
 
-The course emphasizes practical hands-on experience with cutting-edge tools in the agentic AI ecosystem, including the Claude Agent SDK, CrewAI, LangGraph, and Model Context Protocol (MCP). Students will build, evaluate, attack, defend, and deploy real agentic systems that solve tangible cybersecurity challenges.
+Semester 2 builds on the Semester 1 foundation: students optimize and compare multi-agent frameworks, conduct sophisticated multi-stage attacks and defenses up to a full autonomous wargame, go deep on production security engineering (supply chain, NHI governance, observability), and complete a capstone with full AIUC-1 certification documentation and Assessment Stack justification.
+
+The course emphasizes practical hands-on experience with cutting-edge tools in the agentic AI ecosystem, including the Claude Agent SDK, CrewAI, LangGraph, and Model Context Protocol (MCP). Students extend what they built in Semester 1 rather than starting from scratch.
 
 ### Key Terminology
 - **Collaborative Critical Thinking (CCT):** The systematic application of structured reasoning to design robust agentic systems, considering agent interactions, failure modes, security boundaries, and ethical implications. This is distinct from "prompting" and represents deep architectural and design thinking.
 - **Context Engineering:** The intentional design and management of information context, instruction clarity, and tool availability to shape agent behavior. This is distinct from "prompt engineering" and encompasses the broader challenge of engineering systems, not just text prompts.
 
+### What Students Arrive With
+
+Students completing CSEC 601 have:
+- Built and shipped a real security tool through Weeks 11-15 (concept → sprint → red team → hardened → containerized)
+- Applied all six AIUC-1 domains with evidence across 16 weeks
+- Survived cross-team red teaming and implemented defenses
+- Containerized a prototype and run container security scans
+- Built Claude Code skills and plugins
+- Experienced scaling limits empirically (Week 7 Break Everything)
+- Built multi-agent systems with per-agent cost tracking and inter-agent verification
+- Internalized the Engineering Assessment Stack across every architectural decision
+
+Semester 2 does not re-teach any of this. Week 1 begins at the optimization and comparison level.
+
+**V&V Discipline Progression:** In Semester 1, you practiced V&V as a personal skill — verifying AI outputs manually, calibrating trust, imagining failures. In Semester 2, you'll embed V&V into your tools and systems. Your multi-agent systems will verify each other's outputs. Your red team tools will test whether verification mechanisms actually work. Your production systems will include automated verification pipelines. The goal: by capstone, verification is not something you do — it's something your systems do for you.
+
 ### Lab Philosophy
 Semester 2 labs maximize the capabilities of Claude Max subscriptions and the cutting-edge agentic toolstack:
 
-- **Claude Code and Agent SDK:** Students leverage Claude's IDE, real-time code execution, worktrees for branch isolation, and the Agent SDK's subagent capabilities for orchestrating specialized agent teams.
-- **Multi-Vendor Perspective:** Beyond Claude's ecosystem, students gain hands-on experience with CrewAI, LangGraph, and AutoGen to understand architectural trade-offs across frameworks.
-- **Autonomous Rapid Prototyping:** By Semester 2, students are expected to be proficient with the agentic toolstack and are expected to prototype complex systems quickly, iterating on design through building rather than extensive planning.
-- **Production Focus:** Labs shift from "proof of concept" to "production-ready," incorporating observability, error handling, deployment strategies, and operational considerations.
+- **Claude Code and Agent SDK:** Students already know the SDK. Labs extend depth: subagent optimization, concurrent execution, comparative evaluation against CrewAI and LangGraph.
+- **Multi-Vendor Perspective:** Students have built with the Claude Agent SDK. Now they compare architectural trade-offs against CrewAI, LangGraph, and AutoGen on the same security problems.
+- **Autonomous Rapid Prototyping:** Students are proficient with the toolstack. Sprint velocity is higher. Week 1 starts at a complexity level that Week 11 Semester 1 sprints reached by Week 4.
+- **Production Depth:** Semester 1 introduced containerization and CI/CD gates. Semester 2 goes deep: supply chain security (SBOM, dependency signing), NHI governance, OpenTelemetry observability, ECS/Kubernetes deployment.
 
 ---
 
@@ -75,62 +93,70 @@ Each week consists of two class sessions:
 - **Total:** 10-14 hours per week, 160-224 hours over 16 weeks
 
 ### Unit Organization
-- **Unit 5 (Weeks 1-4):** Multi-Agent Orchestration for Security
-- **Unit 6 (Weeks 5-8):** AI Attacker vs. AI Defender
-- **Unit 7 (Weeks 9-12):** Production Security Engineering
-- **Unit 8 (Weeks 13-16):** Capstone Projects
+- **Unit 5 (Weeks 1-4):** Advanced Multi-Agent Engineering — students already built basic agent teams; now they optimize, compare frameworks, and evaluate at scale
+- **Unit 6 (Weeks 5-8):** Advanced Red Team / Blue Team + Wargame — students arrive with red team experience; this unit goes deeper into sophisticated multi-stage attacks, culminating in a full autonomous wargame
+- **Unit 7 (Weeks 9-12):** Production Security Engineering (full depth) — supply chain deep, NHI governance deep, observability deep, deployment engineering deep; students already containerized, now they extend
+- **Unit 8 (Weeks 13-16):** Capstone — full synthesis with AIUC-1 certification documentation, Assessment Stack justification, V&V architecture, and cost analysis
 
 ---
 
 ## Weekly Schedule
 
-### Unit 5: Multi-Agent Orchestration for Security (Weeks 1-4)
+### Unit 5: Advanced Multi-Agent Engineering (Weeks 1-4)
+
+*Students arrive having built a basic multi-agent SOC system in Semester 1 Weeks 9-10. This unit extends to framework comparison, optimization, and production-scale evaluation.*
 
 | Week | Topic |
 |------|-------|
-| [Week 1: Multi-Agent Architecture Patterns](weeks/unit-5.md#week-1-multi-agent-architecture-patterns) | Single-agent limitations and multi-agent patterns |
-| [Week 2: CrewAI for Security Operations](weeks/unit-5.md#week-2-crewai-for-security-operations) | Role-based multi-agent framework |
-| [Week 3: LangGraph for Stateful Workflows](weeks/unit-5.md#week-3-langgraph-for-stateful-security-workflows) | State machines and incident response |
-| [Week 4: Agent Evaluation and Benchmarking](weeks/unit-5.md#week-4-agent-evaluation-and-benchmarking) | Quantitative metrics and testing |
+| [Week 1: Multi-Agent Architecture Patterns](weeks/unit-5.md#week-1-multi-agent-architecture-patterns) | SDK deep dive: concurrent execution, cost optimization, per-agent benchmarking |
+| [Week 2: CrewAI for Security Operations](weeks/unit-5.md#week-2-crewai-for-security-operations) | Role-based multi-agent framework compared to Claude Agent SDK |
+| [Week 3: LangGraph for Stateful Workflows](weeks/unit-5.md#week-3-langgraph-for-stateful-security-workflows) | State machines and incident response; compare to Semester 1 pipeline pattern |
+| [Week 4: Agent Evaluation and Benchmarking](weeks/unit-5.md#week-4-agent-evaluation-and-benchmarking) | Quantitative framework comparison: CPT, aMTTR, synthesis quality, ARR |
 
 [→ View Full Unit 5 Content](weeks/unit-5.md)
 
 ---
 
-### Unit 6: AI Attacker vs. AI Defender (Weeks 5-8)
+### Unit 6: Advanced Red Team / Blue Team + Wargame (Weeks 5-8)
+
+*Students arrive having done basic cross-team red teaming in Semester 1 Weeks 13-14. This unit goes deeper: sophisticated multi-stage attack chains, advanced defensive architectures, and a full autonomous wargame.*
 
 | Week | Topic |
 |------|-------|
-| [Week 5: Adversarial AI Threat Landscape](weeks/unit-6.md#week-5-the-adversarial-ai-threat-landscape) | Threat modeling with MITRE ATLAS |
-| [Week 6: Red Teaming AI Agents](weeks/unit-6.md#week-6-red-teaming-ai-agents--offensive-techniques) | Offensive security assessment techniques |
-| [Week 7: Defending AI Agents](weeks/unit-6.md#week-7-defending-ai-agents--guardrails-and-hardening) | Guardrails, hardening, and defense strategies |
-| [Week 8: AI Attacker vs. Defender Wargame](weeks/unit-6.md#week-8-ai-attacker-vs-defender-wargame) | Full security competition |
+| [Week 5: Adversarial AI Threat Landscape](weeks/unit-6.md#week-5-the-adversarial-ai-threat-landscape) | Advanced MITRE ATLAS: multi-stage attack chains, full PeaRL chain execution |
+| [Week 6: Red Teaming AI Agents](weeks/unit-6.md#week-6-red-teaming-ai-agents--offensive-techniques) | Sophisticated offensive techniques beyond Semester 1: supply chain attacks, model poisoning |
+| [Week 7: Defending AI Agents](weeks/unit-6.md#week-7-defending-ai-agents--guardrails-and-hardening) | Advanced defense: behavioral monitoring, anomaly detection, automated response |
+| [Week 8: AI Attacker vs. Defender Wargame](weeks/unit-6.md#week-8-ai-attacker-vs-defender-wargame) | Full autonomous wargame: attack and defend pipelines running simultaneously |
 
 [→ View Full Unit 6 Content](weeks/unit-6.md)
 
 ---
 
-### Unit 7: Production Security Engineering (Weeks 9-12)
+### Unit 7: Production Security Engineering (Full Depth) (Weeks 9-12)
+
+*Students arrive having containerized a prototype and run basic CI/CD security gates in Semester 1 Week 15. This unit extends to full production depth: supply chain signing, NHI governance, OpenTelemetry observability, and ECS/Kubernetes deployment.*
 
 | Week | Topic |
 |------|-------|
-| [Week 9: AI Supply Chain Security](weeks/unit-7.md#week-9-ai-supply-chain-security) | Model provenance and dependency management |
-| [Week 10: Non-Human Identity Governance](weeks/unit-7.md#week-10-non-human-identity-nhi-governance) | Authentication and authorization for agents |
-| [Week 11: Observability and Cost Management](weeks/unit-7.md#week-11-observability-cost-management-and-operational-excellence) | Production monitoring and optimization |
-| [Week 12: Deploying Agentic Systems](weeks/unit-7.md#week-12-deploying-agentic-security-systems) | CI/CD, containerization, and operations |
+| [Week 9: AI Supply Chain Security](weeks/unit-7.md#week-9-ai-supply-chain-security) | Supply chain deep: SBOM signing, model provenance, dependency integrity verification |
+| [Week 10: Non-Human Identity Governance](weeks/unit-7.md#week-10-non-human-identity-nhi-governance) | NHI governance deep: per-agent credentials, rotation, audit, zero-trust for agents |
+| [Week 11: Observability and Cost Management](weeks/unit-7.md#week-11-observability-cost-management-and-operational-excellence) | OpenTelemetry, distributed tracing, cost dashboards, anomaly alerting |
+| [Week 12: Deploying Agentic Systems](weeks/unit-7.md#week-12-deploying-agentic-security-systems) | ECS/Kubernetes deployment, IaC, canary deployments, operational runbooks |
 
 [→ View Full Unit 7 Content](weeks/unit-7.md)
 
 ---
 
-### Unit 8: Capstone Projects (Weeks 13-16)
+### Unit 8: Capstone (Weeks 13-16)
+
+*Full synthesis. Capstone deliverables include AIUC-1 certification documentation, Engineering Assessment Stack justification, V&V architecture, and cost analysis — the same frameworks carried throughout both semesters.*
 
 | Week | Topic |
 |------|-------|
-| [Week 13: Capstone Kickoff and Architecture Reviews](weeks/unit-8.md#week-13-capstone-kickoff-and-architecture-reviews) | Proposal and architectural design |
-| [Week 14: Capstone Development Sprint I](weeks/unit-8.md#week-14-capstone-development-sprint-i) | Building the core system |
-| [Week 15: Capstone Sprint II and Red Team Review](weeks/unit-8.md#week-15-capstone-development-sprint-ii-and-red-team-review) | Hardening and peer security assessment |
-| [Week 16: Capstone Presentations](weeks/unit-8.md#week-16-capstone-presentations-and-course-wrap) | Final demo and reflection |
+| [Week 13: Capstone Kickoff and Architecture Reviews](weeks/unit-8.md#week-13-capstone-kickoff-and-architecture-reviews) | Proposal review against Assessment Stack; AIUC-1 coverage plan |
+| [Week 14: Capstone Development Sprint I](weeks/unit-8.md#week-14-capstone-development-sprint-i) | Build with AIUC-1 baked in from start; Assessment Stack drives every decision |
+| [Week 15: Capstone Sprint II and Red Team Review](weeks/unit-8.md#week-15-capstone-development-sprint-ii-and-red-team-review) | Full red team by peers; ARR measurement; V&V documentation complete |
+| [Week 16: Capstone Presentations](weeks/unit-8.md#week-16-capstone-presentations-and-course-wrap) | Final demo + AIUC-1 certification checklist + Assessment Stack justification + cost analysis |
 
 [→ View Full Unit 8 Content](weeks/unit-8.md)
 
@@ -166,6 +192,18 @@ Final grade calculation:
 ---
 
 ## Course Policies
+
+### Extra Credit: Production-Quality Deliverables
+
+Throughout the course, you may earn extra credit by producing deliverables that go beyond the standard format:
+
+- **Interactive dashboards** — Build a React or HTML dashboard to present your vulnerability assessment, bias analysis, or compliance audit findings instead of a markdown report. (Up to 5% bonus per instance, max 2 per semester)
+- **Automated report generators** — Build a tool that produces formatted reports from raw data, rather than manually compiling results. (Up to 5% bonus)
+- **Visualization-first presentations** — Create data visualizations that communicate findings more effectively than prose. (Up to 3% bonus)
+
+Extra credit is assessed on: Does the deliverable communicate findings more effectively than the standard format? Is it reusable? Would a security team actually want to use this?
+
+---
 
 ### Attendance and Participation
 - Attendance at all lectures is expected

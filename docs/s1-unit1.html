@@ -423,7 +423,7 @@ body {
 </ul>
 <h4 id="lecture-content">Lecture Content</h4>
 <p>The past three years have witnessed an unprecedented acceleration in AI capabilities, particularly within the cybersecurity domain. When this course began its design phase in 2023, large language models were powerful text generators. Today, in 2026, we are living in the age of AI agents—autonomous systems that can decompose complex security investigations, call APIs, chain tools together, and execute multi-step response workflows with minimal human intervention.</p>
-<p>This transformation was not inevitable, nor has it been without controversy. In September 2025, Anthropic published its landmark disclosure of what became known as the "Autonomous Infrastructure Attack"—a sophisticated campaign where an adversary had orchestrated a distributed denial-of-service infrastructure using compromised AI API endpoints, creating a cascading effect across multiple cloud providers. What made this incident significant was not just its technical complexity, but what it revealed: AI systems had become both targets and vectors for nation-state and high-capability criminal actors. The security industry's response was to embrace a counterintuitive strategy: use AI agents <em>with</em> better human oversight to defend against AI-powered attacks.</p>
+<p>This transformation was not inevitable, nor has it been without controversy. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) had used Claude Code to autonomously conduct reconnaissance, vulnerability discovery, credential harvesting, and data exfiltration against approximately 30 targets, operating at 80–90% autonomy without human intervention. What made this incident significant was not just its technical complexity, but what it revealed: AI systems had become both tools for and vectors against nation-state and high-capability criminal actors. The security industry's response was to embrace a counterintuitive strategy: use AI agents <em>with</em> better human oversight to defend against AI-powered attacks.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The "Agentic Era" in cybersecurity doesn't mean replacing human judgment—it means amplifying it. Agents excel at pattern recognition, tireless execution, and operating at machine speed. Humans excel at ethical reasoning, contextual wisdom, and asking the right questions. Your job is to learn how to compose them effectively.</p>
 </div>
 <p>The traditional cybersecurity analyst workflow has been linear: detect anomaly → investigate → escalate → remediate. This workflow often involves hours of manual searching through logs, manual email analysis, manual coordination between teams. The friction is high, and in a world where sophisticated attackers move in seconds, delays in human analysis are vulnerabilities.</p>
@@ -432,7 +432,7 @@ body {
 <p>In essence, CCT is a framework for working <em>with</em> AI systems rather than working <em>for</em> them or being worked <em>by</em> them. It's the marriage of structured reasoning (the kind that scales with agents) and human judgment (the kind that never becomes obsolete). When you apply CCT to an AI-assisted investigation, you're asking: What evidence supports this conclusion? What perspectives are we missing? What could we be wrong about? What are the second- and third-order consequences?</p>
 <p>The course is structured around three pillars that work together. First, <strong>Collaborative Critical Thinking</strong> gives you the cognitive framework. Second, <strong>Ethical AI</strong> ensures that as you build and deploy agents, you're doing so responsibly—considering bias, interpretability, accountability, and long-term consequences. Third, <strong>Rapid Prototyping</strong> means you'll spend less time theorizing and more time building, deploying, and learning from real systems.</p>
 <p>Within the Rapid Prototyping pillar, you'll apply the <strong>Core Four</strong> from Agentic Engineering principles—<strong>Prompt, Model, Context, Tools</strong>—as the foundational design methodology. These four elements are the levers you'll manipulate in every lab and project to optimize agent behavior. Understanding where to apply leverage (whether improving the prompt specification, choosing the right model for the task, engineering context systematically, or designing better tools) is the key to moving from naive agent implementations to production-grade systems.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for deeper discussion. Also see Anthropic's "Disrupting AI-Orchestrated Cyber Espionage" blog post (September 2025) and the detailed incident timeline in the <a href="reading.html">Reading List</a>. This is the case study we'll use throughout Unit 1.</p>
+<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for deeper discussion. Also see Anthropic's "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" blog post (November 2025, detection: September 2025) and the detailed incident timeline in the <a href="reading.html">Reading List</a>. This is the GTG-1002 case study we'll use throughout Unit 1.</p>
 </div>
 <p>To measure success in this new landscape, we need metrics that go beyond traditional incident counts. The field has converged on five key metrics, each of which you'll track throughout this course:</p>
 <ol>
@@ -678,9 +678,9 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 </ol>
 <h4 id="sources-tools">Sources &amp; Tools</h4>
 <ul>
-<li><strong>Anthropic Model:</strong> Claude Sonnet 4.5 (via Claude Code)</li>
+<li><strong>Anthropic Model:</strong> Claude Sonnet 4.6 (via Claude Code)</li>
 <li><strong>Tools:</strong> Claude Code CLI, Python 3.10+, text editor (VS Code)</li>
-<li><strong>Primary Reading:</strong> Anthropic (Sept 2025). "Disrupting AI-Orchestrated Cyber Espionage: How Anthropic Detected and Responded to Automated Attack Infrastructure." Blog post.</li>
+<li><strong>Primary Reading:</strong> Anthropic (Nov 2025). "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign." Blog post.</li>
 <li><strong>Supporting Material:</strong> <a href="lab-setup.html">Lab Setup Guide</a>, <a href="reading.html">Reading List</a></li>
 </ul>
 <hr />
@@ -722,7 +722,7 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 <p>Individual indicators are data. Connections between indicators are patterns. Patterns are where the real story emerges.</p>
 <p>A failed login attempt by itself is noise—thousands occur daily. But a failed login attempt <em>followed</em> by a successful login from a different geography 3 minutes later, combined with the creation of a new admin account 7 minutes after that, combined with a large data exfiltration 30 minutes later—that's a narrative. The strategic connection between these events tells a story that no single indicator could.</p>
 <p>Strategic connections also include second- and third-order effects. If an attacker compromises a VP's account and exfiltrates client data, the immediate consequence is data theft. But the secondary consequences include: regulatory notification requirements, customer churn risk, reputation damage, potential fines, competitive disadvantage, insider threat (if this was an insider). The tertiary consequences include: how your detection of this incident affects future attacker behavior, whether this was a testing phase for a larger operation, whether this exposes other gaps.</p>
-<p>The Anthropic September 2025 incident perfectly illustrates strategic connections. The initial detection wasn't a smoking gun. It was a <em>pattern</em>: unusual API usage from multiple accounts, requests for logs about recent policy changes, queries to enumerate infrastructure. Individually, any one could be legitimate. The <em>connection</em> between them told the story of reconnaissance.</p>
+<p>The Anthropic GTG-1002 espionage campaign (disclosed November 2025) perfectly illustrates strategic connections. The initial detection wasn't a smoking gun. It was a <em>pattern</em>: unusual API usage from multiple accounts, requests for logs about recent policy changes, queries to enumerate infrastructure. Individually, any one could be legitimate. The <em>connection</em> between them told the story of reconnaissance.</p>
 <p>Strategic connections are also about <em>dependencies</em>. If your detection depends on a firewall log, but the attacker compromised the firewall, your detection is broken. If your response depends on a single person (the SOC lead), and that person is compromised, your response fails. Strategic thinking means asking: What are the dependencies in our detection and response, and what happens if each one fails?</p>
 <div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant? This is strategic thinking—understanding not just what happened, but why the sequence matters.</p>
 </div>
@@ -1266,9 +1266,9 @@ Did automation do the right thing? What would you do differently next time?
 <p>The market has stratified into three tiers:</p>
 <p><strong>Tier 1: Frontier Closed Models</strong></p>
 <p>These are the most capable models, built by large labs and proprietary:
-- <strong>Claude Opus 4.5</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 200K context, ~$15/1M input tokens
-- <strong>Claude Sonnet 4.5</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens
-- <strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$0.80/1M input tokens
+- <strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 200K context, ~$5/1M input tokens
+- <strong>Claude Sonnet 4.6</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens
+- <strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$1.00/1M input tokens
 - <strong>GPT-4o</strong> (OpenAI, 2025): Multimodal (text, image, audio), good reasoning, 128K context, ~$5/1M input tokens
 - <strong>Gemini 2.0</strong> (Google, 2025): Native multimodal, 1M context window (largest publicly available), ~$7/1M input tokens</p>
 <p><strong>Advantages:</strong>
@@ -1365,14 +1365,14 @@ Did automation do the right thing? What would you do differently next time?
 <li>Your question (0.5K tokens)</li>
 </ul>
 <p><strong>Total input: 27.5K tokens</strong></p>
-<p>Opus costs $15 per 1M input tokens, or $0.000015 per token.</p>
-<p>Cost for input: 27.5K × $0.000015 = <strong>$0.41</strong></p>
-<p>The response is 2K tokens. Output costs $0.06 per 1M tokens, or $0.00006 per token.</p>
-<p>Cost for output: 2K × $0.00006 = <strong>$0.12</strong></p>
-<p><strong>Total: $0.53 per incident analysis.</strong></p>
-<p>If your SOC processes 100 incidents/day, that's $53/day, or ~$13K/year.</p>
+<p>Opus costs $5 per 1M input tokens, or $0.000005 per token.</p>
+<p>Cost for input: 27.5K × $0.000005 = <strong>$0.14</strong></p>
+<p>The response is 2K tokens. Output costs $0.025 per 1M tokens, or $0.000025 per token.</p>
+<p>Cost for output: 2K × $0.000025 = <strong>$0.05</strong></p>
+<p><strong>Total: ~$0.19 per incident analysis.</strong></p>
+<p>If your SOC processes 100 incidents/day, that's $19/day, or ~$7K/year.</p>
 <p>Is that worth it? Compare to a human analyst at $80K/year salary. If Claude accelerates analysis by just 5%, it's ROI-positive.</p>
-<p>But here's the hidden cost: If you include irrelevant context (a full log file that only 5% applies), you might waste half your tokens. Same analysis, now $0.80 instead of $0.53. Over a year, that's an extra $9K wasted.</p>
+<p>But here's the hidden cost: If you include irrelevant context (a full log file that only 5% applies), you might waste half your tokens. Same analysis, now ~$0.27 instead of $0.19. Over a year, that's an extra ~$3K wasted.</p>
 <p>This is why "context engineering" (curating what to include, in what format) matters.</p>
 <hr />
 <h3 id="day-2-hands-on-lab_2">Day 2 — Hands-On Lab</h3>
@@ -1566,8 +1566,8 @@ Provide your analysis in a way that&#39;s practical and actionable, without exce
 - Cost (estimated or actual API cost)</p>
 <p>Create a summary file: <code>model-comparison-summary.csv</code></p>
 <div class="codehilite"><pre><span></span><code>model,prompt_tokens,output_tokens,inference_time_seconds,estimated_cost_usd,threat_confidence,recommendation_clear
-Claude Opus 4.5,1250,650,5.3,0.32,98%,yes - block
-Claude Sonnet 4.5,1250,580,2.1,0.08,96%,yes - block
+Claude Opus 4.6,1250,650,5.3,0.32,98%,yes - block
+Claude Sonnet 4.6,1250,580,2.1,0.08,96%,yes - block
 GPT-4o,1250,620,3.8,0.18,92%,yes - block
 Mistral 7B,1250,710,12.5,0.00 (local),88%,yes - block
 </code></pre></div>

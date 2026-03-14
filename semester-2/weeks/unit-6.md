@@ -363,6 +363,40 @@ Create the following artifacts:
 
 ---
 
+### V&V Lens: Adversarial Assumption in Practice
+
+This is where the fourth dimension of V&V Discipline — Adversarial Assumption — becomes your primary operating mode. Everything you learned about Output Verification, Calibrated Trust, and Failure Imagination now gets stress-tested:
+
+- **Can verification itself be compromised?** If your verification step queries a threat intel feed, what happens if the feed is poisoned?
+- **Can trust calibration be exploited?** If you've trained analysts to trust CVE lookups without verification, an attacker who can inject false CVE data bypasses your V&V entirely.
+- **Can failure imagination be weaponized?** If defenders over-imagine failure, they become paralyzed and stop acting on legitimate findings. Attackers can exploit this by flooding systems with false positives.
+
+Red teaming isn't just about finding vulnerabilities in agents — it's about finding vulnerabilities in your V&V process itself. Your lab should include at least one attack that targets the verification mechanism, not just the agent.
+
+---
+
+> **🧠 Domain Assist:** MITRE ATLAS threat modeling requires adversarial thinking that doesn't come naturally if you come from a defensive background. Before starting your threat model, ask Claude Chat:
+>
+> "I have a multi-agent SOC system. I need to think like an attacker. Help me: 1) Where would I start? What's the easiest entry point? 2) How would I move from compromising one agent to compromising the whole system? 3) What MITRE ATLAS techniques apply here? 4) What's the attack the defenders are least likely to anticipate?"
+
+---
+
+### The Attacker's Dark Factory
+
+The most dangerous evolution in the threat landscape is autonomous attack infrastructure — the attacker's dark factory:
+
+1. **Recon agent** continuously scans for vulnerable targets across the internet
+2. **Exploit agent** chains vulnerabilities and generates custom payloads
+3. **Persistence agent** establishes footholds and maintains access
+4. **Exfiltration agent** identifies and extracts high-value data
+5. **Cleanup agent** covers tracks and rotates infrastructure
+
+This pipeline runs 24/7, hits thousands of targets simultaneously, and costs almost nothing per target. The Anthropic GTG-1002 espionage campaign (disclosed November 2025, detected September 2025) operated at 80–90% autonomy across recon, credential harvesting, and data exfiltration.
+
+**Implication for defenders:** You cannot defend against machine-speed attacks at human speed. Your defensive systems need autonomous capabilities — but with AIUC-1 governance guardrails, V&V verification, and human override mechanisms.
+
+---
+
 ## Week 6: Red Teaming AI Agents — Offensive Techniques
 
 ### Day 1 — Theory & Foundations
@@ -954,6 +988,16 @@ This is why production AI systems need:
 - Compete in offensive security assessment exercise
 
 #### Lab Structure: Red Team Offensive Campaign
+
+> **🧠 Domain Assist:** Building red team tools requires understanding attack patterns you may have only read about. Before building your attack tools, ask Claude Chat to walk you through the attacker's perspective:
+>
+> "I'm building a prompt injection attack tool. Help me think like a red teamer: 1) What makes a prompt injection attack succeed vs. fail? What's the attacker's mental model? 2) What are the most effective injection patterns — not just the obvious ones, but the subtle ones that defenders miss? 3) How would I chain multiple techniques together into a multi-stage attack? 4) What does a sophisticated attacker do differently from a script kiddie when targeting AI agents?"
+
+---
+
+> **🛠️ Skill Opportunity:** Your prompt injection test suite? That's a `/red-team-inject` skill. Your attack orchestrator? That's a `/red-team-orchestrate` skill. Package your best attack patterns into skills with test scripts in `scripts/`. Your red team toolkit becomes portable and shareable.
+
+---
 
 **Environment Setup**
 
@@ -2452,6 +2496,21 @@ def measure_false_positive_rate():
     assert false_positive_rate < 0.05, "Too many legitimate requests blocked!"
 ```
 
+### V&V Lens: Verification as Defense
+
+Your guardrail system should include verification as an explicit defense layer:
+
+**Layer 5: Output Verification Gate**
+Before any agent output triggers an action (alert escalation, automated response, report generation), pass it through a verification gate:
+- Cross-reference key claims against independent data sources
+- Check for internal consistency (does the evidence support the conclusion?)
+- Verify that confidence scores are calibrated (not always 0.9 regardless of evidence strength)
+- Flag unverifiable claims for human review
+
+This is different from output filtering (which checks for harmful content). Verification checking confirms accuracy, not safety. Both are needed.
+
+---
+
 #### Deliverables
 
 **Defense Implementation Report (2500-4000 words)**
@@ -2516,6 +2575,8 @@ Blue Team (Defenders): Detect attacks and prevent data loss
 Both teams operate **autonomous agents** that make real-time decisions without manual intervention during the wargame.
 
 **Target Environment**
+
+> **💡 Pro Tip (Company Profile):** Before the wargame begins, ensure your target environment has a clear organizational context. Who is the simulated enterprise? What do they do? What data do they process? What's their regulatory environment? A well-defined organizational context makes attack and defense decisions more realistic — attackers know what data is valuable, defenders know what to protect most. If the target environment lacks a company context, define one as a team before beginning.
 
 A simulated enterprise system running:
 - Web application with intentional vulnerabilities (SQLi, auth bypass, privilege escalation)

@@ -47,23 +47,27 @@ By the end of this course, students will be able to:
 
 1. **Apply Collaborative Critical Thinking (CCT)** systematically to security problems, integrating Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, and Ethical Governance when working with AI-augmented tools.
 
-2. **Design and implement context-engineered solutions** that move beyond prompt engineering to leverage system prompts, structured outputs, tool definitions, and memory architectures for security applications.
+2. **Apply Verification and Validation Discipline** to AI-generated outputs, systematically confirming findings before acting on them — starting with manual verification and progressing to automated verification pipelines built into security tools.
 
-3. **Build and deploy Model Context Protocol (MCP) servers** that standardize agent-tool communication and enable auditable, secure AI agent access to external systems.
+3. **Design and implement context-engineered solutions** that move beyond prompt engineering to leverage system prompts, structured outputs, tool definitions, and memory architectures for security applications.
 
-4. **Evaluate AI security tools** against established frameworks including NIST AI RMF, OWASP Top 10 for Agentic Applications, and the FS-ISAC Responsible AI Principles.
+4. **Build and deploy Model Context Protocol (MCP) servers** that standardize agent-tool communication and enable auditable, secure AI agent access to external systems.
 
-5. **Identify and mitigate bias, fairness, and explainability issues** in AI-powered security systems through hands-on bias detection and fairness engineering.
+5. **Evaluate AI security tools** against established frameworks including NIST AI RMF, OWASP Top 10 for Agentic Applications, and the AIUC-1 Standard for AI agent security, safety, and reliability.
 
-6. **Architect multi-agent security operations** using Claude's agentic stack (subagents, worktrees, agent teams) to coordinate specialized security functions.
+6. **Identify and mitigate bias, fairness, and explainability issues** in AI-powered security systems through hands-on bias detection and fairness engineering.
 
-7. **Prototype production-grade security tools in 2-3 hour sprints** from problem analysis through deployment, demonstrating mastery of rapid agentic engineering.
+7. **Architect multi-agent security operations** using Claude's agentic stack (subagents, worktrees, agent teams) to coordinate specialized security functions.
 
-8. **Compose and enforce AI security policies** that govern data handling, model governance, agent permissions, and incident response for AI-driven security systems.
+8. **Prototype production-grade security tools in 2-3 hour sprints** from problem analysis through deployment, demonstrating mastery of rapid agentic engineering.
 
-9. **Measure AI-augmented security workflows** using five key performance metrics: Mean Time to Triage (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Isolate (MTTI), and Augmented Mean Time to Respond (aMTTR).
+9. **Compose and enforce AI security policies** that govern data handling, model governance, agent permissions, and incident response for AI-driven security systems.
 
-10. **Defend security decisions made by AI agents** by providing explanations grounded in evidence, audit logs, and structured reasoning that satisfy both technical and non-technical stakeholders.
+10. **Measure AI-augmented security workflows** using five key performance metrics: Mean Time to Triage (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Isolate (MTTI), and Augmented Mean Time to Respond (aMTTR).
+
+11. **Defend security decisions made by AI agents** by providing explanations grounded in evidence, audit logs, and structured reasoning that satisfy both technical and non-technical stakeholders.
+
+12. **Select the appropriate Claude tool for each task** — using Claude Chat for analysis and reasoning, Cowork for documentation and deliverables, and Claude Code for building tools and systems — and know when to switch between them.
 
 ---
 
@@ -88,12 +92,12 @@ By the end of this course, students will be able to:
 
 | Week | Topic |
 |------|-------|
-| [Week 1: Welcome to the Agentic Era](weeks/unit-1.md#week-1-welcome-to-the-agentic-era) | Course overview, AI evolution, intro to CCT |
-| [Week 2: The 5 Pillars of CCT](weeks/unit-1.md#week-2-the-5-pillars-of-collaborative-critical-thinking) | Deep dive into CCT theory and cognitive biases |
-| [Week 3: Modern AI Landscape](weeks/unit-1.md#week-3-the-modern-ai-landscape-for-security-professionals) | AI models, capabilities, security implications |
-| [Week 4: Context Engineering](weeks/unit-1.md#week-4-from-prompt-engineering-to-context-engineering) | Beyond prompt engineering |
+| [Week 1: Welcome to the Agentic Era](weeks/week-01.md) | Course overview, AI evolution, intro to CCT |
+| [Week 2: The 5 Pillars of CCT & V&V Discipline](weeks/week-02.md) | Deep dive into CCT theory, cognitive biases, and verification discipline |
+| [Week 3: Modern AI Landscape](weeks/week-03.md) | AI models, capabilities, security implications |
+| [Week 4: Context Engineering](weeks/week-04.md) | Beyond prompt engineering |
 
-[→ View Full Unit 1 Content](weeks/unit-1.md)
+[→ View Unit 1 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-1.md)
 
 ---
 
@@ -101,12 +105,12 @@ By the end of this course, students will be able to:
 
 | Week | Topic |
 |------|-------|
-| [Week 5: Model Context Protocol](weeks/unit-2.md#week-5-model-context-protocol-mcp--the-agent-tool-interface) | Introduction to MCP architecture and standardization |
-| [Week 6: Tool Design Patterns](weeks/unit-2.md#week-6-tool-design-patterns-for-security-agents) | Building robust, secure tools |
-| [Week 7: Structured Outputs](weeks/unit-2.md#week-7-structured-outputs--security-reporting) | Machine-readable formats for reports |
-| [Week 8: RAG for Security](weeks/unit-2.md#week-8-retrieval-augmented-generation-rag-for-security-knowledge) | Domain-specific knowledge systems |
+| [Week 5: Model Context Protocol](weeks/week-05.md) | Introduction to MCP architecture and standardization |
+| [Week 6: Tool Design Patterns](weeks/week-06.md) | Building robust, secure tools |
+| [Week 7: Structured Outputs](weeks/week-07.md) | Machine-readable formats for reports |
+| [Week 8: RAG for Security](weeks/week-08.md) | Domain-specific knowledge systems |
 
-[→ View Full Unit 2 Content](weeks/unit-2.md)
+[→ View Unit 2 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-2.md)
 
 ---
 
@@ -114,12 +118,12 @@ By the end of this course, students will be able to:
 
 | Week | Topic |
 |------|-------|
-| [Week 9: Responsible AI Principles](weeks/unit-3.md#week-9-fs-isac-responsible-ai-principles-for-security-applications) | Industry frameworks for AI safety and fairness |
-| [Week 10: OWASP Top 10 for Agentic Applications](weeks/unit-3.md#week-10-owasp-top-10-for-agentic-applications) | Security vulnerabilities in AI systems |
-| [Week 11: Bias, Fairness, and Explainability](weeks/unit-3.md#week-11-bias-fairness-and-explainability-in-security-ai) | Detecting and mitigating AI bias |
-| [Week 12: Privacy and AI Security Policy](weeks/unit-3.md#week-12-privacy-data-governance-and-ai-security-policy) | Data governance and policy frameworks |
+| [Week 9: AIUC-1 Standard for AI Agents](weeks/week-09.md) | The agent-specific security, safety, and reliability standard |
+| [Week 10: OWASP Top 10 for Agentic Applications](weeks/week-10.md) | Security vulnerabilities in AI systems |
+| [Week 11: Bias, Fairness, and Explainability](weeks/week-11.md) | Detecting and mitigating AI bias |
+| [Week 12: Privacy and AI Security Policy](weeks/week-12.md) | Data governance and policy frameworks |
 
-[→ View Full Unit 3 Content](weeks/unit-3.md)
+[→ View Unit 3 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-3.md)
 
 ---
 
@@ -127,12 +131,12 @@ By the end of this course, students will be able to:
 
 | Week | Topic |
 |------|-------|
-| [Week 13: Claude Code Deep Dive](weeks/unit-4.md#week-13-claude-code-deep-dive--worktrees-subagents-and-agent-teams) | Agentic stack mastery |
-| [Week 14: Rapid Prototyping Sprint I](weeks/unit-4.md#week-14-rapid-prototyping-sprint-i--from-concept-to-demo-in-3-hours) | Build from concept to demo in 3 hours |
-| [Week 15: Rapid Prototyping Sprint II](weeks/unit-4.md#week-15-rapid-prototyping-sprint-ii--iteration-and-hardening) | Hardening and production-ready quality |
-| [Week 16: Midyear Presentations](weeks/unit-4.md#week-16-midyear-project-presentations) | Demo and reflection |
+| [Week 13: Claude Code Deep Dive](weeks/week-13.md) | Agentic stack mastery |
+| [Week 14: Rapid Prototyping Sprint I](weeks/week-14.md) | Build from concept to demo in 3 hours |
+| [Week 15: Rapid Prototyping Sprint II](weeks/week-15.md) | Hardening and production-ready quality |
+| [Week 16: Midyear Presentations](weeks/week-16.md) | Demo and reflection |
 
-[→ View Full Unit 4 Content](weeks/unit-4.md)
+[→ View Unit 4 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-4.md)
 
 ---
 
@@ -224,6 +228,18 @@ For lab-heavy courses, timely completion is critical for peer collaboration and 
 
 ---
 
+### Extra Credit: Production-Quality Deliverables
+
+Throughout the course, you may earn extra credit by producing deliverables that go beyond the standard format:
+
+- **Interactive dashboards** — Build a React or HTML dashboard to present your vulnerability assessment, bias analysis, or compliance audit findings instead of a markdown report. (Up to 5% bonus per instance, max 2 per semester)
+- **Automated report generators** — Build a tool that produces formatted reports from raw data, rather than manually compiling results. (Up to 5% bonus)
+- **Visualization-first presentations** — Create data visualizations that communicate findings more effectively than prose. (Up to 3% bonus)
+
+Extra credit is assessed on: Does the deliverable communicate findings more effectively than the standard format? Is it reusable? Would a security team actually want to use this?
+
+---
+
 ## Course Expectations
 
 ### Workload
@@ -238,11 +254,24 @@ Weeks 14–16 (sprint weeks) may require additional time as you iterate on proto
 ### Technology Requirements
 
 **Required:**
+- Claude Max subscription with access to:
+  - **Claude Chat** — Web or desktop interface for conversational analysis and reasoning
+  - **Cowork** — Desktop tool for documentation, file management, and deliverable organization
+  - **Claude Code** — CLI tool for building, coding, and engineering (install per Lab Setup Guide). Note: Use the `/cost` command at the end of each session to track API usage and build cost awareness.
 - Laptop with Claude Code installed (Mac, Windows, or Linux)
-- Access to Claude (Claude Opus or Sonnet; Anthropic API credentials or Claude Max subscription)
 - Git for version control
-- A text editor or IDE (VSCode, PyCharm, or similar)
+- A text editor or IDE (VSCode recommended)
 - Command-line familiarity (bash/zsh)
+
+**Required Platform Access (provided through course fees or institutional licensing):**
+- **Claude Max subscription** — Primary platform for Chat, Cowork, and Claude Code
+- **OpenAI Platform account** — API access for model comparison and multi-model evaluation
+- **AWS Academy or lab account** — For running open-source models (Ollama/vLLM) and production deployment labs
+
+**Required Hardware:**
+- Minimum: 8GB RAM, 4-core CPU, 50GB free storage
+- Recommended: 16GB RAM, Apple Silicon (M2+) or NVIDIA GPU, 100GB free storage
+- Note: Students with machines below recommended specs will use AWS for model hosting.
 
 **Recommended:**
 - Docker for containerizing tools and MCP servers
@@ -295,14 +324,14 @@ Weeks 14–16 (sprint weeks) may require additional time as you iterate on proto
 | Week | Topic | Major Deliverable |
 |------|-------|-------------------|
 | 1 | Welcome to the Agentic Era | Environment setup + CCT journal |
-| 2 | The 5 Pillars of CCT | CCT analysis report |
+| 2 | The 5 Pillars of CCT & V&V Discipline | CCT + V&V analysis report |
 | 3 | The Modern AI Landscape | Model comparison report |
 | 4 | Context Engineering | Context-engineered tool |
 | 5 | Model Context Protocol | First MCP server |
 | 6 | Tool Design Patterns | Multi-tool MCP server |
 | 7 | Structured Outputs | Report generator |
 | 8 | RAG for Security | RAG security assistant |
-| 9 | Responsible AI Principles | Ethics audit report |
+| 9 | AIUC-1 Standard for AI Agents | AIUC-1 domain audit report |
 | 10 | OWASP Top 10 | Vulnerability assessment |
 | 11 | Bias and Fairness | Bias analysis report |
 | 12 | Privacy and AI Policy | AI Security Policy |

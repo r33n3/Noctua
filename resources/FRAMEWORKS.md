@@ -540,8 +540,8 @@ Provides a systematic approach to understanding and managing risks in AI systems
    - Execute incident response for AI-related incidents
    - Iterate based on measurements and feedback
 
-**Connection to FS-ISAC Responsible AI Principles**
-Maps directly to the FS-ISAC Responsible AI Principles (2024), an industry framework developed by the FS-ISAC AI Risk Working Group. The six principles — Safe/Secure/Resilient, Explainable/Interpretable, Privacy-Enhanced, Fair/Bias-Managed, Valid/Reliable, and Accountable/Transparent — create alignment between organizational policy, NIST AI RMF, and risk management frameworks.
+**Connection to AIUC-1 Standard**
+Maps directly to the AIUC-1 Standard, the first security, safety, and reliability standard for AI agents. The six domains — Data & Privacy (A), Security (B), Safety (C), Reliability (D), Accountability (E), and Society (F) — operationalize NIST AI RMF, ISO 42001, MITRE ATLAS, and OWASP LLM Top 10 into concrete, auditable controls. Unlike principle-based frameworks, AIUC-1 includes third-party technical testing (adversarial robustness, jailbreak resistance, data leak prevention) and quarterly updates to keep pace with evolving threats. This makes AIUC-1 uniquely suited for governing agentic security systems where autonomous agents operate with delegated authority.
 
 **Course Relevance**
 - Semester 1 Week 9: Introduction and deep dive into framework application
@@ -1450,6 +1450,56 @@ PeaRL demonstrates how a production governance system exposes its capabilities t
 - And 34 others for policy management, audit, and anomaly detection
 
 Students will design and implement their own governance tools inspired by PeaRL's architecture, using Claude Code to generate the implementations. Think about: Which capabilities must be externalized as APIs? How should policies be evaluated? What audit trail information is essential?
+
+---
+
+## Verification and Validation Discipline
+
+V&V Discipline is the practice of confirming AI-generated outputs before acting on them. It operates at multiple levels:
+
+**Individual level:** Practitioners verify agent outputs through independent checks, calibrate trust based on output type and consequence, and imagine failure scenarios before committing to AI-recommended actions.
+
+**Tool level:** Security tools include automated verification steps — cross-referencing findings against independent sources, flagging unverifiable claims, and detecting internal inconsistencies.
+
+**System level:** Multi-agent architectures include verification as a structural pattern — consensus verification, pipeline verification, or dedicated verifier agents.
+
+**Organizational level:** AIUC-1 certification requires independent third-party testing — the same V&V principle applied at enterprise scale.
+
+**Connection to AIUC-1:** V&V Discipline maps directly to AIUC-1 domains:
+- Output Verification → D. Reliability (continuous validation)
+- Calibrated Trust → E. Accountability (explainability, audit trails)
+- Failure Imagination → C. Safety (pre-deployment testing, risk taxonomy)
+- Adversarial Assumption → B. Security (adversarial robustness testing)
+
+### Engineering Assessment Stack — Layer 3: Model Selection & Cost Assessment
+
+For each agent/task in your system, calculate cost as part of model selection:
+- Expected input tokens (system prompt + context + input)
+- Expected output tokens (response length)
+- Expected invocations (how many times per hour/day)
+- Cache eligibility (is the system prompt stable? → cache it)
+
+Then compare:
+
+| If task needs... | Use... | Cost/invocation (est.) |
+|-----------------|--------|----------------------|
+| Simple classification | Haiku 4.5 | $0.001-0.005 |
+| Moderate reasoning | Sonnet 4.6 | $0.005-0.02 |
+| Deep analysis | Opus 4.6 | $0.02-0.10 |
+| Deterministic lookup | MCP tool (no LLM) | $0.00 |
+| Pattern matching | Regex/YARA (no LLM) | $0.00 |
+
+The assessment question: "Is the quality improvement from Opus worth 5x the cost of Sonnet for THIS specific task?" Sometimes yes (complex forensic analysis). Often no (alert classification).
+
+### Current Pricing Reference (March 2026)
+
+| Model | Input (per MTok) | Output (per MTok) | Cache Write (5min) | Cache Write (1hr) | Cache Read |
+|-------|------------------|-------------------|--------------------|-------------------|------------|
+| Claude Opus 4.6 | $5.00 | $25.00 | $6.25 | $10.00 | $0.50 |
+| Claude Sonnet 4.6 | $3.00 | $15.00 | $3.75 | $6.00 | $0.30 |
+| Claude Haiku 4.5 | $1.00 | $5.00 | $1.25 | $2.00 | $0.10 |
+
+**Cache pricing:** Cache write = 1.25x (5min) or 2.0x (1hr) base input price. Cache read = 0.1x base input price (90% savings). Batch API = 50% discount on both input and output.
 
 ---
 
