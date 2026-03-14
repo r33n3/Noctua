@@ -303,7 +303,7 @@ Include the completed mapping table in your Governance Policy deliverable.
 5. **Governance Policy** (1-2 pages) — referencing specific controls and vulnerabilities found
 6. **PeaRL Chain Mapping** — which levels your system is vulnerable to and proposed controls
 
-> **📁 Save to:** `~/agentforge/governance/audits/week08/` (audit report and findings), `~/agentforge/governance/policies/` (governance policy), `~/agentforge/deliverables/week08/` (final submission)
+> **📁 Save to:** `~/noctua/governance/audits/week08/` (audit report and findings), `~/noctua/governance/policies/` (governance policy), `~/noctua/deliverables/week08/` (final submission)
 
 ---
 

@@ -1,6 +1,6 @@
-# CyberMinds 2026: Design Rationale — From 2023 to 2026
+# Noctua: Design Rationale — From 2023 to 2026
 
-**Original Course:** CyberMinds: The Fusion of Artificial and Human Intelligence (2023)
+**Original Course:** Noctua: The Fusion of Artificial and Human Intelligence (2023)
 **Assessment Date:** March 2026
 **Status:** Complete — All design decisions implemented in course materials
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The original CyberMinds course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—**Collaborative Critical Thinking (CCT)**, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.
+The original Noctua course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—**Collaborative Critical Thinking (CCT)**, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.
 
 This assessment identified what remains timeless, what requires updating, and what must be newly incorporated. The 2026 course addresses all of these dimensions in its design and materials.
 
@@ -711,7 +711,7 @@ Many AI security courses focus on correctness and safety but ignore production r
 
 ### What Endures
 
-The 2023 CyberMinds course was philosophically prescient. The three foundational pillars remain sound:
+The 2023 course was philosophically prescient. The three foundational pillars remain sound:
 
 1. **Collaborative Critical Thinking (CCT):** Remains the best framework for embedding human values into autonomous AI systems. The five pillars (Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance) are now more critical than ever.
 
@@ -731,9 +731,9 @@ The practical execution layer—tools, frameworks, course structure, and threat 
 - **Frameworks:** OWASP Top 10 for Agentic Applications, MITRE ATLAS, and NIST AI RMF provide concrete guidance that didn't exist in 2023.
 - **Scale and Duration:** A 40-hour course is insufficient for graduate-level mastery. A year-long program with 150+ contact hours is needed.
 
-### The 2026 AgentForge Course
+### The 2026 Noctua Course
 
-The 2026 version of AgentForge:
+The 2026 version of Noctua:
 
 1. **Preserves the philosophical foundation:** The CCT framework, ethical principles, and rapid prototyping mindset form the core.
 
@@ -757,7 +757,7 @@ The 2026 version of AgentForge:
 
 ### Conclusion
 
-The 2023 CyberMinds course was ahead of its time. In 2026, its foundational insights are more relevant than ever, and the tactical knowledge required to implement those insights has evolved dramatically. The 2026 course is a comprehensive rebuild that preserves the original vision while incorporating agentic engineering as the execution discipline. The field is moving faster than any curriculum can track, but the principles implemented in AgentForge will endure.
+The 2023 course was ahead of its time. In 2026, its foundational insights are more relevant than ever, and the tactical knowledge required to implement those insights has evolved dramatically. The 2026 course is a comprehensive rebuild that preserves the original vision while incorporating agentic engineering as the execution discipline. The field is moving faster than any curriculum can track, but the principles implemented in Noctua will endure.
 
 ---
 

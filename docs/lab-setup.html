@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Setup Guide — AgentForge</title>
+<title>Lab Setup Guide — Noctua</title>
 <style>
 /* === RESET === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -377,7 +377,7 @@ body {
 
 <nav class="sidebar">
   <div class="sidebar-header">
-    <h1>AgentForge</h1>
+    <h1>Noctua</h1>
     <p>AI Security Engineering</p>
   </div>
   <div class="nav-section">Overview</div>
@@ -404,9 +404,9 @@ body {
 
 <main class="main">
   <div class="content">
-    <h1 id="lab-environment-setup-guide-agentforge">Lab Environment Setup Guide — AgentForge</h1>
+    <h1 id="lab-environment-setup-guide-agentforge">Lab Environment Setup Guide — Noctua</h1>
 <h2 id="overview">Overview</h2>
-<p>The AgentForge lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure (Debian servers, ELK stacks), this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.</p>
+<p>The Noctua lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure (Debian servers, ELK stacks), this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.</p>
 <p>You will develop autonomous security agents capable of threat detection, incident response, vulnerability assessment, and security architecture using Claude's Agent SDK, MCP servers, and agent teams. This practical approach prepares you to build production-ready security systems in enterprise environments.</p>
 <h2 id="required-accounts-and-subscriptions">Required Accounts and Subscriptions</h2>
 <h3 id="claude-max-subscription-primary">Claude Max Subscription (Primary)</h3>
@@ -435,7 +435,7 @@ body {
 - GitHub account with Codespaces access (free tier includes monthly minutes)</p>
 <p><strong>Setup Steps:</strong></p>
 <ol>
-<li>Fork the CyberMinds course repository to your GitHub account</li>
+<li>Fork the Noctua course repository to your GitHub account</li>
 <li>Click the green "Code" button on your fork</li>
 <li>Select the "Codespaces" tab</li>
 <li>Click "Create codespace on main"</li>
@@ -451,7 +451,7 @@ body {
 - Essential development tools</p>
 <p><strong>Sample devcontainer.json</strong> (reference—included in course repo):</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AgentForge Development&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Noctua Development&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mcr.microsoft.com/devcontainers/python:3.11-node-20&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;ghcr.io/devcontainers/features/github-cli:1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
@@ -636,7 +636,7 @@ claude config list
 <li><strong>timeout</strong>: Maximum execution time in milliseconds (adjust if labs require longer runs).</li>
 </ul>
 <p><strong>Step 4: Run Your First Command</strong></p>
-<div class="codehilite"><pre><span></span><code>claude <span class="s2">&quot;Create a simple Python script that prints &#39;AgentForge Lab Environment Ready&#39;&quot;</span>
+<div class="codehilite"><pre><span></span><code>claude <span class="s2">&quot;Create a simple Python script that prints &#39;Noctua Lab Environment Ready&#39;&quot;</span>
 </code></pre></div>
 
 <p>Claude generates the script, saves it, and reports success. This verifies your setup is working.</p>
@@ -746,20 +746,20 @@ claude config list
 <p>All course work is version-controlled using Git.</p>
 <p><strong>Step 1: Fork the Course Repository</strong></p>
 <ol>
-<li>Navigate to the CyberMinds course repository on GitHub</li>
+<li>Navigate to the Noctua course repository on GitHub</li>
 <li>Click the "Fork" button (top right)</li>
 <li>Select your account as the fork destination</li>
 <li>Wait for the fork to complete</li>
 </ol>
 <p><strong>Step 2: Clone Your Fork Locally</strong></p>
-<div class="codehilite"><pre><span></span><code>git clone git@github.com:YOUR-USERNAME/CyberMinds-2026.git
-<span class="nb">cd</span> CyberMinds-2026
+<div class="codehilite"><pre><span></span><code>git clone git@github.com:YOUR-USERNAME/Noctua.git
+<span class="nb">cd</span> Noctua
 </code></pre></div>
 
 <p>Replace <code>YOUR-USERNAME</code> with your GitHub username.</p>
 <p><strong>Step 3: Add Upstream Remote</strong></p>
 <p>This allows you to sync with course updates:</p>
-<div class="codehilite"><pre><span></span><code>git remote add upstream git@github.com:COURSE-ORGANIZATION/CyberMinds-2026.git
+<div class="codehilite"><pre><span></span><code>git remote add upstream git@github.com:COURSE-ORGANIZATION/Noctua.git
 git fetch upstream
 </code></pre></div>
 
@@ -797,7 +797,7 @@ git push origin main
 <li>Document your work in README files within lab directories</li>
 </ul>
 <h2 id="devsecops-promotion-pipeline">DevSecOps Promotion Pipeline</h2>
-<p>AgentForge follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — we don't teach CI/CD in detail — but we follow the methodology so that when a prototype is selected by leadership for delivery, the path to production is already paved.</p>
+<p>Noctua follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — we don't teach CI/CD in detail — but we follow the methodology so that when a prototype is selected by leadership for delivery, the path to production is already paved.</p>
 <h3 id="the-promotion-path">The Promotion Path</h3>
 <p><strong>Local Development (Docker Desktop)</strong>
 Every prototype starts as a containerized application on Docker Desktop. From Week 1, students containerize their agents with a <code>Dockerfile</code> and <code>docker-compose.yml</code>. This ensures reproducibility, isolation, and a clean path to cloud deployment.</p>
@@ -1072,10 +1072,10 @@ python3 -m pip install mcp  <span class="c1"># Use python3 explicitly if python 
 <p><strong>Problem:</strong> Version conflicts between packages</p>
 <p><strong>Solution:</strong>
 Create a virtual environment to isolate dependencies:</p>
-<div class="codehilite"><pre><span></span><code>python3 -m venv cyberminds-env
-<span class="nb">source</span> cyberminds-env/bin/activate  <span class="c1"># macOS/Linux</span>
+<div class="codehilite"><pre><span></span><code>python3 -m venv noctua-env
+<span class="nb">source</span> noctua-env/bin/activate  <span class="c1"># macOS/Linux</span>
 <span class="c1"># OR</span>
-cyberminds-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate  <span class="c1"># Windows</span>
+noctua-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate  <span class="c1"># Windows</span>
 pip install -r requirements.txt
 </code></pre></div>
 
@@ -1103,7 +1103,7 @@ docker ps  <span class="c1"># Test</span>
 <p><strong>Problem:</strong> <code>fatal: not a git repository</code></p>
 <p><strong>Solution:</strong>
 Ensure you're in the correct directory:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> CyberMinds-2026
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> Noctua
 git status
 </code></pre></div>
 
@@ -1166,7 +1166,7 @@ ollama pull llama2
 <li>Read the Lab 1 README for your first assignment</li>
 <li>Join the course Slack/Discord for real-time support and peer collaboration</li>
 </ol>
-<p>Welcome to AgentForge. You're now ready to build autonomous security agents.</p>
+<p>Welcome to Noctua. You're now ready to build autonomous security agents.</p>
   </div>
 </main>
 

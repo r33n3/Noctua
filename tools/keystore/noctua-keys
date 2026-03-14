@@ -3,22 +3,22 @@
 AgentForge Keystore — Encrypted local secret management for AI development.
 
 Secrets are encrypted with AES-256-GCM using a master password derived through
-PBKDF2 (100K iterations). The encrypted vault lives at ~/.agentforge/vault.enc.
+PBKDF2 (100K iterations). The encrypted vault lives at ~/.noctua/vault.enc.
 No secret ever touches disk in plaintext.
 
 Usage:
-    agentforge-keys init                    # Create vault with master password
-    agentforge-keys add ANTHROPIC_API_KEY   # Add a secret (prompts for value)
-    agentforge-keys get ANTHROPIC_API_KEY   # Retrieve a secret
-    agentforge-keys list                    # List all key names (not values)
-    agentforge-keys delete ANTHROPIC_API_KEY # Remove a secret
-    agentforge-keys export                  # Print export statements for shell
-    agentforge-keys env                     # Print .env format (for reference only)
-    agentforge-keys rotate                  # Change master password
-    agentforge-keys check                   # Verify vault integrity
+    noctua-keys init                    # Create vault with master password
+    noctua-keys add ANTHROPIC_API_KEY   # Add a secret (prompts for value)
+    noctua-keys get ANTHROPIC_API_KEY   # Retrieve a secret
+    noctua-keys list                    # List all key names (not values)
+    noctua-keys delete ANTHROPIC_API_KEY # Remove a secret
+    noctua-keys export                  # Print export statements for shell
+    noctua-keys env                     # Print .env format (for reference only)
+    noctua-keys rotate                  # Change master password
+    noctua-keys check                   # Verify vault integrity
 
 Shell integration (add to ~/.bashrc or ~/.zshrc):
-    eval $(agentforge-keys export)
+    eval $(noctua-keys export)
 
 MCP server integration (in .mcp.json, reference env vars set by export):
     { "env": { "API_KEY": "${THREAT_INTEL_KEY}" } }
@@ -92,7 +92,7 @@ def _get_password(confirm=False) -> str:
 def _load_vault(password: str) -> dict:
     """Load and decrypt the vault. Returns dict of key-value pairs."""
     if not VAULT_FILE.exists() or not SALT_FILE.exists():
-        print("No vault found. Run: agentforge-keys init", file=sys.stderr)
+        print("No vault found. Run: noctua-keys init", file=sys.stderr)
         sys.exit(1)
     
     salt = SALT_FILE.read_bytes()
@@ -143,11 +143,11 @@ def cmd_init(args):
     print(f"Permissions: {oct(VAULT_FILE.stat().st_mode)[-3:]}")
     print()
     print("Next steps:")
-    print("  agentforge-keys add ANTHROPIC_API_KEY")
-    print("  agentforge-keys add OPENAI_API_KEY")
+    print("  noctua-keys add ANTHROPIC_API_KEY")
+    print("  noctua-keys add OPENAI_API_KEY")
     print()
     print("To load keys into your shell, add to ~/.bashrc or ~/.zshrc:")
-    print('  eval $(agentforge-keys export)')
+    print('  eval $(noctua-keys export)')
 
 def cmd_add(args):
     """Add or update a secret."""
@@ -189,7 +189,7 @@ def cmd_get(args):
         sys.exit(1)
     
     # Print ONLY the value (no newline issues) for shell capture:
-    # export KEY=$(agentforge-keys get KEY)
+    # export KEY=$(noctua-keys get KEY)
     sys.stdout.write(vault[name])
 
 def cmd_list(args):
@@ -232,7 +232,7 @@ def cmd_delete(args):
 def cmd_export(args):
     """Print export statements for shell sourcing.
     
-    Usage: eval $(agentforge-keys export)
+    Usage: eval $(noctua-keys export)
     This loads all vault secrets as environment variables.
     """
     password = _get_password()
@@ -292,7 +292,7 @@ def cmd_check(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="agentforge-keys",
+        prog="noctua-keys",
         description="AgentForge Keystore — Encrypted local secret management"
     )
     sub = parser.add_subparsers(dest="command", help="Command")

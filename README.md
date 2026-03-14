@@ -1,16 +1,16 @@
-# AgentForge: AI Security Engineering
+# Noctua: AI Security Engineering
 
 **Build-First AI Security — From Prototype to Production**
 
 A year-long graduate-level program where students forge their own agentic security tools using Claude Code, the Claude Agent SDK, and context engineering — then ship them to production.
 
-*Evolved from the original CyberMinds course (2023) for the Agentic Era, 2026*
+*Evolved from the original course (2023) for the Agentic Era, 2026*
 
 ---
 
 ## Course Philosophy
 
-AgentForge is built on four foundational pillars that shape how we teach and practice cybersecurity in the age of AI agents:
+Noctua is built on four foundational pillars that shape how we teach and practice cybersecurity in the age of AI agents:
 
 ### 1. Collaborative Critical Thinking (CCT)
 
@@ -82,7 +82,7 @@ The emerging discipline of designing, building, orchestrating, and securing AI a
 
 ## What's New in 2026
 
-The cybersecurity and AI landscape has shifted dramatically since the original 2023 CyberMinds course:
+The cybersecurity and AI landscape has shifted dramatically since the original 2023 course:
 
 - **Context Engineering** has evolved as a discipline. "Prompt engineering" is increasingly dated; the real work is managing context windows, tool definitions, system prompts, memory architectures, and semantic retrieval.
 
@@ -176,7 +176,7 @@ The lab stack is centered on **Claude Max subscription** capabilities, with mult
 
 ## Performance Metrics
 
-The five core metrics from the original CyberMinds course remain valid and are now measurable in real-time using agentic tools:
+The five core metrics from the original course remain valid and are now measurable in real-time using agentic tools:
 
 - **MTTS (Mean Time to Strategy)** — How quickly a team identifies the core security problem and strategic approach
 - **MTTP (Mean Time to Plan)** — How quickly a validated plan emerges from the strategy
@@ -191,7 +191,7 @@ Students will track these metrics across lab exercises to quantify how agentic t
 ## Repository Structure
 
 ```
-CyberMinds-2026/
+Noctua/
 ├── README.md                          # This file
 ├── COURSE-ASSESSMENT.md               # Comparative analysis: 2023 vs. 2026 landscape
 │

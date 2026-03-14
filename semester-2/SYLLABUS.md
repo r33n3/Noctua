@@ -1,4 +1,4 @@
-# CSEC 602: AgentForge — Advanced Agentic Security Engineering
+# CSEC 602: Noctua — Advanced Agentic Security Engineering
 ## Semester 2 Syllabus
 
 **Term:** Semester 2, 2026

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Guide: Unit 3 — Ethical AI & Security Governance | AgentForge</title>
+<title>Lab Guide: Unit 3 — Ethical AI & Security Governance | Noctua</title>
 <link rel="stylesheet" href="labs.css">
 </head>
 <body>
@@ -201,7 +201,7 @@
       </div></label>
       <div class="code-block"><pre><code>pip install garak
 npm install -g promptfoo
-mkdir -p ~/agentforge-labs/unit3/week10 && cd ~/agentforge-labs/unit3/week10</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+mkdir -p ~/noctua-labs/unit3/week10 && cd ~/noctua-labs/unit3/week10</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w10-2">
@@ -226,7 +226,7 @@ python3 -m garak --model_type anthropic --model_name claude-sonnet-4-5 \
         <div class="step-desc">Create <code>promptfoo.yaml</code> targeting your MCP server via Claude Code. Configure: OWASP LLM Top 10 test suite, custom prompt injection scenarios specific to security contexts, and tool misuse test cases.</div>
       </div></label>
       <div class="code-block"><pre><code># promptfoo.yaml
-description: AgentForge Unit 2 Security Assessment
+description: Noctua Unit 2 Security Assessment
 providers:
   - id: anthropic:claude-sonnet-4-5
     config:
@@ -324,7 +324,7 @@ tests:
         <div class="step-title">Step 1: Install AIF360 and generate the synthetic dataset</div>
       </div></label>
       <div class="code-block"><pre><code>pip install aif360 pandas matplotlib scikit-learn
-mkdir -p ~/agentforge-labs/unit3/week11 && cd ~/agentforge-labs/unit3/week11
+mkdir -p ~/noctua-labs/unit3/week11 && cd ~/noctua-labs/unit3/week11
 
 # Use Claude Code to generate a biased synthetic dataset:
 # "Generate a Python script that creates a synthetic employee threat
@@ -419,7 +419,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: AI Security Policy for AgentForge Labs</h4>
+  <h4>&#x1f52c; Lab Exercise: AI Security Policy for Noctua Labs</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w12-1">
       <label><input type="checkbox" onchange="toggleStep('w12-1',this.checked)">
@@ -428,8 +428,8 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-desc">Download NIST's AI Risk Management Framework playbook. Review the policy templates in Appendix A. These form the foundation for your organization's policy. Identify which sections directly apply to the agent systems you've built in Units 1-3.</div>
       </div></label>
       <div class="code-block"><pre><code># Create policy directory
-mkdir -p ~/agentforge-labs/unit3/week12
-cd ~/agentforge-labs/unit3/week12
+mkdir -p ~/noctua-labs/unit3/week12
+cd ~/noctua-labs/unit3/week12
 
 # Download NIST AI RMF playbook (link from course reading list)
 # Review and annotate: which sections apply to your MCP server?</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
@@ -439,10 +439,10 @@ cd ~/agentforge-labs/unit3/week12
       <label><input type="checkbox" onchange="toggleStep('w12-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Use Claude Code to generate a policy draft</div>
-        <div class="step-desc">Ask Claude Code to generate an AI Security Policy tailored to your course organization (AgentForge Labs) covering: scope, guiding principles (AIUC-1 six domains), approved AI uses for security operations, prohibited uses, data handling requirements, governance process, audit logging requirements.</div>
+        <div class="step-desc">Ask Claude Code to generate an AI Security Policy tailored to your course organization (Noctua Labs) covering: scope, guiding principles (AIUC-1 six domains), approved AI uses for security operations, prohibited uses, data handling requirements, governance process, audit logging requirements.</div>
       </div></label>
       <div class="code-block"><pre><code># Claude Code prompt:
-# "Write a complete AI Security Policy for AgentForge Labs,
+# "Write a complete AI Security Policy for Noctua Labs,
 # a security operations team using agentic AI tools including
 # Claude Code, MCP servers, and multi-agent systems.
 # The policy must: cite AIUC-1 domains, address OWASP
@@ -481,7 +481,7 @@ cd ~/agentforge-labs/unit3/week12
 <div class="deliverables">
   <h5>Week 12 Deliverables</h5>
   <ul>
-    <li><strong>ai-security-policy.md</strong> — complete, peer-reviewed AI Security Policy for AgentForge Labs</li>
+    <li><strong>ai-security-policy.md</strong> — complete, peer-reviewed AI Security Policy for Noctua Labs</li>
     <li><strong>Peer Review Notes</strong> — gaps identified in your peer's policy and in your own</li>
     <li><strong>Unit 3 Reflection</strong> (500 words) — how have ethics, bias, and privacy considerations changed how you would design agent systems? Cite specific examples from your labs.</li>
   </ul>

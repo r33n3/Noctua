@@ -1,4 +1,4 @@
-# AgentForge — Reading List and Resources
+# Noctua — Reading List and Resources
 
 This reading list is organized into **Core** (required) and **Expanded** (recommended deep-dives) for each topic area. Core readings are assigned weekly; Expanded readings support capstone research and personal exploration.
 
@@ -353,7 +353,7 @@ Conference talks from the [AI Engineer](https://youtube.com/@aiDotEngineer) YouT
 
 ## Document Information
 
-**Course**: AgentForge Graduate Course
+**Course**: Noctua Graduate Course
 **Academic Year**: 2026
 **Last Updated**: March 2026
 **Reading List Version**: 3.0 — Restructured into Core/Expanded with September 2025 – March 2026 research

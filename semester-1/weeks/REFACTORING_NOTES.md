@@ -1,4 +1,4 @@
-# CyberMinds 2.0 Refactoring Notes
+# Noctua 2.0 Refactoring Notes
 
 ## Overview
 Units 1 and 2 have been refactored to align with the new course philosophy: teaching architecture and context engineering via Claude Code, rather than providing copy-paste Python scripts.
@@ -76,8 +76,8 @@ Units 1 and 2 have been refactored to align with the new course philosophy: teac
 
 ## Files Modified
 
-1. `/sessions/awesome-focused-heisenberg/mnt/AI_Security_Course/CyberMinds-2026/semester-1/weeks/unit-1.md`
-2. `/sessions/awesome-focused-heisenberg/mnt/AI_Security_Course/CyberMinds-2026/semester-1/weeks/unit-2.md`
+1. `/sessions/awesome-focused-heisenberg/mnt/AI_Security_Course/Noctua/semester-1/weeks/unit-1.md`
+2. `/sessions/awesome-focused-heisenberg/mnt/AI_Security_Course/Noctua/semester-1/weeks/unit-2.md`
 
 ## Contact
 

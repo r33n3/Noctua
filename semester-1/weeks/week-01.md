@@ -114,14 +114,14 @@ Before starting the lab, create your course workspace structure. See [Lab Setup 
 
 ```bash
 # Quick setup
-mkdir -p ~/agentforge/{evidence,analysis,context/{prompts,system-prompts,skills,plugins},tools/{mcp-servers,scripts},governance/{audits,policies,compliance-mappings},metrics,deliverables}
+mkdir -p ~/noctua/{evidence,analysis,context/{prompts,system-prompts,skills,plugins},tools/{mcp-servers,scripts},governance/{audits,policies,compliance-mappings},metrics,deliverables}
 ```
 
 Save all lab outputs to the appropriate directory. For this lab:
-- Incident data → `~/agentforge/evidence/week01-meridian/`
-- CCT analysis and threat assessment → `~/agentforge/analysis/week01/`
-- Performance metrics → `~/agentforge/metrics/`
-- Final deliverable → `~/agentforge/deliverables/week01/`
+- Incident data → `~/noctua/evidence/week01-meridian/`
+- CCT analysis and threat assessment → `~/noctua/analysis/week01/`
+- Performance metrics → `~/noctua/metrics/`
+- Final deliverable → `~/noctua/deliverables/week01/`
 
 > **🛠️ Tool Guide:** This lab uses **Claude Chat** for analysis (thinking exercise), **Claude Projects/Cowork** for organizing deliverables, and **Claude Code** as a homework setup task. Use the right tool for each phase.
 
@@ -219,7 +219,7 @@ After Claude generates the CCT analysis, check three claims:
 
 If any are missing, iterate — don't accept a vague response as sufficient.
 
-> **💡 Skill Preview:** The system prompt you just refined — the one that produces structured JSON threat assessments with confidence scores and alternative hypotheses — is a reusable artifact. If you saved it as a SKILL.md file, you'd have a Claude Code skill you could invoke with `/threat-assess` anytime. We'll formally learn skill-building in Week 13, but for now, save your best prompts to `~/agentforge/context/prompts/`. You're building your skill library without knowing it yet.
+> **💡 Skill Preview:** The system prompt you just refined — the one that produces structured JSON threat assessments with confidence scores and alternative hypotheses — is a reusable artifact. If you saved it as a SKILL.md file, you'd have a Claude Code skill you could invoke with `/threat-assess` anytime. We'll formally learn skill-building in Week 13, but for now, save your best prompts to `~/noctua/context/prompts/`. You're building your skill library without knowing it yet.
 
 **Homework:** Install Claude Code on your development machine using the [Lab Setup Guide](../../resources/LAB-SETUP.md).
 
@@ -234,7 +234,7 @@ If any are missing, iterate — don't accept a vague response as sufficient.
 3. **Performance Metrics Log** — `metrics-log.csv` with timestamps for each investigation phase
 4. **CCT Journal Entry** (500–750 words) — reflect on your first experience using AI as a thinking partner; what questions did Claude surface that you hadn't considered?
 
-> **📁 Save to:** `~/agentforge/evidence/week01-meridian/` (raw data), `~/agentforge/analysis/week01/` (analysis outputs), `~/agentforge/deliverables/week01/` (final submission)
+> **📁 Save to:** `~/noctua/evidence/week01-meridian/` (raw data), `~/noctua/analysis/week01/` (analysis outputs), `~/noctua/deliverables/week01/` (final submission)
 
 ---
 

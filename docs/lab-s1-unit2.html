@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Guide: Unit 2 — Context Engineering & Tool Design | AgentForge</title>
+<title>Lab Guide: Unit 2 — Context Engineering & Tool Design | Noctua</title>
 <link rel="stylesheet" href="labs.css">
 </head>
 <body>
@@ -79,8 +79,8 @@
       <div class="step-content">
         <div class="step-title">Step 1: Set up MCP Python development environment</div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit2/week5/cve-mcp
-cd ~/agentforge-labs/unit2/week5/cve-mcp
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit2/week5/cve-mcp
+cd ~/noctua-labs/unit2/week5/cve-mcp
 python3 -m venv .venv && source .venv/bin/activate
 pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
@@ -120,7 +120,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
   "mcpServers": {
     "cve-lookup": {
       "command": "python3",
-      "args": ["/path/to/agentforge-labs/unit2/week5/cve-mcp/server.py"],
+      "args": ["/path/to/noctua-labs/unit2/week5/cve-mcp/server.py"],
       "env": {}
     }
   }
@@ -435,8 +435,8 @@ print('Report is valid!')
         <div class="step-title">Step 1: Install RAG dependencies</div>
       </div></label>
       <div class="code-block"><pre><code>pip install chromadb anthropic sentence-transformers
-mkdir -p ~/agentforge-labs/unit2/week8/security-kb
-cd ~/agentforge-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+mkdir -p ~/noctua-labs/unit2/week8/security-kb
+cd ~/noctua-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w8-2">

@@ -1,5 +1,5 @@
 
-# CSEC 601: AgentForge — Foundations of Agentic AI Security
+# CSEC 601: Noctua — Foundations of Agentic AI Security
 
 **Semester 1 of a Year-Long Graduate Course**
 
@@ -7,7 +7,7 @@
 
 ## Course Information
 
-**Course Title:** AgentForge — Foundations of Agentic AI Security
+**Course Title:** Noctua — Foundations of Agentic AI Security
 
 **Course Number:** CSEC 601
 

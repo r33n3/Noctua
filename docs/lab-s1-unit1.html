@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Guide: Unit 1 — CCT Foundations | AgentForge</title>
+<title>Lab Guide: Unit 1 — CCT Foundations | Noctua</title>
 <link rel="stylesheet" href="labs.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
   </div>
 
   <div class="quiz-question" data-qid="w1q4" data-answer="b" data-explain="MTTI (Mean Time to Investigate) measures how quickly a complete forensic and behavioral analysis is completed — what happened, how, and why. This is one of five key performance metrics you will track throughout the course.">
-    <p class="q-text">4. What does the MTTI metric measure in the AgentForge framework?</p>
+    <p class="q-text">4. What does the MTTI metric measure in the Noctua framework?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="w1q4" value="a"> A) Time to deploy a security patch</label>
       <label><input type="radio" name="w1q4" value="b"> B) Time to complete forensic and behavioral analysis</label>
@@ -106,7 +106,7 @@
     <a href="skills/think.md" download="think.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download think.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/think.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/think.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/skills/think.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
 # Then in any Claude Code session:
 /think analyze the Meridian Financial incident — what do we know, what are we assuming, and what could explain this alert?</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
   </div>
@@ -131,8 +131,8 @@
         <div class="step-title">Step 2: Create the lab working directory</div>
         <div class="step-desc">All Unit 1 lab files live here.</div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week1
-cd ~/agentforge-labs/unit1/week1</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit1/week1
+cd ~/noctua-labs/unit1/week1</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w1-3">
@@ -153,10 +153,10 @@ cd ~/agentforge-labs/unit1/week1</code></pre><button class="copy-btn" onclick="c
           &#128065; View in browser
         </a>
       </div>
-      <div class="code-block" style="margin-top:10px;"><pre><code>mkdir -p ~/agentforge-labs/unit1/week1
-cp ~/Downloads/incident-data.md ~/agentforge-labs/unit1/week1/
+      <div class="code-block" style="margin-top:10px;"><pre><code>mkdir -p ~/noctua-labs/unit1/week1
+cp ~/Downloads/incident-data.md ~/noctua-labs/unit1/week1/
 # Or if viewing locally from the course docs folder:
-cp ./incident-data.md ~/agentforge-labs/unit1/week1/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+cp ./incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w1-4">
@@ -460,8 +460,8 @@ support@microsoft.com</code></pre><button class="copy-btn" onclick="copyCode(thi
       <div class="step-content">
         <div class="step-title">Step 1: Create lab directory and save the sample</div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week3
-cd ~/agentforge-labs/unit1/week3
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit1/week3
+cd ~/noctua-labs/unit1/week3
 # Save the sample above as phishing-sample.txt</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
@@ -596,7 +596,7 @@ cd ~/agentforge-labs/unit1/week3
         <div class="step-title">Step 1: Create a Version 1 minimal system prompt</div>
         <div class="step-desc">Create <code>v1-system-prompt.md</code> with only: "You are a security analyst. Analyze security incidents and provide recommendations." Test this against the Meridian Financial incident from Week 1.</div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit1/week4
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit1/week4
 # Create v1-system-prompt.md with minimal prompt
 # Test in Claude Code by starting with:
 claude

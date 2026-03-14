@@ -2,7 +2,7 @@
 
 **CSEC 601 — Semester 1 | 16 Weeks**
 
-This directory contains the week-by-week course files for Semester 1 of the AgenticSecForge / CyberMinds 2026 program. Each file is a complete week: Day 1 theory, Day 2 lab, deliverables, AIUC-1 integration, and V&V lens.
+This directory contains the week-by-week course files for Semester 1 of the Noctua / Noctua program. Each file is a complete week: Day 1 theory, Day 2 lab, deliverables, AIUC-1 integration, and V&V lens.
 
 ## Week Index
 

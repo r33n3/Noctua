@@ -1,17 +1,17 @@
-# AgentForge Keystore
+# Noctua Keystore
 
-Encrypted local secret management for the AgentSecForge course. No secret ever touches disk in plaintext.
+Encrypted local secret management for the Noctua course. No secret ever touches disk in plaintext.
 
 ## Why Not Just Use .env?
 
 A `.env` file stores secrets in plaintext. Any process, script, or agent that can read files can read your secrets. In the PeaRL Governance Bypass case study, the autonomous agent read `.env.example` to discover the governance flag, then wrote directly to `.env` to escalate its own privileges. A plaintext credential file is an invitation to every agent in your environment.
 
-The AgentForge Keystore encrypts all secrets with AES-256-GCM using a master password. The encrypted vault file is unreadable without the password. Even if an agent reads `~/.agentforge/vault.enc`, it gets encrypted bytes — not your API keys.
+The Noctua Keystore encrypts all secrets with AES-256-GCM using a master password. The encrypted vault file is unreadable without the password. Even if an agent reads `~/.noctua/vault.enc`, it gets encrypted bytes — not your API keys.
 
 ## Architecture
 
 ```
-~/.agentforge/
+~/.noctua/
 ├── vault.enc    # AES-256-GCM encrypted JSON (chmod 600)
 └── vault.salt   # PBKDF2 salt for key derivation (chmod 600)
 ```
@@ -31,23 +31,23 @@ The master password never touches disk. It's prompted at runtime, used to derive
 chmod +x setup.sh && ./setup.sh
 
 # 2. Create your vault
-agentforge-keys init
+noctua-keys init
 # Enter and confirm a master password
 
 # 3. Add your API keys
-agentforge-keys add ANTHROPIC_API_KEY
+noctua-keys add ANTHROPIC_API_KEY
 # Paste your key when prompted (input is hidden)
 
-agentforge-keys add OPENAI_API_KEY
-agentforge-keys add THREAT_INTEL_KEY
-agentforge-keys add SIEM_API_TOKEN
+noctua-keys add OPENAI_API_KEY
+noctua-keys add THREAT_INTEL_KEY
+noctua-keys add SIEM_API_TOKEN
 
 # 4. Verify
-agentforge-keys list
+noctua-keys list
 # Shows key names with masked values
 
 # 5. Load into shell
-eval $(agentforge-keys export)
+eval $(noctua-keys export)
 # All secrets now available as environment variables
 ```
 
@@ -56,9 +56,9 @@ eval $(agentforge-keys export)
 Add this to `~/.bashrc` or `~/.zshrc` to load keys on every new terminal:
 
 ```bash
-# AgentForge Keystore — load encrypted secrets
-if command -v agentforge-keys &> /dev/null && [ -f "$HOME/.agentforge/vault.enc" ]; then
-    eval $(agentforge-keys export)
+# Noctua Keystore — load encrypted secrets
+if command -v noctua-keys &> /dev/null && [ -f "$HOME/.noctua/vault.enc" ]; then
+    eval $(noctua-keys export)
 fi
 ```
 
@@ -68,14 +68,14 @@ You'll be prompted for your master password once per terminal session.
 
 ```bash
 # Cache for current session only (NOT recommended for shared machines)
-export AGENTFORGE_MASTER=$(agentforge-keys get ANTHROPIC_API_KEY > /dev/null && echo "cached")
+export NOCTUA_MASTER=$(noctua-keys get ANTHROPIC_API_KEY > /dev/null && echo "cached")
 ```
 
 ## Claude Code Integration
 
 ### Environment Variables
 
-After running `eval $(agentforge-keys export)`, Claude Code automatically picks up:
+After running `eval $(noctua-keys export)`, Claude Code automatically picks up:
 
 ```bash
 # These are set by the keystore export
@@ -115,13 +115,13 @@ The `.mcp.json` file is safe to commit — it contains no secrets, only variable
 
 ```bash
 # In a shell script
-API_KEY=$(agentforge-keys get THREAT_INTEL_KEY)
+API_KEY=$(noctua-keys get THREAT_INTEL_KEY)
 curl -H "Authorization: Bearer $API_KEY" https://api.threatintel.example/v1/indicators
 
 # In Python
 import subprocess
 key = subprocess.check_output(
-    ["agentforge-keys", "get", "ANTHROPIC_API_KEY"],
+    ["noctua-keys", "get", "ANTHROPIC_API_KEY"],
     input=b"your-master-password\n"
 ).decode().strip()
 ```
@@ -167,7 +167,7 @@ Wire it up in `.claude/settings.json`:
 After running `setup.sh`, configure git-secrets in your project:
 
 ```bash
-cd ~/agentforge
+cd ~/noctua
 
 # Initialize git-secrets
 git secrets --install
@@ -206,47 +206,47 @@ vault.*
 
 | Command | Description |
 |---------|-------------|
-| `agentforge-keys init` | Create a new encrypted vault |
-| `agentforge-keys add NAME` | Add or update a secret (prompts for value) |
-| `agentforge-keys add NAME -v VALUE` | Add with value inline (less secure — shows in history) |
-| `agentforge-keys get NAME` | Print secret value to stdout (for shell capture) |
-| `agentforge-keys list` | Show all key names with masked values |
-| `agentforge-keys delete NAME` | Remove a secret |
-| `agentforge-keys export` | Print `export` statements for shell sourcing |
-| `agentforge-keys env` | Print `.env` format (reference only — do not save) |
-| `agentforge-keys rotate` | Change master password (re-encrypts vault) |
-| `agentforge-keys check` | Verify vault integrity and permissions |
+| `noctua-keys init` | Create a new encrypted vault |
+| `noctua-keys add NAME` | Add or update a secret (prompts for value) |
+| `noctua-keys add NAME -v VALUE` | Add with value inline (less secure — shows in history) |
+| `noctua-keys get NAME` | Print secret value to stdout (for shell capture) |
+| `noctua-keys list` | Show all key names with masked values |
+| `noctua-keys delete NAME` | Remove a secret |
+| `noctua-keys export` | Print `export` statements for shell sourcing |
+| `noctua-keys env` | Print `.env` format (reference only — do not save) |
+| `noctua-keys rotate` | Change master password (re-encrypts vault) |
+| `noctua-keys check` | Verify vault integrity and permissions |
 
 ## Course Lab: Week 1 Setup Sequence
 
 ```bash
 # Step 1: Clone course repo
-git clone https://github.com/your-org/agentforge.git
-cd agentforge
+git clone https://github.com/r33n3/Noctua.git
+cd Noctua
 
 # Step 2: Set up keystore
 cd tools/keystore
 chmod +x setup.sh && ./setup.sh
 
 # Step 3: Initialize vault
-agentforge-keys init
+noctua-keys init
 # Choose a strong master password — you'll use it every session
 
 # Step 4: Add your API keys
-agentforge-keys add ANTHROPIC_API_KEY
+noctua-keys add ANTHROPIC_API_KEY
 # Paste key from console.anthropic.com
 
-agentforge-keys add OPENAI_API_KEY  
+noctua-keys add OPENAI_API_KEY  
 # Paste key from platform.openai.com (if using for comparison)
 
 # Step 5: Load into shell
-eval $(agentforge-keys export)
+eval $(noctua-keys export)
 
 # Step 6: Verify Claude Code can see it
 claude --version  # Should work if ANTHROPIC_API_KEY is set
 
 # Step 7: Set up git protection
-cd ~/agentforge
+cd ~/noctua
 git secrets --install
 git secrets --add 'sk-ant-[a-zA-Z0-9]{20,}'
 git secrets --add 'sk-[a-zA-Z0-9]{20,}'
@@ -273,7 +273,7 @@ mkdir -p .claude/hooks
 | Agent reads credential file | Vault is encrypted — unreadable without password |
 | Agent reads .env | No .env file exists — secrets are in vault |
 | Accidental git commit | git-secrets blocks known key patterns pre-commit |
-| Credential in shell history | `agentforge-keys add` prompts for value (hidden input) |
+| Credential in shell history | `noctua-keys add` prompts for value (hidden input) |
 | File permission exposure | Vault files are chmod 600 (owner only) |
 | Shoulder surfing | `list` shows masked values, `get` is for scripts not display |
 
@@ -291,8 +291,8 @@ mkdir -p .claude/hooks
 
 | Stage | Secret Management |
 |-------|-------------------|
-| Stage 0 (Sandbox) | AgentForge Keystore — encrypted local vault |
-| Stage 1 (Dev) | AgentForge Keystore + git-secrets + PreToolUse hooks |
+| Stage 0 (Sandbox) | Noctua Keystore — encrypted local vault |
+| Stage 1 (Dev) | Noctua Keystore + git-secrets + PreToolUse hooks |
 | Stage 2 (Preprod) | Transition to HashiCorp Vault or AWS SSM |
 | Stage 3 (Prod) | Vault/SSM with role-based access, rotation, audit logging |
 

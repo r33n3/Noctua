@@ -138,8 +138,8 @@ Apply this to your Week 3 lab: when building your CVE lookup MCP server, include
 
 **Setup:**
 ```bash
-mkdir -p ~/agentforge/week03-mcp
-cd ~/agentforge/week03-mcp
+mkdir -p ~/noctua/week03-mcp
+cd ~/noctua/week03-mcp
 pip install mcp httpx pydantic
 ```
 
@@ -239,7 +239,7 @@ Create `~/.claude.json` (or your platform's Claude Code config):
 
 Register the server:
 ```bash
-claude mcp add cve-lookup -- python ~/agentforge/week03-mcp/cve_mcp_server.py
+claude mcp add cve-lookup -- python ~/noctua/week03-mcp/cve_mcp_server.py
 ```
 
 **Step 5: Test with Natural Language**
@@ -282,7 +282,7 @@ Document the security boundaries you've enforced.
 4. **Test results** — 3 natural language queries and their outputs
 5. **AIUC-1 B005/B006 verification log** — 3 invalid inputs and how your server rejected them
 
-> **📁 Save to:** `~/agentforge/tools/mcp-servers/week03-cve/` (server code), `~/agentforge/deliverables/week03/` (final submission)
+> **📁 Save to:** `~/noctua/tools/mcp-servers/week03-cve/` (server code), `~/noctua/deliverables/week03/` (final submission)
 
 ---
 

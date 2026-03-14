@@ -264,7 +264,7 @@ Using the architecture table from Step 3, write a 1-page `data-architecture.md` 
 
 > **💡 Skill Preview:** Your RAG knowledge base? That could be a skill's `references/` directory. Your chunking and retrieval logic? That could be a skill's `scripts/` directory. Skills are just organized context packages — SKILL.md for instructions, references for knowledge, scripts for tools. You've been building skill components since Week 4.
 
-> **📁 Save to:** `~/agentforge/tools/mcp-servers/week04-multitool/` (server code), `~/agentforge/governance/audits/` (audit log exercise), `~/agentforge/deliverables/week04/` (final submission)
+> **📁 Save to:** `~/noctua/tools/mcp-servers/week04-multitool/` (server code), `~/noctua/governance/audits/` (audit log exercise), `~/noctua/deliverables/week04/` (final submission)
 
 ---
 

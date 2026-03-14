@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Guide: Unit 7 — Production Security Engineering | AgentForge</title>
+<title>Lab Guide: Unit 7 — Production Security Engineering | Noctua</title>
 <link rel="stylesheet" href="labs.css">
 </head>
 <body>
@@ -75,10 +75,10 @@
       <label><input type="checkbox" onchange="toggleStep('u7w9-1',this.checked)">
       <div class="step-content"><div class="step-title">Step 1: Generate SBOM in CycloneDX format</div></div></label>
       <div class="code-block"><pre><code>pip install cyclonedx-bom
-mkdir -p ~/agentforge-labs/unit7/week9 && cd ~/agentforge-labs/unit7/week9
+mkdir -p ~/noctua-labs/unit7/week9 && cd ~/noctua-labs/unit7/week9
 
 # Generate SBOM for your SOC agent system
-cyclonedx-py --requirement ~/agentforge-labs/unit5/requirements.txt \
+cyclonedx-py --requirement ~/noctua-labs/unit5/requirements.txt \
   --output sbom.json --format json
 
 # Inspect: how many components? Any with known vulnerabilities?
@@ -91,7 +91,7 @@ cat sbom.json | python3 -m json.tool | grep -c '"type"'</code></pre><button clas
         <div class="step-title">Step 2: Scan dependencies for CVEs with pip-audit</div>
       </div></label>
       <div class="code-block"><pre><code>pip install pip-audit
-pip-audit --requirement ~/agentforge-labs/unit5/requirements.txt \
+pip-audit --requirement ~/noctua-labs/unit5/requirements.txt \
   --output json --output-file audit-results.json
 
 # Review findings
@@ -290,7 +290,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <div class="step-content"><div class="step-title">Step 1: Install OpenTelemetry SDK</div></div></label>
       <div class="code-block"><pre><code>pip install opentelemetry-sdk opentelemetry-exporter-otlp \
   opentelemetry-instrumentation-requests
-mkdir -p ~/agentforge-labs/unit7/week11 && cd ~/agentforge-labs/unit7/week11</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+mkdir -p ~/noctua-labs/unit7/week11 && cd ~/noctua-labs/unit7/week11</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w11-2">

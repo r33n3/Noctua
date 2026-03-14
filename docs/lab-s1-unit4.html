@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Guide: Unit 4 — Rapid Prototyping | AgentForge</title>
+<title>Lab Guide: Unit 4 — Rapid Prototyping | Noctua</title>
 <link rel="stylesheet" href="labs.css">
 </head>
 <body>
@@ -75,7 +75,7 @@
     <a href="skills/worktree-setup.md" download="worktree-setup.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download worktree-setup.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/worktree-setup.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 # Then in Claude Code, after your spec is ready:
 /worktree-setup three-agent SOC system: recon-agent, analysis-agent, reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
@@ -91,7 +91,7 @@
       <div class="step-content">
         <div class="step-title">Step 1: Initialize worktrees for parallel development</div>
       </div></label>
-      <div class="code-block"><pre><code>cd ~/agentforge-labs
+      <div class="code-block"><pre><code>cd ~/noctua-labs
 git init soc-agent-system && cd soc-agent-system
 git commit --allow-empty -m "init"
 # Create worktrees for each agent component
@@ -209,7 +209,7 @@ claude
     <a href="skills/spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/spec.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/spec.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/skills/spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
 # Sprint scoping sequence in Claude Code:
 /think I want to build a phishing email triage pipeline for this sprint. What are the risks and unknowns?
 # Then after validating direction:
@@ -244,8 +244,8 @@ claude
         <div class="step-title">Phase 2 — Build (120 min): Initialize repo and build core agents</div>
         <div class="step-desc">Use Claude Code continuously. Start with the core agent loop. Use your MCP server from Unit 2. Apply your context-engineered system prompt from Week 4. Build the minimum viable system that demonstrates the core value — not a perfect system.</div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/agentforge-labs/unit4/sprint1
-cd ~/agentforge-labs/unit4/sprint1
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit4/sprint1
+cd ~/noctua-labs/unit4/sprint1
 git init
 # Start building with Claude Code immediately — spec in context
 claude
@@ -403,7 +403,7 @@ class JSONFormatter(logging.Formatter):
     <a href="skills/retro.md" download="retro.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download retro.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/retro.md https://raw.githubusercontent.com/r33n3/AgenticSecForge/main/docs/skills/retro.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/skills/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
 # After Sprint II, in Claude Code:
 /retro Unit 4 Sprint I + II — phishing triage pipeline</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>

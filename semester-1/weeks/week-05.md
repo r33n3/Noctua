@@ -142,8 +142,8 @@ In your lab, add a verification step: after the RAG assistant answers a question
 
 **Setup:**
 ```bash
-mkdir -p ~/agentforge/week05-rag
-cd ~/agentforge/week05-rag
+mkdir -p ~/noctua/week05-rag
+cd ~/noctua/week05-rag
 pip install anthropic chromadb sentence-transformers
 ```
 
@@ -338,7 +338,7 @@ Apply this pattern to 3 more incident summaries from your test data. Document wh
 4. **Data minimization exercise** — 5 incident summaries before and after anonymization
 5. **Knowledge base poisoning analysis** — what happened when you injected false data, what controls would help
 
-> **📁 Save to:** `~/agentforge/tools/scripts/week05-rag/` (system code), `~/agentforge/deliverables/week05/` (final submission)
+> **📁 Save to:** `~/noctua/tools/scripts/week05-rag/` (system code), `~/noctua/deliverables/week05/` (final submission)
 
 ---
 

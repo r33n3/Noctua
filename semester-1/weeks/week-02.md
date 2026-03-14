@@ -155,8 +155,8 @@ CloudShift is a SaaS platform management company that helps mid-market businesse
 
 **Setup:**
 ```bash
-mkdir -p ~/agentforge/week02
-cd ~/agentforge/week02
+mkdir -p ~/noctua/week02
+cd ~/noctua/week02
 ```
 
 **Phase 1 (Claude Chat): Naive vs. Context-Engineered Prompt Comparison**
@@ -304,7 +304,7 @@ print(f"Engineered cost: ${calculate_cost(engineered_result):.6f}")
 
 Create the metrics directory first:
 ```bash
-mkdir -p ~/agentforge/metrics
+mkdir -p ~/noctua/metrics
 ```
 
 **Phase 3: SDK Cost Tracking Exercise**
@@ -314,7 +314,7 @@ Run the script and compare:
 2. Was the naive approach actually cheaper? (Often it costs MORE because the output is verbose and unstructured)
 3. Which output would you trust to make a real security decision?
 
-**Save results to:** `~/agentforge/metrics/week02-costs.csv`
+**Save results to:** `~/noctua/metrics/week02-costs.csv`
 
 #### V&V Lens: Calibrated Trust in Practice
 
@@ -344,7 +344,7 @@ This lab naturally demonstrates Calibrated Trust. As you compare naive and conte
 4. **Governance reflection** — "What if someone feeds false context to your context-engineered system? The system prompt says 'base conclusions on evidence' — what happens if the 'evidence' is fabricated?"
 5. **V&V documentation** — which claims did you verify, how, and did verification change your assessment?
 
-> **📁 Save to:** `~/agentforge/analysis/week02/` (analysis outputs), `~/agentforge/metrics/` (cost CSV), `~/agentforge/deliverables/week02/` (final submission)
+> **📁 Save to:** `~/noctua/analysis/week02/` (analysis outputs), `~/noctua/metrics/` (cost CSV), `~/noctua/deliverables/week02/` (final submission)
 
 ---
 

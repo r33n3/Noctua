@@ -29,21 +29,21 @@ echo "✓ cryptography package installed"
 # Get the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Install agentforge-keys to PATH
+# Install noctua-keys to PATH
 echo ""
-echo "Installing agentforge-keys command..."
-chmod +x "$SCRIPT_DIR/agentforge-keys"
+echo "Installing noctua-keys command..."
+chmod +x "$SCRIPT_DIR/noctua-keys"
 
 # Try to symlink to a PATH location
 if [ -d "$HOME/.local/bin" ]; then
-    ln -sf "$SCRIPT_DIR/agentforge-keys" "$HOME/.local/bin/agentforge-keys"
-    echo "✓ Installed to ~/.local/bin/agentforge-keys"
+    ln -sf "$SCRIPT_DIR/noctua-keys" "$HOME/.local/bin/noctua-keys"
+    echo "✓ Installed to ~/.local/bin/noctua-keys"
 elif [ -d "$HOME/bin" ]; then
-    ln -sf "$SCRIPT_DIR/agentforge-keys" "$HOME/bin/agentforge-keys"
-    echo "✓ Installed to ~/bin/agentforge-keys"
+    ln -sf "$SCRIPT_DIR/noctua-keys" "$HOME/bin/noctua-keys"
+    echo "✓ Installed to ~/bin/noctua-keys"
 else
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$SCRIPT_DIR/agentforge-keys" "$HOME/.local/bin/agentforge-keys"
+    ln -sf "$SCRIPT_DIR/noctua-keys" "$HOME/.local/bin/noctua-keys"
     echo "✓ Created ~/.local/bin and installed"
     echo ""
     echo "  Add to PATH if not already there:"
@@ -109,14 +109,14 @@ echo " Setup complete! Next steps:"
 echo "═══════════════════════════════════════════════════"
 echo ""
 echo " 1. Initialize your vault:"
-echo "    agentforge-keys init"
+echo "    noctua-keys init"
 echo ""
 echo " 2. Add your API keys:"
-echo "    agentforge-keys add ANTHROPIC_API_KEY"
-echo "    agentforge-keys add OPENAI_API_KEY"
+echo "    noctua-keys add ANTHROPIC_API_KEY"
+echo "    noctua-keys add OPENAI_API_KEY"
 echo ""
 echo " 3. Load keys into your shell (add to ~/.bashrc or ~/.zshrc):"
-echo '    eval $(agentforge-keys export)'
+echo '    eval $(noctua-keys export)'
 echo ""
 echo " 4. Set up git-secrets in your project:"
 echo "    cd ~/agentforge"

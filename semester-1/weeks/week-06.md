@@ -161,7 +161,7 @@ The PeaRL (Progressive Exploitation and Recursive Leverage) attack chain demonst
 
 This skill encodes the full Assessment Stack and helps select the right tool for any security engineering task.
 
-Create `~/agentforge/skills/tool-select.md`:
+Create `~/noctua/skills/tool-select.md`:
 
 ```markdown
 ---
@@ -213,7 +213,7 @@ Provide a decision table:
 
 This skill runs a systematic AIUC-1 audit against any AI security tool. This is the first time students see all six domains as an integrated audit framework.
 
-Create `~/agentforge/skills/audit-aiuc1.md`:
+Create `~/noctua/skills/audit-aiuc1.md`:
 
 ```markdown
 ---
@@ -313,7 +313,7 @@ Write a 300-word analysis answering these three questions.
 4. **Frontmatter trigger test results** — vague vs. specific trigger comparison
 5. **Rugpull reflection** (300 words) — how your `/audit-aiuc1` skill could be weaponized, and the safeguard
 
-> **📁 Save to:** `~/agentforge/context/skills/` (skill files), `~/agentforge/deliverables/week06/` (final submission)
+> **📁 Save to:** `~/noctua/context/skills/` (skill files), `~/noctua/deliverables/week06/` (final submission)
 
 ---
 

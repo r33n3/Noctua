@@ -1,8 +1,8 @@
-# Lab Environment Setup Guide — AgentForge
+# Lab Environment Setup Guide — Noctua
 
 ## Overview
 
-The AgentForge lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure (Debian servers, ELK stacks), this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.
+The Noctua lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure (Debian servers, ELK stacks), this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.
 
 You will develop autonomous security agents capable of threat detection, incident response, vulnerability assessment, and security architecture using Claude's Agent SDK, MCP servers, and agent teams. This practical approach prepares you to build production-ready security systems in enterprise environments.
 
@@ -155,7 +155,7 @@ GitHub Codespaces provides a fully configured cloud development environment with
 
 **Setup Steps:**
 
-1. Fork the CyberMinds course repository to your GitHub account
+1. Fork the Noctua course repository to your GitHub account
 2. Click the green "Code" button on your fork
 3. Select the "Codespaces" tab
 4. Click "Create codespace on main"
@@ -174,7 +174,7 @@ The Codespace includes a `devcontainer.json` that automatically installs:
 
 ```json
 {
-  "name": "AgentForge Development",
+  "name": "Noctua Development",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-node-20",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
@@ -387,7 +387,7 @@ Key settings for the course:
 **Step 4: Run Your First Command**
 
 ```bash
-claude "Create a simple Python script that prints 'AgentForge Lab Environment Ready'"
+claude "Create a simple Python script that prints 'Noctua Lab Environment Ready'"
 ```
 
 Claude generates the script, saves it, and reports success. This verifies your setup is working.
@@ -533,7 +533,7 @@ All course work is version-controlled using Git.
 
 **Step 1: Fork the Course Repository**
 
-1. Navigate to the CyberMinds course repository on GitHub
+1. Navigate to the Noctua course repository on GitHub
 2. Click the "Fork" button (top right)
 3. Select your account as the fork destination
 4. Wait for the fork to complete
@@ -541,8 +541,8 @@ All course work is version-controlled using Git.
 **Step 2: Clone Your Fork Locally**
 
 ```bash
-git clone git@github.com:YOUR-USERNAME/CyberMinds-2026.git
-cd CyberMinds-2026
+git clone git@github.com:YOUR-USERNAME/Noctua.git
+cd Noctua
 ```
 
 Replace `YOUR-USERNAME` with your GitHub username.
@@ -552,7 +552,7 @@ Replace `YOUR-USERNAME` with your GitHub username.
 This allows you to sync with course updates:
 
 ```bash
-git remote add upstream git@github.com:COURSE-ORGANIZATION/CyberMinds-2026.git
+git remote add upstream git@github.com:COURSE-ORGANIZATION/Noctua.git
 git fetch upstream
 ```
 
@@ -598,7 +598,7 @@ git push origin main
 
 ## DevSecOps Promotion Pipeline
 
-AgentForge follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — we don't teach CI/CD in detail — but we follow the methodology so that when a prototype is selected by leadership for delivery, the path to production is already paved.
+Noctua follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — we don't teach CI/CD in detail — but we follow the methodology so that when a prototype is selected by leadership for delivery, the path to production is already paved.
 
 ### The Promotion Path
 
@@ -952,10 +952,10 @@ python3 -m pip install mcp  # Use python3 explicitly if python points to Python 
 **Solution:**
 Create a virtual environment to isolate dependencies:
 ```bash
-python3 -m venv cyberminds-env
-source cyberminds-env/bin/activate  # macOS/Linux
+python3 -m venv noctua-env
+source noctua-env/bin/activate  # macOS/Linux
 # OR
-cyberminds-env\Scripts\activate  # Windows
+noctua-env\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
@@ -993,7 +993,7 @@ docker ps  # Test
 **Solution:**
 Ensure you're in the correct directory:
 ```bash
-cd CyberMinds-2026
+cd Noctua
 git status
 ```
 
@@ -1071,4 +1071,4 @@ Most students will fall in the typical range. Financial hardship policies should
 4. Read the Lab 1 README for your first assignment
 5. Join the course Slack/Discord for real-time support and peer collaboration
 
-Welcome to AgentForge. You're now ready to build autonomous security agents.
+Welcome to Noctua. You're now ready to build autonomous security agents.

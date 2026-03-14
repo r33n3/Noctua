@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document serves as a comprehensive reference for graduate students in AgentForge. It covers both foundational security frameworks and the emerging agent protocol stack that has developed since 2023. The convergence of Model Context Protocol (MCP), Agent-to-Agent Protocol (A2A), Agent Communication Protocol (ACP), and Agent Network Protocol (ANP) represents a paradigm shift in how AI agents communicate and integrate with each other and external systems.
+This document serves as a comprehensive reference for graduate students in Noctua. It covers both foundational security frameworks and the emerging agent protocol stack that has developed since 2023. The convergence of Model Context Protocol (MCP), Agent-to-Agent Protocol (A2A), Agent Communication Protocol (ACP), and Agent Network Protocol (ANP) represents a paradigm shift in how AI agents communicate and integrate with each other and external systems.
 
 ---
 
