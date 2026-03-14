@@ -1499,6 +1499,16 @@ The assessment question: "Is the quality improvement from Opus worth 5x the cost
 | Claude Sonnet 4.6 | $3.00 | $15.00 | $3.75 | $6.00 | $0.30 |
 | Claude Haiku 4.5 | $1.00 | $5.00 | $1.25 | $2.00 | $0.10 |
 
+**Multi-Agent Architecture Cost Reference (March 2026):**
+
+| Architecture | Models | Quality vs. Single-Agent | Token Cost Multiplier | Best For |
+|---|---|---|---|---|
+| Single agent | Opus 4 | Baseline | 1× | Complex single-task reasoning |
+| Single agent | Sonnet 4 | −10 to −20% vs Opus | ~0.6× | Most operational tasks |
+| Orchestrator-worker | Opus 4 lead + Sonnet 4 subagents (3–5 parallel) | **+90.2% vs single Opus 4** | **~15×** | Complex research, multi-source synthesis |
+
+*Source: https://www.anthropic.com/engineering/multi-agent-research-system*
+
 **Cache pricing:** Cache write = 1.25x (5min) or 2.0x (1hr) base input price. Cache read = 0.1x base input price (90% savings). Batch API = 50% discount on both input and output.
 
 ---

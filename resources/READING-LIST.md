@@ -12,6 +12,14 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 - **The Dark Factory Roadmap — From Ad-Hoc AI to Autonomous Operations** (AI Engineering Leadership Playbook, 2026). Defines the six-stage maturity model, nine anti-patterns, six pillars of dark factory operations, governance deep-dive (23 evaluation metrics, design-time and runtime controls), and four-tier agent regulatory classification. Source document for all dark factory concepts in this course. See `C:\Users\bradj\Development\Dark_Factory_Research\dark-factory-roadmap.html`
 
+- **Partnering with Mozilla to Improve Firefox's Security** (Anthropic, March 2026). Claude Opus 4.6 autonomously scanned ~6,000 Firefox C++ files and found 22 confirmed vulnerabilities (14 high-severity) at a cost of $4,000. Demonstrates dark factory applied to defensive security research; documents the dual-use architecture reality. Required reading for Week 13. https://www.anthropic.com/news/mozilla-firefox-security
+
+- **How We Built Our Multi-Agent Research System** (Anthropic Engineering, 2026). Primary source architecture documentation for Claude Research — orchestrator-worker pattern, Opus 4 orchestrator + Sonnet 4 subagent design, 90.2% performance improvement at 15x token cost. Required reading for Week 5–6 tool design and cost architecture decisions. https://www.anthropic.com/engineering/multi-agent-research-system
+
+- **Measuring AI Agent Autonomy in Practice** (Anthropic Research, 2026). Analysis of 998,481 real Claude Code tool calls — session duration trends (45+ min at 99.9th percentile), human oversight patterns, auto-approve rate growth from 20% to 40%+ with experience. Required reading for Week 9 dark factory discussion. https://www.anthropic.com/research/measuring-agent-autonomy
+
+- **karpathy/autoresearch** (Andrej Karpathy, early March 2026). Single-file Python tool running autonomous ML experiment iteration on a single GPU — ~100 experiments overnight unattended. Dark factory made concrete and reproducible. See Week 9 discussion. https://github.com/karpathy/autoresearch
+
 ---
 
 ## Verification and Validation

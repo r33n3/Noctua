@@ -251,6 +251,33 @@ Using the architecture table from Step 3, write a 1-page `data-architecture.md` 
 - How would your agent query across multiple stores?
 - What happens if one store is unavailable? (AIUC-1 D — graceful degradation)
 
+> ### Real-World Anti-Pattern: The OpenClaw Security Crisis (January 2026)
+>
+> OpenClaw is a personal AI agent integrating with calendars, messaging apps, and developer tools — a popular open-source consumer agent. A January 2026 security audit found:
+>
+> | Finding | Detail |
+> |---|---|
+> | Exposed instances | **21,639** publicly accessible on the internet (Censys scan) |
+> | One-click RCE | Confirmed CVE — remote code execution via malicious link |
+> | Malicious community skills | **341 of 2,857** skills in the community catalog (~12%) were malicious |
+> | Email addresses breached | 35,000 |
+> | API tokens leaked | 1.5 million |
+>
+> **Source:** https://www.reco.ai/blog/openclaw-the-ai-agent-security-crisis-unfolding-right-now
+>
+> **Which anti-patterns does this represent?**
+>
+> | Anti-Pattern | How OpenClaw Demonstrates It |
+> |---|---|
+> | Shadow Agent Sprawl | 21,639 exposed instances with no central inventory or visibility |
+> | Credential Minefield | 1.5 million API tokens leaked — agents storing secrets without rotation or revocation |
+> | Evaluation Blindness | 12% of the skills catalog was malicious — no review process before community publication |
+> | Compliance Afterthought | Consumer agents deployed with no security review; RCE discovered post-deployment |
+>
+> **The supply chain dimension:** The malicious skills catalog attack (341 of 2,857) is the marketplace supply chain risk made real. When agents can be extended via community-contributed components, every component is an attack vector. This is what Stage 4 governance is designed to prevent.
+>
+> **Field question:** If you joined a company using an OpenClaw-equivalent tool, which stage assessment indicators would have surfaced this risk before the breach?
+
 ---
 
 ## Deliverables

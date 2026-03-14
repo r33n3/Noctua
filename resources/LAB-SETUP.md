@@ -45,6 +45,17 @@ This course uses three Claude tools, each optimized for different types of work:
 - Weeks 13-15: Rapid prototyping sprints
 - Semester 2: Multi-agent systems, red team tools, defense tools, production pipelines
 
+### Claude Research (Multi-Step Agentic Research)
+
+Available on Max, Team, and Enterprise plans. Claude Research conducts multi-step web searches and synthesizes findings with citations — useful for pre-lab threat actor background, CVE research, and framework updates.
+
+**What it is technically:** An orchestrator-worker multi-agent system (Opus 4 lead + Sonnet 4 subagents in parallel). Using it is not just convenience — it is an opportunity to observe the architecture covered in Week 5–6 in production. Notice when it spawns parallel search subagents, how it handles conflicting sources, and where it expresses uncertainty.
+
+**Access:** claude.ai → new conversation → Research icon
+**Documentation:** https://support.anthropic.com/en/articles/11088861-using-research-on-claude-ai
+
+> ⚠️ **V&V applies to Research outputs.** Claude Research can misattribute claims to sources, present secondary-source interpretations as primary-source facts, and fabricate specific statistics. Always verify numbers and citations against the actual source before including them in coursework. This is not a limitation unique to Claude — it applies to all AI research tools.
+
 ### The Switch Pattern
 Most labs follow this flow:
 1. **Think in Chat** — Analyze the problem, apply CCT, explore approaches

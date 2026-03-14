@@ -151,6 +151,23 @@ From Week 7 Station 2 (Agent Proliferation):
 
 Design for 3-5 agents. If you need more, consider hierarchical agent teams (coordinators for each sub-team, rather than one coordinator for all).
 
+> ### Anti-Patterns Mapped to OWASP LLM Top 10
+>
+> The nine dark factory anti-patterns from the roadmap map directly to OWASP LLM categories. This gives you two vocabularies for the same problems — use whichever lands better with a given audience.
+>
+> | Anti-Pattern | OWASP LLM Category | Real-World Instance |
+> |---|---|---|
+> | **Credential Minefield** (API keys hardcoded, shared service accounts) | LLM09: Misinformation / Overreliance on insecure storage | OpenClaw: 1.5M API tokens leaked from poorly secured agent deployments |
+> | **Shadow Agent Sprawl** (no inventory, unknown agents running) | LLM06: Excessive Agency | OpenClaw: 21,639 instances publicly exposed with no central visibility |
+> | **Evaluation Blindness** (no accuracy or safety metrics) | LLM08: Vector and Embedding Weaknesses + LLM02: Sensitive Information Disclosure | OpenClaw: 341 of 2,857 community skills were malicious — no eval before publish |
+> | **Governance Theater** (checkbox compliance, nothing ever blocked) | LLM07: System Prompt Leakage / Insecure Output Handling | Approval committees that never reject anything provide no real guardrails |
+> | **Compliance Afterthought** (build first, regulate later) | LLM10: Unbounded Consumption | Agents deployed to all jurisdictions before regulatory review; pulled post-deployment |
+> | **Vendor Lock-in Trap** (single model, no abstraction layer) | LLM05: Improper Output Handling | Model outage = full fleet downtime; no fallback when vendor has incident |
+>
+> **The OpenClaw Case:** OpenClaw simultaneously demonstrated Credential Minefield (1.5M tokens), Shadow Agent Sprawl (21,639 exposed), Evaluation Blindness (12% malicious skills), and Compliance Afterthought (RCE discovered post-deployment). One product, four anti-patterns active simultaneously — which is why agent security incidents tend to be severe rather than isolated.
+>
+> **Source:** https://www.reco.ai/blog/openclaw-the-ai-agent-security-crisis-unfolding-right-now
+
 ---
 
 ## Day 2 — Lab

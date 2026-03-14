@@ -143,6 +143,44 @@ In a multi-agent system, each agent has its own Assessment Stack decision:
 
 Using Opus for the orchestrator (which just routes between agents) is a $5 mistake when Haiku suffices.
 
+> ### Real Data: How Autonomous Are AI Agents Today?
+>
+> Anthropic analyzed 998,481 tool calls from real Claude Code sessions.
+> **Source:** https://www.anthropic.com/research/measuring-agent-autonomy
+>
+> | Metric | Finding |
+> |---|---|
+> | Session duration (99.9th percentile) | **45+ minutes** of continuous autonomous operation — nearly doubled in 3 months |
+> | Human-in-loop presence | **73%** of tool calls have a human in the loop in some way |
+> | Irreversible actions | Only **0.8%** of actions are irreversible |
+> | Auto-approve (new users) | ~**20%** of sessions use full auto-approve |
+> | Auto-approve (experienced users) | Rises to **40%+** by 750 sessions |
+>
+> **The oversight atrophy pattern:** The 20%→40% auto-approve progression is not recklessness — it reflects earned trust. But it is the mechanism by which human oversight erodes with familiarity. A security professional on a dark factory team must monitor this trend. The governance question is not whether users trust the agent — it is whether that trust is calibrated to the actual risk of what the agent can do.
+
+> ### Concrete Example: Karpathy's `autoresearch` — The Dark Factory Running
+>
+> In early March 2026, Andrej Karpathy released `autoresearch` — a single-file Python tool that runs a dark factory for ML research on one GPU.
+>
+> **Source:** https://github.com/karpathy/autoresearch
+>
+> **What it does:**
+> - Reads a human-written Markdown instruction file defining the research goal
+> - Autonomously modifies a Python training script
+> - Runs each experiment for exactly **5 minutes**
+> - Evaluates whether the validation metric improved; keeps or discards the change; repeats
+> - **~12 experiments per hour, ~100 experiments overnight** — unattended
+>
+> **Why this matters for security professionals:**
+>
+> 1. **The pattern is general.** Replace "training script" with "attack script" and the architecture is identical. An attacker running a dark factory for exploit development follows the same loop: modify → run → evaluate → iterate. The objective function is the only difference.
+>
+> 2. **Human intent is in a document, not in supervision.** The human writes `program.md` once; the agent runs for hours. This is the "specification replaces supervision" model — with all the power and risk that implies.
+>
+> 3. **It is accessible.** A working autonomous research system in a single file, runnable by anyone with a GPU. Dark factory capability is no longer enterprise-exclusive.
+>
+> **V&V connection:** The agent's output is only as valid as its evaluation metric. If the metric improves but the model becomes brittle on out-of-distribution inputs, the metric lies. This is Output Verification applied to autonomous research.
+
 ---
 
 ## Day 2 — Lab (Three-Step Progression)

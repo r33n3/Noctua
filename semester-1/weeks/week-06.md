@@ -116,6 +116,31 @@ How do I confirm the output is correct?
 - Human review (reasoning outputs)
 - Cross-reference (multi-source validation)
 
+> ### Reference Architecture: Anthropic's Multi-Agent Research System
+>
+> Anthropic published the engineering design of their Claude Research feature — a production multi-agent system that demonstrates the orchestrator-worker pattern at scale. This is the architecture you are building toward.
+>
+> **Source:** https://www.anthropic.com/engineering/multi-agent-research-system
+>
+> **Architecture (primary source verified):**
+> - **Lead Researcher (Claude Opus 4)** — receives query, plans research strategy, records plan in memory, coordinates subagents, synthesizes final output
+> - **Subagents (Claude Sonnet 4)** — execute individual searches or tool calls; spawned in parallel batches of **3–5**; run in multiple rounds as gaps are identified
+> - System scales from 1 agent (simple queries) to **10+ subagents** (complex research)
+>
+> **Performance vs. cost tradeoff (primary source verified):**
+>
+> | Approach | Benchmark Performance | Token Cost |
+> |---|---|---|
+> | Single-agent Claude Opus 4 | Baseline | 1× |
+> | Multi-agent (Opus 4 + Sonnet 4 subagents) | **+90.2%** over baseline | **~15×** |
+>
+> Token consumption explained 80% of performance variance. Redesigning tool descriptions alone reduced task completion time by 40%.
+>
+> **Engineering Assessment Stack implication:**
+> A complex research query costing $0.15 as single-agent costs ~$2.25 multi-agent. At 1,000 queries/day enterprise-wide, that's $150/day vs. $2,250/day — a $765K annual difference. The architecture decision depends entirely on whether 90% quality improvement justifies 15× cost for the specific task.
+>
+> **Security implication:** Each subagent is a separate principal making independent tool calls. Multi-agent systems require per-subagent authorization scope — if the lead agent has access to sensitive data, subagents should not automatically inherit that access. Design authorization at the subagent level, not just the orchestrator level.
+
 ### AIUC-1: All Six Domains
 
 You've already encountered Domains A, B, D, E in Weeks 2-5. Today, the complete framework:
