@@ -368,7 +368,69 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-</style>
+
+    /* === SITE SEARCH === */
+    .search-wrap {
+      padding: 12px 16px 4px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: #0b1020;
+      border: 1px solid rgba(212,160,23,0.3);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 7px 10px 7px 30px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-wrap input::placeholder { color: var(--text-muted); }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon {
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 12px;
+      pointer-events: none;
+    }
+    #site-search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% - 4px);
+      left: 16px;
+      right: 16px;
+      background: #0d1525;
+      border: 1px solid rgba(212,160,23,0.35);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      z-index: 9999;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    #site-search-results.open { display: block; }
+    .ssr-item {
+      display: block;
+      padding: 9px 14px;
+      border-bottom: 1px solid #1a2035;
+      text-decoration: none;
+      color: inherit;
+    }
+    .ssr-item:last-child { border-bottom: none; }
+    .ssr-item:hover { background: rgba(212,160,23,0.08); }
+    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
+    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+    .ssr-tag {
+      display: inline-block; font-size: 10px;
+      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
+      color: var(--accent); border-radius: 3px; padding: 1px 5px;
+      margin-top: 3px; margin-right: 3px;
+    }
+    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
+
+  </style>
 </head>
 <body>
 
@@ -380,6 +442,12 @@ body {
     <h1>Noctua</h1>
     <p>AI Security Engineering</p>
   </div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input id="site-search-input" type="text" placeholder="Search course topics..." autocomplete="off" />
+    <div id="site-search-results"></div>
+  </div>
+
   <div class="nav-section">Overview</div>
 <a href="index.html">Course Overview</a>
 <a href="assessment.html" class="active">Design Rationale</a>
@@ -1021,6 +1089,89 @@ document.querySelectorAll('.sidebar a').forEach(a => {
     flowchart: { curve: 'basis', padding: 15 },
     securityLevel: 'loose'
   });
+</script>
+<script>
+(function() {
+  var IDX = [
+    // Units
+    {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
+    {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
+    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
+    {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
+    // Key topics
+    {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},
+    {t:"A2A — Agent-to-Agent Protocol",d:"Inter-agent communication standard. Enables orchestrator ↔ worker messaging secured via mTLS.",tags:["a2a","protocol","multi-agent"],url:"s2-unit5.html"},
+    {t:"OWASP Top 10 for LLMs",d:"LLM01–LLM10: prompt injection, insecure output handling, training data poisoning, model theft, and more.",tags:["owasp","llm","security"],url:"frameworks.html"},
+    {t:"OWASP NHI Top 10",d:"NHI1–NHI10: improper offboarding, secret leakage, overprivileged NHI, long-lived secrets, NHI reuse.",tags:["owasp","nhi","identity","security"],url:"frameworks.html"},
+    {t:"OWASP Agentic Apps",d:"Security considerations specific to agentic AI applications: tool misuse, orchestration risks, data leakage.",tags:["owasp","agentic","security"],url:"frameworks.html"},
+    {t:"Defense in Depth — 9 Layers",d:"Layer 1–9: input validation → semantic guardrails → tool validation → output filtering → monitoring → RBAC → audit → scope boundaries → network egress.",tags:["defense in depth","did","layers","security"],url:"s2-unit7.html"},
+    {t:"Allowance Profiles",d:"Per-agent scope at design time: tool scope, credential scope, network scope, cost limit. Enforced by PeaRL. Addresses NHI5.",tags:["allowance profiles","governance","nhi5","pearl"],url:"s2-unit7.html"},
+    {t:"SPIFFE / SPIRE",d:"Workload identity. Short-lived X.509 SVIDs per agent. mTLS between agents. Addresses NHI7 long-lived secrets.",tags:["spiffe","spire","identity","mtls","svid"],url:"s2-unit7.html"},
+    {t:"MASS 2.0",d:"Multi-Agent Security Scanner. Static analysis, red-team, MCP security, diagnostics. Runs at Security Gate.",tags:["mass","scanner","security gate"],url:"s2-unit7.html"},
+    {t:"PeaRL",d:"Policy, execution, and Resource Ledger. Governance layer: allowance profiles, approvals, cost ledger, audit trail, trace root.",tags:["pearl","governance","audit","cost"],url:"s2-unit7.html"},
+    {t:"LiteLLM",d:"AI routing and cost control. Routes model calls, enforces per-agent cost caps, tracks spend. Budget-as-containment-boundary.",tags:["litellm","cost","routing","budget"],url:"s2-unit7.html"},
+    {t:"Grafana Tempo",d:"Distributed tracing backend. OTLP/HTTP port 4318. PeaRL as trace root — every agent span links to governance record.",tags:["grafana","tempo","tracing","observability","otlp"],url:"s2-unit7.html"},
+    {t:"Network Egress Control",d:"Default-deny outbound. Linux netns per worktree (local). VPC + AWS Network Firewall (cloud). Private registry.",tags:["network","egress","netns","vpc","firewall"],url:"s2-unit7.html"},
+    {t:"Dual-Scan Pattern",d:"T=0 pre-briefing meta-scan + T=N delivery gate scan for behavioral drift. Two independent scanning moments.",tags:["dual scan","behavioral drift","t0","tn","security"],url:"s2-unit7.html"},
+    {t:"Stateless Agent Recovery",d:"Lambda pattern — state in PeaRL, not the agent. On drift or failure, agent is replaced, not repaired.",tags:["stateless","recovery","lambda","resilience"],url:"s2-unit7.html"},
+    {t:"Prompt Injection",d:"Attacker-controlled input that redirects agent behavior. Direct (user input) and indirect (tool output / retrieved content).",tags:["prompt injection","attack","unit6"],url:"s2-unit6.html"},
+    {t:"NeMo Guardrails",d:"NVIDIA framework for adding safety rails to LLM outputs. Colang rules, topical/safety/jailbreak rails.",tags:["nemo","guardrails","safety","nvidia"],url:"s2-unit6.html"},
+    {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
+    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
+    {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
+    {t:"Architecture Diagram",d:"Interactive diagram of the full Secure Dark Factory — all layers: pipeline, security, governance, identity, observability, network.",tags:["diagram","architecture","dark factory"],url:"resources/dark-factory-architecture.html"},
+    {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
+    {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
+    {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},
+    {t:"Lab Setup Guide",d:"Environment setup: Claude Code install, API keys, MCP servers, Python environment, git config.",tags:["setup","lab","install","environment"],url:"lab-setup.html"},
+    {t:"Reading List",d:"Week-by-week assigned readings: OWASP docs, Claude docs, research papers, dark factory reference.",tags:["reading","resources","papers"],url:"reading.html"},
+    {t:"Frameworks & Protocols",d:"Full reference: OWASP Top 10 LLM, OWASP NHI, Agentic Apps, MCP spec, A2A spec, AIUC-1.",tags:["frameworks","protocols","reference","owasp"],url:"frameworks.html"},
+  ];
+
+  var inp = document.getElementById('site-search-input');
+  var res = document.getElementById('site-search-results');
+  if (!inp) return;
+
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  inp.addEventListener('input', function() {
+    var q = this.value.trim().toLowerCase();
+    if (q.length < 2) { res.classList.remove('open'); return; }
+    var hits = IDX.filter(function(x) {
+      return x.t.toLowerCase().indexOf(q) !== -1
+          || x.d.toLowerCase().indexOf(q) !== -1
+          || x.tags.some(function(tag){ return tag.indexOf(q) !== -1; });
+    });
+    if (!hits.length) {
+      res.innerHTML = '<div class="ssr-empty">No results for "' + esc(q) + '"</div>';
+    } else {
+      res.innerHTML = hits.map(function(x) {
+        var tags = x.tags.slice(0,3).map(function(t){ return '<span class="ssr-tag">'+esc(t)+'</span>'; }).join('');
+        return '<a class="ssr-item" href="' + esc(x.url) + '">'
+             + '<div class="ssr-title">'+esc(x.t)+'</div>'
+             + '<div class="ssr-desc">'+esc(x.d)+'</div>'
+             + '<div>'+tags+'</div>'
+             + '</a>';
+      }).join('');
+    }
+    res.classList.add('open');
+  });
+
+  document.addEventListener('click', function(e) {
+    var wrap = document.querySelector('.search-wrap');
+    if (wrap && !wrap.contains(e.target)) res.classList.remove('open');
+  });
+
+  inp.addEventListener('focus', function() {
+    if (this.value.trim().length >= 2) res.classList.add('open');
+  });
+})();
 </script>
 </body>
 </html>
