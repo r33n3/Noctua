@@ -61,11 +61,94 @@
     }
     footer span { color: #475569; }
     footer b { color: #6366F1; }
+
+    /* Search */
+    #search-wrap {
+      position: relative;
+    }
+    #search-input {
+      background: #1E2433;
+      border: 1px solid #3730A3;
+      border-radius: 6px;
+      color: #E2E8F0;
+      font-size: 13px;
+      padding: 6px 12px 6px 32px;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #search-input::placeholder { color: #475569; }
+    #search-input:focus { border-color: #6366F1; }
+    #search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #475569;
+      font-size: 13px;
+      pointer-events: none;
+    }
+    #search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 340px;
+      background: #131825;
+      border: 1px solid #3730A3;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      z-index: 9999;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    #search-results.open { display: block; }
+    .sr-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid #1E2433;
+      cursor: default;
+    }
+    .sr-item:last-child { border-bottom: none; }
+    .sr-item:hover { background: #1E2433; }
+    .sr-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6366F1;
+      margin-bottom: 2px;
+    }
+    .sr-desc {
+      font-size: 11px;
+      color: #94A3B8;
+      line-height: 1.4;
+    }
+    .sr-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #1E2433;
+      border: 1px solid #3730A3;
+      color: #6366F1;
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-top: 4px;
+      margin-right: 3px;
+    }
+    .sr-empty {
+      padding: 14px;
+      color: #475569;
+      font-size: 12px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
 
   <header>
+
+    <div id="search-wrap">
+      <span id="search-icon">&#128269;</span>
+      <input id="search-input" type="text" placeholder="Search layers, components..." autocomplete="off" />
+      <div id="search-results"></div>
+    </div>
     <h1>Secure Agent Dark Factory — Architecture &amp; Security Map</h1>
     <div class="toolbar-hint">Scroll to zoom &nbsp;·&nbsp; Drag to pan &nbsp;·&nbsp; Ctrl+Shift+H to fit</div>
     <div class="meta">v0.3 · 2026-03-15</div>
@@ -85,6 +168,108 @@
   </footer>
 
   <script src="https://app.diagrams.net/js/viewer-static.min.js"></script>
+
+
+  <script>
+  (function() {
+    var INDEX = [
+      // Pipeline stages
+      { name: "Ideation ①", tags: ["pipeline","stage"], desc: "First pipeline stage. /think slash command — brainstorm goals, constraints, and approach before any code is written." },
+      { name: "Spec ②", tags: ["pipeline","stage"], desc: "/spec slash command — produce a structured specification artifact that workers act on." },
+      { name: "Worktree Setup ③", tags: ["pipeline","stage"], desc: "/worktree-setup — isolates each task in a git worktree with its own network namespace for blast-radius containment." },
+      { name: "Orchestrator ④", tags: ["pipeline","agent"], desc: "Deep Agents orchestrator — breaks spec into tasks, assigns workers, tracks state in PeaRL governance layer." },
+      { name: "Workers ⑤", tags: ["pipeline","agent"], desc: "Parallel or sequential worker agents. Each runs in its own worktree with scoped credentials and tools per Allowance Profile." },
+      { name: "Delivery ⑥", tags: ["pipeline","stage"], desc: "Workers surface artifacts. Triggers T=N behavioral drift scan before promotion to security gate." },
+      { name: "Security Gate ⑦ — MASS 2.0", tags: ["pipeline","security","mass"], desc: "Static analysis, red-team checks, MCP security scan, diagnostics. Dual-scan: T=0 pre-briefing + T=N delivery. Blocks on failure." },
+      { name: "Governance Gate ⑧ — PeaRL", tags: ["pipeline","governance","pearl"], desc: "Promotion gate. Checks allowance profiles, approval requirements, cost ledger, and audit trail before production release." },
+      { name: "Production", tags: ["pipeline","stage"], desc: "Promoted artifacts deployed to execution substrate (local or cloud). Immutable after promotion." },
+      // Components
+      { name: "MASS 2.0", tags: ["security","component"], desc: "Multi-Agent Security Scanner. Runs static-analysis, redteam, mcp-security, and diagnostics modules. Lives in the Security Gate layer." },
+      { name: "PeaRL", tags: ["governance","component"], desc: "Policy, execution, and Resource Ledger. Holds allowance profiles, approvals, audit trail, cost ledger, and trace root. Acts as promotion gatekeeper." },
+      { name: "LiteLLM", tags: ["control-plane","component"], desc: "AI routing and cost control. Routes model calls, enforces per-agent cost caps, tracks token spend. Budget-as-containment-boundary." },
+      { name: "Deep Agents", tags: ["agent","component"], desc: "Orchestrator framework managing parallel/sequential worker agents. State stored in PeaRL, not in agent memory." },
+      { name: "SPIFFE / SPIRE", tags: ["identity","security"], desc: "Workload identity. Issues short-lived X.509 SVIDs per agent. Enables mTLS between agents. Registered in PeaRL workload registry. Addresses NHI7 (long-lived secrets)." },
+      { name: "HashiCorp Vault", tags: ["identity","secrets","local"], desc: "Local secrets backend. Short-lived dynamic credentials. Never hardcoded. Rotated per-task." },
+      { name: "AWS Secrets Manager", tags: ["identity","secrets","cloud"], desc: "Cloud secrets backend (AWS). Paired with KMS for envelope encryption. Used when running on AWS AgentCore." },
+      { name: "Grafana Tempo", tags: ["observability","tracing"], desc: "Distributed tracing backend. Receives OTLP/HTTP on port 4318. PeaRL is the trace root — every agent span links back to the governance record." },
+      { name: "OpenTelemetry", tags: ["observability"], desc: "Instrumentation layer. All agent actions emit OTel spans. Flows to Grafana Tempo (local) or AWS X-Ray (cloud)." },
+      { name: "AWS X-Ray", tags: ["observability","cloud"], desc: "Cloud distributed tracing when running on AWS. Same OTel instrumentation, different backend." },
+      { name: "Nemotron NIM", tags: ["model","local"], desc: "Local model inference (NVIDIA NIM). Used when running LocalShellBackend to avoid data leaving the environment." },
+      { name: "AWS Bedrock", tags: ["model","cloud"], desc: "Cloud model inference on AWS. Used with AgentCore microVM substrate." },
+      { name: "AWS AgentCore", tags: ["execution","cloud"], desc: "AWS microVM execution substrate for cloud workers. Provides isolation equivalent to local netns." },
+      // Security concepts
+      { name: "Allowance Profiles", tags: ["security","governance","nhi"], desc: "Per-agent scope defined at design time: tool scope, credential scope, network scope, cost limit. Enforced by PeaRL at runtime. Addresses NHI5 (overprivileged NHI)." },
+      { name: "Network Egress Control", tags: ["security","network"], desc: "Default-deny outbound. Local: Linux network namespace (netns) per worktree. Cloud: VPC + AWS Network Firewall. Only whitelisted endpoints allowed." },
+      { name: "Dual-Scan Pattern", tags: ["security","scanning"], desc: "T=0 pre-briefing meta-scan (before agent sees the task) + T=N delivery gate scan (behavioral drift detection). Two independent scanning moments." },
+      { name: "Behavioral Drift", tags: ["security","scanning"], desc: "T=N scan detects when agent behavior at delivery diverges from T=0 baseline. Triggers block + stateless recovery." },
+      { name: "Stateless Recovery", tags: ["security","resilience"], desc: "Lambda pattern — state lives in PeaRL, not the agent. On drift or failure, agent is replaced, not repaired. Fast recovery, no persistent compromise." },
+      { name: "Cost Caps", tags: ["security","control-plane"], desc: "Per-agent token budget enforced by LiteLLM. Runaway cost = runaway compute = containment signal. Budget-as-security-boundary." },
+      { name: "Linux netns", tags: ["network","local"], desc: "Linux network namespace per git worktree. Isolates agent network traffic at the OS level. No cross-worktree lateral movement." },
+      { name: "Private Registry", tags: ["network","supply-chain"], desc: "Nexus OSS (local) / AWS CodeArtifact (cloud). All dependencies pulled from internal mirror, not public internet. Addresses NHI3 (vulnerable third-party NHI)." },
+      // OWASP NHI
+      { name: "NHI1 — Improper Offboarding", tags: ["owasp","nhi"], desc: "Service accounts, API keys, and agent SVIDs not revoked when agents are decommissioned. Mitigated by SPIRE short-lived SVIDs and PeaRL workload registry." },
+      { name: "NHI2 — Secret Leakage", tags: ["owasp","nhi"], desc: "Credentials exposed in logs, code, or environment variables. Mitigated by Vault/Secrets Manager dynamic credentials and OTel log scrubbing." },
+      { name: "NHI3 — Vulnerable Third-Party NHI", tags: ["owasp","nhi"], desc: "Compromised dependencies or third-party integrations. Mitigated by private registry mirror + supply chain scanning in MASS 2.0." },
+      { name: "NHI5 — Overprivileged NHI", tags: ["owasp","nhi"], desc: "Agents with more access than needed. Mitigated by Allowance Profiles — tool, credential, network, and cost scope defined at design time." },
+      { name: "NHI7 — Long-Lived Secrets", tags: ["owasp","nhi"], desc: "Static API keys that never rotate. Mitigated by SPIFFE/SPIRE short-lived SVIDs and dynamic Vault credentials." },
+      { name: "NHI9 — NHI Reuse", tags: ["owasp","nhi"], desc: "Same identity used across multiple agents or environments. Mitigated by per-worktree SVID issuance — each worker gets a unique identity." },
+      // Protocols
+      { name: "MCP — Model Context Protocol", tags: ["protocol"], desc: "Agent-to-tool communication standard. Registers tools/servers via `claude mcp add`. Used across all pipeline stages for tool access." },
+      { name: "A2A — Agent-to-Agent", tags: ["protocol"], desc: "Inter-agent communication protocol. Enables orchestrator ↔ worker messaging. mTLS-secured via SPIFFE SVIDs." },
+      { name: "mTLS", tags: ["protocol","identity"], desc: "Mutual TLS for inter-agent calls. Both sides present SPIFFE SVIDs. No agent trusts another without a valid short-lived certificate." },
+      { name: "OTLP", tags: ["protocol","observability"], desc: "OpenTelemetry Protocol. HTTP port 4318 (or gRPC 4317). Used to ship spans from agents to Grafana Tempo or X-Ray." },
+      // Maturity stages
+      { name: "Stage 1 — Ad-hoc AI Use", tags: ["maturity"], desc: "Individual tool use, no governance. ChatGPT/Claude via browser. No agent infrastructure." },
+      { name: "Stage 2 — Assisted Dev", tags: ["maturity"], desc: "Claude Code or Copilot in IDEs. Pipeline band + agent layer present. No governance, security layer, or observability." },
+      { name: "Stage 3 — Structured Agentic", tags: ["maturity"], desc: "MCP + A2A deployed. Some observability. Governance emerging. Most orgs with serious AI programs in 2026." },
+      { name: "Stage 4 — Governed Agentic", tags: ["maturity"], desc: "PeaRL or equivalent governance live. MASS scanning integrated. Allowance profiles enforced. Full Secure Dark Factory." },
+      { name: "Stage 5 — Autonomous Production", tags: ["maturity"], desc: "Agents promote to production without human approval for low-risk tasks. Stateless recovery in place. Full observability." },
+      { name: "Stage 6 — Self-Optimizing", tags: ["maturity"], desc: "System tunes its own allowance profiles and cost caps based on behavioral data. Governance layer adapts dynamically." },
+    ];
+
+    var input = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function render(matches) {
+      if (matches.length === 0) {
+        results.innerHTML = '<div class="sr-empty">No results</div>';
+      } else {
+        results.innerHTML = matches.map(function(m) {
+          var tags = m.tags.map(function(t){ return '<span class="sr-tag">'+escapeHtml(t)+'</span>'; }).join('');
+          return '<div class="sr-item"><div class="sr-name">'+escapeHtml(m.name)+'</div>'
+               + '<div class="sr-desc">'+escapeHtml(m.desc)+'</div>'
+               + '<div>'+tags+'</div></div>';
+        }).join('');
+      }
+      results.classList.add('open');
+    }
+
+    input.addEventListener('input', function() {
+      var q = this.value.trim().toLowerCase();
+      if (q.length < 2) { results.classList.remove('open'); return; }
+      var matches = INDEX.filter(function(item) {
+        return item.name.toLowerCase().indexOf(q) !== -1
+            || item.desc.toLowerCase().indexOf(q) !== -1
+            || item.tags.some(function(t){ return t.indexOf(q) !== -1; });
+      });
+      render(matches);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('search-wrap').contains(e.target)) {
+        results.classList.remove('open');
+      }
+    });
+
+    input.addEventListener('focus', function() {
+      if (this.value.trim().length >= 2) results.classList.add('open');
+    });
+  })();
+  </script>
 
 </body>
 </html>
