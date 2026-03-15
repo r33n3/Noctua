@@ -585,8 +585,11 @@ If recommendations are too generic, ask: "For a CRITICAL dependency vulnerabilit
 
 **Learning Objectives:**
 - Understand the NHI explosion and why traditional identity governance fails for agents, service accounts, and API credentials
+- Apply the OWASP NHI Top 10 (2025) as an audit framework for agentic system identity risks
 - Design role-based and attribute-based access control (RBAC, ABAC) for agentic systems
 - Implement time-bound credentials, credential rotation, and just-in-time (JIT) access patterns
+- Design Allowance Profiles to bound agent scope at design time — tool, credential, network, and cost dimensions
+- Apply SPIFFE/SPIRE workload identity for verifiable inter-agent and agent-to-service authentication
 - Apply Zero Trust principles to non-human identities
 - Leverage PeaRL environment hierarchy as a reference for agent governance gates
 
@@ -646,6 +649,27 @@ And it can remain undetected for **months** if there's no audit trail.
    - Input/output parameters logged
    - Success/failure recorded
    - Audit trail immutable
+
+#### OWASP NHI Top 10: What You're Defending Against
+
+The OWASP Top 10 for Non-Human Identities (2025) is the authoritative classification of NHI vulnerabilities. Everything built in this week's lab addresses at least one item. Know the standard — assessors, compliance teams, and incident responders use this vocabulary.
+
+Reference: https://owasp.org/www-project-non-human-identities-top-10/2025/top-10-2025/
+
+| OWASP NHI Risk | What Goes Wrong | What We Build Today |
+|---|---|---|
+| **NHI1 Improper Offboarding** | Retired agents leave active credentials; attackers exploit ghost identities | `disable_identity()` in identity registry; lifecycle automation |
+| **NHI2 Secret Leakage** | API keys committed to Git repos or printed in logs | Vault-based secret storage; pre-commit secrets scanning |
+| **NHI3 Vulnerable Third-Party NHI** | Malicious or compromised third-party integrations steal credentials | Covered in Week 9 (supply chain); dependency scanning |
+| **NHI4 Insecure Authentication** | Agents using HTTP Basic Auth or hardcoded shared passwords | JWT with short expiry; per-agent identity, not shared passwords |
+| **NHI5 Overprivileged NHI** | Agent with read/write/delete when it only needs read | RBAC/ABAC policy-as-code; least privilege enforced at policy layer |
+| **NHI6 Insecure Cloud Deployment** | Static credentials in GitHub Actions; OIDC misconfiguration | No static secrets in CI/CD; GitHub Actions OIDC token exchange |
+| **NHI7 Long-Lived Secrets** | API keys that never expire; unchanged for years | `max_lifetime` on all credentials; 90-day rotation enforced |
+| **NHI8 Environment Isolation** | Same API key in dev, staging, and prod | Per-environment credential sets; separate agent identity per tier |
+| **NHI9 NHI Reuse** | One API key shared across five agents | One identity per agent/service in the identity registry |
+| **NHI10 Human Use of NHI** | Developer using the production bot token for local debugging | Policy: automation credentials must not be used interactively |
+
+> **V&V Connection:** The OWASP NHI Top 10 is your coverage checklist. After building your governance system, map each component to the NHI item it mitigates. Any unmapped item is a gap.
 
 #### RBAC and ABAC for Agents
 
@@ -957,6 +981,143 @@ flowchart TD
   }
 }
 ```
+
+#### Allowance Profiles: Scope as a Security Primitive
+
+RBAC and ABAC define *what roles can do*. Allowance Profiles define *what this specific agent, on this specific task, is allowed to touch* — and nothing else. The difference matters: RBAC grants capabilities to a role class; Allowance Profiles scope a running agent instance at launch time.
+
+This is blast radius containment as a design primitive, not a runtime afterthought.
+
+```yaml
+# Allowance Profile — defined at project design time, stored in governance layer
+# Every tool call is checked against this profile before execution
+allowance_profile:
+  project_id: threat-analysis-prod
+
+  baseline:                          # applies to ALL agents on this project
+    blocked_commands:
+      - "rm -rf"
+      - "git push --force"
+      - "DROP TABLE"
+      - "curl * | bash"
+    blocked_paths:
+      - ".env"
+      - "deploy/secrets/"
+      - ".git/config"
+    always_requires_approval:
+      - "git push origin *"          # must be reviewed before any push
+      - "pip install *"              # new deps require sign-off
+    model_allowed:
+      - claude-sonnet-4-6
+      - claude-haiku-4-5-20251001
+    model_requires_approval:
+      - claude-opus-4-6              # expensive model needs explicit approval
+    budget_soft_warn_usd:  2.00
+    budget_hard_cap_usd:   5.00      # agent is killed if this is exceeded
+
+  credentials:                       # each agent gets scoped credentials, not full account keys
+    github_token:  repo-scoped       # not org-admin
+    db_key:        read-only         # not write access
+    llm_api_key:   project-budget    # budget-limited, not global
+
+  network:                           # egress allowlist — default deny all else
+    allowed_outbound:
+      - api.threatintel.internal
+      - governance.internal
+      - litellm.internal
+    default: deny
+
+  task_extensions:                   # per-task narrowing beyond baseline
+    threat-analysis:
+      allowed_paths:    [src/analysis/, data/threats/]
+      pre_approved:     [pytest, uv add]
+      blocked_paths:    [src/billing/, deploy/]
+```
+
+**Runtime enforcement flow:**
+
+```
+Agent calls a tool
+      │
+      ▼
+Allowance check middleware (fires before every tool call)
+      │
+      ├── blocked → hard stop, log to audit trail, explain to agent why
+      ├── pre_approved → execute, log
+      ├── within_baseline → execute, log
+      └── requires_approval →
+              │
+              ▼
+          Governance layer notification
+          "threat-analysis wants to: git push origin..."
+          "Justification: analysis complete, ready for review"
+              │
+          ┌───┴───┐
+       approve  reject
+          │       │
+    proceed    agent finds alternative approach
+```
+
+**Why Allowance Profiles address multiple OWASP NHI items simultaneously:**
+
+| OWASP NHI | Allowance Profile mechanism |
+|---|---|
+| NHI5 Overprivileged NHI | Baseline blocks all non-functional access |
+| NHI7 Long-Lived Secrets | `budget_hard_cap` + credential scope forces rotation on next task |
+| NHI8 Environment Isolation | Profiles are environment-specific (dev/preprod/prod) |
+| NHI9 NHI Reuse | One profile per project/task — no sharing |
+| NHI10 Human Use of NHI | Approval gates make automation credentials non-interactive |
+
+#### Workload Identity: SPIFFE/SPIRE
+
+Allowance Profiles control what agents can do. Workload identity controls *which agents can call which services* — the inter-agent and agent-to-service authentication layer.
+
+**The problem:** When an agent calls your governance service (e.g., PeaRL) or another agent in the pipeline, how does the receiving service verify it's talking to a legitimate factory agent and not a spoofed/compromised caller? API keys passed through environment variables are shared secrets — they don't identify *which specific workload* is calling.
+
+**SPIFFE/SPIRE** solves this with short-lived X.509 certificates (SVIDs — SPIFFE Verifiable Identity Documents) issued per workload:
+
+```
+SPIRE server (runs in your Docker stack)
+      │
+      ▼
+Issues short-lived X.509 SVID per agent at launch
+(e.g., spiffe://factory.internal/agent/threat-analyzer/prod)
+      │
+      ▼
+All inter-agent + agent→service calls present SVID via mTLS
+(mutual TLS — both sides authenticate)
+      │
+      ▼
+Receiving service verifies SVID against SPIRE trust domain
+Expired SVID = denied even if credentials are otherwise valid
+```
+
+**Why short-lived certificates matter:**
+
+| Static API Key | SPIFFE SVID |
+|---|---|
+| Shared secret — anyone who has it can use it | Cryptographic identity — bound to workload |
+| Lives until manually rotated | Expires automatically (minutes to hours TTL) |
+| Compromised key requires emergency rotation | Compromised SVID expires on its own |
+| No way to know *which process* made the call | Call site is part of the identity |
+| Hard to revoke at scale | Short TTL makes revocation essentially free |
+
+**Integration with governance layer:**
+
+The governance layer (PeaRL) maintains a **workload registry** — an inventory of all active SVIDs mapped to their task, allowance profile, and status. This gives operators real-time visibility: which agents are running, what identity they're presenting, and when their credentials expire.
+
+```
+Workload Registry (governance dashboard):
+  ┌─────────────────────────────────────────────────────────────────┐
+  │ Agent: threat-analyzer-task-001   Running 12m  $0.38 spent      │
+  │ SVID:  spiffe://factory/agent/threat-analyzer/prod              │
+  │ Expires: 14m from now                                           │
+  │ Allowance Profile: threat-analysis-prod                         │
+  │ Status: within scope                                            │
+  └─────────────────────────────────────────────────────────────────┘
+```
+
+> **V&V Connection:** Before trusting an agent's output, check: can you verify *which workload* produced it? A finding with no verifiable workload origin is unattributable — and unattributable findings can't anchor a reliable audit trail.
 
 ---
 
@@ -1420,6 +1581,8 @@ Include example showing dashboard being generated and printed.
 - Distinguish observability (ability to infer state) from monitoring (predefined metrics)
 - Instrument agentic systems using OpenTelemetry for end-to-end tracing
 - Implement token usage tracking and cost attribution by agent/task
+- Apply cost caps as security controls — budget-as-containment-boundary, not just financial hygiene
+- Design the stateless agent recovery pattern: execution phase checkpointing for safe agent replacement
 - Design resilience patterns: error compounding, graceful degradation, human escalation
 - Build dashboards for system health, cost, and quality metrics
 
@@ -1451,17 +1614,17 @@ Traditional monitoring watches dashboards. **Observability** answers: "Why is th
 
 ```python
 from opentelemetry import trace, metrics
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.exporter.prometheus import PrometheusMetricReader
 import time
 
-# Setup Jaeger exporter for traces
-jaeger_exporter = JaegerExporter(
-    agent_host_name="localhost",
-    agent_port=6831,
+# Setup Grafana Tempo exporter — receives OTLP traces on port 4318
+# Run Tempo locally: docker run -p 4317:4317 -p 4318:4318 -p 3200:3200 grafana/tempo
+tempo_exporter = OTLPSpanExporter(
+    endpoint="http://localhost:4318/v1/traces",
 )
 
 trace.set_tracer_provider(
@@ -1473,7 +1636,7 @@ trace.set_tracer_provider(
     )
 )
 trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(jaeger_exporter)
+    BatchSpanProcessor(tempo_exporter)
 )
 
 tracer = trace.get_tracer(__name__)
@@ -1617,7 +1780,7 @@ class TokenTracker:
         """Calculate cost based on model pricing."""
         # Anthropic Claude 4.5 family pricing (as of March 2026)
         pricing = {
-            "claude-sonnet-4-5": {
+            "claude-sonnet-4-6": {
                 "input": 0.003 / 1_000_000,      # $3 per 1M tokens
                 "output": 0.015 / 1_000_000      # $15 per 1M tokens
             },
@@ -1669,7 +1832,7 @@ tracker.log_token_usage(
     task_id="incident-2026-03-05-001",
     input_tokens=500,
     output_tokens=1500,
-    model="claude-sonnet-4-5"
+    model="claude-sonnet-4-6"
 )
 
 # Another call
@@ -1678,7 +1841,7 @@ tracker.log_token_usage(
     task_id="incident-2026-03-05-002",
     input_tokens=200,
     output_tokens=800,
-    model="claude-sonnet-4-5"
+    model="claude-sonnet-4-6"
 )
 
 # Get cost summary
@@ -1689,6 +1852,76 @@ print(tracker.get_cost_summary(groupby="agent"))
 anomalies = tracker.detect_cost_anomaly()
 print(f"Found {len(anomalies)} anomalous tasks")
 ```
+
+#### Cost Caps as Security Controls
+
+Cost anomaly detection tells you when something unusual happened. Cost *caps* prevent it from continuing. This distinction matters: monitoring is observability; caps are enforcement.
+
+**Budget-as-security-boundary:** A hard cost cap is a cheap form of containment. An agent that has consumed $5 of its $5 budget is automatically terminated — regardless of whether it was drifting, compromised, or simply runaway. This is defense in depth at the economic layer.
+
+```yaml
+# Agent-level budget enforcement (Allowance Profile dimension)
+cost_limits:
+  budget_soft_warn_usd: 2.00    # notify operator, agent continues
+  budget_hard_cap_usd:  5.00    # agent process killed, PeaRL logs event
+  per_turn_cap_usd:     0.10    # single turn > $0.10 triggers review
+```
+
+**Implementation via LiteLLM proxy:**
+
+Rather than instrumenting each agent individually, route all model calls through a single proxy that enforces budget caps. When the cap is hit, the proxy returns an error — the agent sees a tool failure, not a kill signal — giving it a chance to log a clean shutdown:
+
+```python
+# LiteLLM config (all agents route through this)
+litellm_settings:
+  max_budget: 5.00
+  budget_duration: "1d"
+  budget_action: "error"     # returns BudgetExceededError to agent
+  success_callback:
+    - post_cost_to_governance  # every successful call recorded
+```
+
+**The three-tier cost alert pattern:**
+
+| Threshold | Action | Security Significance |
+|---|---|---|
+| 50% of cap | Operator notification | Early warning — agent may be drifting |
+| 80% of cap | Soft warning to agent | Agent can self-limit or request extension |
+| 100% of cap | Hard kill | Containment — drift or compromise stops here |
+
+#### Stateless Agent Recovery: The Lambda Pattern
+
+Traditional processes fail, accumulate state, and become harder to restart the longer they run. Agents are worse — they accumulate context, and degraded context produces degraded behavior. The stateless agent model inverts this: state lives in an external governance layer, agents are ephemeral executors that can be replaced at any point.
+
+**The pattern:**
+
+```
+Agent context degrades / drifts / hits cost cap / fails hard
+         │
+         ▼
+Detected by: monitoring (MASS streaming) OR hard guardrail OR cost cap
+         │
+         ▼
+Governance layer signals: terminate agent, preserve execution phase
+         │
+         ▼
+Fresh agent launched → reads from governance layer:
+  - Task definition (SPEC.md or task packet)
+  - Current execution phase (what's done, what's next)
+  - Completed work artifacts (code, findings, outputs)
+  - Trace ID (continues same audit trail, new span)
+         │
+         ▼
+Continues from last clean checkpoint — no context baggage
+```
+
+**Why this is a security pattern, not just a resilience pattern:**
+
+A long-running agent accumulates context — and adversarial content can accumulate in that context over time. Periodic replacement doesn't just fix errors; it flushes any injected context that may have changed the agent's behavior. USENIX Security 2026 found 78% of memory backdoors persist across agent sessions — stateless replacement is the counter.
+
+**The manufacturing analogy:** You don't repair a malfunctioning robot mid-run. You swap it out and pick up from the last verified checkpoint on the line. The production record (state in the governance layer) continues uninterrupted; the executor is replaced.
+
+**Practical implication for your Week 11 system:** Your observability design must include *execution phase checkpointing* — a mechanism to record what phase the agent is in, so replacement agents can continue rather than restart. OpenTelemetry trace IDs serve as the handoff token.
 
 #### Error Compounding in Multi-Agent Systems
 
@@ -1878,7 +2111,7 @@ OpenTelemetry is the standard for collecting observability data. Your instrument
 1. **Trace Requests:** End-to-end flow from user request through multiple agents
 2. **Record Metrics:** Duration, errors, token counts
 3. **Emit Logs:** Structured logs at each step
-4. **Export Data:** Send to Jaeger (traces), Prometheus (metrics), logging system
+4. **Export Data:** Send to Grafana Tempo (traces), Prometheus (metrics), logging system
 
 **Why This Matters:**
 
@@ -1890,7 +2123,7 @@ Without instrumentation, you're debugging blind. With it, you can:
 **Context Engineering Note:**
 
 Ask Claude Code to:
-- Set up Jaeger exporter and TracerProvider
+- Set up Grafana Tempo exporter (OTLP) and TracerProvider
 - Define key metrics (execution duration, error count, token count)
 - Create a StructuredLogger that outputs JSON
 - Build an ObservableAgent that wraps agent execution with tracing
@@ -1901,7 +2134,7 @@ Ask Claude Code to:
 Create OpenTelemetry instrumentation for an agent system:
 
 1. Setup (boilerplate):
-   - Create JaegerExporter pointing to localhost:6831
+   - Create OTLPSpanExporter pointing to http://localhost:4318/v1/traces (Grafana Tempo)
    - Create TracerProvider and add BatchSpanProcessor
    - Create PrometheusMetricReader and MeterProvider
    - Get tracer = trace.get_tracer("agent-system")
@@ -2147,7 +2380,7 @@ If escalation tracking is incomplete, ask: "We're counting escalations from the 
 - SLO tracking
 
 **4. Observability Export**
-- Sample Jaeger trace showing multi-agent request flow
+- Sample Grafana Tempo trace showing multi-agent request flow
 - Sample metrics export (JSON/Prometheus format)
 - Sample logs (JSONL)
 
@@ -2158,7 +2391,7 @@ If escalation tracking is incomplete, ask: "We're counting escalations from the 
 
 **Sources & Tools:**
 - OpenTelemetry: https://opentelemetry.io/
-- Jaeger (distributed tracing): https://www.jaegertracing.io/
+- Grafana Tempo (distributed tracing): https://grafana.com/oss/tempo/
 - Prometheus (metrics): https://prometheus.io/
 
 ---
@@ -2171,6 +2404,8 @@ If escalation tracking is incomplete, ask: "We're counting escalations from the 
 - Design CI/CD pipelines for agentic systems with automated security gates
 - Containerize AI agents using Docker best practices
 - Implement canary, blue-green, and shadow mode deployments
+- Implement per-agent network egress control — default deny, allowlist-only outbound
+- Apply the dual-scan pattern: T=0 pre-briefing meta-scan + T=N runtime behavioral drift detection
 - Build operational runbooks for production agentic systems
 - Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance
 
@@ -2944,6 +3179,93 @@ spec:
     capabilities:
       add: ["NET_ADMIN"]  # Can see all network traffic for monitoring
 ```
+
+#### Network Egress Control: Default Deny
+
+The secrets management pattern above prevents agents from reading credentials they shouldn't have. Network egress control prevents agents from *sending* data to endpoints they shouldn't reach — even if they have valid credentials to do so.
+
+An agent with unrestricted internet access can exfiltrate data to attacker-controlled infrastructure, pull down malicious packages from public registries, or receive command-and-control instructions from outside your environment. None of these require a compromised credential — just an open network.
+
+**The pattern: per-agent egress allowlist, default deny**
+
+```yaml
+# Network scope in Allowance Profile
+network:
+  allowed_outbound:
+    - api.threatintel.internal    # the one external service this agent legitimately needs
+    - governance.internal         # governance layer (PeaRL)
+    - litellm.internal            # model proxy
+    - packages.internal           # private package registry only — no public npm/pypi
+  default: deny                   # everything else is silently dropped
+```
+
+**Local enforcement (Linux network namespaces):**
+
+```bash
+# Each agent worktree launched in an isolated network namespace
+# Egress policy from the Allowance Profile is applied at launch
+ip netns add ns-threat-analyzer-001
+ip netns exec ns-threat-analyzer-001 \
+  iptables -A OUTPUT -d api.threatintel.internal -j ACCEPT
+ip netns exec ns-threat-analyzer-001 \
+  iptables -A OUTPUT -j DROP   # default deny everything else
+```
+
+**Cloud enforcement:** VPC security groups restrict outbound to the same allowlist. NAT gateway with allowlist, AWS Network Firewall for deep packet inspection, VPC Flow Logs piped to your governance layer for egress anomaly detection.
+
+**Private package registry:** Never let agents pull packages directly from public npm/pypi. Route all installs through a private registry proxy (Nexus OSS locally, AWS CodeArtifact in cloud) that scans packages on pull and caches clean versions. This closes two attack surfaces: malicious packages on download AND typosquatting attacks.
+
+| Risk | Open Internet | Egress Allowlist |
+|---|---|---|
+| Data exfiltration | Agent can POST to any endpoint | Blocked — only approved hosts reachable |
+| C2 callbacks | Agent can call attacker infrastructure | Blocked — default deny |
+| Supply chain injection | Agent pulls from public registry | Blocked — private registry only |
+| Lateral movement to internet | Agent can enumerate external services | Blocked — no unapproved DNS/connections |
+
+#### Dual-Scan Security: Pre-Briefing + Delivery Gate
+
+Two fundamentally different moments in an agent's lifecycle need security scanning — and they need different kinds of scanning.
+
+**T=0 — Before the agent is briefed (meta-security scan):**
+
+Before agents read their task briefing, scan everything that will go into their context for adversarial instruction patterns. USENIX Security 2026: 98.2% of memory poisoning attacks succeed when injected through spec/briefing artifacts — because agents trust their own briefing.
+
+What to scan at T=0:
+- Agent system prompts (injection vulnerabilities)
+- Task briefing documents and spec files
+- MCP tool configurations (malicious tool definitions)
+- Context files and RAG inputs
+
+Critical findings at T=0 block the agent launch entirely. The agent never sees the poisoned content.
+
+**T=N — Runtime behavioral drift detection:**
+
+After the agent is running, compare its actions against the task scope defined in the spec. An agent that was briefed to analyze threat intelligence and starts making outbound connections to endpoints not in its allowance profile is drifting from its intended behavior — whether through adversarial manipulation or context degradation.
+
+```
+Agent running → @before_tool middleware fires
+      │
+      ▼
+Compare tool call to SPEC.md task scope baseline
+      │
+      ├── within scope → proceed, log
+      ├── minor drift → async steering signal queued
+      │                  (agent reads on next model turn, corrects course)
+      └── hard violation → synchronous halt, escalate to human
+```
+
+The key design constraint: T=N drift detection must be **asynchronous** — it cannot block the hot path. Analysis runs in parallel, queues interrupt signals. Hard guardrails remain synchronous.
+
+**Why two scan points, not one:**
+
+| Single scan (pre-deploy only) | Dual-scan (T=0 + T=N) |
+|---|---|
+| Catches static vulnerabilities in code | Catches static + runtime injection |
+| Blind to production behavior | Detects drift after briefing |
+| 37.8% of adversarial content appears at runtime | Covered by T=N streaming detection |
+| 98.2% memory poisoning via briefing artifacts | Blocked by T=0 meta-scan |
+
+> **V&V Connection:** T=0 is Output Verification applied to the *inputs* — verifying the briefing before trusting it. T=N is Failure Imagination applied to runtime — anticipating drift and checking for it continuously.
 
 ##### Behavioral Anomaly Detection: AGP Patterns
 
@@ -4134,7 +4456,7 @@ Manual approval
 [Production] Canary deployment (10% traffic)
     ├─ Monitor error rate, latency, cost ✓
     ├─ Gradual traffic shift: 10% → 25% → 50% → 100% ✓
-    ├─ OpenTelemetry traces flowing to Jaeger ✓
+    ├─ OpenTelemetry traces flowing to Grafana Tempo ✓
     ├─ Metrics to Prometheus ✓
     └─ Logs to central logging ✓
 
@@ -4161,7 +4483,9 @@ Running system with full observability
 - PeaRL governance paper (arXiv:2310.18688)
 
 **Observability (Week 11):**
-- OpenTelemetry documentation
+- OpenTelemetry documentation: https://opentelemetry.io/
+- Grafana Tempo (distributed tracing): https://grafana.com/oss/tempo/
+- Prometheus (metrics): https://prometheus.io/
 - "The Three Pillars of Observability" (O'Reilly)
 - SRE best practices (Google)
 

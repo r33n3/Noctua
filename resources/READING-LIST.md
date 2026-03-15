@@ -10,7 +10,7 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 - **Dark Factory Stage Assessment Field Guide** (Course Instructor, 2026). Three-phase methodology for identifying an organization's autonomous AI maturity stage: public signal analysis, structured interview questions, and first-week observation framework. Includes scoring rubric, say/reality gap patterns, and Assessment Report Template. Required reading Week 1; used as the foundation for the Week 14–15 Security Maturity Assessment Deliverable. See `resources/dark-factory-stage-assessment.md`
 
-- **The Dark Factory Roadmap — From Ad-Hoc AI to Autonomous Operations** (AI Engineering Leadership Playbook, 2026). Defines the six-stage maturity model, nine anti-patterns, six pillars of dark factory operations, governance deep-dive (23 evaluation metrics, design-time and runtime controls), and four-tier agent regulatory classification. Source document for all dark factory concepts in this course. See `C:\Users\bradj\Development\Dark_Factory_Research\dark-factory-roadmap.html`
+- **The Dark Factory Roadmap — From Ad-Hoc AI to Autonomous Operations** (AI Engineering Leadership Playbook, 2026). Defines the six-stage maturity model, nine anti-patterns, six pillars of dark factory operations, governance deep-dive (23 evaluation metrics, design-time and runtime controls), and four-tier agent regulatory classification. Source document for all dark factory concepts in this course. See `resources/dark-factory-roadmap.html` (distributed by course instructor)
 
 - **Partnering with Mozilla to Improve Firefox's Security** (Anthropic, March 2026). Claude Opus 4.6 autonomously scanned ~6,000 Firefox C++ files and found 22 confirmed vulnerabilities (14 high-severity) at a cost of $4,000. Demonstrates dark factory applied to defensive security research; documents the dual-use architecture reality. Required reading for Week 13. https://www.anthropic.com/news/mozilla-firefox-security
 
@@ -174,7 +174,7 @@ This reading list is organized into **Core** (required) and **Expanded** (recomm
 
 ### Expanded
 
-- **OWASP NHI Top 10** — Cloud Security Alliance (June 2025). Standardized NHI security framework.
+- **OWASP Top 10 for Non-Human Identities (2025)** — OWASP (2025). Standardized classification of the 10 most critical NHI vulnerabilities: improper offboarding, secret leakage, overprivileged NHI, long-lived secrets, environment isolation failures, and more. Primary reference for Semester 2 Week 10. https://owasp.org/www-project-non-human-identities-top-10/2025/top-10-2025/
 - **PCI DSS 4.0 NHI Requirements** (March 2025). Updated compliance for NHI management.
 
 ---
@@ -352,7 +352,7 @@ Conference talks from the [AI Engineer](https://youtube.com/@aiDotEngineer) YouT
 | 7 | Defense & Guardrails | NeMo Guardrails docs; LlamaFirewall docs; Guardrails AI docs |
 | 8 | Wargame Prep | Buchanan — "The Hacker and the State" (full); PeaRL security research docs |
 | 9 | Supply Chain | "State of MCP Server Security 2025"; "Poisoning Attacks on LLMs" (arXiv:2510.07192) |
-| 10 | NHI Governance | "2025 State of NHI Report"; Zero Trust for AI (CISA); PeaRL governance docs; AIUC-1 + AIVSS crosswalk |
+| 10 | NHI Governance | "2025 State of NHI Report"; OWASP NHI Top 10 (2025); Zero Trust for AI (CISA); PeaRL governance docs; AIUC-1 + AIVSS crosswalk |
 | 11 | Observability | OpenTelemetry docs (AI observability); NIST IR 8596 monitoring sections |
 | 12 | Production Security | Christian — "The Alignment Problem" (deployment chapters); CISA AI guidance |
 | 13-16 | Capstone | Directed research aligned with project scope |

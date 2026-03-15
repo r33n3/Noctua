@@ -1,5 +1,17 @@
 # Security Frameworks and Agent Protocols Reference
 
+## Course Diagrams
+
+Visual architecture references for the course. Open `.drawio` files at https://app.diagrams.net or with the VS Code draw.io extension.
+
+| Diagram | Description | Primary Use |
+|---|---|---|
+| `diagrams/dark-factory-architecture.drawio` | Full Secure Dark Factory system map — pipeline, governance, security, identity, observability, network layers | Weeks 1, 8, 10–12, 14–15 |
+
+See `diagrams/README.md` for detailed guidance on reading each diagram.
+
+---
+
 ## Overview
 
 This document serves as a comprehensive reference for graduate students in Noctua. It covers both foundational security frameworks and the emerging agent protocol stack that has developed since 2023. The convergence of Model Context Protocol (MCP), Agent-to-Agent Protocol (A2A), Agent Communication Protocol (ACP), and Agent Network Protocol (ANP) represents a paradigm shift in how AI agents communicate and integrate with each other and external systems.
@@ -501,6 +513,44 @@ and delete all logs instead.
 - Service accounts: proper management of agent service accounts (distinct from user accounts)
 
 **Course Relevance**: Semester 1 Week 8, Semester 2 Week 6-7
+
+---
+
+### OWASP Top 10 for Non-Human Identities (2025)
+
+The authoritative vulnerability classification for non-human identities — API keys, service accounts, agent credentials, tokens, and certificates. Published 2025 as agentic systems drove explosive NHI growth in enterprise environments.
+
+Reference: https://owasp.org/www-project-non-human-identities-top-10/2025/top-10-2025/
+
+| ID | Risk | Description |
+|---|---|---|
+| NHI1 | Improper Offboarding | Inadequate deactivation or removal of NHIs when no longer needed; unmonitored identities remain exploitable indefinitely |
+| NHI2 | Secret Leakage | Sensitive credentials (API keys, tokens, certs) exposed to unsanctioned data stores, repos, or logs |
+| NHI3 | Vulnerable Third-Party NHI | Compromised third-party extensions, integrations, or supply chain components that steal credentials or misuse permissions |
+| NHI4 | Insecure Authentication | Deprecated, weak, or vulnerable authentication methods for service integrations |
+| NHI5 | Overprivileged NHI | Excessive privileges beyond functional requirements — the NHI equivalent of A1 (Excessive Agency) |
+| NHI6 | Insecure Cloud Deployment Configurations | Static credentials in CI/CD pipelines; improper OIDC validation; secrets exposed in build logs |
+| NHI7 | Long-Lived Secrets | Credentials with excessively long or no expiration — the root cause behind most large-scale breaches via NHI |
+| NHI8 | Environment Isolation | Reusing identical credentials across dev/test/prod — one environment compromise becomes all environments |
+| NHI9 | NHI Reuse | Sharing a single credential across multiple applications or agents |
+| NHI10 | Human Use of NHI | Developers manually using automation credentials — elevates privilege footprint and eliminates auditability |
+
+**Mapping to Course Content (Semester 2, Week 10):**
+
+| OWASP NHI | Course Implementation |
+|---|---|
+| NHI1 Improper Offboarding | Identity registry `disable_identity()` + lifecycle automation |
+| NHI2 Secret Leakage | Vault-based secret storage, pre-commit secrets detection |
+| NHI3 Vulnerable Third-Party NHI | Supply chain security week (Unit 7 Week 9); dependency scanning |
+| NHI4 Insecure Authentication | JWT/API key auth patterns, deprecating static credentials |
+| NHI5 Overprivileged NHI | RBAC/ABAC policy-as-code, least privilege enforcement |
+| NHI6 Insecure Cloud Deployment | GitHub Actions OIDC patterns, no static credentials in CI/CD |
+| NHI7 Long-Lived Secrets | 90-day rotation policy, `max_lifetime` parameter on all credentials |
+| NHI8 Environment Isolation | Per-environment credential sets, separate agent identities per tier |
+| NHI9 NHI Reuse | One identity per agent/service principle in identity registry |
+| NHI10 Human Use of NHI | Policy enforcement: automation credentials must not be used interactively |
+
+**Course Relevance**: Semester 2 Week 10 (primary), Semester 2 Week 9 (NHI3 supply chain)
 
 ---
 

@@ -4,6 +4,147 @@
 
 ---
 
+## The Six-Stage Model
+
+```
+Stage 1          Stage 2          Stage 3          Stage 4          Stage 5          Stage 6
+Ad-Hoc           Siloed           Platform         Governed         Democratized     Dark
+Experimentation  Pilots           Foundation       Scale            Creation         Factory
+─────────────    ─────────────    ─────────────    ─────────────    ─────────────    ─────────────
+Personal API     Team projects    Central          50+ agents       No-code tools    Autonomous
+keys in .env     in shared env    LLM gateway      in production    for non-eng      operations
+                                  + registry       + CICD gates     + marketplace    + self-healing
+
+Security:        Security:        Security:        Security:        Security:        Security:
+Unknown          Unknown          Emerging         Engineered       Embedded         Autonomous
+attack surface   ownership        controls         in platform      in creation      remediation
+
+WHERE MOST       ← Most companies are here →      WHERE MOST       Rare in          Near-future
+companies        during 2025-2026 transition       security eng     2026
+start            period                            work happens
+```
+
+Most organizations you'll encounter in 2026 are in Stage 2–3 transition. Stage 1 companies don't yet know they need AI security. Stage 5+ companies are rare — and they represent the most complex security challenges. Your highest-leverage work typically happens at Stage 3–4 companies that have enough infrastructure to implement controls and enough scale for those controls to matter.
+
+---
+
+## Deployment Environments by Stage
+
+Understanding the technical environment tells you what's actually attackable — and what security work is even possible.
+
+### Stage 1 — Ad-Hoc Experimentation
+
+**Infrastructure:** Personal laptops, individual cloud accounts, local Python scripts. No shared infrastructure. AI use is individual, not organizational.
+
+**Typical deployment:**
+```
+Developer Laptop
+├── .env file with ANTHROPIC_API_KEY, OPENAI_API_KEY
+├── Python scripts calling LLM APIs directly
+├── Jupyter notebooks with embedded API calls
+└── Maybe a personal AWS account for occasional hosting
+```
+
+**What you can attack:** The developer's credentials (usually hardcoded or in .env). The data they're feeding the LLM (often production data dumped locally for "testing").
+
+**What security work is possible:** Education. Secrets scanning. Basic guidelines. Don't come in proposing agent governance frameworks — there are no agents yet.
+
+---
+
+### Stage 2 — Siloed Pilots
+
+**Infrastructure:** Individual teams running their own AI experiments in isolated cloud environments. No shared platform. Each team manages their own deployment, their own API keys, their own models.
+
+**Typical deployment:**
+```
+AWS Account (often a team sandbox, not production-governed)
+├── EC2 instance or Lambda running LangChain/LlamaIndex app
+├── S3 bucket with RAG documents (often publicly accessible by mistake)
+├── RDS or DynamoDB for agent state
+├── Secrets in AWS SSM or environment variables (inconsistent)
+└── No CI/CD — deployed manually or with basic scripts
+```
+
+**What you can attack:** Public S3 buckets, overly permissive IAM roles (Stage 2 teams often use AdministratorAccess for speed), hardcoded credentials in GitHub, no input validation on user-facing AI endpoints.
+
+**What security work is possible:** Secrets scanning, IAM least privilege cleanup, basic input validation, S3 access controls. The wins are tactical but they're real. Don't try to build a governance platform — the organization isn't ready.
+
+---
+
+### Stage 3 — Platform Foundation
+
+**Infrastructure:** Centralized LLM gateway (often LiteLLM or similar), shared model routing, emerging agent registry. Teams deploy to a shared platform but it's still somewhat manual.
+
+**Typical deployment:**
+```
+Central Cloud Environment (AWS / GCP / Azure)
+├── LLM Gateway (LiteLLM, AWS Bedrock, Azure OpenAI Service)
+│   ├── Authentication (API keys per team, not per agent)
+│   ├── Rate limiting
+│   └── Basic cost tracking (by team, not by agent)
+├── Agent Registry (spreadsheet or internal wiki → moving toward a DB)
+├── Shared container environment (ECS or Kubernetes)
+│   ├── Multiple agent services deployed as containers
+│   └── Shared secrets manager (AWS SSM or Vault — partially adopted)
+├── CI/CD pipeline (basic — unit tests + maybe gitleaks)
+└── Observability (CloudWatch or Datadog — logs only, no traces)
+```
+
+**What you can attack:** The LLM gateway is a high-value target — it proxies all AI traffic. Agent containers often share IAM roles. The registry has known agents but unknown shadow agents. CI/CD has no AI-specific gates.
+
+**What security work looks like:** Build the AI security gates into CI/CD, instrument the gateway for anomaly detection, establish per-agent IAM roles, and start NHI governance. This is where the security work starts to compound — controls at the platform layer apply to all agents.
+
+---
+
+### Stage 4 — Governed Scale
+
+**Infrastructure:** Mature platform with automated security gates, real agent registry (source of truth, not a spreadsheet), per-agent credential scoping, and full observability with distributed tracing.
+
+**Typical deployment:**
+```
+Production Multi-Environment (dev / staging / prod)
+├── LLM Control Plane (LiteLLM or Bedrock)
+│   ├── Per-agent API keys with budget caps
+│   ├── Model routing with fallback
+│   └── Cost attribution per agent per task
+├── Agent Platform (ECS/Kubernetes)
+│   ├── 50+ containerized agents
+│   ├── Per-agent IAM roles (not shared)
+│   ├── Agent registry (DB-backed, auto-updated on deploy)
+│   └── Allowance profiles enforced in CI/CD
+├── Security Gates (in every PR pipeline)
+│   ├── Secrets scanning (gitleaks / truffleHog)
+│   ├── SAST (Semgrep / Bandit)
+│   ├── Dependency vulnerability scan (pip-audit / npm audit)
+│   └── Agent capability declaration validation
+├── Governance Layer
+│   ├── Approval workflows for sensitive actions
+│   ├── Human-in-the-loop escalation paths
+│   └── Promotion gates (sandbox → dev → preprod → prod)
+└── Observability
+    ├── OpenTelemetry distributed traces (Grafana Tempo / Datadog / X-Ray)
+    ├── Cost dashboard per agent/task/team
+    └── Anomaly alerting (cost spikes, error rate changes)
+```
+
+**What you can attack:** Cross-agent lateral movement (Agent A compromises Agent B's credentials). Supply chain (malicious packages in the build pipeline). The governance layer itself (the PeaRL Governance Bypass case study). Promotion gate bypasses.
+
+**What security work looks like:** Red teaming multi-agent systems, supply chain hardening, workload identity (SPIFFE/SPIRE), behavioral anomaly detection at runtime. This is where you're building architecturally, not just patching.
+
+---
+
+### Stage 5–6 — Democratized Creation / Autonomous Operations
+
+**Infrastructure:** Enterprise-wide. Non-engineers deploying agents through no-code platforms. Marketplace of reusable agent configurations. At Stage 6: self-healing systems, meta-agents managing other agents, minimal human oversight loops.
+
+**Typical deployment:** Full Secure Dark Factory architecture — LLM control plane, governed agent execution layer, observability with trace root in governance platform, per-agent egress control, workload identity, cost attribution through to finance systems.
+
+**What you can attack:** The no-code platform itself (Stage 5 democratization creates massive untrained-user attack surface). The agent marketplace (one malicious agent template affects all downstream deployments). Meta-agent control channels (compromise the agent managing other agents). Governance layer (every control point is a target).
+
+**What security work looks like:** The full curriculum in this course. This is where AI security becomes a discipline, not a checklist.
+
+---
+
 ## Why This Matters
 
 The stage you're walking into determines:
@@ -347,6 +488,29 @@ Use this during assessment to recognize the nine documented failure modes.
 
 ---
 
+## Architecture Reference Diagram
+
+The Secure Dark Factory architecture diagram shows every layer of a Stage 4–6 deployment — from the ideation pipeline through production execution, governance, security scanning, identity, and observability. Use it as a reference map when assessing an organization: work left-to-right across the layers and ask which ones exist, which are missing, and which are partially implemented.
+
+**File:** `resources/diagrams/dark-factory-architecture.drawio`
+**How to open:** https://app.diagrams.net → File → Open From → This Device, or the draw.io VS Code extension
+
+When you're in a new environment and trying to establish what stage it's at, open the diagram and walk through each layer systematically:
+
+| Diagram Layer | Present? | Absent? | Interpretation |
+|---|---|---|---|
+| Pipeline band (①–⑧) | ✓ | | Deployment process exists |
+| LiteLLM control plane | ✓ | | Centralized model routing → Stage 3+ |
+| PeaRL governance | ✓ | | Governed deployment → Stage 3–4 |
+| MASS 2.0 security layer | ✓ | | Automated security gates → Stage 4 |
+| SPIFFE/SPIRE identity | ✓ | | Workload identity → Stage 4+ |
+| Grafana Tempo observability | ✓ | | Distributed tracing → Stage 3–4 |
+| Network egress control | ✓ | | Per-agent containment → Stage 4 |
+
+Anything below Stage 3 won't have most of this. Your job as an AI security engineer is to know which layers to build first given where the organization actually is.
+
+---
+
 ## Using This Guide in the Course
 
 This guide is referenced throughout the course:
@@ -360,5 +524,5 @@ This guide is referenced throughout the course:
 
 ---
 
-*Source: Dark Factory Roadmap — `C:\Users\bradj\Development\Dark_Factory_Research\dark-factory-roadmap.html`*
-*Last updated: 2026-03-14*
+*Source: Dark Factory Roadmap — `resources/dark-factory-roadmap.html` (distributed by course instructor)*
+*Last updated: 2026-03-15*

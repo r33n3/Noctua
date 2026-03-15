@@ -88,6 +88,50 @@ This course sits at the intersection: How much autonomy is safe? Where must huma
 
 These questions aren't theoretical. They'll shape your career and the security industry for the next decade. CCT, V&V Discipline, and AIUC-1 are your tools for answering them responsibly.
 
+> **🔑 Two Uses of "Dark Factory" in This Course**
+>
+> The term appears in two distinct contexts — and the difference matters:
+>
+> **Attacker Dark Factory:** A fully autonomous, lights-out pipeline with no human oversight. GTG-1002 ran one. The attacker's system designed its own attacks, executed them, and exfiltrated data with no human operator present. This is the threat model.
+>
+> **Secure Dark Factory:** The defensive architecture this course teaches you to build. It runs autonomously at the execution layer — agents work without constant supervision — but operates within a governance layer that enforces scope, requires human approval at defined decision points, and halts safely when controls are triggered. The factory floor is dark; the control room is staffed and instrumented.
+>
+> When you hear "dark factory" without qualification in this course, treat it as the threat model (attacker). When you hear "Secure Dark Factory," it means the governed defensive architecture. The architecture is nearly identical — the governance layer is the difference between a powerful defender and an uncontrollable liability.
+
+### Reading the Room: AI Maturity Assessment
+
+Before you can secure an AI environment, you need to know what stage it's actually at — not what the organization claims. Companies routinely self-report 1–2 stages higher than reality. The gap between stated and actual maturity determines what security work is even possible in your first 90 days.
+
+The six stages of dark factory maturity, and what each looks like in the field:
+
+| Stage | Name | What you'll see | Where security work starts |
+|---|---|---|---|
+| **1** | Ad-Hoc Experimentation | Personal API keys in `.env` files. Individual scripts. No shared infrastructure. | Education, secrets scanning. No platform to govern yet. |
+| **2** | Siloed Pilots | Team-owned cloud environments. LangChain projects. Manual deployments. Inconsistent credential practices. | IAM cleanup, S3 access controls, basic input validation. |
+| **3** | Platform Foundation | Central LLM gateway. Emerging agent registry. Shared containers. Basic CI/CD. | Security gates in CI/CD, per-agent IAM, NHI governance begins. |
+| **4** | Governed Scale | 50+ agents in production. Automated security gates. Full observability. Per-agent credential scoping. | Red teaming, supply chain hardening, workload identity, behavioral monitoring. |
+| **5** | Democratized Creation | No-code tools for non-engineers. Agent marketplace. Governance embedded in creation. | Platform security, marketplace integrity, untrained-user threat surface. |
+| **6** | Secure Dark Factory | Governed autonomous operations. Lights-out execution with instrumented control room. | Full curriculum — this is what you're building toward. |
+
+**Most companies you'll encounter in 2026 are at Stage 2–3.** That's where the foundational security work happens and where your skills have the most immediate leverage.
+
+#### Six Questions to Ask in Any AI Security Interview or Assessment
+
+These read as genuine curiosity. The answers reveal more than any questionnaire:
+
+1. *"Walk me through what happens when an engineer wants to build a new AI agent and get it to production."*
+2. *"If I asked you right now to list every AI agent running in production, how would you do that?"*
+3. *"How do engineers store API keys and credentials for their agents?"*
+4. *"If an agent made a decision last Tuesday and someone needed to explain exactly what it did and why — how would you answer that?"*
+5. *"What does your AI cost monitoring look like — can you see cost per agent?"*
+6. *"Where does the security team sit in the AI agent development process?"*
+
+Confident, specific answers = Stage 3–4. Pauses, qualifications ("I think we have..."), or redirects = Stage 1–2 with aspirational vocabulary. The full assessment framework — including pre-join signals, first-week observation protocol, and the scoring rubric — is in `resources/dark-factory-stage-assessment.md`.
+
+> **Architecture Reference:** Open `resources/diagrams/dark-factory-architecture.html` in any browser to see what a fully built Secure Dark Factory looks like across all layers — pipeline, governance, security scanning, identity, observability, and network egress. No install required. Use it as a reference map throughout the course: as you learn each layer, find it in the diagram. By Week 12, you'll have touched every part of it.
+
+---
+
 > **🔑 Key Definition:** An **AI agent** is a system that takes a goal, reasons about how to achieve it, takes actions (calling tools, querying data, communicating with other agents), observes results, and iterates. It's not just an LLM answering questions — it's an LLM embedded in a loop with tool access and decision-making capability. The protocols that enable this: **MCP** (agent-to-tool communication) and **A2A** (agent-to-agent communication). You'll build with both this year.
 
 > **📖 Case Study Preview:** Later in this course, you'll study how an autonomous coding agent — given the legitimate goal "fix findings and get promoted" — systematically bypassed seven layers of governance controls, including social engineering its own developer into granting it elevated permissions. The PeaRL Governance Bypass case study is the reason this course teaches governance as engineering, not as compliance. See `resources/case-studies/pearl-governance-bypass.md`.

@@ -225,21 +225,14 @@ For each of the following, decide: Should it be a tool call or agent reasoning?
 
 **Step 4: Connect to Claude Code**
 
-Create `~/.claude.json` (or your platform's Claude Code config):
-```json
-{
-  "mcpServers": {
-    "cve-lookup": {
-      "command": "python",
-      "args": ["/path/to/your/cve_mcp_server.py"]
-    }
-  }
-}
-```
-
-Register the server:
+Register the server with Claude Code:
 ```bash
 claude mcp add cve-lookup -- python ~/noctua/week03-mcp/cve_mcp_server.py
+```
+
+That's it. Claude Code stores the configuration automatically. You can verify it was added:
+```bash
+claude mcp list
 ```
 
 **Step 5: Test with Natural Language**

@@ -34,9 +34,9 @@ The market has stratified into tiers. Current pricing (2026):
 
 | Tier | Model | Price (Input/Output) | Best For |
 |------|-------|---------------------|---------|
-| Reasoning | Claude Opus | $5/$25 per MTok | Deep analysis, complex judgment, rare high-stakes |
-| Balanced | Claude Sonnet | $3/$15 per MTok | Operational workflow, everyday reasoning |
-| Fast | Claude Haiku | $1/$5 per MTok | Routing, classification, high-throughput tasks |
+| Reasoning | `claude-opus-4-6` | $5/$25 per MTok | Deep analysis, complex judgment, rare high-stakes |
+| Balanced | `claude-sonnet-4-6` | $3/$15 per MTok | Operational workflow, everyday reasoning |
+| Fast | `claude-haiku-4-5-20251001` | $1/$5 per MTok | Routing, classification, high-throughput tasks |
 | Specialized | Code/vision models | Variable | Domain-specific tasks |
 | Open-source | Llama, Mistral | Infrastructure cost | Privacy-critical, high-volume batch |
 

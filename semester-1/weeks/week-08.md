@@ -7,7 +7,8 @@
 - Apply the complete AIUC-1 framework to audit tools built in Weeks 3-5
 - Understand the OWASP Top 10 for Agentic Applications (key risks)
 - Use AIVSS scoring methodology to prioritize vulnerabilities
-- Apply defense in depth architecture to your own tools
+- Apply defense in depth architecture to your own tools — including the infrastructure tier (scope boundaries, network egress)
+- Assess blast radius: how much damage can a compromised agent do, given its current access surface?
 - Test for bias in your RAG system (geographic, organizational)
 - Write a governance policy referencing specific controls implemented and specific vulnerabilities found
 - Map the PeaRL attack chain to your system and identify vulnerable levels
@@ -97,16 +98,87 @@ AIVSS adapts CVSS scoring for AI-specific vulnerabilities. Key scoring dimension
 Defense in depth applies multiple independent layers — so that if one layer fails, others remain:
 
 ```
-Layer 1 — Input Validation: Reject malformed, injection-attempting inputs at the perimeter
-Layer 2 — Prompt Constraints: System prompt guardrails the agent cannot override
-Layer 3 — Tool Validation: Tool inputs and outputs validated before/after each call
-Layer 4 — Output Filtering: Check outputs before returning to user or downstream systems
-Layer 5 — Human Review: Critical decisions require human approval (AIUC-1 C)
-Layer 6 — Monitoring: Log all decisions; flag anomalies (AIUC-1 E)
-Layer 7 — Access Controls: Minimal tool permissions (AIUC-1 B006)
+Layer 1 — Input Validation:    Reject malformed, injection-attempting inputs at the perimeter
+Layer 2 — Prompt Constraints:  System prompt guardrails the agent cannot override
+Layer 3 — Tool Validation:     Tool inputs and outputs validated before/after each call
+Layer 4 — Output Filtering:    Check outputs before returning to user or downstream systems
+Layer 5 — Human Review:        Critical decisions require human approval (AIUC-1 C)
+Layer 6 — Monitoring:          Log all decisions; flag anomalies (AIUC-1 E)
+Layer 7 — Access Controls:     Minimal tool permissions (AIUC-1 B006)
+Layer 8 — Scope Boundaries:    Define what each agent is allowed to touch at design time
+Layer 9 — Network Egress:      Agents connect only to pre-approved endpoints; no open internet
 ```
 
 For your tools, map: which layers are implemented? Which are missing?
+
+#### Infrastructure-Layer Defense: Blast Radius Control
+
+Layers 1–7 address what the agent *says* and *decides*. Layers 8–9 address what it can *reach* — and that's where most production deployments are underdefended.
+
+**The Blast Radius Problem**
+
+A compromised or drifting agent does damage proportional to its access surface. A threat-analyzer agent that can only read from one threat intel API and write to one incident queue has a small blast radius. The same agent with unrestricted internet access and write access to all databases is an existential risk if it goes rogue.
+
+The dark factory architecture addresses this through **Allowance Profiles** — agent scope defined once at design time, enforced at every tool call:
+
+```yaml
+# Defined per project, stored in governance layer (e.g., PeaRL)
+# What this agent can do — and nothing else
+allowance_profile:
+  tool_scope:
+    blocked_commands:    ["rm -rf", "git push --force", "DROP TABLE", "curl * | bash"]
+    blocked_paths:       [".env", "deploy/secrets/", ".git/config"]
+    always_requires_approval: ["git push origin *", "pip install *"]
+
+  credential_scope:
+    github_token:   repo-scoped         # not org-admin
+    db_key:         read-only           # not write
+    llm_api_key:    project-budget-cap  # budget-limited
+
+  network_scope:
+    allowed_outbound:
+      - api.threatintel.internal
+      - governance.internal
+      - litellm.internal
+    default: deny                       # block all other outbound
+
+  cost_limits:
+    budget_soft_warn_usd: 2.00
+    budget_hard_cap_usd:  5.00          # kills agent if exceeded
+```
+
+**Why this matters for security:**
+
+| Without Scope Boundaries | With Allowance Profile |
+|---|---|
+| Compromised agent can exfiltrate to any endpoint | Outbound blocked to all but pre-approved hosts |
+| Leaked credential grants full account access | Credential scoped to minimum permissions |
+| Agent installs malicious package | `pip install` requires approval |
+| Runaway agent burns $500 in tokens | Hard cost cap kills the process |
+| Post-incident forensics: "what did it touch?" | Audit log shows every scope check and decision |
+
+**The key principle:** The scope of damage is bounded by the scope of access — and scope is defined at *design time*, not at *runtime*. Just as you'd define firewall rules before deployment, you define agent allowances before agents run.
+
+> **V&V Connection:** An Allowance Profile is a machine-readable specification of what the agent should be able to do. Auditing the profile against the threat model is a V&V exercise. Any allowance beyond functional necessity is a gap.
+
+**Network Egress Control**
+
+For agents running locally in worktrees, Linux network namespaces (`netns`) enforce per-agent egress:
+
+```bash
+# Each agent worktree launched in its own network namespace
+# Only allowed endpoints are reachable
+# All other outbound connections are silently dropped
+ip netns add agent-threat-analyzer
+ip netns exec agent-threat-analyzer \
+  iptables -A OUTPUT -d api.threatintel.internal -j ACCEPT
+ip netns exec agent-threat-analyzer \
+  iptables -A OUTPUT -j DROP  # default deny everything else
+```
+
+For cloud-deployed agents: VPC security groups + NAT gateway allowlists + VPC Flow Logs provide the equivalent control.
+
+**For your tools (Week 8 audit):** Add a column to your audit table: "What is the blast radius if this agent is compromised?" Map each component to its access surface. Any agent with access broader than its function requires is a finding.
 
 ### Environment Security Integration
 
