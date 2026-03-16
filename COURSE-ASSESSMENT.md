@@ -108,12 +108,12 @@ This is not hypothetical. It is the new threat model.
 
 ### 5. Performance Metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)
 
-**Original Metrics:**
-- **MTTS (Mean Time To Symptom):** How long until an issue is visible?
-- **MTTP (Mean Time To Patch):** How long to develop a fix?
-- **MTTSol (Mean Time To Solution):** How long until the fix is deployed?
-- **MTTI (Mean Time To Investigate):** How long to understand root cause?
-- **aMTTR (Assisted Mean Time To Recovery):** How long with human involvement?
+**Canonical Definitions (authoritative — week-01.md):**
+- **MTTS (Mean Time to Suppress):** Time until the blast radius stops expanding
+- **MTTP (Mean Time to Prevent):** Time until preventive measures are deployed
+- **MTTSol (Mean Time to Solution):** Full resolution time from detection to incident closure
+- **MTTI (Mean Time to Investigate):** Time to complete forensic and behavioral analysis
+- **aMTTR (Adjusted Mean Time to Remediate):** Weighted metric accounting for incident severity
 
 **2026 Validation:**
 
@@ -125,7 +125,7 @@ These metrics remain conceptually valid and have become more operationally criti
 
 The metrics have evolved from static SLA measurements into real-time observability requirements.
 
-**New Context:** With agentic systems operating autonomously, these metrics must be instrumented at runtime. An agent's MTTS might be 50 milliseconds (when logging first detects anomaly); MTTI might be 200 milliseconds (when root cause is identified by analysis agent); MTTSol might be automatic (guardrails prevent further damage).
+**New Context:** With agentic systems operating autonomously, these metrics must be instrumented at runtime. An agent's MTTS might be 50 milliseconds (when guardrails suppress the blast radius); MTTI might be 200 milliseconds (when the analysis agent completes forensic review); MTTSol may be automatic when the governance layer rolls back the offending action.
 
 **Design Decision:** These metrics have been integrated into the observability and monitoring section. Students learn how to instrument agentic systems to measure and optimize these metrics in production, with connections to OpenTelemetry standards throughout the labs.
 

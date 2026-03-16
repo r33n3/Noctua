@@ -648,8 +648,8 @@ Rather than creating a separate framework, the Cyber AI Profile shows how AI-spe
    - Model retraining after compromise
    - Lessons learned and continuous improvement
 
-**Expected Impact**
-Likely to become the de facto standard for AI security governance in regulated industries (finance, healthcare, government) by 2027.
+**Status and Adoption**
+A voluntary framework — not a regulation. Increasingly referenced in procurement requirements, board-level AI governance reviews, and audit engagements in regulated industries (finance, healthcare, government). The EU AI Act is the nearest binding law; the Cyber AI Profile is the technical complement organizations use to operationalize it.
 
 **Course Relevance**
 - Semester 1 Week 12: Introduction to CSF 2.0 and Cyber AI Profile
@@ -933,7 +933,7 @@ AIUC-1 is the world's first standard specifically designed for AI agent systems.
 6. **Society** — Fairness, bias mitigation, societal impact assessment, transparency
 
 **Certification**
-Schellman became the first accredited AIUC-1 auditor in early 2026, making certification a practical reality for organizations deploying autonomous agents.
+Schellman became the first accredited AIUC-1 auditor in early 2026. Certification is now available but adoption is early-stage — treat it as procurement-relevant and governance-relevant rather than a regulatory requirement, unless your organization operates under a contract or jurisdiction that specifically mandates it.
 
 **Relationship to Other Frameworks**
 

@@ -81,11 +81,11 @@ Domains C (Safety) and F (Society) — for a prototype, the minimum is: "Does th
 
 Measure yourself against these from the first run:
 
-1. **MTTS — Mean Time To Spot/Triage:** How long from alert to "we understand what this is?"
-2. **MTTP — Mean Time To Protect:** How long from understanding to protective action?
-3. **MTTSol — Mean Time To Solve:** Full resolution (often not achievable in a sprint — aim for MTTS + MTTP)
-4. **MTTI — Mean Time To Isolate:** How long to stop lateral movement? Critical for ransomware/APT scenarios.
-5. **aMTTR — Augmented Mean Time To Respond:** Total including human review time.
+1. **MTTS — Mean Time to Suppress:** How long until the blast radius stops expanding?
+2. **MTTP — Mean Time to Prevent:** How long until preventive measures are deployed?
+3. **MTTSol — Mean Time to Solution:** Full resolution from detection to closure (often not achievable in a sprint — aim for MTTS + MTTP first)
+4. **MTTI — Mean Time to Investigate:** How long to complete forensic and behavioral analysis?
+5. **aMTTR — Adjusted Mean Time to Remediate:** Weighted metric accounting for incident severity; includes human review time.
 
 **CPT — Cost Per Transaction:** How much does one invocation of your tool cost in API tokens? Calculate: `total_tokens * model_price / 1_000_000`. Track this for every model tier used.
 
