@@ -949,6 +949,21 @@ Schellman became the first accredited AIUC-1 auditor in early 2026, making certi
 - Semester 2 Week 10: Mapping PeaRL governance architecture to AIUC-1 domains
 - Semester 2 Weeks 13-16: Capstone projects must include AIUC-1 domain mapping
 
+**Framework Crosswalk: AIUC-1 ↔ NIST AI RMF ↔ ISO 42001**
+
+When you walk into a company that uses different framework vocabulary, use this table to translate. All three frameworks are addressing the same risks — they just use different terms and have different scopes.
+
+| AIUC-1 Domain | NIST AI RMF Function | ISO 42001 Clause | What it means in practice |
+|---|---|---|---|
+| **A — Data & Privacy** | Map (data assets) | 8.4 (AI system operation) | What data flows through agents, where it's stored, how long it's retained |
+| **B — Security** | Protect | 6.1 (risks and opportunities) + 8.5 (security) | Authentication, tool access controls, input validation, supply chain |
+| **C — Safety** | Manage (safety controls) | 8.6 (AI system safety) | Behavioral guardrails, human override, graceful degradation |
+| **D — Reliability** | Measure | 9.1 (performance evaluation) | Output quality, failure recovery, SLO/SLA compliance |
+| **E — Accountability** | Govern (audit) | 7.5 (documented information) + 9.3 (management review) | Audit trails, decision attribution, governance chain |
+| **F — Society** | Govern (ethics) | 8.7 (responsible development) | Bias testing, fairness metrics, societal impact |
+
+**How to use this at a company:** If a company says "we follow ISO 42001," ask which clauses they've implemented. Clause 8.5 (security) maps to AIUC-1 Domain B — ask for evidence of tool access controls and input validation. Clause 8.6 (safety) maps to Domain C — ask for behavioral guardrail documentation and human override procedures. This approach lets you assess their actual security posture regardless of which framework name they use.
+
 ---
 
 ### OWASP AI Vulnerability Scoring System (AIVSS)

@@ -374,6 +374,7 @@ Include the completed mapping table in your Governance Policy deliverable.
 4. **Bias Testing Results** — comparison analysis for geographic/demographic test cases
 5. **Governance Policy** (1-2 pages) — referencing specific controls and vulnerabilities found
 6. **PeaRL Chain Mapping** — which levels your system is vulnerable to and proposed controls
+7. **V&V Document** — complete all four dimensions using `resources/vv-template.md`. This is the first time you're producing a full V&V document. It will carry forward to the capstone — you'll revise and expand it as your system grows.
 
 > **📁 Save to:** `~/noctua/governance/audits/week08/` (audit report and findings), `~/noctua/governance/policies/` (governance policy), `~/noctua/deliverables/week08/` (final submission)
 
@@ -400,5 +401,34 @@ Bias detection is a V&V exercise. When your geographic bias test shows disparate
 - Does the bias persist when you change the organizational context? A bias that appears for one geography but not another may be a training data artifact rather than a genuine threat intelligence difference.
 
 Calibrated Trust applies here: a bias finding confirmed by multiple test cases deserves high trust and immediate action. A finding from a single comparison on limited data deserves investigation, not immediate action.
+
+---
+
+## What Carries Forward into Semester 2
+
+You've spent eight weeks building a foundation. Before you cross into Semester 2, here's what you're bringing with you and how it applies at the next scale.
+
+| What you built in S1 | How it scales in S2 |
+|---|---|
+| Single-agent tools (MCP servers, RAG systems) | Semester 2 orchestrates these as specialist workers inside a multi-agent pipeline |
+| Engineering Assessment Stack (6 layers) | Every multi-agent design decision maps to a layer — you'll use the Stack to spec orchestrator/worker boundaries |
+| AIUC-1 audit discipline | Applies to entire agent pipelines, not just single tools — governance gates must hold at the orchestration layer |
+| V&V Discipline (4 dimensions) | Adversarial Assumption becomes the primary lens in S2 — you're now designing for attackers, not just bugs |
+| PeaRL attack chain mapping | Unit 6 (Attack vs. Defend) builds directly on this — you'll map your own multi-agent systems to MITRE ATLAS |
+| Governance Policy (Week 8 deliverable) | Becomes your baseline policy for the capstone system — revise and harden it as you add agents |
+
+**What's new in Semester 2:**
+
+- **Scale of trust boundaries.** In S1, trust boundaries were within a single agent. In S2, trust boundaries exist between agents — an orchestrator must not blindly trust worker output, and workers must not inherit the orchestrator's full permissions.
+- **A2A protocol.** You've used MCP for agent-to-tool calls. Unit 5 introduces A2A (Agent-to-Agent), the protocol governing how agents communicate with each other. You'll implement it.
+- **Adversarial AI.** Unit 6 flips the perspective — you become the attacker. The defense skills you built in S1 (OWASP testing, AIVSS scoring) are the target. Expect your own tools to be broken.
+- **Infrastructure security.** Unit 7 adds the layer below the code: identity (SPIFFE/SPIRE), secrets management, network egress, and deployment hardening. The nine-layer DiD model from Week 8 gets its infrastructure tiers populated.
+
+**Carry-forward checklist before starting Unit 5:**
+
+- [ ] Your Week 3–5 tool code is committed and accessible at `~/noctua/`
+- [ ] Your Week 8 AIUC-1 Audit Report and Governance Policy are saved
+- [ ] Your Assessment Stack mapping from Week 6 `/tool-select` skill is working
+- [ ] You can articulate the difference between MCP (tool access) and A2A (agent delegation) — you'll build A2A in Unit 5
 
 **Completion check before Week 9:** Your Weeks 3-5 tools should be audited and the most critical vulnerabilities addressed before you start building multi-agent systems on top of them in Week 9.

@@ -141,9 +141,30 @@ How do I confirm the output is correct?
 >
 > **Security implication:** Each subagent is a separate principal making independent tool calls. Multi-agent systems require per-subagent authorization scope — if the lead agent has access to sensitive data, subagents should not automatically inherit that access. Design authorization at the subagent level, not just the orchestrator level.
 
+### Assessment Stack in Action: Running Worked Example
+
+The Stack has been introduced in layers since Week 1. Here it is fully filled in for a real security problem — an **automated CVE triage system** that decides whether a new vulnerability requires immediate patching. Use this as your reference model when completing your own assessments.
+
+| Layer | Question | Answer for CVE Triage |
+|---|---|---|
+| **1. Problem Type** | What kind of problem is this? | Reasoning — each CVE has novel context; rules alone can't assess "does this affect our environment?" |
+| **2. Computation Approach** | Deterministic, statistical, or reasoning? | Hybrid: deterministic for CVSS score thresholds (≥9.0 = auto-escalate), reasoning for environmental impact |
+| **3. Model Selection** | If reasoning: which tier? | Sonnet ($3/MTok) for triage decisions; Haiku for initial CVSS parsing and routing |
+| **4. Data Architecture** | Where does the data live? | Relational (CVE metadata, asset inventory); Vector (semantic search across prior patches); Time Series (exploit activity trends) |
+| **5. Integration Pattern** | MCP tool call or A2A delegation? | MCP for NVD API and asset DB lookups; A2A to delegate deep analysis to a specialist agent for critical CVEs |
+| **6. Verification** | How do I confirm the output is correct? | Cross-reference NVD + vendor advisories; confusion matrix on held-out labeled CVEs; human review for all CVSS ≥9.0 |
+
+**Why this matters:** Layer 5 is where most students stall — "should this be an MCP call or an agent?" The answer is: MCP if you need data retrieved; A2A if you need judgment applied. A CVE lookup is MCP. A risk assessment of that CVE's impact on a specific system is A2A.
+
+You'll return to this example in Unit 5 (when you build the multi-agent version) and Unit 7 (when you add identity scoping and network controls to each component). Keep it as your reference point.
+
+---
+
 ### AIUC-1: All Six Domains
 
-You've already encountered Domains A, B, D, E in Weeks 2-5. Today, the complete framework:
+You've already encountered Domains A, B, D, E in Weeks 2-5. The domains were introduced in that order intentionally — you built context before receiving the full framework. This week you get the complete picture. The ordering you saw was not the canonical order of the framework; it was the pedagogical order. The canonical framework is A through F.
+
+Today, the complete framework:
 
 | Domain | Focus | Weeks Introduced |
 |--------|-------|-----------------|

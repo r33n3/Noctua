@@ -208,18 +208,15 @@ incidents = [
     }
 ]
 
-# Generate embeddings using Anthropic embedding model
-def embed_text(text: str) -> list:
-    response = client.messages.create(
-        model="claude-haiku-4-5",
-        max_tokens=1,
-        messages=[{"role": "user", "content": f"Embed: {text}"}]
-    )
-    # In practice, use the embeddings API
-    # This is pseudocode to show the pattern
-    return []
+# ChromaDB generates embeddings automatically via its default embedding function
+# (all-MiniLM-L6-v2 via sentence-transformers — no additional API key needed).
+# For production, swap in Voyage AI (Anthropic's recommended embedding partner):
+#   pip install voyageai
+#   ef = chromadb.utils.embedding_functions.VoyageAIEmbeddingFunction(
+#           api_key=os.environ["VOYAGE_API_KEY"], model_name="voyage-3")
+#   collection = chroma_client.get_or_create_collection("incidents", embedding_function=ef)
 
-# Add to vector store
+# Add to vector store — embeddings generated automatically on insert
 collection.add(
     ids=[inc["id"] for inc in incidents],
     documents=[inc["text"] for inc in incidents],

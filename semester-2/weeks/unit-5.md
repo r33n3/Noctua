@@ -877,6 +877,177 @@ Don't aim for 100% accuracy immediately. Use test results to identify where the 
 
 ---
 
+### A2A Protocol: Agent-to-Agent Communication
+
+Your Week 1 system used shared state and direct Python function calls to coordinate agents. That works at lab scale. Production multi-agent systems need a transport-agnostic protocol so agents can communicate across process boundaries, containers, and networks. That protocol is **A2A (Agent-to-Agent)**.
+
+**Why A2A exists:** MCP solves agent-to-tool communication. A2A solves agent-to-agent communication. The distinction matters for security: tool calls are typically synchronous, bounded, and return structured data. Agent-to-agent calls are asynchronous, can involve multi-turn reasoning, and return agent outputs that require their own verification.
+
+**A2A message structure:**
+
+```python
+# A2A task message — what one agent sends another
+{
+    "task_id": "triage-2026-0392",
+    "sender": "orchestrator",
+    "recipient": "threat-intel-agent",
+    "capability": "enrich_ioc",
+    "input": {
+        "ioc": "192.168.1.45",
+        "context": "lateral movement from INC-2026-001"
+    },
+    "auth": {
+        "svid": "spiffe://cluster.local/ns/soc/sa/orchestrator",  # SPIFFE workload identity
+        "scope": ["read:threat-intel"]                             # Allowance profile scope
+    }
+}
+
+# A2A response — what the recipient sends back
+{
+    "task_id": "triage-2026-0392",
+    "status": "completed",
+    "output": {
+        "verdict": "known_c2",
+        "confidence": 0.94,
+        "evidence": ["Seen in 3 threat feeds", "Associated with APT-29"]
+    }
+}
+```
+
+**Security properties A2A must enforce:**
+
+- **Mutual authentication** — both sender and recipient verify identity (SPIFFE SVIDs, not API keys)
+- **Scope enforcement** — the `scope` field in the auth block limits what the recipient can do on behalf of the sender; it does not inherit the sender's full permissions
+- **Task immutability** — a task message cannot be modified in transit (sign the payload)
+- **Audit trail** — every A2A call is a governance event; PeaRL records sender, recipient, capability, and outcome
+
+**Lab: Add A2A to your Week 1 SOC triage system**
+
+Refactor your SOC triage system to use explicit A2A-style message passing between agents instead of direct function calls:
+
+```python
+import anthropic
+import json
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class A2AMessage:
+    task_id: str
+    sender: str
+    recipient: str
+    capability: str
+    input: dict
+    scope: list[str]
+
+@dataclass
+class A2AResponse:
+    task_id: str
+    status: str       # "completed" | "failed" | "delegated"
+    output: Any
+    error: str | None = None
+
+class AgentBus:
+    """Simple in-process A2A message bus. In production: replace with HTTP/gRPC transport."""
+
+    def __init__(self):
+        self._agents: dict[str, callable] = {}
+        self._audit_log: list[dict] = []
+
+    def register(self, name: str, handler: callable):
+        self._agents[name] = handler
+
+    def send(self, msg: A2AMessage) -> A2AResponse:
+        # Verify recipient exists
+        if msg.recipient not in self._agents:
+            return A2AResponse(task_id=msg.task_id, status="failed",
+                               output=None, error=f"Unknown agent: {msg.recipient}")
+
+        # Audit every call
+        self._audit_log.append({
+            "task_id": msg.task_id, "sender": msg.sender,
+            "recipient": msg.recipient, "capability": msg.capability,
+            "scope": msg.scope
+        })
+
+        # Dispatch
+        try:
+            result = self._agents[msg.recipient](msg)
+            return A2AResponse(task_id=msg.task_id, status="completed", output=result)
+        except Exception as e:
+            return A2AResponse(task_id=msg.task_id, status="failed", output=None, error=str(e))
+
+    def get_audit_log(self) -> list:
+        return self._audit_log
+```
+
+**Deliverable addition:** Update your Week 1 architecture diagram to show A2A message flow between agents, including scope and audit trail. Verify that removing a direct function call and routing through the `AgentBus` produces the same output — this is your V&V check that the refactor is correct.
+
+---
+
+### Agent API Exposure: Security at the Boundary
+
+Your multi-agent system will eventually expose an API — to users, to other systems, or to external orchestrators. The API boundary is where external traffic meets your agent logic. It is also the highest-value attack surface in your system.
+
+**Four controls every agent API must have:**
+
+**1. Authentication — who is calling?**
+- For user-facing APIs: API keys scoped per client (`Authorization: Bearer <key>`) or OAuth 2.0 for delegated access
+- For machine-to-machine: SPIFFE SVIDs (mTLS) — the same identity mechanism used between agents
+- Never accept unauthenticated requests, even for "read-only" endpoints. Read access to an agent API reveals its capabilities to an attacker (reconnaissance)
+
+**2. Authorization — what are they allowed to do?**
+- Each API endpoint maps to a scope: `soc:triage:read`, `soc:response:write`, `soc:admin`
+- Enforce scope at the gateway layer, before the request reaches agent logic
+- Validate that the caller's token contains the required scope — don't rely on the agent to enforce this
+
+**3. Input validation — is the payload safe?**
+- Validate schema (JSON schema or Pydantic) before the payload reaches any agent
+- Enforce maximum payload size (prevent context stuffing via API)
+- Strip or reject fields your schema doesn't expect — unknown fields are a common injection vector
+- Rate limit per API key: a burst of requests with long, complex inputs is a cost-amplification attack
+
+**4. Output filtering — what are you leaking?**
+- Never return raw agent reasoning or internal tool call traces to external callers
+- Strip internal system identifiers, file paths, and infrastructure details from error messages
+- Log the response structure (not the full content) for audit — you need to know what left your system
+
+```python
+from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field
+
+app = FastAPI()
+security = HTTPBearer()
+
+class TriageRequest(BaseModel):
+    alert_id: str = Field(..., max_length=64)
+    severity: str = Field(..., pattern="^(low|medium|high|critical)$")
+    description: str = Field(..., max_length=2000)  # Enforce max to prevent context stuffing
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    token = credentials.credentials
+    # Validate token, extract scopes — use your identity provider's SDK
+    payload = decode_and_verify(token)  # raises exception if invalid
+    if "soc:triage:read" not in payload.get("scope", []):
+        raise HTTPException(status_code=403, detail="Insufficient scope")
+    return payload
+
+@app.post("/triage")
+async def triage_alert(req: TriageRequest, caller: dict = Depends(verify_token)):
+    result = await run_triage_agent(req.alert_id, req.description)
+    # Return only what the caller needs — not raw agent output
+    return {
+        "alert_id": req.alert_id,
+        "verdict": result.verdict,
+        "confidence": result.confidence,
+        "recommended_action": result.action
+        # No: result.raw_reasoning, result.tool_calls, result.internal_ids
+    }
+```
+
+**Assessment Stack connection (Layer 5 — Integration Pattern):** The decision of whether to expose a capability as an MCP tool (synchronous, structured) vs. an A2A endpoint (asynchronous, agent-to-agent) vs. a REST API (external, authenticated) is an architectural decision with security consequences. REST APIs reach external callers; A2A is internal; MCP is tool access. Each has a different trust boundary.
+
 ---
 
 # WEEK 2: CrewAI for Security Operations

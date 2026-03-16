@@ -4470,6 +4470,73 @@ Running system with full observability
 
 ---
 
+## Field Exercise: AI Security Maturity Assessment
+
+*This exercise prepares you for the most common first-week task of an AI security engineer at a new employer or client: figuring out where they actually are.*
+
+Most organizations describe themselves as more mature than they are. Your job is to cut through the narrative and map reality to the six-stage dark factory model. Use this structured exercise with a fictional company profile, then apply the same method in your capstone and in your first real engagement.
+
+---
+
+### Target Company Profile: Meridian Financial (2026 State)
+
+Meridian Financial is a mid-size investment bank ($8B AUM) that began an AI transformation program 18 months ago. Their CISO describes the program as "production-ready agentic AI." Your job on day one is to validate that claim.
+
+**Pre-join signals (publicly available):**
+- Job postings mention "Claude Code," "LangChain," and "prompt engineering" — no mention of SPIFFE, PeaRL, allowance profiles, or SBOM
+- GitHub org has 3 public repos: a ChatGPT wrapper from 2023, a LangChain example from 2024, and an internal API proxy
+- CTO gave a conference talk titled "Our Journey to Agentic AI" — showed a slide of a pipeline diagram with no governance or security layer visible
+
+**First-week observation questions:**
+
+Ask these to at least three different people (a developer, a security engineer, and someone in operations). Record whether answers are specific or aspirational.
+
+| Question | What a specific answer sounds like | What an aspirational answer sounds like |
+|---|---|---|
+| How does an AI agent get credentials to access your systems? | "We use HashiCorp Vault with dynamic secrets; each agent gets a scoped token per task" | "We're working on centralizing that" or "each team handles it differently" |
+| What happens when an AI agent behaves unexpectedly in production? | "The agent goes into a holding state, PeaRL flags it, on-call gets paged, and we review the trace before resuming" | "We have monitoring" or "we'd restart it" |
+| Who approves what tools an agent can use? | "Each agent's allowance profile is defined in code review and enforced by the governance layer" | "The team lead" or "it's self-service" |
+| How do you audit what an AI agent did during an incident? | "Every tool call is in Grafana Tempo as a span linked to the governance record in PeaRL" | "We have logs" or "we'd check the output" |
+| How are AI agents authenticated to each other? | "mTLS with SPIFFE SVIDs — each agent has a short-lived workload identity" | "They share an API key" or "they're in the same VPC" |
+| Where do AI dependencies come from? | "Private registry mirror; we don't pull from PyPI directly in production" | "PyPI" or "our devs manage that" |
+
+---
+
+### Maturity Scoring Rubric
+
+For each question, score the answer:
+- **2 points** — specific, technical, evidence-backed
+- **1 point** — partially specific, some evidence
+- **0 points** — aspirational, vague, or "we're working on it"
+
+| Score Range | Stage | What it means |
+|---|---|---|
+| 10–12 | Stage 4–5 | Governed agentic. Real security work possible immediately. Focus on hardening and optimization. |
+| 6–9 | Stage 3 | Structured agentic. MCP and orchestration exist but governance is thin. Primary work: governance layer and identity. |
+| 3–5 | Stage 2 | Assisted development. Agents in dev, not production. Primary work: establish governance before they ship agents. |
+| 0–2 | Stage 1 | Ad-hoc AI use. No agentic infrastructure. Primary work: assess risk of shadow AI before building anything. |
+
+---
+
+### Meridian Scoring Exercise
+
+Based on the pre-join signals and the likely answers at Meridian, assign scores and write a one-paragraph engagement plan.
+
+**Your deliverable:**
+
+1. **Stage assignment** — what stage is Meridian at, and why?
+2. **Top 3 gaps** — what's missing that creates the most risk?
+3. **First 30 days** — what would you do first and why? (Use the architecture diagram layers: pipeline → agent → governance → security → identity → observability → network — which layer is most urgently missing?)
+4. **AIUC-1 mapping** — which AIUC-1 domains are completely unaddressed at the company's current stage?
+
+**Reference:** `resources/dark-factory-stage-assessment.md` contains the full six-stage model with deployment environment examples and the architecture layer checklist. Use it.
+
+---
+
+**Why this exercise matters:** Most AI security engineers arrive at a company with a clear mandate ("secure our AI systems") but no shared vocabulary for describing the current state. The maturity assessment gives you that vocabulary. It also tells you where to focus first — a Stage 2 company with agents shipping to production next quarter is a different problem than a Stage 4 company that needs its governance layer hardened. The same security controls matter; the priority order is different.
+
+---
+
 ## Resources and References
 
 **Supply Chain Security (Week 9):**
