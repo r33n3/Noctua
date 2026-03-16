@@ -122,8 +122,8 @@ library entry capturing the reusable pattern from [specific thing]."
 
 ## Installation
 
-Save as `~/.claude/skills/retro.md` (global) or
-`.claude/skills/retro.md` (project-local).
+Save as `~/.claude/commands/retro.md` (global) or
+`.claude/commands/retro.md` (project-local).
 
 Use `/retro` at the end of every build session, sprint, or cycle.
 The output feeds directly into the next `/think`.

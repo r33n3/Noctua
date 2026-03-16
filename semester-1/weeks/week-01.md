@@ -152,14 +152,35 @@ Confident, specific answers = Stage 3–4. Pauses, qualifications ("I think we h
 
 Meridian Financial is a mid-sized investment bank with 2,000 employees across offices in New York, London, and Singapore. They manage $15B in assets under management and serve institutional clients, high-net-worth individuals, and corporate treasury accounts. Their tech stack runs on AWS with a mix of legacy on-premises systems for core banking. The security team is a 12-person SOC operating 24/7 with a mix of commercial SIEM (Splunk), EDR (CrowdStrike), and custom threat detection tools. They've had two minor security incidents in the past year (credential stuffing and a phishing campaign) but no major breaches.
 
-**Workspace Setup (5 minutes)**
+**Workspace + Skills Setup (10 minutes)**
 
-Before starting the lab, create your course workspace structure. See [Lab Setup Guide](../../resources/LAB-SETUP.md#course-workspace-setup) for the full directory layout.
+Before starting the lab, create your course workspace and install the four course skills. You'll use these throughout the year.
 
 ```bash
-# Quick setup
+# 1. Create course workspace
 mkdir -p ~/noctua/{evidence,analysis,context/{prompts,system-prompts,skills,plugins},tools/{mcp-servers,scripts},governance/{audits,policies,compliance-mappings},metrics,deliverables}
+
+# 2. Install course skills — these become slash commands in Claude Code
+mkdir -p ~/.claude/commands
+
+# Copy the four course skills from the repo docs/skills/ directory
+# (adjust the path below to wherever you cloned the Noctua repo)
+cp ~/path/to/noctua-repo/docs/skills/think.md ~/.claude/commands/think.md
+cp ~/path/to/noctua-repo/docs/skills/spec.md ~/.claude/commands/spec.md
+cp ~/path/to/noctua-repo/docs/skills/retro.md ~/.claude/commands/retro.md
+cp ~/path/to/noctua-repo/docs/skills/worktree-setup.md ~/.claude/commands/worktree-setup.md
 ```
+
+**Verify they're installed** — open any Claude Code session and type `/` — you should see `/think`, `/spec`, `/retro`, `/worktree-setup` in the autocomplete list.
+
+| Skill | When to use |
+|---|---|
+| `/think` | Before starting any task — structured critical analysis |
+| `/spec` | After thinking — produce a structured specification |
+| `/retro` | After completing a sprint — capture what worked and what didn't |
+| `/worktree-setup` | When running parallel agent tasks — configure isolated git worktrees |
+
+These skills live in `~/.claude/commands/` (global, available in every project). You'll build your own security-specific skills starting in Week 6.
 
 Save all lab outputs to the appropriate directory. For this lab:
 - Incident data → `~/noctua/evidence/week01-meridian/`

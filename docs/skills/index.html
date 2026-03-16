@@ -16,7 +16,7 @@
 
 <div class="callout callout-key">
   <strong>What is a Claude Code Skill?</strong>
-  <p>A skill is a markdown file you place in <code>~/.claude/skills/</code> (global) or <code>.claude/skills/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
+  <p>A skill is a markdown file you place in <code>~/.claude/commands/</code> (global, available in all projects) or <code>.claude/commands/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
   <p>Skills are just text files. You can read them, edit them, fork them, and share them. The four below are starting points — not finished products.</p>
 </div>
 
@@ -32,13 +32,13 @@
   <pre><code>mkdir -p ~/.claude/skills
 
 # Download all four skills at once (run from your terminal)
-curl -o ~/.claude/skills/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
-curl -o ~/.claude/skills/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
-curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
-curl -o ~/.claude/skills/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
+curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
+curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
+curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
 
 # Verify
-ls ~/.claude/skills/</code></pre>
+ls ~/.claude/commands/</code></pre>
 </div>
 
 <hr>
@@ -54,7 +54,7 @@ ls ~/.claude/skills/</code></pre>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/skills/think.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/think.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md</code></pre>
 </div>
 
 <div class="callout callout-tip">
@@ -80,7 +80,7 @@ ls ~/.claude/skills/</code></pre>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/skills/spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md</code></pre>
 </div>
 
 <div class="callout callout-tip">
@@ -106,7 +106,7 @@ ls ~/.claude/skills/</code></pre>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md</code></pre>
 </div>
 
 <hr>
@@ -122,7 +122,7 @@ ls ~/.claude/skills/</code></pre>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/skills/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md</code></pre>
 </div>
 
 <div class="callout callout-tip">
@@ -142,7 +142,7 @@ ls ~/.claude/skills/</code></pre>
   <strong>What skill would make your workflow 10x faster?</strong>
   <p>Think about the tasks you repeat every session. Every time you find yourself doing the same thing — structuring an analysis, setting up a project, writing a certain type of report — that's a skill waiting to be built. Use this prompt:</p>
 </div>
-<div class="prompt-block">I keep doing [task] repeatedly in my security work. Write a Claude Code skill file for it — a markdown file I can save as ~/.claude/skills/[name].md — that automates the setup and structure so I can invoke it as /[name] in any future session.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<div class="prompt-block">I keep doing [task] repeatedly in my security work. Write a Claude Code skill file for it — a markdown file I can save as ~/.claude/commands/[name].md — that automates the setup and structure so I can invoke it as /[name] in any future session.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 
 <p style="margin-top:16px;">Share your skills. Post them as GitHub gists, tag them <code>claude-code-skills</code> and <code>security</code>. The security community benefits when practitioners share what works — including the small workflow automations that save 20 minutes a day.</p>
 

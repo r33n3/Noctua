@@ -93,8 +93,8 @@ git worktree prune
 
 ## Installation
 
-Save as `~/.claude/skills/worktree-setup.md` (global) or
-`.claude/skills/worktree-setup.md` (project-local).
+Save as `~/.claude/commands/worktree-setup.md` (global) or
+`.claude/commands/worktree-setup.md` (project-local).
 
 Use `/worktree-setup` after your `/spec` is approved and you're ready
 to begin parallel development.

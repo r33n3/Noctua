@@ -120,7 +120,7 @@ The build is complete when:
 
 ## Installation
 
-Save as `~/.claude/skills/spec.md` (global) or `.claude/skills/spec.md`
+Save as `~/.claude/commands/spec.md` (global) or `.claude/commands/spec.md`
 (project-local).
 
 Use `/spec` at the start of any build session. Works best after `/think`.

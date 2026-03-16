@@ -96,7 +96,7 @@ The best version of this skill is the one you've shaped for your context.
 
 ## Installation
 
-Save this file as `~/.claude/skills/think.md` (global — available in all
-projects) or `.claude/skills/think.md` (project-local).
+Save this file as `~/.claude/commands/think.md` (global — available in all
+projects) or `.claude/commands/think.md` (project-local).
 
 Then use `/think [topic or paste your task]` in any Claude Code session.
