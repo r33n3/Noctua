@@ -169,29 +169,29 @@ function buildSidebar(activeLink, pathPrefix) {
     ['nav-section', 'Semester 1: Foundations'],
     ['link', 'semester1.html', 'Semester 1 Overview'],
     ['sublink', 's1-unit1.html', 'Unit 1: CCT Foundations'],
-    ['sublink', 'lab-s1-unit1.html', '&#x1f9ea; Lab: Unit 1'],
+    ['sublink', 'lab-s1-unit1.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 1'],
     ['sublink', 's1-unit2.html', 'Unit 2: Context Engineering'],
-    ['sublink', 'lab-s1-unit2.html', '&#x1f9ea; Lab: Unit 2'],
+    ['sublink', 'lab-s1-unit2.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 2'],
     ['sublink', 's1-unit3.html', 'Unit 3: Ethical AI'],
-    ['sublink', 'lab-s1-unit3.html', '&#x1f9ea; Lab: Unit 3'],
+    ['sublink', 'lab-s1-unit3.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 3'],
     ['sublink', 's1-unit4.html', 'Unit 4: Rapid Prototyping'],
-    ['sublink', 'lab-s1-unit4.html', '&#x1f9ea; Lab: Unit 4'],
+    ['sublink', 'lab-s1-unit4.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 4'],
     ['nav-section', 'Semester 2: Advanced'],
     ['link', 'semester2.html', 'Semester 2 Overview'],
     ['sublink', 's2-unit5.html', 'Unit 5: Multi-Agent'],
-    ['sublink', 'lab-s2-unit5.html', '&#x1f9ea; Lab: Unit 5'],
+    ['sublink', 'lab-s2-unit5.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 5'],
     ['sublink', 's2-unit6.html', 'Unit 6: Attack vs Defend'],
-    ['sublink', 'lab-s2-unit6.html', '&#x1f9ea; Lab: Unit 6'],
+    ['sublink', 'lab-s2-unit6.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 6'],
     ['sublink', 's2-unit7.html', 'Unit 7: Production Security'],
-    ['sublink', 'lab-s2-unit7.html', '&#x1f9ea; Lab: Unit 7'],
+    ['sublink', 'lab-s2-unit7.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 7'],
     ['sublink', 's2-unit8.html', 'Unit 8: Capstone'],
-    ['sublink', 'lab-s2-unit8.html', '&#x1f9ea; Lab: Unit 8'],
+    ['sublink', 'lab-s2-unit8.html', '<i data-lucide="flask-conical" class="licon"></i>Lab: Unit 8'],
     ['nav-section', 'Resources'],
     ['link', 'frameworks.html', 'Frameworks &amp; Protocols'],
     ['link', 'lab-setup.html', 'Lab Setup Guide'],
     ['link', 'reading.html', 'Reading List'],
-    ['link', 'skills/index.html', '&#x26a1; Claude Code Skills'],
-    ['link', 'resources/course-cheatsheet.html', '&#x1f4cb; Course Cheatsheet'],
+    ['link', 'skills/index.html', '<i data-lucide="zap" class="licon"></i>Claude Code Skills'],
+    ['link', 'resources/course-cheatsheet.html', '<i data-lucide="clipboard-list" class="licon"></i>Course Cheatsheet'],
   ];
 
   let html = '<div class="sidebar-header"><h1>AgentForge</h1><p>AI Security Engineering</p></div>\n';
@@ -209,3 +209,17 @@ function buildSidebar(activeLink, pathPrefix) {
   });
   return html;
 }
+
+// Load Lucide icons and initialize on DOMContentLoaded
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js';
+  document.head.appendChild(s);
+  document.addEventListener('DOMContentLoaded', function() {
+    function tryInit() {
+      if (window.lucide) { window.lucide.createIcons(); }
+      else { setTimeout(tryInit, 50); }
+    }
+    tryInit();
+  });
+})();

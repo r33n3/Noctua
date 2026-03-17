@@ -29,7 +29,7 @@
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a functioning MCP server in Python that exposes a <code>query_cve</code> tool to Claude Code. By the end, Claude should be able to fetch live CVE data from the NVD API using natural language in your terminal.</p></div>
 
 <div class="quiz-block" id="quiz-w5">
-  <h4>&#x1f4da; Knowledge Check — Week 5</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 5</h4>
   <p class="quiz-intro">Complete before starting the lab.</p>
 
   <div class="quiz-question" data-qid="w5q1" data-answer="b" data-explain="MCP defines three components: Clients (AI agents consuming tools), Servers (stateless services exposing tools with input validation and logging), and Transports (the communication channel — stdio, HTTP, or WebSockets). Each layer provides distinct security controls.">
@@ -70,7 +70,7 @@
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: CVE Lookup MCP Server</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: CVE Lookup MCP Server</h4>
   <div class="callout callout-tip" style="margin-bottom:14px;"><p><strong>Architecture note:</strong> You are building an MCP <em>server</em> — a Python process that Claude Code connects to. Claude becomes the <em>client</em>. The server wraps the NVD API and exposes it as the <code>query_cve</code> tool. Claude never calls the NVD API directly.</p></div>
 
   <div class="lab-steps">
@@ -179,7 +179,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Extend your CVE server to expose four security tools, implementing rate limiting, input sanitization, and the "Pit of Success" design principle — making the secure path the easy path.</p></div>
 
 <div class="quiz-block" id="quiz-w6">
-  <h4>&#x1f4da; Knowledge Check — Week 6</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 6</h4>
 
   <div class="quiz-question" data-qid="w6q1" data-answer="c" data-explain="The 'Pit of Success' principle (from Agentic Engineering practice) means designing tools so that the correct, secure usage is the path of least resistance. Agents should naturally fall into secure patterns without requiring developers to know all the edge cases.">
     <p class="q-text">1. What does the 'Pit of Success' principle mean for MCP tool design?</p>
@@ -219,7 +219,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: Extend to a Multi-Tool Security Server</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Extend to a Multi-Tool Security Server</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w6-1">
       <label><input type="checkbox" onchange="toggleStep('w6-1',this.checked)">
@@ -294,7 +294,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build an MCP tool that generates structured security incident reports as both JSON (machine-readable) and Markdown (human-readable). Reports must be valid against a defined JSON Schema and parseable by downstream systems.</p></div>
 
 <div class="quiz-block" id="quiz-w7">
-  <h4>&#x1f4da; Knowledge Check — Week 7</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 7</h4>
 
   <div class="quiz-question" data-qid="w7q1" data-answer="b" data-explain="Structured outputs (validated JSON) allow downstream agents, SOAR platforms, ticketing systems, and dashboards to reliably parse security reports. Unstructured text requires brittle regex parsing that breaks when output format changes. Machine-readable outputs are the foundation of automated security workflows.">
     <p class="q-text">1. Why is structured JSON output preferred over free-text in security automation?</p>
@@ -322,7 +322,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: Security Report Generator</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Security Report Generator</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w7-1">
       <label><input type="checkbox" onchange="toggleStep('w7-1',this.checked)">
@@ -399,7 +399,7 @@ print('Report is valid!')
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a Retrieval-Augmented Generation system that lets Claude query a curated security knowledge base (threat intel, runbooks, policy docs) without hallucinating answers from training data. This becomes your personal security AI assistant.</p></div>
 
 <div class="quiz-block" id="quiz-w8">
-  <h4>&#x1f4da; Knowledge Check — Week 8</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 8</h4>
 
   <div class="quiz-question" data-qid="w8q1" data-answer="c" data-explain="RAG (Retrieval-Augmented Generation) combines retrieval (finding relevant documents from a knowledge base) with generation (LLM using those documents to answer questions). This grounds the LLM's answers in real, current documents rather than potentially outdated training data — critical for fast-moving fields like threat intelligence.">
     <p class="q-text">1. What problem does RAG (Retrieval-Augmented Generation) solve for security knowledge systems?</p>
@@ -427,7 +427,7 @@ print('Report is valid!')
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: Security Knowledge Base with ChromaDB + Claude</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Security Knowledge Base with ChromaDB + Claude</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w8-1">
       <label><input type="checkbox" onchange="toggleStep('w8-1',this.checked)">
@@ -507,7 +507,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 
 <hr>
 <div class="unit-complete">
-  <h3>&#x1f3c6; Unit 2 Complete</h3>
+  <h3><i data-lucide="trophy" class="licon"></i> Unit 2 Complete</h3>
   <p>You have built a production-capable MCP server with CVE lookup, IP reputation, hash analysis, report generation, and RAG-based knowledge retrieval.</p>
   <p style="margin-top:8px;"><a href="lab-s1-unit3.html">Next: Unit 3 Lab — Ethical AI &amp; Security Governance &rarr;</a></p>
 </div>

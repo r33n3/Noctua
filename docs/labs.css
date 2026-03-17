@@ -152,3 +152,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(212,160,23,0.45); }
+
+/* Lucide icon alignment */
+.licon {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
+  margin-right: 4px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}

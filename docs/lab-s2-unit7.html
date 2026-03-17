@@ -29,7 +29,7 @@
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Generate a Software Bill of Materials for your SOC agent system, scan all dependencies for CVEs, verify model integrity, and implement supply chain security controls at each stage of your development pipeline.</p></div>
 
 <div class="quiz-block" id="quiz-u7w9">
-  <h4>&#x1f4da; Knowledge Check — Week 9</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 9</h4>
 
   <div class="quiz-question" data-qid="u7w9q1" data-answer="d" data-explain="A Software Bill of Materials (SBOM) is a machine-readable inventory of all software components in a system — direct dependencies, transitive dependencies, versions, licenses, and known vulnerabilities. For AI systems, the SBOM extends to model artifacts, training data provenance, and evaluation datasets.">
     <p class="q-text">1. What is a Software Bill of Materials (SBOM) and why does it matter for AI systems?</p>
@@ -69,7 +69,7 @@
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: SBOM Generation &amp; Supply Chain Audit</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: SBOM Generation &amp; Supply Chain Audit</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u7w9-1">
       <label><input type="checkbox" onchange="toggleStep('u7w9-1',this.checked)">
@@ -152,7 +152,7 @@ models:
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Design and implement a Non-Human Identity (NHI) governance system for your multi-agent SOC. Each agent receives a unique identity with defined permissions, credential rotation, and audit trail. Apply the principle of least privilege to agent tool access.</p></div>
 
 <div class="quiz-block" id="quiz-u7w10">
-  <h4>&#x1f4da; Knowledge Check — Week 10</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 10</h4>
 
   <div class="quiz-question" data-qid="u7w10q1" data-answer="c" data-explain="Enterprise environments in 2026 have an estimated 50:1 ratio of non-human identities (service accounts, API keys, agent credentials, automation tokens) to human identities. This creates a massive attack surface because NHIs are often over-provisioned, rarely audited, and credentials are frequently long-lived or never rotated.">
     <p class="q-text">1. What is the estimated ratio of non-human to human identities in enterprise environments?</p>
@@ -180,7 +180,7 @@ models:
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: NHI Registry for Your SOC Agent System</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: NHI Registry for Your SOC Agent System</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u7w10-1">
       <label><input type="checkbox" onchange="toggleStep('u7w10-1',this.checked)">
@@ -255,7 +255,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Instrument your SOC agent system with OpenTelemetry to capture distributed traces, metrics, and logs. Build a cost tracking dashboard. Configure anomaly detection alerts for unusual agent behavior.</p></div>
 
 <div class="quiz-block" id="quiz-u7w11">
-  <h4>&#x1f4da; Knowledge Check — Week 11</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 11</h4>
 
   <div class="quiz-question" data-qid="u7w11q1" data-answer="b" data-explain="The three pillars of observability are: Logs (discrete events with structured data), Metrics (numerical measurements over time — counters, gauges, histograms), and Traces (distributed request flows showing cause-and-effect across services). Together they provide complete visibility into system behavior — essential for debugging agent misbehavior.">
     <p class="q-text">1. What are the three pillars of observability?</p>
@@ -283,7 +283,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: OTel Instrumentation for Your SOC Agent</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: OTel Instrumentation for Your SOC Agent</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u7w11-1">
       <label><input type="checkbox" onchange="toggleStep('u7w11-1',this.checked)">
@@ -352,7 +352,7 @@ with tracer.start_as_current_span("recon_agent") as span:
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production.</p></div>
 
 <div class="quiz-block" id="quiz-u7w12">
-  <h4>&#x1f4da; Knowledge Check — Week 12</h4>
+  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 12</h4>
 
   <div class="quiz-question" data-qid="u7w12q1" data-answer="c" data-explain="Multi-stage Dockerfiles separate build dependencies from runtime dependencies. Stage 1 (builder): install all dev tools, compile/prepare. Stage 2 (runtime): copy only the artifacts needed to run, using a minimal base image, with a non-root user. This reduces attack surface (no build tools in production) and image size.">
     <p class="q-text">1. What security benefit does a multi-stage Dockerfile provide?</p>
@@ -380,7 +380,7 @@ with tracer.start_as_current_span("recon_agent") as span:
 </div>
 
 <div class="lab-section">
-  <h4>&#x1f52c; Lab Exercise: Containerize &amp; Build CI/CD Pipeline</h4>
+  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Containerize &amp; Build CI/CD Pipeline</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u7w12-1">
       <label><input type="checkbox" onchange="toggleStep('u7w12-1',this.checked)">
@@ -501,7 +501,7 @@ jobs:
 
 <hr>
 <div class="unit-complete">
-  <h3>&#x1f3c6; Unit 7 Complete</h3>
+  <h3><i data-lucide="trophy" class="licon"></i> Unit 7 Complete</h3>
   <p>Your systems are now production-ready: supply chain verified, identities governed, observable, and deployable via secure CI/CD.</p>
   <p style="margin-top:8px;"><a href="lab-s2-unit8.html">Next: Unit 8 Lab — Capstone Projects &rarr;</a></p>
 </div>

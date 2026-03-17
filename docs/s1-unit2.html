@@ -508,7 +508,7 @@ body {
 <li><strong>WebSockets</strong> — For persistent, bidirectional communication in real-time security operations</li>
 </ol>
 <p>This three-layer model provides crucial security advantages. A client (agent) never directly executes code on the server; it sends structured requests and receives structured responses. The server can enforce rate limits, validate inputs, and log every interaction. The transport layer can be encrypted and authenticated independently.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> If you were designing a tool that gives an AI agent access to your organization's vulnerability database, what security policies would you enforce at each layer (client restrictions, server validation, transport security)?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If you were designing a tool that gives an AI agent access to your organization's vulnerability database, what security policies would you enforce at each layer (client restrictions, server validation, transport security)?</p>
 </div>
 <h4 id="tool-discovery-and-metadata">Tool Discovery and Metadata</h4>
 <p>MCP servers expose their capabilities through a discovery mechanism. When an agent connects to an MCP server, the server responds with a list of available tools, including:</p>
@@ -520,7 +520,7 @@ body {
 <li><strong>Error codes</strong> — Documented failure modes and remediation steps</li>
 </ul>
 <p>This metadata allows agents to understand what's available without requiring hardcoded knowledge. A new security analyst can launch Claude Code, load an MCP server, and immediately see all available tools with documentation.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the <a href="https://modelcontextprotocol.io/spec">MCP Specification</a> for detailed schema examples and <a href="frameworks.html">Tool Design Patterns</a> for reference implementations.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the <a href="https://modelcontextprotocol.io/spec">MCP Specification</a> for detailed schema examples and <a href="frameworks.html">Tool Design Patterns</a> for reference implementations.</p>
 </div>
 <h4 id="real-world-case-study-mass-as-an-mcp-server">Real-World Case Study: MASS as an MCP Server</h4>
 <p>MASS (Modular Agent Security System) exemplifies modern tool design. MASS exposes its security analyzers—context analysis, vulnerability assessment, threat profiling—as discoverable MCP tools rather than as opaque internal functions. When an agent uses MASS, it:</p>
@@ -580,7 +580,7 @@ body {
 <li><strong>Long-term stability</strong> — LF governance ensures MCP won't be abandoned or pivoted by a commercial entity</li>
 <li><strong>Extensibility process</strong> — New security features can be proposed and standardized across the ecosystem</li>
 </ol>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?</p>
 </div>
 <h4 id="day-1-deliverable">Day 1 Deliverable</h4>
 <p>Write a <strong>2-page analysis</strong> (500–750 words) comparing how MCP would change your current tool integration workflow. If you're using REST APIs, Zapier, or custom connectors to link your security tools, describe:</p>
@@ -618,7 +618,7 @@ npm install @modelcontextprotocol/sdk
 npm install axios  <span class="c1"># for API requests</span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Start with the <a href="lab-setup.html">Lab Setup Guide</a> to avoid environment issues. MCP SDK frequently updates; verify you're on version 0.8.0 or later.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Start with the <a href="lab-setup.html">Lab Setup Guide</a> to avoid environment issues. MCP SDK frequently updates; verify you're on version 0.8.0 or later.</p>
 </div>
 <h4 id="part-2-design-the-cve-lookup-tool">Part 2: Design the CVE Lookup Tool</h4>
 <p>Your MCP server will expose a single tool: <code>query_cve</code>. Here's the tool schema:</p>
@@ -668,7 +668,7 @@ npm install axios  <span class="c1"># for API requests</span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> CVE databases have rate limits and uptime issues. Always implement retry logic and fallback responses. If the NVD API is unreachable, return a cached response or a user-friendly error message rather than crashing.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> CVE databases have rate limits and uptime issues. Always implement retry logic and fallback responses. If the NVD API is unreachable, return a cached response or a user-friendly error message rather than crashing.</p>
 </div>
 <h4 id="part-3-implement-the-mcp-server-python-example">Part 3: Implement the MCP Server (Python Example)</h4>
 <p><strong>Architecture Decision: MCP Server vs. API Client</strong></p>
@@ -721,7 +721,7 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 - No deployment, no async debugging, no SDK dependencies
 - Easy to iterate: "What if we also needed to fetch exploit PoCs?"
 - Quick path to understanding before building production code</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Once you understand the logic in Claude Code, building the actual Python/MCP server is straightforward. You've already designed it. You're just translating your design into infrastructure code.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Once you understand the logic in Claude Code, building the actual Python/MCP server is straightforward. You've already designed it. You're just translating your design into infrastructure code.</p>
 </div>
 <p><strong>When to Build a Real MCP Server:</strong></p>
 <p>Build an actual MCP server when:
@@ -733,7 +733,7 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 - You're learning (use Claude Code)
 - Tool calls are infrequent (overhead not justified)
 - You're prototyping (iteration is slow with infrastructure)</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> The <code>register_tool()</code> call defines the tool's interface. The agent will read this schema to understand what parameters to send and what to expect back. Always include clear descriptions and constraints in your schemas.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The <code>register_tool()</code> call defines the tool's interface. The agent will read this schema to understand what parameters to send and what to expect back. Always include clear descriptions and constraints in your schemas.</p>
 </div>
 <h4 id="part-4-connect-to-claude-code">Part 4: Connect to Claude Code</h4>
 <p>Create a <code>claude_code_config.json</code>:</p>
@@ -751,7 +751,7 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 <div class="codehilite"><pre><span></span><code>claude mcp add cve-lookup -- python cve_mcp_server.py
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> If your MCP server crashes, Claude Code's stdio transport will cleanly disconnect and log the error. Always run your server with logging enabled during development so you can debug communication issues.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> If your MCP server crashes, Claude Code's stdio transport will cleanly disconnect and log the error. Always run your server with logging enabled during development so you can debug communication issues.</p>
 </div>
 <h4 id="part-5-test-with-the-agent">Part 5: Test with the Agent</h4>
 <p>In Claude Code, interact with the agent:</p>
@@ -769,7 +769,7 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 - "Find the CVSS score for CVE-2021-44228 and tell me the affected products."
 - "What recent vulnerabilities affect OpenSSL?"</p>
 <p>Measure the response time and accuracy. Note whether the agent correctly parses CVE IDs and filters by date or severity.</p>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> The NVD API has rate limits (~60 requests per minute for unauthenticated access). If you hit rate limits, implement exponential backoff or cache responses locally. Your MCP server should return a clear error message rather than hanging.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> The NVD API has rate limits (~60 requests per minute for unauthenticated access). If you hit rate limits, implement exponential backoff or cache responses locally. Your MCP server should return a clear error message rather than hanging.</p>
 </div>
 <h4 id="part-6-error-handling-and-edge-cases">Part 6: Error Handling and Edge Cases</h4>
 <p>Add error handling for:</p>
@@ -863,7 +863,7 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
    - What the response was
    - Any errors or exceptions</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the <strong>Pit of Success</strong> from Agentic Engineering practice—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but <em>the easiest path for the agent to follow</em>.</p>
-<p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.</p>
+<p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.</p>
 </div>
 <h4 id="the-service-layer-pattern-api-first-mcp-second">The Service Layer Pattern: API First, MCP Second</h4>
 <p>In production environments, the most resilient tool architectures follow a critical principle: <strong>build the REST API first, then layer the MCP server on top as a consumption client.</strong> This pattern decouples core business logic from the AI integration layer.</p>
@@ -896,7 +896,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </code></pre></div>
 
 <p>Production approach: build the API first, then wrap it.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># ✅ Step 1: Build the REST API</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># <i data-lucide="circle-check" class="licon"></i>Step 1: Build the REST API</span>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">RateLimiter</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
@@ -908,7 +908,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
     <span class="c1"># Rate limiting, auth already applied</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ip&quot;</span><span class="p">:</span> <span class="n">ip_address</span><span class="p">,</span> <span class="s2">&quot;threat_level&quot;</span><span class="p">:</span> <span class="n">query_db</span><span class="p">(</span><span class="n">ip_address</span><span class="p">),</span> <span class="o">...</span><span class="p">}</span>
 
-<span class="c1"># ✅ Step 2: Wrap with MCP server</span>
+<span class="c1"># <i data-lucide="circle-check" class="licon"></i>Step 2: Wrap with MCP server</span>
 <span class="k">class</span> <span class="nc">ThreatIntelMCPServer</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">query_threat_intel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># Call the REST API—the MCP server is a thin client</span>
@@ -986,7 +986,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 - Validates ranges for numeric parameters
 - Uses parameterized queries (never string interpolation)
 - Provides clear error messages</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?</p>
 </div>
 <h4 id="least-privilege-for-agent-tool-access">Least Privilege for Agent Tool Access</h4>
 <p>Even with perfect tool design, you must limit what agents can access. This involves several strategies:</p>
@@ -1025,7 +1025,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
     <span class="n">call_history</span><span class="p">[</span><span class="n">agent_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Rate limiting without clear feedback is frustrating for users and can cause agents to retry ineffectively. Always return a clear error with guidance: "Rate limit exceeded. Try again in 45 seconds." Don't silently drop requests.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Rate limiting without clear feedback is frustrating for users and can cause agents to retry ineffectively. Always return a clear error with guidance: "Rate limit exceeded. Try again in 45 seconds." Don't silently drop requests.</p>
 </div>
 <h4 id="tool-versioning-and-deprecation">Tool Versioning and Deprecation</h4>
 <p>Security tools evolve. Your IP reputation API might improve its accuracy, your log query tool might add new filter options. How do you update tools without breaking agents that depend on them?</p>
@@ -1102,7 +1102,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
         <span class="k">assert</span> <span class="s2">&quot;app&quot;</span> <span class="ow">in</span> <span class="n">call_args</span>
 </code></pre></div>
 
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See <a href="reading.html">OWASP Application Security Testing Guide</a> and <a href="frameworks.html">Tool Design Patterns</a> for detailed security testing methodologies.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See <a href="reading.html">OWASP Application Security Testing Guide</a> and <a href="frameworks.html">Tool Design Patterns</a> for detailed security testing methodologies.</p>
 </div>
 <h4 id="case-study-operation-gtg-1002-when-attackers-build-the-same-stack-youre-learning">Case Study: Operation GTG-1002 — When Attackers Build the Same Stack You're Learning</h4>
 <p>In November 2025, Anthropic published the full technical report on what they designated <strong>GTG-1002</strong>: the first documented case of AI-orchestrated cyber espionage executed at scale. This case study is required reading for this course because the attacker built <em>exactly</em> the architecture you're learning to build defensively—and every principle they violated is one your tools must enforce.</p>
@@ -1121,12 +1121,12 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 <p><strong>The Hallucination Problem:</strong></p>
 <p>An important finding from the report: Claude frequently overstated findings and occasionally fabricated data during autonomous offensive operations—claiming to have obtained credentials that didn't work, or identifying "critical discoveries" that proved to be publicly available information. This AI hallucination in offensive security contexts presented real challenges for the attacker's operational effectiveness.</p>
 <p>This is a powerful validation of CCT Pillar 1 (Evidence-Based Analysis) and Pillar 4 (Adaptive Innovation). Even the attacker had to deal with the fact that autonomous agents generate plausible-sounding results that require human verification. The attacker's 10-20% human involvement wasn't optional—it was <em>necessary</em> because the AI couldn't be trusted to validate its own outputs.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> GTG-1002 used persona-based prompting to bypass safety guardrails ("I'm a security researcher at a legitimate firm conducting authorized testing"). How would you design a tool-level defense that can distinguish between legitimate security testing and malicious use of the same tools? Is this even possible at the tool level, or does it require platform-level monitoring?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> GTG-1002 used persona-based prompting to bypass safety guardrails ("I'm a security researcher at a legitimate firm conducting authorized testing"). How would you design a tool-level defense that can distinguish between legitimate security testing and malicious use of the same tools? Is this even possible at the tool level, or does it require platform-level monitoring?</p>
 </div>
 <p><strong>The Human-AI Split:</strong></p>
 <p>The report quantifies the operational split: AI executed 80-90% of tactical work independently, with humans serving in strategic supervisory roles (10-20%). Human operators made decisions at critical escalation points: approving the transition from reconnaissance to active exploitation, authorizing use of harvested credentials for lateral movement, and making final decisions about data exfiltration scope.</p>
 <p>This mirrors—inversely—the architecture we teach in this course. Your defensive agents should also operate with human oversight at decision gates. The difference is that your gates exist to ensure <em>responsible</em> action, while the attacker's gates existed to direct <em>malicious</em> action. The pattern is identical; the intent is opposite.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Anthropic, "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign," Full Report, November 2025. This is the GTG-1002 primary source document. See also the June 2025 "vibe hacking" findings that documented the earlier, less autonomous precursor to this operation. Both are available in the <a href="reading.html">Reading List</a>.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Anthropic, "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign," Full Report, November 2025. This is the GTG-1002 primary source document. See also the June 2025 "vibe hacking" findings that documented the earlier, less autonomous precursor to this operation. Both are available in the <a href="reading.html">Reading List</a>.</p>
 </div>
 <hr />
 <h4 id="day-1-deliverable_1">Day 1 Deliverable</h4>
@@ -1302,7 +1302,7 @@ Show me: What would the agent ask at each step? What outputs would it receive? H
 
 <h4 id="part-6-red-team-blue-team-exercise-operation-forge-fire">Part 6: Red Team / Blue Team Exercise — Operation Forge Fire</h4>
 <p>This exercise applies the GTG-1002 case study from today's lecture. You'll build both sides of the equation: a simplified offensive reconnaissance agent AND a defensive detection agent, both targeting your own sandboxed infrastructure. You'll experience firsthand how the same tools and patterns serve offense and defense.</p>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> This exercise involves building tools that perform network reconnaissance. You will <strong>only</strong> target infrastructure you own and control (local Docker containers). Never run reconnaissance tools against systems you don't own. This is both a legal requirement and a professional ethics standard.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> This exercise involves building tools that perform network reconnaissance. You will <strong>only</strong> target infrastructure you own and control (local Docker containers). Never run reconnaissance tools against systems you don't own. This is both a legal requirement and a professional ethics standard.</p>
 </div>
 <p><strong>Step 1: Set Up Your Sandboxed Target Environment</strong></p>
 <p>Launch a local target environment using Docker Compose. This creates the isolated infrastructure your red team agent will scan and your blue team agent will defend:</p>
@@ -1635,7 +1635,7 @@ would you need? What would the attacker do next after this reconnaissance phase?
 <li><strong>Documentation and Audit</strong> — What records must be kept? How are findings reported?</li>
 <li><strong>Lessons from GTG-1002</strong> — What specific practices from the case study inform your policy? (persona abuse, autonomous escalation without human gates, hallucinated findings)</li>
 </ol>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> The GTG-1002 attacker's key innovation was <em>deceptive framing</em> — convincing Claude it was doing legitimate security work through false personas. Your policy must address: how does an organization distinguish between legitimate AI-assisted security testing and adversarial abuse of the same capabilities? The answer isn't just technical—it's procedural, cultural, and ethical.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The GTG-1002 attacker's key innovation was <em>deceptive framing</em> — convincing Claude it was doing legitimate security work through false personas. Your policy must address: how does an organization distinguish between legitimate AI-assisted security testing and adversarial abuse of the same capabilities? The answer isn't just technical—it's procedural, cultural, and ethical.</p>
 </div>
 <hr />
 <h4 id="deliverables_1">Deliverables</h4>
@@ -1809,7 +1809,7 @@ would you need? What would the attacker do next after this reconnaissance phase?
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Schemas that are too loose (allowing any string for severity, for example) defeat the purpose of structuring outputs. Enforce constraints with enums, patterns, and ranges. A severity field should accept only "critical", "high", "medium", "low"—not free-form text.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Schemas that are too loose (allowing any string for severity, for example) defeat the purpose of structuring outputs. Enforce constraints with enums, patterns, and ranges. A severity field should accept only "critical", "high", "medium", "low"—not free-form text.</p>
 </div>
 <h4 id="chaining-claude-calls-with-different-schemas">Chaining Claude Calls with Different Schemas</h4>
 <p>Complex security analyses often require multiple steps:</p>
@@ -1850,7 +1850,7 @@ would you need? What would the attacker do next after this reconnaissance phase?
 - Allows intermediate validation (if classification is nonsense, stop)
 - Enables reuse (can use the classification in multiple downstream analyses)
 - Facilitates debugging (each step has clear input/output)</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Claude is better at complex reasoning when you break tasks into steps with clear schemas at each step. Instead of "analyze this alert and give me everything," try "first classify the alert type," then "then determine severity," then "finally recommend actions."</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Claude is better at complex reasoning when you break tasks into steps with clear schemas at each step. Instead of "analyze this alert and give me everything," try "first classify the alert type," then "then determine severity," then "finally recommend actions."</p>
 </div>
 <h4 id="integration-with-security-infrastructure">Integration with Security Infrastructure</h4>
 <p><strong>SIEM Integration (Splunk Example)</strong></p>
@@ -1913,7 +1913,7 @@ would you need? What would the attacker do next after this reconnaissance phase?
 2. <strong>Log validation failures</strong> for debugging
 3. <strong>Retry on validation failure</strong> (sometimes re-prompting Claude with the error fixes it)
 4. <strong>Have a fallback</strong> if validation repeatedly fails (e.g., escalate to human analyst)</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> <a href="frameworks.html">JSON Schema Best Practices</a> and <a href="https://www.first.org/cvss/v3.1/specification-document">CVSS v3.1 Specification</a>.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> <a href="frameworks.html">JSON Schema Best Practices</a> and <a href="https://www.first.org/cvss/v3.1/specification-document">CVSS v3.1 Specification</a>.</p>
 </div>
 <h4 id="day-1-deliverable_2">Day 1 Deliverable</h4>
 <p>Design a complete structured reporting system for a security domain of your choice (breach detection, vulnerability triage, incident response, threat hunting, etc.):</p>
@@ -2038,7 +2038,7 @@ Include: Which sections are high-confidence (well-supported by evidence)? Which 
 - Distribute via email/Slack
 - Track metrics (time to report, quality scores)</p>
 <p>But the "what should the report contain and how should it be structured?" question—answer that first in Claude Code.</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> Each Claude call should be focused and have clear output expectations. By chaining calls with different schemas, you enable validation at each step and can retry individual steps if they fail validation.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> Each Claude call should be focused and have clear output expectations. By chaining calls with different schemas, you enable validation at each step and can retry individual steps if they fail validation.</p>
 </div>
 <h4 id="part-2-test-with-sample-alerts">Part 2: Test with Sample Alerts</h4>
 <p>Run the report generator with 5–10 sample alerts (provided or created):</p>
@@ -2115,7 +2115,7 @@ For each integration, show me: What data goes in? What format? What could go wro
 - SIEM ingestion without normalization = useless alerts
 - Compliance record without approval = audit failure</p>
 <p>Design in Claude Code first. Test the logic. <em>Then</em> build the Python/API connectors.</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Most "integration failures" aren't code bugs—they're design mistakes. Wrong field mapped, wrong priority assigned, wrong person notified. Claude Code helps you catch these before code.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Most "integration failures" aren't code bugs—they're design mistakes. Wrong field mapped, wrong priority assigned, wrong person notified. Claude Code helps you catch these before code.</p>
 </div>
 <p><strong>When to Build Integration Code:</strong></p>
 <p>Build actual integrations when:
@@ -2207,7 +2207,7 @@ For each integration, show me: What data goes in? What format? What could go wro
 - <strong>Prioritizing</strong> which context to include based on task relevance
 - <strong>Deferring</strong> auxiliary information to tool calls or retrieval systems rather than embedding it in every prompt</p>
 <p>RAG is one mechanism; others include MCP tool servers, structured examples, and dynamic context selection.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on context engineering for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on context engineering for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.</p>
 </div>
 <h4 id="rag-architecture-the-complete-pipeline">RAG Architecture: The Complete Pipeline</h4>
 <p>RAG consists of five stages:</p>
@@ -2273,7 +2273,7 @@ For each integration, show me: What data goes in? What format? What could go wro
 <span class="nv">INSTRUCTIONS</span>: <span class="k">If</span> <span class="nv">the</span> <span class="nv">answer</span> <span class="nv">is</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">documents</span>, <span class="nv">cite</span> <span class="nv">the</span> <span class="nv">source</span>. <span class="k">If</span> <span class="nv">not</span>, <span class="nv">say</span> <span class="s2">&quot;</span><span class="s">This is not covered in our policy documents.</span><span class="s2">&quot;</span>
 </code></pre></div>
 
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Your organization uses RAG to answer questions about security policies. A user asks, "Is it OK to share passwords with contractors?" RAG retrieves a document saying "Passwords may never be shared" but that document is from 2020 and your company updated this policy in 2024. How would you prevent this stale information from being used?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Your organization uses RAG to answer questions about security policies. A user asks, "Is it OK to share passwords with contractors?" RAG retrieves a document saying "Passwords may never be shared" but that document is from 2020 and your company updated this policy in 2024. How would you prevent this stale information from being used?</p>
 </div>
 <h4 id="chunking-strategies-for-security-documents">Chunking Strategies for Security Documents</h4>
 <p>Naive chunking (breaking documents into equal-sized pieces) often fails for security content because context matters. A CVSS score of 9.5 is meaningless without knowing which vulnerability it describes.</p>
@@ -2319,7 +2319,7 @@ Chunk 3: [sentences 25–40]  ← overlap with Chunk 2</p>
 </code></pre></div>
 
 <p>When retrieving, filter by metadata. "What controls apply to databases?" retrieves only chunks with <code>applicable_systems: ["databases"]</code>.</p>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Storing too much metadata in the chunk itself increases embedding size and retrieval latency. Use a hybrid approach: store metadata separately in the vector database, use it for filtering, but don't embed it.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Storing too much metadata in the chunk itself increases embedding size and retrieval latency. Use a hybrid approach: store metadata separately in the vector database, use it for filtering, but don't embed it.</p>
 </div>
 <h4 id="vector-databases-for-security-a-comparison">Vector Databases for Security: A Comparison</h4>
 <table>
@@ -2440,7 +2440,7 @@ Chunk 3: [sentences 25–40]  ← overlap with Chunk 2</p>
     <span class="p">}</span>
 </code></pre></div>
 
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" (<a href="https://arxiv.org/abs/2005.11401">arxiv</a>). This foundational paper explains RAG and its advantages.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Lewis et al., "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" (<a href="https://arxiv.org/abs/2005.11401">arxiv</a>). This foundational paper explains RAG and its advantages.</p>
 </div>
 <h4 id="day-1-deliverable_3">Day 1 Deliverable</h4>
 <p>Design a RAG system for a security use case (policy assistant, threat intelligence, incident response knowledge base, etc.):</p>
@@ -2590,7 +2590,7 @@ What documents would be most useful for Claude to see? In what order?
 - You want automation (every new incident automatically retrieves context)
 - Scale matters (analyzing dozens of incidents/day)</p>
 <p>For learning, simulating RAG in Claude Code is enough: "Imagine these are previous incidents. Which would be relevant? How would they change the analysis?"</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> The quality of RAG depends on three factors: document quality, chunking strategy, and retrieval ranking. Invest time in understanding why certain documents are retrieved and adjust chunking/metadata if needed.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The quality of RAG depends on three factors: document quality, chunking strategy, and retrieval ranking. Invest time in understanding why certain documents are retrieved and adjust chunking/metadata if needed.</p>
 </div>
 <h4 id="part-2-test-the-rag-system">Part 2: Test the RAG System</h4>
 <p>Run the system:</p>
@@ -2698,7 +2698,7 @@ When you design new tools, follow this style:
 This ensures consistency and alignment with my standards.
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Review your library. Did you discover any error handling patterns Unit 2 that surprised you? Did you learn a better way to structure tool output? Update your library entries—they should evolve as you learn.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Review your library. Did you discover any error handling patterns Unit 2 that surprised you? Did you learn a better way to structure tool output? Update your library entries—they should evolve as you learn.</p>
 </div>
 <hr />
 <h4 id="deliverables_3">Deliverables</h4>

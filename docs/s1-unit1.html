@@ -500,7 +500,7 @@ body {
 <p>In essence, CCT is a framework for working <em>with</em> AI systems rather than working <em>for</em> them or being worked <em>by</em> them. It's the marriage of structured reasoning (the kind that scales with agents) and human judgment (the kind that never becomes obsolete). When you apply CCT to an AI-assisted investigation, you're asking: What evidence supports this conclusion? What perspectives are we missing? What could we be wrong about? What are the second- and third-order consequences?</p>
 <p>The course is structured around three pillars that work together. First, <strong>Collaborative Critical Thinking</strong> gives you the cognitive framework. Second, <strong>Ethical AI</strong> ensures that as you build and deploy agents, you're doing so responsibly—considering bias, interpretability, accountability, and long-term consequences. Third, <strong>Rapid Prototyping</strong> means you'll spend less time theorizing and more time building, deploying, and learning from real systems.</p>
 <p>Within the Rapid Prototyping pillar, you'll apply the <strong>Core Four</strong> from Agentic Engineering principles—<strong>Prompt, Model, Context, Tools</strong>—as the foundational design methodology. These four elements are the levers you'll manipulate in every lab and project to optimize agent behavior. Understanding where to apply leverage (whether improving the prompt specification, choosing the right model for the task, engineering context systematically, or designing better tools) is the key to moving from naive agent implementations to production-grade systems.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for deeper discussion. Also see Anthropic's "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" blog post (November 2025, detection: September 2025) and the detailed incident timeline in the <a href="reading.html">Reading List</a>. This is the GTG-1002 case study we'll use throughout Unit 1.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for deeper discussion. Also see Anthropic's "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" blog post (November 2025, detection: September 2025) and the detailed incident timeline in the <a href="reading.html">Reading List</a>. This is the GTG-1002 case study we'll use throughout Unit 1.</p>
 </div>
 <p>To measure success in this new landscape, we need metrics that go beyond traditional incident counts. The field has converged on five key metrics, each of which you'll track throughout this course:</p>
 <ol>
@@ -520,7 +520,7 @@ body {
 <p><strong>Adjusted Mean Time to Remediate (aMTTR):</strong> A weighted metric accounting for incident severity. A critical zero-day gets more weight than a failed login attempt, even if both take the same clock time to resolve.</p>
 </li>
 </ol>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Think about a recent incident (real or hypothetical) at an organization you know. If an AI agent could compress MTTI from 8 hours to 30 minutes, what would the security team do with those 7.5 hours? What new risk emerges if teams treat agent-generated analyses as gospel without CCT-level scrutiny?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Think about a recent incident (real or hypothetical) at an organization you know. If an AI agent could compress MTTI from 8 hours to 30 minutes, what would the security team do with those 7.5 hours? What new risk emerges if teams treat agent-generated analyses as gospel without CCT-level scrutiny?</p>
 </div>
 <p>The timeline from 2023 to 2026 is instructive. In 2023, Claude and GPT-4 were impressive but single-message systems. By 2024, extended context windows (up to 200K tokens) made it feasible to inject entire incident response runbooks into a single prompt. By 2025, Claude Code emerged—a system where AI could not only write code but execute it, see results, and iterate. And in 2026, we have Claude Agent SDK, which lets you build multi-step autonomous workflows that can run for hours, manage complex state, handle errors gracefully, and integrate deeply with enterprise tools.</p>
 <p>This is the environment in which you're learning to be a security professional. The baseline expectation is no longer "can you analyze logs?" It's "can you build systems that analyze logs better than you can alone, and can you maintain critical oversight of those systems?"</p>
@@ -666,8 +666,8 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 - Outputs are immediately usable (no copy-paste from terminal)
 - You can iterate: "I disagree about assumption X; reconsider it"
 - No infrastructure management (no need to deploy and maintain the Python tool)</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> This workflow transforms you from "run this script to get an analysis" to "collaborate with Claude to build analysis." The script approach doesn't scale past your first incident because every incident requires tweaking the code.</p>
-<p><strong>⚠️ Common Pitfall:</strong> A common mistake is assuming that because a user has valid credentials and passed MFA, the access is "safe." MFA can be compromised through SIM-swap, malware that captures MFA codes, or through compromise of the device that stores MFA seeds. Always treat valid authentication as <em>necessary but not sufficient</em> proof of legitimate access.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> This workflow transforms you from "run this script to get an analysis" to "collaborate with Claude to build analysis." The script approach doesn't scale past your first incident because every incident requires tweaking the code.</p>
+<p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> A common mistake is assuming that because a user has valid credentials and passed MFA, the access is "safe." MFA can be compromised through SIM-swap, malware that captures MFA codes, or through compromise of the device that stores MFA seeds. Always treat valid authentication as <em>necessary but not sufficient</em> proof of legitimate access.</p>
 </div>
 <p><strong>Phase 2: Engage Claude for Deeper Analysis (15 minutes)</strong></p>
 <p>Now use Claude Code directly to request a more sophisticated analysis. Open Claude Code interactively:</p>
@@ -695,7 +695,7 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 <span class="n">Format</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">clear</span><span class="w"> </span><span class="n">decision</span><span class="w"> </span><span class="n">trees</span><span class="o">.</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Claude works best when you give it a <em>role</em> (senior analyst), <em>context</em> (the incident details), <em>framework</em> (CCT pillars), and <em>output format</em> (JSON with decision trees). This combination—which we call "context engineering"—dramatically improves the quality and consistency of the response.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Claude works best when you give it a <em>role</em> (senior analyst), <em>context</em> (the incident details), <em>framework</em> (CCT pillars), and <em>output format</em> (JSON with decision trees). This combination—which we call "context engineering"—dramatically improves the quality and consistency of the response.</p>
 </div>
 <p>Document Claude's response in <code>threat-assessment.json</code>.</p>
 <p><strong>Phase 3: Performance Metrics (5 minutes)</strong></p>
@@ -708,7 +708,7 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 </code></pre></div>
 
 <p>Sum the MTTI column. This is your baseline. Did Claude + CCT compress the investigation timeline?</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> These metrics aren't about speed for its own sake. They're about <em>efficiency in service of accuracy</em>. A 10-minute investigation that misses critical context is worse than a 1-hour investigation that gets it right. As you progress through this course, you'll optimize <em>both</em> speed and confidence.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> These metrics aren't about speed for its own sake. They're about <em>efficiency in service of accuracy</em>. A 10-minute investigation that misses critical context is worse than a 1-hour investigation that gets it right. As you progress through this course, you'll optimize <em>both</em> speed and confidence.</p>
 </div>
 <h4 id="deliverables">Deliverables</h4>
 <p>By the end of Day 2, submit:</p>
@@ -784,7 +784,7 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 </ul>
 <p>Inclusive perspective also means seeking dissenting views. If everyone in the room agrees, you're probably missing something. The organization that finds vulnerabilities <em>before</em> attackers is the one that has someone saying, "Wait, what if we're wrong about that?"</p>
 <p>A famous example is the Space Shuttle Challenger disaster in 1986. Engineers at Morton Thiokol raised concerns about O-ring failure in cold temperatures. Management overrode them. The full information was distributed across the organization—engineering, management, safety—but the perspective that mattered most was never adequately included in the final decision. Inclusive perspective means building cultures where that dissenting engineer's voice is not just heard but <em>sought</em>.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Daniel Kahneman's "Thinking, Fast and Slow" (Chapters 8–10) explores groupthink, overconfidence, and the value of dissenting voices. See <a href="reading.html">Reading List</a> for a full study guide.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Daniel Kahneman's "Thinking, Fast and Slow" (Chapters 8–10) explores groupthink, overconfidence, and the value of dissenting voices. See <a href="reading.html">Reading List</a> for a full study guide.</p>
 </div>
 <p><strong>Pillar 3: Strategic Connections</strong></p>
 <p>Individual indicators are data. Connections between indicators are patterns. Patterns are where the real story emerges.</p>
@@ -792,7 +792,7 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 <p>Strategic connections also include second- and third-order effects. If an attacker compromises a VP's account and exfiltrates client data, the immediate consequence is data theft. But the secondary consequences include: regulatory notification requirements, customer churn risk, reputation damage, potential fines, competitive disadvantage, insider threat (if this was an insider). The tertiary consequences include: how your detection of this incident affects future attacker behavior, whether this was a testing phase for a larger operation, whether this exposes other gaps.</p>
 <p>The Anthropic GTG-1002 espionage campaign (disclosed November 2025) perfectly illustrates strategic connections. The initial detection wasn't a smoking gun. It was a <em>pattern</em>: unusual API usage from multiple accounts, requests for logs about recent policy changes, queries to enumerate infrastructure. Individually, any one could be legitimate. The <em>connection</em> between them told the story of reconnaissance.</p>
 <p>Strategic connections are also about <em>dependencies</em>. If your detection depends on a firewall log, but the attacker compromised the firewall, your detection is broken. If your response depends on a single person (the SOC lead), and that person is compromised, your response fails. Strategic thinking means asking: What are the dependencies in our detection and response, and what happens if each one fails?</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant? This is strategic thinking—understanding not just what happened, but why the sequence matters.</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant? This is strategic thinking—understanding not just what happened, but why the sequence matters.</p>
 </div>
 <p><strong>Pillar 4: Adaptive Innovation</strong></p>
 <p>This is the pillar most often misunderstood. "Adaptive" doesn't mean "improvise when things go wrong." It means <em>building in the assumption that you will be wrong, and preparing to change course</em>.</p>
@@ -1328,7 +1328,7 @@ Did automation do the right thing? What would you do differently next time?
 - Output tokens cost more (maybe $0.006 per 1K tokens)
 - Longer contexts = more input tokens = higher cost</p>
 <p>The tradeoff is between cost and quality. For some tasks (simple classification), you don't need much context. For others (complex investigation), context is what distinguishes a good analysis from a mediocre one.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Anthropic's guide "Context Windows and Token Economics" (see <a href="reading.html">Reading List</a>) dives deeper into cost optimization strategies. The short version: don't include irrelevant context just because you can.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Anthropic's guide "Context Windows and Token Economics" (see <a href="reading.html">Reading List</a>) dives deeper into cost optimization strategies. The short version: don't include irrelevant context just because you can.</p>
 </div>
 <p><strong>The Landscape of Models in 2026</strong></p>
 <p>The market has stratified into three tiers:</p>
@@ -1422,7 +1422,7 @@ Did automation do the right thing? What would you do differently next time?
 </tr>
 </tbody>
 </table>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Your organization needs to analyze 10,000 SIEM alerts per day for threats. Budget is limited. Would you use a single frontier model (expensive but very accurate) or multiple cheaper models (Haiku + Mistral) in a ensemble (cheaper, but requires more coordination)? What are the tradeoffs?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Your organization needs to analyze 10,000 SIEM alerts per day for threats. Budget is limited. Would you use a single frontier model (expensive but very accurate) or multiple cheaper models (Haiku + Mistral) in a ensemble (cheaper, but requires more coordination)? What are the tradeoffs?</p>
 </div>
 <p><strong>Token Economics in Practice</strong></p>
 <p>Let's say you're using Claude Opus to analyze a complex incident. You include:</p>
@@ -1724,7 +1724,7 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <p>Over the next four units, you'll build a personal <strong>context library</strong>—a curated collection of patterns, templates, prompts, and code snippets that you've refined with Claude Code. Think of it as a playbook of your best work.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Every time Claude Code generates something you like—a system prompt that works, an analysis framework that's clear, a tool definition that's reusable—extract it. Store it in your context library. In future sessions, feed your library back to Claude as context. This teaches the model YOUR style, YOUR standards, and YOUR architectural preferences. You get increasingly consistent, personalized outputs.</p>
 </div>
-<div class="callout callout-tip"><p><strong>💡 Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, use this prompt:</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, use this prompt:</p>
 <div class="prompt-block">Based on what you just produced, write a reusable context library entry—a template or prompt—that would reliably reproduce this quality of output for similar scenarios.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 <p>Claude has full visibility into its own reasoning and can articulate the pattern more precisely than you can by inspecting the output alone. The entry it writes becomes your starting point; you refine it over time as you learn what consistently works.</p>
 </div>
@@ -1761,7 +1761,7 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <li><strong>Incident Response Structure:</strong> The incident analysis JSON schema and system prompt that work well</li>
 <li><strong>Model Comparison Rubric:</strong> The evaluation framework you developed for comparing AI models</li>
 </ol>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Good context library entries have examples. Don't just save the template—save one example of it being used successfully. Next time, Claude can copy the pattern.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Good context library entries have examples. Don't just save the template—save one example of it being used successfully. Next time, Claude can copy the pattern.</p>
 </div>
 <p><strong>Claude Code Prompt: Extract Your Unit 1 Patterns</strong></p>
 <div class="codehilite"><pre><span></span><code>Review the code and analysis we&#39;ve created in Unit 1. I&#39;m building a context library
@@ -2008,7 +2008,7 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 - <strong>Auditable:</strong> Every field is documented
 - <strong>Composable:</strong> You can feed this into downstream systems (ticketing, SOAR playbooks, etc.)</p>
 <p>You enforce structured outputs by providing a JSON schema to the model and having it comply.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?</p>
 </div>
 <hr />
 <p><strong>Component 5: Retrieval-Augmented Generation (RAG)</strong></p>
@@ -2161,7 +2161,7 @@ Is this a breach? What should we do?
 - No infrastructure setup (no Anthropic SDK installation)
 - Learn context engineering principles by seeing Claude apply them
 - Much faster iteration</p>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Teams often write Python scripts to wrap Claude calls, thinking they're adding structure. But if the system prompt is weak, the Python doesn't help. The structure comes from the prompt, not the code. Claude Code lets you experiment with prompts directly before building Python infrastructure.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Teams often write Python scripts to wrap Claude calls, thinking they're adding structure. But if the system prompt is weak, the Python doesn't help. The structure comes from the prompt, not the code. Claude Code lets you experiment with prompts directly before building Python infrastructure.</p>
 </div>
 <hr />
 <h4 id="part-2-context-engineering">Part 2: Context Engineering</h4>
@@ -2251,7 +2251,7 @@ Provide your analysis as JSON.
 - No infrastructure setup required
 - Much faster to iterate on the system prompt
 - You learn context engineering by doing it, not reading about it</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Save your final system prompt (the one that works well) to a file. Reuse it for similar incidents. Over time, you build a library of proven prompts for different incident types. That's how ops teams scale.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Save your final system prompt (the one that works well) to a file. Reuse it for similar incidents. Over time, you build a library of proven prompts for different incident types. That's how ops teams scale.</p>
 </div>
 <p>To practice this with Claude Code:</p>
 <p>Run it:</p>

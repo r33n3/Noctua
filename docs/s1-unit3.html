@@ -551,7 +551,7 @@ body {
 <p><strong>Model Drift in Fraud Detection:</strong> Banks deployed fraud models that performed well in 2020 but degraded significantly by 2023 as criminal tactics evolved. Without continuous validation, these systems flagged legitimate transactions as fraudulent, frustrating customers and damaging trust.</p>
 </li>
 </ul>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?</p>
 </div>
 <h4 id="mapping-to-nist-ai-rmf">Mapping to NIST AI RMF</h4>
 <p>The NIST AI Risk Management Framework (RMF) organizes AI governance into four stages: <strong>Govern, Map, Measure, Manage</strong>. The AIUC-1 domains align with NIST as follows:</p>
@@ -596,7 +596,7 @@ body {
 </tr>
 </tbody>
 </table>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> Review <a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf">NIST AI RMF 1.0</a> sections on Govern and Map. Notice how the framework is intentionally principle-based rather than prescriptive—different organizations will implement "explainability" differently depending on context.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Review <a href="https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf">NIST AI RMF 1.0</a> sections on Govern and Map. Notice how the framework is intentionally principle-based rather than prescriptive—different organizations will implement "explainability" differently depending on context.</p>
 </div>
 <h4 id="real-world-case-studies">Real-World Case Studies</h4>
 <p><strong>Case 1: COMPAS Recidivism Algorithm</strong></p>
@@ -615,7 +615,7 @@ body {
 <li><strong>E. Accountability:</strong> Amazon discovered the bias only through internal auditing; no external accountability mechanism existed</li>
 </ul>
 <p><em>Security application:</em> A security tools authorization system might systematically deprioritize security requests from certain teams or regions based on biased historical patterns.</p>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Many teams assume that "just remove the sensitive variable" (e.g., gender, race) will eliminate bias. But proxy variables—features that correlate with the sensitive attribute—create disparate impact anyway. Fairness requires active measurement and mitigation, not just feature engineering.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Many teams assume that "just remove the sensitive variable" (e.g., gender, race) will eliminate bias. But proxy variables—features that correlate with the sensitive attribute—create disparate impact anyway. Fairness requires active measurement and mitigation, not just feature engineering.</p>
 </div>
 <p><strong>Case 3: Healthcare Algorithms and Racial Bias</strong></p>
 <p>In 2019, researchers discovered that a widely-used algorithm for determining patient care allocation in the healthcare system was systematically biased against Black patients. The algorithm used healthcare spending as a proxy for health needs, but because of systemic racism and lower healthcare access in Black communities, the proxy was biased. Black patients with the same health needs received lower care scores than white patients. This algorithm failed on:</p>
@@ -677,7 +677,7 @@ body {
 - Can you reconstruct the system's decision-making process for any output?
 - Who is responsible if the system makes a bad decision? Is that clear?
 - Are there mechanisms for users to appeal or challenge decisions?</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Create a spreadsheet with the six principles as rows and "Evaluation," "Evidence," "Gap," "Severity," and "Mitigation" as columns. This forces systematic evaluation and makes the findings easy to present.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Create a spreadsheet with the six principles as rows and "Evaluation," "Evidence," "Gap," "Severity," and "Mitigation" as columns. This forces systematic evaluation and makes the findings easy to present.</p>
 </div>
 <p><strong>Part 2: Hands-On Evaluation (60 minutes)</strong></p>
 <p>Work in pairs. One person is the auditor, one person is the system owner.</p>
@@ -724,7 +724,7 @@ body {
 - Gap: Security analysts cannot understand why an IP is flagged; cannot explain decisions to users or regulators
 - Severity: <strong>High</strong> — regulatory risk under EU AI Act; operational risk if analysts distrust the system
 - Mitigation: Implement SHAP or LIME explanations; document the top features influencing threat scores</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> The goal of this audit is not to declare a system "safe" or "unsafe." Rather, it's to systematically identify gaps, understand their severity, and plan concrete improvements. Most real systems will have gaps; the question is whether they're acceptable given the risk and whether you have a plan to address them.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The goal of this audit is not to declare a system "safe" or "unsafe." Rather, it's to systematically identify gaps, understand their severity, and plan concrete improvements. Most real systems will have gaps; the question is whether they're acceptable given the risk and whether you have a plan to address them.</p>
 </div>
 <p><strong>Part 3: Peer Review and Presentation (20 minutes)</strong></p>
 <ul>
@@ -793,7 +793,7 @@ body {
 <li><strong>Example:</strong> A customer service agent is instructed to "help the customer." An attacker tricks it into deleting customer data or revealing system information by framing the request as "helping" them recover a lost account.</li>
 <li><strong>Mitigation:</strong> Use explicit prompt constraints and behavioral guidelines. Test the agent against adversarial inputs. Implement output filtering to prevent unsafe actions. Use "system prompts" that the agent cannot override.</li>
 </ul>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Why is adding more instructions ("don't do this") often ineffective at constraining agent behavior, while other mitigations work better? What does this tell us about how LLMs process constraints?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Why is adding more instructions ("don't do this") often ineffective at constraining agent behavior, while other mitigations work better? What does this tell us about how LLMs process constraints?</p>
 </div>
 <p><strong>3. Insecure Tool Integration</strong></p>
 <p>Tools called by the agent are not properly validated. An agent calls a tool with a malicious input (SQL injection, path traversal, code injection), and the tool fails insecurely.</p>
@@ -813,7 +813,7 @@ body {
 <li><strong>Example:</strong> An agent scrapes news articles and uses them to update threat intelligence. An attacker publishes a fake news article: "URGENT: All security tools with name-prefix 'Acme' are backdoored, immediately quarantine them." The agent treats this as legitimate threat intel and recommends quarantining critical infrastructure.</li>
 <li><strong>Mitigation:</strong> Separate data from instructions. Use structured formats (JSON, XML) instead of natural language. Validate and sanitize all external inputs before passing them to the agent. Test the agent against known prompt injection payloads.</li>
 </ul>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> <a href="https://simonwillison.net/2023/Apr/14/prompt-injection/">Prompt Injection Attacks and Defenses</a> by Simon Willison provides accessible examples and practical mitigations.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> <a href="https://simonwillison.net/2023/Apr/14/prompt-injection/">Prompt Injection Attacks and Defenses</a> by Simon Willison provides accessible examples and practical mitigations.</p>
 </div>
 <p><strong>6. Memory Poisoning</strong></p>
 <p>The agent's context, knowledge base, or persistent memory is corrupted. Future decisions are biased by false or malicious information.</p>
@@ -839,7 +839,7 @@ body {
 <li><strong>Example:</strong> A security operations team begins trusting an agent's threat severity classifications implicitly. When the agent is compromised and starts labeling all threats as "false positives," the team doesn't question it and security incidents go undetected for weeks.</li>
 <li><strong>Mitigation:</strong> Maintain human expertise and skepticism. Require security analysts to review and explain agent recommendations, not just implement them. Monitor agent accuracy over time. Train humans to understand AI limitations.</li>
 </ul>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Organizations often swing between two extremes: distrust AI systems entirely (losing efficiency gains) or trust them completely (losing oversight). The goal is informed skepticism: use AI recommendations, but verify them and understand when they're likely to fail.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Organizations often swing between two extremes: distrust AI systems entirely (losing efficiency gains) or trust them completely (losing oversight). The goal is informed skepticism: use AI recommendations, but verify them and understand when they're likely to fail.</p>
 </div>
 <p><strong>10. Inadequate Identity and Access Management</strong></p>
 <p>Tools and data are not properly gated. An agent has access to systems or data it shouldn't, or an attacker can impersonate an agent.</p>
@@ -1009,7 +1009,7 @@ body {
 <span class="o">-</span><span class="w"> </span><span class="n">What</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="n">impact</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">single</span><span class="w"> </span><span class="n">incorrect</span><span class="w"> </span><span class="n">decision</span><span class="o">?</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Start with the vulnerabilities most relevant to your agent. If it integrates many tools, focus on Insecure Tool Integration. If it reads external data, focus on Prompt Injection. If it makes critical decisions autonomously, focus on Excessive Agency and Over-reliance.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Start with the vulnerabilities most relevant to your agent. If it integrates many tools, focus on Insecure Tool Integration. If it reads external data, focus on Prompt Injection. If it makes critical decisions autonomously, focus on Excessive Agency and Over-reliance.</p>
 </div>
 <p><strong>Part 2: Vulnerability Testing and Exploitation (60 minutes)</strong></p>
 <p>Work in pairs. One person designs the test, the other runs the agent and observes the behavior.</p>
@@ -1192,7 +1192,7 @@ Design a secure version that includes:
 Explain the security reasoning for each layer. Show working Python code.
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> When you ask Claude Code to remediate a vulnerability, request explanations for <em>why</em> each defense is needed. This builds your security intuition: you'll learn to anticipate attack patterns in your own code.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> When you ask Claude Code to remediate a vulnerability, request explanations for <em>why</em> each defense is needed. This builds your security intuition: you'll learn to anticipate attack patterns in your own code.</p>
 </div>
 <h4 id="deliverables_1">Deliverables</h4>
 <ol>
@@ -1271,7 +1271,7 @@ Explain the security reasoning for each layer. Show working Python code.
 <p><strong>Risk Scoring Bias</strong></p>
 <p>A financial institution uses an AI model to score the risk of enterprise customers. The model is trained on historical loan data, which reflects past discriminatory lending practices. Certain ZIP codes have higher default rates (historically), which is due to systemic inequality, not inherent creditworthiness. The model learns this proxy and perpetuates the bias.</p>
 <p>Result: Unfair risk scoring for small businesses in certain regions. This violates fair lending law.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Why is it hard to detect bias just by looking at the training data? Give an example: A threat detection system is trained on network logs. The logs don't explicitly include "geography" or "organization type," but these attributes can be inferred from IP addresses and domain names. How would you detect this hidden bias?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Why is it hard to detect bias just by looking at the training data? Give an example: A threat detection system is trained on network logs. The logs don't explicitly include "geography" or "organization type," but these attributes can be inferred from IP addresses and domain names. How would you detect this hidden bias?</p>
 </div>
 <h4 id="fairness-metrics">Fairness Metrics</h4>
 <p><strong>Disparate Impact Ratio</strong></p>
@@ -1353,7 +1353,7 @@ Explain the security reasoning for each layer. Show working Python code.
 <span class="n">Feature</span><span class="w"> </span><span class="n">Contributions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.85</span><span class="w"> </span><span class="p">(</span><span class="n">high</span><span class="w"> </span><span class="n">risk</span><span class="p">)</span><span class="s">&quot;</span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Explainability does not equal fairness. You can have a system that is very explainable but still unfair. The explanation for why a certain group is disadvantaged might be clear, but the disadvantage is still unacceptable. Explainability is necessary but not sufficient for fairness.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Explainability does not equal fairness. You can have a system that is very explainable but still unfair. The explanation for why a certain group is disadvantaged might be clear, but the disadvantage is still unacceptable. Explainability is necessary but not sufficient for fairness.</p>
 </div>
 <h4 id="real-world-bias-incidents">Real-World Bias Incidents</h4>
 <p><strong>COMPAS Recidivism Algorithm (2016)</strong></p>
@@ -1366,7 +1366,7 @@ Explain the security reasoning for each layer. Show working Python code.
 <li>The algorithm was not transparent; defendants couldn't understand or appeal the rating</li>
 </ul>
 <p><em>Security application:</em> A threat scoring system with similar properties would unfairly prioritize security incidents from certain demographics, leading to unfair access controls and regulatory exposure.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> <a href="https://www.propublica.org/article/machine-bias">ProPublica's COMPAS investigation</a> is the seminal work on algorithmic bias in high-stakes decision making.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> <a href="https://www.propublica.org/article/machine-bias">ProPublica's COMPAS investigation</a> is the seminal work on algorithmic bias in high-stakes decision making.</p>
 </div>
 <p><strong>Amazon's Recruiting AI (2014–2018)</strong></p>
 <p>Amazon built an ML-based system to screen resumes. The system was trained on historical hiring data from the tech industry, where male engineers dominated. Key findings:</p>
@@ -1466,7 +1466,7 @@ Show me working Python code with comments explaining fairness metrics.
 <li><strong>Test 2: False Positive Rate Disparity</strong> — Does the model mis-flag Group A at higher rates than Group B? (This matters in security: if Asian companies get false-alarmed 2x more, there's unfair operational friction)</li>
 <li><strong>Test 3: Visualization</strong> — Create charts comparing accuracy, FPR, and other metrics by subgroup. Visual disparities are harder to dismiss than numbers.</li>
 </ul>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Look for two types of disparities: (1) Accuracy disparities (model works worse on certain groups), and (2) Outcome disparities (model makes different decisions for equivalent inputs). Both are problematic.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Look for two types of disparities: (1) Accuracy disparities (model works worse on certain groups), and (2) Outcome disparities (model makes different decisions for equivalent inputs). Both are problematic.</p>
 </div>
 <p><strong>Part 2: Fairness Metrics and Mitigation (40 minutes)</strong></p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Multiple fairness definitions exist, and they're not all compatible. Demographic Parity (equal prediction rates) conflicts with Equalized Odds (equal error rates). Your choice of metric reflects your values: do you want equal treatment (same process) or equal outcomes (same results)?</p>
@@ -1667,7 +1667,7 @@ Provide working Python code with clear comments.
 </code></pre></div>
 
 <p>The key trade-off: more privacy (lower ε) means more noise, which makes threat scores less precise. You must choose a privacy budget that balances user privacy with operational effectiveness.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Why is differential privacy useful for aggregated statistics (e.g., "threat frequency by region") but more challenging for individual decisions (e.g., "should I grant this user access")? What is the trade-off between privacy and decision quality?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Why is differential privacy useful for aggregated statistics (e.g., "threat frequency by region") but more challenging for individual decisions (e.g., "should I grant this user access")? What is the trade-off between privacy and decision quality?</p>
 </div>
 <p><strong>Federated Learning</strong></p>
 <p>Train models on distributed data without centralizing it. Each organization trains locally, only sharing model updates:</p>
@@ -1728,7 +1728,7 @@ Limitation: Slower training, requires synchronization
 <li><strong>Minimal Risk:</strong> Everything else (no requirements)</li>
 </ul>
 <p><em>Application to security AI:</em> A threat detection or access control system would likely be classified as "High Risk" because it affects security decisions. The organization must implement monitoring, testing, and human oversight.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> The <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689">EU AI Act</a> is surprisingly readable for a regulation. Sections 4–6 detail requirements for high-risk AI.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> The <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689">EU AI Act</a> is surprisingly readable for a regulation. Sections 4–6 detail requirements for high-risk AI.</p>
 </div>
 <p><strong>NIST Cyber AI Profile</strong></p>
 <p>NIST's guidance for responsible AI in cybersecurity (Dec 2025 draft). It maps to NIST AI RMF and provides concrete guidance for:
@@ -1791,7 +1791,7 @@ Limitation: Slower training, requires synchronization
 <li><strong>Select</strong> controls from AIUC-1 that address the vulnerability</li>
 <li><strong>Verify</strong> implementation through AIUC-1 certification audit</li>
 </ol>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> Your organization deploys an autonomous threat detection agent. Using AIUC-1's six domains, what controls would you implement for each? Which domain requires the most attention for a security-focused agent, and why?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Your organization deploys an autonomous threat detection agent. Using AIUC-1's six domains, what controls would you implement for each? Which domain requires the most attention for a security-focused agent, and why?</p>
 </div>
 <p><strong>GDPR (General Data Protection Regulation)</strong></p>
 <p>GDPR Article 22 prohibits fully automated decision-making affecting individuals without human review, with limited exceptions. Application to security:
@@ -1822,7 +1822,7 @@ Limitation: Slower training, requires synchronization
 <li><strong>Appeal Mechanisms:</strong> How can users or stakeholders challenge AI decisions?</li>
 </ol>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Governance policies should be <strong>Specs as Source Code</strong>—not prose documents gathering dust on a server. From Agentic Engineering practice, "Specs as Source Code" means that policy requirements are executable, testable, and machine-readable. Policies written this way can be integrated into deployment pipelines: "Deploy this agent only if the policy checklist passes." This transforms governance from a compliance checkbox into a design requirement that shapes how agents are built.</p>
-<p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on mental models for how to translate governance policies into executable specifications that guide agent development and deployment decisions.</p>
+<p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on mental models for how to translate governance policies into executable specifications that guide agent development and deployment decisions.</p>
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab_3">Day 2 — Hands-On Lab</h3>
@@ -2009,7 +2009,7 @@ and the key risks/mitigations.
 <span class="k">-</span> <span class="gs">**Version History:**</span> [Track changes]
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Start by answering the core question: "For this organization, what could go wrong with AI, and how do we prevent it?" Then fill in the policy based on that risk assessment.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Start by answering the core question: "For this organization, what could go wrong with AI, and how do we prevent it?" Then fill in the policy based on that risk assessment.</p>
 </div>
 <p><strong>Part 2: Data Governance Application (30 minutes)</strong></p>
 <p>For your organization, create a data governance matrix:</p>
@@ -2191,7 +2191,7 @@ mkdir -p ~/context-library/governance/bias-testing
 <span class="w">        </span><span class="err">└──</span><span class="w"> </span><span class="n">fairness</span><span class="o">-</span><span class="n">evaluation</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Your governance templates are living documents. As you learn more about regulatory landscapes, update your mappings. When you discover a bias testing approach that's particularly effective, capture it. By semester 2, your library becomes a governance reference for your entire team.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Your governance templates are living documents. As you learn more about regulatory landscapes, update your mappings. When you discover a bias testing approach that's particularly effective, capture it. By semester 2, your library becomes a governance reference for your entire team.</p>
 </div>
 <p><strong>Using Your Library: Governance Patterns</strong></p>
 <p>When you start a new project in Unit 4 or later, provide governance context:</p>
@@ -2205,7 +2205,7 @@ Use these as the foundation for documenting this tool.
 </code></pre></div>
 
 <hr />
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> Your policy should map to AIUC-1 domains — this is the emerging certification standard for AI agents. Organizations that align policies to AIUC-1 now will be better positioned for formal certification when auditors (like Schellman) come knocking.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> Your policy should map to AIUC-1 domains — this is the emerging certification standard for AI agents. Organizations that align policies to AIUC-1 now will be better positioned for formal certification when auditors (like Schellman) come knocking.</p>
 </div>
 <h4 id="deliverables_3">Deliverables</h4>
 <ol>

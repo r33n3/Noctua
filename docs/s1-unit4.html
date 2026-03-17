@@ -509,7 +509,7 @@ body {
 </ol>
 <p>An advanced variant is the <strong>Expert Swarm Pattern</strong> from Agentic Engineering principles: multiple specialized agents attack the same problem in parallel, each bringing unique expertise, and a coordinator synthesizes their findings. Rather than routing (as in hierarchical), swarm patterns emphasize diversity. In security: a threat detection swarm might include agents specialized in network analysis, behavioral profiling, code analysis, and threat intelligence. Each independently analyzes the same incident and provides output. The coordinator merges findings, identifying where experts agree (high confidence) and where they diverge (investigate further).</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Multi-agent systems trade simplicity for specialization. A single large model might be faster, but multiple smaller specialized agents are more auditable, cheaper per task, and easier to swap/upgrade. This is the agentic equivalent of "Unix philosophy: do one thing well."</p>
-<p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on orchestration patterns for coverage of the Expert Swarm pattern and when it outperforms hierarchical orchestration.</p>
+<p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on orchestration patterns for coverage of the Expert Swarm pattern and when it outperforms hierarchical orchestration.</p>
 </div>
 <p><strong>Cost &amp; Token Economics</strong></p>
 <p>A critical insight: using multiple agents isn't necessarily more expensive. Why?</p>
@@ -519,7 +519,7 @@ body {
 <li><strong>Parallel execution saves wallclock time:</strong> If you run three subagents in parallel (possible with concurrent API calls), you finish in 1/3 the time versus sequential invocation.</li>
 </ul>
 <p>Conversely, <em>poor orchestration costs more:</em> replicating context across agents, making unnecessary API calls, or routing requests to the wrong agent wastes tokens.</p>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> If a single 200k-context model costs $20 per invocation and a 50k-context specialized agent costs $2 per invocation, but you need to invoke the large model 5 times versus 20 invocations of specialized agents, which is cheaper? What other dimensions matter (speed, auditing, error recovery)?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If a single 200k-context model costs $20 per invocation and a 50k-context specialized agent costs $2 per invocation, but you need to invoke the large model 5 times versus 20 invocations of specialized agents, which is cheaper? What other dimensions matter (speed, auditing, error recovery)?</p>
 </div>
 <p><strong>Failure Modes &amp; Resilience</strong></p>
 <p>Real agent systems fail. Plan for it.</p>
@@ -529,7 +529,7 @@ body {
 <li><strong>Cascading failures:</strong> The recon agent fails, so the orchestrator never calls the analysis agent, and the reporting agent produces incomplete output. Solution: design graceful degradation—the analysis agent can work with incomplete recon data; the reporting agent flags what's missing.</li>
 <li><strong>Token budget exhaustion:</strong> An agent conversation grows too long and hits the context limit. Solution: implement summarization (periodically compress conversation history) and tool-defined outputs (agents write to files/databases rather than keeping everything in context).</li>
 </ul>
-<div class="callout callout-pitfall"><p><strong>⚠️ Common Pitfall:</strong> Designers often assume agents are deterministic. They aren't. The same prompt on the same input might produce different outputs due to temperature and model updates. Agentic systems must tolerate non-determinism: implement idempotency checks and result verification.</p>
+<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Designers often assume agents are deterministic. They aren't. The same prompt on the same input might produce different outputs due to temperature and model updates. Agentic systems must tolerate non-determinism: implement idempotency checks and result verification.</p>
 </div>
 <p><strong>Reading Connections:</strong></p>
 <p>The orchestration patterns described here map to real incident response: the orchestrator is the incident commander, subagents are the SOC specialists. Your Week 13 lab implements a small version of how modern security operations <em>should</em> be structured—parallel investigation, clear handoffs, specialized expertise.</p>
@@ -589,7 +589,7 @@ git worktree add worktrees/reporting-agent -b feature/reporting
 </code></pre></div>
 
 <p>Each team member now has an isolated directory where they develop without interfering with others. When each agent is complete and tested, the team merges back to main.</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Use Claude Code's integrated terminal to manage worktrees. When you <code>git worktree add</code>, Claude Code creates a path you can navigate to—making it natural to develop multiple agents simultaneously in separate Claude Code panes.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Use Claude Code's integrated terminal to manage worktrees. When you <code>git worktree add</code>, Claude Code creates a path you can navigate to—making it natural to develop multiple agents simultaneously in separate Claude Code panes.</p>
 </div>
 <p><strong>Implementing the Orchestrator Agent</strong></p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The orchestrator is a <strong>state machine</strong>, not a reasoning engine. Its job is routing: accept an incident → delegate to recon agent → collect results → delegate to analysis agent → delegate to reporting agent → return final report. The orchestrator's system prompt is <em>minimal</em>—it's just instructions for control flow.</p>
@@ -885,7 +885,7 @@ Show working Python code with error handling.
 <li><strong>Low Leverage:</strong> Code style, UI polish, comprehensive error messages (defer to Week 15)</li>
 </ul>
 <p>In your 60-minute build window, spend 50 minutes on high-leverage improvements and 10 minutes on essentials. This is how you get 80% of the value in 20% of the time.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for how to systematically identify where to focus effort in any agentic system. Understanding leverage is what separates fast prototypers from those who get stuck.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for how to systematically identify where to focus effort in any agentic system. Understanding leverage is what separates fast prototypers from those who get stuck.</p>
 </div>
 <p><strong>MVP Design Thinking</strong></p>
 <p>MVP = Minimum Viable Product. It's the smallest, simplest version that solves the core problem.</p>
@@ -905,7 +905,7 @@ Show working Python code with error handling.
 <li><strong>Retro (~15 min):</strong> Use <code>/retro</code> to review what was built against the spec, capture what worked, what didn't, and what to carry into the next cycle.</li>
 </ol>
 <p>This cycle repeats every sprint. Week 14 is your first Think → Spec → Build → Retro cycle. Week 15 iterates on failures. By the capstone (Unit 8), you're running multiple cycles per week.</p>
-<div class="callout callout-reading"><p><strong>📖 Further Reading:</strong> See the Agentic Engineering additional reading on rapid iteration patterns for coverage of orchestration patterns that compress development timelines.</p>
+<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> See the Agentic Engineering additional reading on rapid iteration patterns for coverage of orchestration patterns that compress development timelines.</p>
 </div>
 <p><strong>The Prototype-to-Production Delivery Pipeline</strong></p>
 <p>As you move through Unit 4 and into Units 7–8, understand the full delivery pipeline:</p>
@@ -973,7 +973,7 @@ Show working Python code with error handling.
 <li>Realistic: MTTS + time for analyst review + MTTP</li>
 <li>Target for sprint: Under 15 minutes for a basic alert</li>
 </ol>
-<div class="callout callout-discuss"><p><strong>💡 Discussion Prompt:</strong> If your tool has MTTS = 2 sec but an analyst takes 5 minutes to review the output, what's the effective aMTTR? What if you reduce MTTS to 0.5 sec? When does speed matter most?</p>
+<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If your tool has MTTS = 2 sec but an analyst takes 5 minutes to review the output, what's the effective aMTTR? What if you reduce MTTS to 0.5 sec? When does speed matter most?</p>
 </div>
 <p><strong>Time-Waster Antipatterns</strong></p>
 <p>Avoid these common sprint killers:</p>
@@ -1123,7 +1123,7 @@ Show working Python code with error handling.
 </code></pre></div>
 
 <p><strong>Output:</strong> Design doc (1 page) + ASCII diagram</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> Your design doesn't need to be perfect. It needs to be <em>clear enough to code to</em>. You can change it during implementation.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> Your design doesn't need to be perfect. It needs to be <em>clear enough to code to</em>. You can change it during implementation.</p>
 </div>
 <p><strong>Phase 3: Implementation (60 min) — Build the MVP</strong></p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Use Claude Code as your pair programmer. You describe the architecture and requirements; Claude Code generates the scaffolding and implementation. Your job is to refine, test, and iterate—not to write perfect code from scratch.</p>
@@ -1237,7 +1237,7 @@ Show me working Python code with:
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> If you're failing a success criterion by a small margin, don't spend 10 minutes optimizing. Note it and move to Week 15. The demo is next.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> If you're failing a success criterion by a small margin, don't spend 10 minutes optimizing. Note it and move to Week 15. The demo is next.</p>
 </div>
 <p><strong>Phase 5: Prepare Demo (10 min)</strong></p>
 <p>You have 2–3 minutes to show your prototype. Practice:</p>
@@ -1249,7 +1249,7 @@ Show me working Python code with:
 <li><strong>Closing</strong> (10 sec): "In Week 15, we'll add [defer items]. Questions?"</li>
 </ol>
 <p>Record a video OR practice a live demo. Either way, time yourself.</p>
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> A working 3-hour prototype with a honest demo ("it works on the happy path, needs edge case handling") is better than a beautiful demo of incomplete work.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> A working 3-hour prototype with a honest demo ("it works on the happy path, needs edge case handling") is better than a beautiful demo of incomplete work.</p>
 </div>
 <hr />
 <p><strong>Sprint Deliverables:</strong></p>
@@ -1530,7 +1530,7 @@ Show working Python code.
     <span class="k">return</span> <span class="n">action</span>
 </code></pre></div>
 
-<div class="callout callout-remember"><p><strong>✅ Remember:</strong> Security isn't a feature—it's a requirement. Hardening isn't optional; it's mandatory before deployment.</p>
+<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> Security isn't a feature—it's a requirement. Hardening isn't optional; it's mandatory before deployment.</p>
 </div>
 <p><strong>3. Logging and Observability (15 min)</strong></p>
 <p>Add structured logging at every step:</p>
@@ -1614,7 +1614,7 @@ Show working Python code.
 </code></pre></div>
 
 <p>Document findings and fixes.</p>
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Red-teaming is fun. Get creative. If you find a bug, you have time to fix it <em>before</em> showing it in the final demo.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Red-teaming is fun. Get creative. If you find a bug, you have time to fix it <em>before</em> showing it in the final demo.</p>
 </div>
 <p><strong>6. Final Demo Prep (20 min)</strong></p>
 <p>Update your demo to show hardening:</p>
@@ -1858,7 +1858,7 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 <span class="w">        </span><span class="err">└──</span><span class="w"> </span><span class="n">deployment</span><span class="o">-</span><span class="n">checklist</span><span class="p">.</span><span class="n">md</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong>💡 Pro Tip:</strong> Document your library as you build Unit 4. After Week 15 hardening, review what you learned. Did you discover a better way to handle timeouts? Update your pattern. Did you find a security issue you nearly missed? Add it to your hardening checklist. Your library improves through iteration, just like your code.</p>
+<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Document your library as you build Unit 4. After Week 15 hardening, review what you learned. Did you discover a better way to handle timeouts? Update your pattern. Did you find a security issue you nearly missed? Add it to your hardening checklist. Your library improves through iteration, just like your code.</p>
 </div>
 <p><strong>Delivering Your Context Library</strong></p>
 <p><strong>As part of Unit 4 Deliverables, submit:</strong></p>
