@@ -1303,17 +1303,17 @@ Did automation do the right thing? What would you do differently next time?
 <li>Build a mental model of the AI landscape in 2026 and how it's evolving</li>
 </ul>
 <h4 id="lecture-content_2">Lecture Content</h4>
-<p>To use AI effectively as a security professional, you need a mental model of how these systems work and what their tradeoffs are. This isn't about becoming a machine learning engineer. It's about understanding enough to make informed choices: When do I use Claude Opus vs. Sonnet? When should I deploy an open model? What does it mean that a model has a 200K context window?</p>
+<p>To use AI effectively as a security professional, you need a mental model of how these systems work and what their tradeoffs are. This isn't about becoming a machine learning engineer. It's about understanding enough to make informed choices: When do I use Claude Opus vs. Sonnet? When should I deploy an open model? What does it mean that a model has a 1M token context window?</p>
 <p><strong>Foundation: The Transformer Architecture</strong></p>
 <p>All modern large language models—Claude, GPT, Llama, Mistral—are built on the same underlying architecture: the transformer. Understanding it at a high level is essential.</p>
 <p>The core innovation of transformers (introduced by Vaswani et al. in 2017) is something called "attention." Imagine you're reading a long security incident report. Your attention isn't equally distributed. When you see the word "ransomware," your mind attends to words nearby like "encryption," "payment," "victim," "recovery." You're selectively focusing on the most relevant context.</p>
 <p>Transformers do something similar. Every token (roughly, a word or subword) in the input attends to every other token, and the model learns which connections matter. This "all-to-all" connection structure is why transformers can capture long-range dependencies in text—something older architectures (RNNs, LSTMs) struggled with.</p>
 <p>The output of attention is a set of importance weights. "Ransomware" attends heavily to "encryption" and "payment." "Incident" attends to timestamps and threat actors. These weights are learned through training on billions of tokens.</p>
 <p>The practical consequence: Transformers are <em>context-aware</em>. They don't process tokens in isolation. They understand that "password" in a security context might mean something different than "password" in a user interface context. But—and this is critical—they can only attend to tokens within their context window.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A model's context window is its attention span. GPT-4o has a 128K token context window. Claude Opus 4.6 has 200K. Gemini 2.5 supports 1M+. Longer windows cost more (more tokens to process) but allow you to include more evidence, more examples, more nuance in a single prompt. For security analysis, a larger context window means you can include the full incident report, rather than summarizing it.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A model's context window is its attention span. GPT-4o has a 128K token context window. Claude Opus 4.6 now supports 1M tokens (just released). Gemini 2.5 also supports 1M+. Longer windows cost more (more tokens to process) but allow you to include more evidence, more examples, more nuance in a single prompt. For security analysis, a larger context window means you can include the full incident report, rather than summarizing it.</p>
 </div>
 <p><strong>Context Windows and Their Implications</strong></p>
-<p>A token is roughly 4 characters (or 0.75 words) on average. So a 200K token context window is about 150K words, or ~500 pages of text.</p>
+<p>A token is roughly 4 characters (or 0.75 words) on average. So a 200K token context window is about 150K words (~500 pages). Claude Opus 4.6's 1M token window is roughly 750K words — equivalent to loading several full novels, or an entire year of SIEM logs, into a single session.</p>
 <p>Why does this matter? Consider two security analysis scenarios:</p>
 <ol>
 <li>
@@ -1334,7 +1334,7 @@ Did automation do the right thing? What would you do differently next time?
 <p>The market has stratified into three tiers:</p>
 <p><strong>Tier 1: Frontier Closed Models</strong></p>
 <p>These are the most capable models, built by large labs and proprietary:
-- <strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 200K context, ~$5/1M input tokens
+- <strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 1M token context, ~$15/1M input tokens
 - <strong>Claude Sonnet 4.6</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens
 - <strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$1.00/1M input tokens
 - <strong>GPT-4o / GPT-4.5</strong> (OpenAI, 2025): Multimodal (text, image, audio), strong reasoning, 128K context
