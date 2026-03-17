@@ -1310,7 +1310,7 @@ Did automation do the right thing? What would you do differently next time?
 <p>Transformers do something similar. Every token (roughly, a word or subword) in the input attends to every other token, and the model learns which connections matter. This "all-to-all" connection structure is why transformers can capture long-range dependencies in text—something older architectures (RNNs, LSTMs) struggled with.</p>
 <p>The output of attention is a set of importance weights. "Ransomware" attends heavily to "encryption" and "payment." "Incident" attends to timestamps and threat actors. These weights are learned through training on billions of tokens.</p>
 <p>The practical consequence: Transformers are <em>context-aware</em>. They don't process tokens in isolation. They understand that "password" in a security context might mean something different than "password" in a user interface context. But—and this is critical—they can only attend to tokens within their context window.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A model's context window is its attention span. GPT-4 has a 128K token context window. Claude Opus has 200K. Longer windows cost more (more tokens to process) but allow you to include more evidence, more examples, more nuance in a single prompt. For security analysis, a larger context window means you can include the full incident report, rather than summarizing it.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A model's context window is its attention span. GPT-4o has a 128K token context window. Claude Opus 4.6 has 200K. Gemini 2.5 supports 1M+. Longer windows cost more (more tokens to process) but allow you to include more evidence, more examples, more nuance in a single prompt. For security analysis, a larger context window means you can include the full incident report, rather than summarizing it.</p>
 </div>
 <p><strong>Context Windows and Their Implications</strong></p>
 <p>A token is roughly 4 characters (or 0.75 words) on average. So a 200K token context window is about 150K words, or ~500 pages of text.</p>
@@ -1337,8 +1337,9 @@ Did automation do the right thing? What would you do differently next time?
 - <strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 200K context, ~$5/1M input tokens
 - <strong>Claude Sonnet 4.6</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens
 - <strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$1.00/1M input tokens
-- <strong>GPT-4o</strong> (OpenAI, 2025): Multimodal (text, image, audio), good reasoning, 128K context, ~$5/1M input tokens
-- <strong>Gemini 2.0</strong> (Google, 2025): Native multimodal, 1M context window (largest publicly available), ~$7/1M input tokens</p>
+- <strong>GPT-4o / GPT-4.5</strong> (OpenAI, 2025): Multimodal (text, image, audio), strong reasoning, 128K context
+- <strong>GPT-5.x series / o3 / o4-mini</strong> (OpenAI, 2026): Latest generation; o-series models optimized for extended reasoning and complex tasks
+- <strong>Gemini 2.5</strong> (Google, 2026): Native multimodal, 1M+ context window, strong coding and reasoning</p>
 <p><strong>Advantages:</strong>
 - Highest quality output
 - Newest knowledge (training cutoff more recent)
