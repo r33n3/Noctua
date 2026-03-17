@@ -1,5 +1,5 @@
 /**
- * AgentForge Lab Guide — Shared Interactive System
+ * Noctua Lab Guide — Shared Interactive System
  * Handles: quiz evaluation, step tracking, progress bars, code copy, sidebar
  * Each lab page calls: initLabPage('unique-lab-id')
  */
@@ -194,7 +194,7 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'resources/course-cheatsheet.html', '<i data-lucide="clipboard-list" class="licon"></i>Course Cheatsheet'],
   ];
 
-  let html = '<div class="sidebar-header"><h1>AgentForge</h1><p>AI Security Engineering</p></div>\n';
+  let html = '<div class="sidebar-header"><h1>Noctua</h1><p>AI Security Engineering</p></div>\n';
   nav.forEach(item => {
     if (item[0] === 'nav-section') {
       html += '<div class="nav-section">' + item[1] + '</div>\n';
