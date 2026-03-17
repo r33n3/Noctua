@@ -33,7 +33,7 @@
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a complete MITRE ATLAS threat model for your Unit 5 multi-agent SOC system. Identify top-5 AI-specific threats, DREAD score each, and design control measures. This threat model informs your red team exercise in Week 6.</p></div>
 
 <div class="quiz-block" id="quiz-u6w5">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 5</h4>
+  <h4> Knowledge Check — Week 5</h4>
 
   <div class="quiz-question" data-qid="u6w5q1" data-answer="b" data-explain="AI attacks operate at the semantic (language/meaning) layer rather than the syntactic (code/memory) layer. An attacker doesn't need a buffer overflow — they need to craft language that rewires an agent's goals. This requires entirely new defense paradigms beyond traditional network security.">
     <p class="q-text">1. What layer do AI-specific attacks primarily operate on?</p>
@@ -73,7 +73,7 @@
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: MITRE ATLAS Threat Model</h4>
+  <h4> Lab Exercise: MITRE ATLAS Threat Model</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u6w5-1">
       <label><input type="checkbox" onchange="toggleStep('u6w5-1',this.checked)">
@@ -141,7 +141,7 @@
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a structured red team operation against your own multi-agent SOC system. Use Garak for automated scanning and PyRIT for multi-turn adversarial conversations. Document all findings with AIVSS scores. This is the Red Team Exercise (8% of grade).</p></div>
 
 <div class="quiz-block" id="quiz-u6w6">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 6</h4>
+  <h4> Knowledge Check — Week 6</h4>
 
   <div class="quiz-question" data-qid="u6w6q1" data-answer="c" data-explain="Garak (NVIDIA) scans LLMs for vulnerabilities using 37+ probe modules. PyRIT (Microsoft) conducts multi-turn adversarial conversations where an attacker agent uses scoring and orchestration to pursue attack goals across extended interactions. Together they provide breadth (Garak) and depth (PyRIT) of red team coverage.">
     <p class="q-text">1. What complementary capabilities do Garak and PyRIT provide for red teaming?</p>
@@ -157,7 +157,7 @@
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Structured Red Team Operation (Red Team Exercise — 8% grade)</h4>
+  <h4> Lab Exercise: Structured Red Team Operation (Red Team Exercise — 8% grade)</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u6w6-1">
       <label><input type="checkbox" onchange="toggleStep('u6w6-1',this.checked)">
@@ -232,7 +232,7 @@ from pyrit.common import default_values
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement defensive guardrails using NeMo Guardrails and LlamaFirewall. Retest your Week 6 red team scenarios against the hardened system. Measure defense effectiveness. This is the Blue Team Exercise (7% of grade).</p></div>
 
 <div class="quiz-block" id="quiz-u6w7">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 7</h4>
+  <h4> Knowledge Check — Week 7</h4>
 
   <div class="quiz-question" data-qid="u6w7q1" data-answer="b" data-explain="NeMo Guardrails uses Colang — a custom domain-specific language — to define conversation flows (what the agent does and doesn't do), output rails (what the agent will and won't say), and input rails (what inputs will be processed or blocked). Colang is human-readable and security-auditable.">
     <p class="q-text">1. What language does NeMo Guardrails use to define conversation rails?</p>
@@ -260,7 +260,7 @@ from pyrit.common import default_values
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Guardrails Implementation (Blue Team — 7% grade)</h4>
+  <h4> Lab Exercise: Guardrails Implementation (Blue Team — 7% grade)</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u6w7-1">
       <label><input type="checkbox" onchange="toggleStep('u6w7-1',this.checked)">
@@ -339,7 +339,7 @@ define bot require evidence before clearing
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a live red vs. blue team exercise. Red teams attack a target system (their partner's SOC agent). Blue teams defend and respond. Score is determined by: attacks that succeed, attacks that are detected and blocked, and incident response time.</p></div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Wargame Exercise Structure</h4>
+  <h4> Wargame Exercise Structure</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u6w8-1">
       <label><input type="checkbox" onchange="toggleStep('u6w8-1',this.checked)">
@@ -400,7 +400,7 @@ define bot require evidence before clearing
 
 <hr>
 <div class="unit-complete">
-  <h3><i data-lucide="trophy" class="licon"></i> Unit 6 Complete</h3>
+  <h3> Unit 6 Complete</h3>
   <p>You have threat modeled, red teamed, hardened, and wargamed AI agent security systems.</p>
   <p style="margin-top:8px;"><a href="lab-s2-unit7.html">Next: Unit 7 Lab — Production Security Engineering &rarr;</a></p>
 </div>

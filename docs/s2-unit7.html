@@ -484,7 +484,7 @@ body {
 - Deploy production observability and cost tracking for agentic systems
 - Automate secure deployment with CI/CD, containerization, and runbooks</p>
 <blockquote>
-<p><strong><i data-lucide="target" class="licon"></i>Prototype-to-Production Pipeline:</strong> This unit is where <strong>selected prototypes become production systems</strong>. If leadership selects your work from Unit 4, Unit 5, or Unit 6 for delivery, Unit 7 is where you transform it from a working proof-of-concept into a hardened, observable, governed, and deployable system. This course's agentic development methodology — including the Think → Spec → Build → Retro cycle — provides the framework for this transformation. The <strong>Pit of Success</strong> principle applies here: design your systems so secure, compliant deployment is the easy path, not the exception.</p>
+<p><strong>Prototype-to-Production Pipeline:</strong> This unit is where <strong>selected prototypes become production systems</strong>. If leadership selects your work from Unit 4, Unit 5, or Unit 6 for delivery, Unit 7 is where you transform it from a working proof-of-concept into a hardened, observable, governed, and deployable system. This course's agentic development methodology — including the Think → Spec → Build → Retro cycle — provides the framework for this transformation. The <strong>Pit of Success</strong> principle applies here: design your systems so secure, compliant deployment is the easy path, not the exception.</p>
 </blockquote>
 <hr />
 <h2 id="week-9-ai-supply-chain-security">Week 9: AI Supply Chain Security</h2>
@@ -498,7 +498,7 @@ body {
 <h4 id="the-ai-supply-chain-attack-surface">The AI Supply Chain Attack Surface</h4>
 <p>The AI supply chain is <strong>uniquely complex</strong> because models are data artifacts, not just code. Every component—models, training data, dependencies, checkpoints, evaluation sets—can be poisoned, replaced, or tampered with before deployment.</p>
 <blockquote>
-<p><strong><i data-lucide="book-open" class="licon"></i>Production Engineering Methodology:</strong> Securing the supply chain requires applying the <strong>Pit of Success</strong> principle (from <em>Agentic Engineering</em>): make secure, verified deployment the path of least resistance. Every step in your pipeline—dependency scanning, model signing, SBOM generation—should be automated so teams can't accidentally deploy unverified artifacts. This is not a checklist; it's a system design where security is baked in from the start.</p>
+<p><strong>Production Engineering Methodology:</strong> Securing the supply chain requires applying the <strong>Pit of Success</strong> principle (from <em>Agentic Engineering</em>): make secure, verified deployment the path of least resistance. Every step in your pipeline—dependency scanning, model signing, SBOM generation—should be automated so teams can't accidentally deploy unverified artifacts. This is not a checklist; it's a system design where security is baked in from the start.</p>
 <p><strong>🔑 Key Concept:</strong> Unlike traditional software (code → build → binary), AI systems have a data-driven supply chain: <strong>Training Data → Model Artifact → Trained Weights → Evaluation → Deployment Checkpoint</strong>. Each stage is an attack surface.</p>
 </blockquote>
 <p><strong>Supply Chain Attack Vectors:</strong></p>
@@ -517,7 +517,7 @@ body {
 <li>Data source spoofing: claiming data is from trusted source when it isn't</li>
 <li>Label flipping in supervised learning datasets</li>
 </ol>
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> "Poisoning Attacks on Machine Learning Models" (Li et al., 2019) covers detection strategies for subtle data poisoning.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> "Poisoning Attacks on Machine Learning Models" (Li et al., 2019) covers detection strategies for subtle data poisoning.</p>
 </div>
 <ol>
 <li><strong>Dependency Chain Compromise</strong></li>
@@ -612,7 +612,7 @@ def load_verified_model<span class="o">(</span>model_path, pub_key<span class="o
     <span class="k">return</span> torch.load<span class="o">(</span>model_path<span class="o">)</span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Automate signature verification in your model loading pipeline. Never skip this step in production, even for "trusted" sources.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Automate signature verification in your model loading pipeline. Never skip this step in production, even for "trusted" sources.</p>
 </div>
 <h4 id="mitre-atlas-and-slsa-framework-for-ai">MITRE ATLAS and SLSA Framework for AI</h4>
 <p><strong>MITRE ATLAS</strong> (Adversarial Tactics, Techniques, and Common Knowledge for AI) maps supply chain attacks:</p>
@@ -708,8 +708,8 @@ safety check --json &gt; vulnerability-report.json
 <span class="c1"># If vulnerabilities found with severity &gt;= HIGH, CI/CD fails</span>
 </code></pre></div>
 
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> NIST AI Security and Governance Resource Center: https://airc.nist.gov</p>
-<p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Your organization uses TensorFlow 2.8.0. A critical CVE is announced in a transitive dependency (protobuf 3.19.0). Do you upgrade immediately? What are the risks of each choice?</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> NIST AI Security and Governance Resource Center: https://airc.nist.gov</p>
+<p><strong>Discussion Prompt:</strong> Your organization uses TensorFlow 2.8.0. A critical CVE is announced in a transitive dependency (protobuf 3.19.0). Do you upgrade immediately? What are the risks of each choice?</p>
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-ai-supply-chain-audit-tool">Day 2 — Hands-On Lab: AI Supply Chain Audit Tool</h3>
@@ -800,7 +800,7 @@ Use subprocess to call external tools (safety, pip). Handle timeouts and errors 
 <p><strong>Iteration guidance:</strong></p>
 <p>If the output doesn't parse Safety JSON correctly, ask: "The Safety tool outputs JSON with structure <code>{vulnerabilities: [{package, version, advisory}]}</code>. Make sure you parse this correctly and only count actual vulnerabilities, not metadata."</p>
 <p>If risk scoring seems arbitrary, ask: "Add a docstring to _calculate_risk_score explaining the thresholds. Why is 5 vulnerabilities CRITICAL?"</p>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Don't just scan once. Supply chain attacks happen <strong>after</strong> initial scans. Run dependency checks at commit time (pre-commit hook), CI/CD time, and before deployment.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Don't just scan once. Supply chain attacks happen <strong>after</strong> initial scans. Run dependency checks at commit time (pre-commit hook), CI/CD time, and before deployment.</p>
 </div>
 <h4 id="step-2-model-provenance-verification">Step 2: Model Provenance Verification</h4>
 <p><strong>Architecture Decision:</strong></p>
@@ -859,7 +859,7 @@ Return dict format for each check with status and message fields.
 <p><strong>Iteration guidance:</strong></p>
 <p>If model discovery is slow, ask: "For large projects, finding all models can be slow. Add a parameter to limit search depth or exclude certain directories. Should we cache the model list?"</p>
 <p>If signature verification is unclear, ask: "Show me an example of what the .sig file should contain. Is it just the hex hash on one line?"</p>
-<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> A model without provenance is like software without version control—you can't audit it, can't roll back, and can't verify it hasn't been tampered with.</p>
+<div class="callout callout-remember"><p><strong>Remember:</strong> A model without provenance is like software without version control—you can't audit it, can't roll back, and can't verify it hasn't been tampered with.</p>
 </div>
 <h4 id="step-3-sbom-generation">Step 3: SBOM Generation</h4>
 <p><strong>Architecture Decision:</strong></p>
@@ -939,8 +939,8 @@ The class should:
 
 3. Method _generate_recommendations(report) that:
    - Iterates findings array
-   - For each CRITICAL finding: adds &quot;<i data-lucide="triangle-alert" class="licon"></i>CRITICAL: {category} - Address immediately&quot;
-   - For each HIGH finding: adds &quot;<i data-lucide="triangle-alert" class="licon"></i>HIGH: {category} - Address before next release&quot;
+   - For each CRITICAL finding: adds &quot;CRITICAL: {category} - Address immediately&quot;
+   - For each HIGH finding: adds &quot;HIGH: {category} - Address before next release&quot;
    - Returns list of recommendation strings
 
 4. Support outputting to JSON (pretty-printed)
@@ -963,7 +963,7 @@ Return format:
 <p><strong>Iteration guidance:</strong></p>
 <p>If the report feels incomplete, ask: "Add an 'executive_summary' field that counts total findings by severity and recommends next steps (e.g., 'Project has 3 CRITICAL findings. Do not deploy until resolved.')."</p>
 <p>If recommendations are too generic, ask: "For a CRITICAL dependency vulnerability, the recommendation should include: 'Run: safety check --json &gt; vulnerabilities.json to see details. Then update vulnerable packages with: pip install --upgrade {package}==new_version.'"</p>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Integrate this audit into your CI/CD pipeline so every commit triggers a supply chain check. Fail the build if risk score is CRITICAL.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Integrate this audit into your CI/CD pipeline so every commit triggers a supply chain check. Fail the build if risk score is CRITICAL.</p>
 </div>
 <h4 id="deliverables">Deliverables</h4>
 <p><strong>1. AI Supply Chain Audit Tool</strong>
@@ -1217,27 +1217,27 @@ Result: ALLOW
         <span class="p">}</span>
 </code></pre></div>
 
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> "Just-in-Time Access: Zero Trust for the Cloud" explores JIT patterns for cloud infrastructure and extends naturally to AI agents.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> "Just-in-Time Access: Zero Trust for the Cloud" explores JIT patterns for cloud infrastructure and extends naturally to AI agents.</p>
 </div>
 <h4 id="pearl-open-source-governance-for-autonomous-agents">PeaRL: Open-Source Governance for Autonomous Agents</h4>
 <p><strong>PeaRL</strong> (Policy-enforced Autonomous Risk Layer) is an open-source governance platform built specifically for the problem we're studying: how do you enforce security gates between autonomous AI agents and production systems? Built by this course's creator and available at https://github.com/r33n3/PeaRL, PeaRL demonstrates that governance tooling should be accessible to everyone — security should never be locked behind expensive enterprise licenses when the stakes are this high.</p>
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Clone PeaRL and explore its architecture: <code>git clone https://github.com/r33n3/PeaRL.git</code>. Study how it implements the patterns we're covering in this unit. You can also explore <strong>MASS</strong> (Model &amp; Application Security Suite) at https://github.com/r33n3/MASS for security assessment approaches. Both are open source — contribute if you find something to improve.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> Clone PeaRL and explore its architecture: <code>git clone https://github.com/r33n3/PeaRL.git</code>. Study how it implements the patterns we're covering in this unit. You can also explore <strong>MASS</strong> (Model &amp; Application Security Suite) at https://github.com/r33n3/MASS for security assessment approaches. Both are open source — contribute if you find something to improve.</p>
 </div>
 <p>PeaRL's <strong>environment hierarchy</strong> demonstrates how agent permissions should tighten as deployments move toward production:</p>
 <div class="mermaid">flowchart LR
-    subgraph dev["<i data-lucide="wrench" class="licon"></i>Development"]
+    subgraph dev["Development"]
         devAccess["Full Access<br/>No Approval"]
     end
 
-    subgraph pilot["<i data-lucide="flask-conical" class="licon"></i>Pilot"]
+    subgraph pilot["Pilot"]
         pilotAccess["Lite User Data<br/>Guard Approval"]
     end
 
-    subgraph preprod["<i data-lucide="clipboard-list" class="licon"></i>Preproduction"]
+    subgraph preprod["Preproduction"]
         preprodAccess["Full Prod Simulation<br/>Guard Gates"]
     end
 
-    subgraph prod["<i data-lucide="rocket" class="licon"></i>Production"]
+    subgraph prod["Production"]
         prodAccess["Full Prod Live Users<br/>Guard Gates +<br/>Human Approval"]
     end
 
@@ -1331,7 +1331,7 @@ Result: ALLOW
 <li><strong>Preprod gate:</strong> AIVSS scores above 5.0 (MEDIUM) require documented exception with human approval. PeaRL's <code>pearl_request_approval</code> workflow handles this.</li>
 <li><strong>Prod gate:</strong> All AIVSS findings must be resolved or have approved exceptions. No agent proceeds without human sign-off on the full risk profile.</li>
 </ul>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> AIVSS extends CVSS with AI-specific metrics. A traditional CVSS score of 4.0 (MEDIUM) for an SQL injection might become an AIVSS 7.5 (HIGH) when that same vulnerability exists in an agent's tool-calling pipeline — because the blast radius includes every action the agent can take autonomously.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> AIVSS extends CVSS with AI-specific metrics. A traditional CVSS score of 4.0 (MEDIUM) for an SQL injection might become an AIVSS 7.5 (HIGH) when that same vulnerability exists in an agent's tool-calling pipeline — because the blast radius includes every action the agent can take autonomously.</p>
 </div>
 <p><strong>Applying PeaRL to Agent Governance:</strong></p>
 <div class="mermaid">flowchart TD
@@ -1359,7 +1359,7 @@ Result: ALLOW
     class E prod
 </div>
 
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If an agent has different permissions in dev vs. prod, how do you prevent it from exploiting the dev → prod transition to escalate privileges?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If an agent has different permissions in dev vs. prod, how do you prevent it from exploiting the dev → prod transition to escalate privileges?</p>
 </div>
 <h4 id="zero-trust-and-audit-for-nhi">Zero Trust and Audit for NHI</h4>
 <p><strong>Zero Trust Model for Agents:</strong></p>
@@ -1493,7 +1493,7 @@ Output should be JSON-serializable for compliance audits.
 <p><strong>Iteration guidance:</strong></p>
 <p>If tier assignment seems arbitrary, ask: "Add docstrings explaining tier classification: TIER_1 = critical paths (incident response), TIER_2 = sensitive data access, etc. What characteristics put an identity in each tier?"</p>
 <p>If the registry feels incomplete, ask: "Add a method disable_identity(identity_id) that marks an identity as disabled and logs the event. This is needed for credential revocation."</p>
-<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The identity registry is not a set-and-forget artifact. Update it continuously as agents are created, modified, or retired. Use it as your source of truth for NHI governance.</p>
+<div class="callout callout-remember"><p><strong>Remember:</strong> The identity registry is not a set-and-forget artifact. Update it continuously as agents are created, modified, or retired. Use it as your source of truth for NHI governance.</p>
 </div>
 <h4 id="step-2-policy-as-code-authorization">Step 2: Policy-as-Code Authorization</h4>
 <p><strong>Architecture Decision:</strong></p>
@@ -1626,7 +1626,7 @@ Include example usage showing agent authorization attempt.
 <p><strong>Iteration guidance:</strong></p>
 <p>If rate limiting seems wrong, ask: "The rate counter should reset every hour. Show me a concrete example: agent makes 50 calls in first hour (tracked), then at hour boundary the counter resets to 0. Is that what your code does?"</p>
 <p>If tokens are too simple, ask: "Right now tokens are just agent:resource:timestamp. In production, we'd need tokens to be signed/encrypted. For now, add a comment explaining what a real token system would look like."</p>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Don't cache policy decisions. Always evaluate against live policy store. Cached decisions can allow revoked credentials to continue working for hours or days.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Don't cache policy decisions. Always evaluate against live policy store. Cached decisions can allow revoked credentials to continue working for hours or days.</p>
 </div>
 <h4 id="step-4-audit-logging-and-alerts">Step 4: Audit Logging and Alerts</h4>
 <p><strong>Architecture Decision:</strong></p>
@@ -1750,7 +1750,7 @@ Include example showing dashboard being generated and printed.
 - Properly sorted rotation schedule
 - Alert aggregation from audit logger
 - Both machine-readable (JSON) and human-readable (text) output</p>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Display this dashboard in a web UI or send it to your team's Slack channel daily. Make NHI governance visible so it stays top-of-mind.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Display this dashboard in a web UI or send it to your team's Slack channel daily. Make NHI governance visible so it stays top-of-mind.</p>
 </div>
 <h4 id="deliverables_1">Deliverables</h4>
 <p><strong>1. Identity Registry Document</strong>
@@ -1941,7 +1941,7 @@ Include example showing dashboard being generated and printed.
 <span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">execute_task</span><span class="p">(</span><span class="s2">&quot;analyze IP 192.0.2.1&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> "The Three Pillars of Observability" (O'Reilly) covers metrics, logs, and traces in detail.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> "The Three Pillars of Observability" (O'Reilly) covers metrics, logs, and traces in detail.</p>
 </div>
 <h4 id="token-tracking-and-cost-attribution">Token Tracking and Cost Attribution</h4>
 <p>AI systems are expensive. <strong>$0.0001 per 1000 tokens × 1 million tasks = $100 per day.</strong> Without tracking, you're flying blind.</p>
@@ -2194,11 +2194,11 @@ Include example showing dashboard being generated and printed.
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;escalated&quot;</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;<i data-lucide="triangle-alert" class="licon"></i>ESCALATE TO HUMAN: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ESCALATE TO HUMAN: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># Queue for human review</span>
 </code></pre></div>
 
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If an agent is in "degraded mode" (using fallback rules), should you notify the user? What if it succeeds anyway—was the notification necessary?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If an agent is in "degraded mode" (using fallback rules), should you notify the user? What if it succeeds anyway—was the notification necessary?</p>
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-observability-and-cost-management">Day 2 — Hands-On Lab: Observability and Cost Management</h3>
@@ -2334,7 +2334,7 @@ Methods:
 
 2. _generate_cost_alerts(total, forecast) -&gt; list[str]:
    - Define daily_budget = 100.0 (example)
-   - If forecast &gt; budget: add alert &quot;<i data-lucide="triangle-alert" class="licon"></i>Forecast exceeds budget: ${forecast:.2f} vs ${budget:.2f}&quot;
+   - If forecast &gt; budget: add alert &quot;Forecast exceeds budget: ${forecast:.2f} vs ${budget:.2f}&quot;
    - Return alerts list
 
 3. print_dashboard():
@@ -2409,8 +2409,8 @@ Methods:
    }
 
 2. _generate_health_alerts(success_rate, accuracy) -&gt; list[str]:
-   - If success_rate &lt; 95: add &quot;<i data-lucide="triangle-alert" class="licon"></i>Success rate below SLO: {success_rate:.1f}%&quot;
-   - If accuracy &lt; 80: add &quot;<i data-lucide="triangle-alert" class="licon"></i>End-to-end accuracy degraded: {accuracy:.1f}%&quot;
+   - If success_rate &lt; 95: add &quot;Success rate below SLO: {success_rate:.1f}%&quot;
+   - If accuracy &lt; 80: add &quot;End-to-end accuracy degraded: {accuracy:.1f}%&quot;
    - Return alerts
 
 3. print_dashboard():
@@ -2932,7 +2932,7 @@ kubectl patch service agent-system -p <span class="s1">&#39;{&quot;spec&quot;:{&
         <span class="k">return</span> <span class="mi">0</span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Shadow deployments are low-risk way to validate new agent versions before canary. Problems found in shadow don't affect users.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Shadow deployments are low-risk way to validate new agent versions before canary. Problems found in shadow don't affect users.</p>
 </div>
 <h4 id="mcp-sandboxing-agentic-deployment-security">MCP Sandboxing &amp; Agentic Deployment Security</h4>
 <p>When AI agents are deployed to production, they operate within a bounded environment defined by <strong>MCP (Model Context Protocol) server configurations</strong>. These configurations specify what tools the agent can access, what data sources it can reach, and what actions it can take. As demonstrated by MASS and PeaRL's production deployment patterns, this configuration layer is a critical security boundary—and it is frequently misconfigured.</p>
@@ -2951,7 +2951,7 @@ kubectl patch service agent-system -p <span class="s1">&#39;{&quot;spec&quot;:{&
 <li><strong>Cross-Origin Attacks</strong> — Agent can make requests to unintended domains</li>
 <li><strong>Supply Chain Risks</strong> — Tools are pulled from untrusted registries or lack signature verification</li>
 </ol>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Many teams assume MCP server configs are "safe by default" because they're configuration files, not code. In reality, a single misconfigured tool can become an agent's attack surface. For example, an agent with access to <code>bash_execute</code> can bypass all application-level controls. <strong>Always audit MCP configurations as security-critical.</strong></p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Many teams assume MCP server configs are "safe by default" because they're configuration files, not code. In reality, a single misconfigured tool can become an agent's attack surface. For example, an agent with access to <code>bash_execute</code> can bypass all application-level controls. <strong>Always audit MCP configurations as security-critical.</strong></p>
 </div>
 <p><strong>Security Audit Checklist:</strong></p>
 <p>For each tool in an agent's MCP configuration, ask:
@@ -3087,22 +3087,22 @@ kubectl patch service agent-system -p <span class="s1">&#39;{&quot;spec&quot;:{&
 <p>PeaRL demonstrates a progression from development to production, with increasing security gates at each stage:</p>
 <p><strong>Environment Progression:</strong></p>
 <div class="mermaid">flowchart LR
-    subgraph dev["<i data-lucide="wrench" class="licon"></i>dev<br/>Learning Phase"]
+    subgraph dev["dev<br/>Learning Phase"]
         dev1["Agents can fail<br/>No impact"]
         dev2["Agents can attempt<br/>anything (try-catch)"]
     end
 
-    subgraph pilot["<i data-lucide="flask-conical" class="licon"></i>pilot<br/>Error Escalation"]
+    subgraph pilot["pilot<br/>Error Escalation"]
         pilot1["Agents execute tasks<br/>errors escalate"]
         pilot2["PreToolUse gates<br/>approval workflows"]
     end
 
-    subgraph preprod["<i data-lucide="clipboard-list" class="licon"></i>preprod<br/>Full Simulation"]
+    subgraph preprod["preprod<br/>Full Simulation"]
         preprod1["Full production sim<br/>real data volumes"]
         preprod2["All monitoring enabled<br/>IR procedures validated"]
     end
 
-    subgraph prod["<i data-lucide="rocket" class="licon"></i>prod<br/>Read-Only Autonomy"]
+    subgraph prod["prod<br/>Read-Only Autonomy"]
         prod1["Agents report<br/>don't modify"]
         prod2["Critical actions<br/>require approval"]
         prod3["All actions logged<br/>& immutable<br/>Secrets secured"]
@@ -3331,7 +3331,7 @@ spec:
     <span class="n">monitor</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;HARD_GATE&quot;</span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Don't activate AGP hard gates on day one. Spend 2-4 weeks in "detection-only" mode to calibrate baselines. An agent that looks suspicious during week one might be normal during week three. Gradual hardening prevents legitimate operations from being blocked while you learn the system's baseline behavior.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Don't activate AGP hard gates on day one. Spend 2-4 weeks in "detection-only" mode to calibrate baselines. An agent that looks suspicious during week one might be normal during week three. Gradual hardening prevents legitimate operations from being blocked while you learn the system's baseline behavior.</p>
 </div>
 <h5 id="context-compilation-for-governance">Context Compilation for Governance</h5>
 <p>The most sophisticated governance approach, demonstrated by PeaRL, compiles governance context into <strong>immutable, signed packages</strong>:</p>
@@ -3842,7 +3842,7 @@ _check_alerts():
 _report_incident(message, severity, details):
 - Create incident dict with timestamp, severity.name, message, details
 - Append to incidents
-- Print with emoji (🚨 for CRITICAL, <i data-lucide="triangle-alert" class="licon"></i>for WARNING)
+- Print with emoji (🚨 for CRITICAL, for WARNING)
 
 _tick_time():
 - Advance simulated_time by timedelta(seconds=3600/speedup_factor)
@@ -4274,7 +4274,7 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <span class="w">            </span><span class="no">--force-new-deployment</span><span class="w"></span>
 </code></pre></div>
 
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Each security gate is a <strong>decision point</strong> where humans can intervene. In dev/pilot, gates are "warnings." In production, gates are "hard blocks." This graduated enforcement prevents developer frustration while ensuring production safety.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Each security gate is a <strong>decision point</strong> where humans can intervene. In dev/pilot, gates are "warnings." In production, gates are "hard blocks." This graduated enforcement prevents developer frustration while ensuring production safety.</p>
 </div>
 <p><strong>Connection to PeaRL's Promotion Gates:</strong></p>
 <p>PeaRL's environment hierarchy (dev → pilot → preprod → prod) mirrors the DevSecOps pipeline:</p>

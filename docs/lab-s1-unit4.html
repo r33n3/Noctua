@@ -29,7 +29,7 @@
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a three-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
 
 <div class="quiz-block" id="quiz-w13">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 13</h4>
+  <h4> Knowledge Check — Week 13</h4>
 
   <div class="quiz-question" data-qid="w13q1" data-answer="c" data-explain="Git worktrees create parallel working directories on separate branches, enabling teammates to develop different components simultaneously without branch-switching conflicts. For agent development, this means one developer builds the recon agent while another builds the analysis agent — they merge when both are complete.">
     <p class="q-text">1. Why do worktrees enable parallel agent development without conflicts?</p>
@@ -81,7 +81,7 @@
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Three-Agent SOC System</h4>
+  <h4> Lab Exercise: Three-Agent SOC System</h4>
 
   <div class="scenario-box"><strong>Architecture:</strong> Incident arrives → Orchestrator routes to Recon Agent (gathers IoC data via your MCP tools) → Analysis Agent (applies CCT framework to synthesize findings) → Reporting Agent (generates structured JSON + Markdown report). All three run under the Orchestrator's control.</div>
 
@@ -175,7 +175,7 @@ claude
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a time-boxed rapid prototyping sprint: 20 minutes for problem scoping and spec, 2 hours for building, 40 minutes for testing and demo prep. You will measure MTTS, MTTP, and MTTSol for your sprint. This prototype becomes the foundation of your midyear project.</p></div>
 
 <div class="quiz-block" id="quiz-w14">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 14</h4>
+  <h4> Knowledge Check — Week 14</h4>
 
   <div class="quiz-question" data-qid="w14q1" data-answer="a" data-explain="MTTS (Mean Time to Suppress/Strategy) measures how quickly a team identifies the core security problem and strategic approach — from receiving a challenge to having a validated strategy. In sprint terms, this is your 20-minute scoping phase where you define the problem, solution approach, and agent architecture.">
     <p class="q-text">1. In the sprint context, what does MTTS measure?</p>
@@ -217,7 +217,7 @@ claude
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Sprint I — Timed Prototype</h4>
+  <h4> Lab Exercise: Sprint I — Timed Prototype</h4>
 
   <div class="callout callout-warn"><p><strong>Timer is active:</strong> The lab instructor will signal the start. Record your exact start time. Each phase is time-boxed — when the phase ends, move on regardless of completion state. Track your metrics honestly.</p></div>
 
@@ -306,7 +306,7 @@ claude
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Transform your Sprint I prototype into a hardened, documented, and ethically audited system. Apply the full quality checklist: error handling, input validation, logging, CCT analysis, AIUC-1 compliance, performance measurement.</p></div>
 
 <div class="quiz-block" id="quiz-w15">
-  <h4><i data-lucide="book-marked" class="licon"></i> Knowledge Check — Week 15</h4>
+  <h4> Knowledge Check — Week 15</h4>
 
   <div class="quiz-question" data-qid="w15q1" data-answer="d" data-explain="Production hardening for agentic systems means: robust error handling (every agent failure is caught and handled gracefully), input validation (all user input and tool outputs validated), structured logging (every tool invocation logged with timestamp, parameters, result), complete documentation (README, API docs, architecture diagram), and ethics compliance (AIUC-1 audit passed).">
     <p class="q-text">1. What does 'hardening' a security prototype specifically require?</p>
@@ -322,7 +322,7 @@ claude
 </div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Lab Exercise: Sprint II Hardening Checklist</h4>
+  <h4> Lab Exercise: Sprint II Hardening Checklist</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w15-1">
       <label><input type="checkbox" onchange="toggleStep('w15-1',this.checked)">
@@ -417,7 +417,7 @@ class JSONFormatter(logging.Formatter):
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Present your hardened prototype to the class and instructor panel. Defend architectural decisions using CCT. Conduct peer reviews. Reflect on the semester's learning trajectory.</p></div>
 
 <div class="lab-section">
-  <h4><i data-lucide="microscope" class="licon"></i> Presentation Preparation Checklist</h4>
+  <h4> Presentation Preparation Checklist</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w16-1">
       <label><input type="checkbox" onchange="toggleStep('w16-1',this.checked)">
@@ -488,7 +488,7 @@ class JSONFormatter(logging.Formatter):
 
 <hr>
 <div class="unit-complete">
-  <h3><i data-lucide="trophy" class="licon"></i> Semester 1 Complete!</h3>
+  <h3> Semester 1 Complete!</h3>
   <p>You have completed all four units of CSEC 601: CCT Foundations, Context Engineering &amp; Tool Design, Ethical AI, and Rapid Prototyping. You are ready for Semester 2.</p>
   <p style="margin-top:8px;"><a href="lab-s2-unit5.html">Continue: Semester 2 Lab Guide — Unit 5: Multi-Agent Orchestration &rarr;</a></p>
 </div>

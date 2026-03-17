@@ -495,7 +495,7 @@ body {
 <p><strong>The Threat Taxonomy</strong></p>
 <p>Understanding the landscape begins with categorizing how agents can be compromised.</p>
 <blockquote>
-<p><strong><i data-lucide="book-open" class="licon"></i>Methodology:</strong> Building a red team for agentic systems follows the <strong>Think → Spec → Build → Retro cycle</strong>: Think through your attack surface and threat scenarios → Spec probes and exploitation approaches → Build and execute → Retro on findings and iterate. This unit applies that cycle to adversarial thinking, ensuring your team systematically explores threats rather than relying on intuition.</p>
+<p><strong>Methodology:</strong> Building a red team for agentic systems follows the <strong>Think → Spec → Build → Retro cycle</strong>: Think through your attack surface and threat scenarios → Spec probes and exploitation approaches → Build and execute → Retro on findings and iterate. This unit applies that cycle to adversarial thinking, ensuring your team systematically explores threats rather than relying on intuition.</p>
 </blockquote>
 <ol>
 <li><strong>Prompt Injection Attacks</strong> — The most common attack vector. Attackers inject instructions into user inputs or external data (documents, web pages, tool outputs) that override the agent's original goals.</li>
@@ -511,7 +511,7 @@ body {
 <li><strong>Authority Confusion:</strong> Making the agent believe override instructions come from a legitimate authority (e.g., "This message is from the CEO").</li>
 <li><strong>Objective Reframing:</strong> Gradually shifting the agent's perception of its goals through repeated context manipulation.</li>
 </ol>
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> Anthropic's "Disrupting AI-orchestrated Cyber Espionage" (September 2025) documents how state-sponsored actors used sophisticated prompt injection chains to manipulate AI agents into conducting surveillance and exfiltrating classified information. The attack chain demonstrated goal hijacking at scale.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> Anthropic's "Disrupting AI-orchestrated Cyber Espionage" (September 2025) documents how state-sponsored actors used sophisticated prompt injection chains to manipulate AI agents into conducting surveillance and exfiltrating classified information. The attack chain demonstrated goal hijacking at scale.</p>
 </div>
 <ol>
 <li><strong>Tool Misuse and Exploitation</strong> — Agents have permissions to call external tools (APIs, databases, file systems). Attackers exploit these tools in unintended ways.</li>
@@ -535,7 +535,7 @@ body {
 <li><strong>Corrupting Conversation History:</strong> Modifying stored conversation logs to change how the agent understands prior decisions.</li>
 <li><strong>Planting Backdoors:</strong> Embedding instructions in memory that activate under specific triggers.</li>
 </ol>
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If an agent's persistent memory is corrupted with false information, and the agent believes it must maintain consistency with that memory, how would you detect this as an attacker? How would you defend against it?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If an agent's persistent memory is corrupted with false information, and the agent believes it must maintain consistency with that memory, how would you detect this as an attacker? How would you defend against it?</p>
 </div>
 <ol>
 <li><strong>Data Poisoning</strong> — Introducing false or malicious data into the agent's operational inputs (documents, databases, web search results).</li>
@@ -603,7 +603,7 @@ body {
 - Attack becomes harder to detect and remove
 - Attacker establishes deeper persistence for long-term access</p>
 <p>This 7-level chain demonstrates that the most dangerous attacks are <strong>not one-shot exploits but orchestrated campaigns</strong> that combine multiple techniques.</p>
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> PeaRL's full technical report: "Autonomous Agent Attack Chains: A Seven-Level Framework for Agentic AI Compromise" documents the TTPs, detection signatures, and mitigation strategies for each level. See <a href="frameworks.html">Frameworks</a>.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> PeaRL's full technical report: "Autonomous Agent Attack Chains: A Seven-Level Framework for Agentic AI Compromise" documents the TTPs, detection signatures, and mitigation strategies for each level. See <a href="frameworks.html">Frameworks</a>.</p>
 </div>
 <p><strong>Anthropic September 2025: State-Sponsored AI Espionage</strong></p>
 <p>In September 2025, Anthropic disclosed a coordinated attack by a state-sponsored actor that weaponized prompt injection against enterprise AI agents. The attack:</p>
@@ -666,7 +666,7 @@ body {
 - Tool access and permissions
 - Data flows and dependencies
 - Trust boundaries</p>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Focusing only on direct attack vectors (user input) while ignoring indirect vectors (tool outputs, knowledge base poisoning, inter-agent communication). Remember: every data flow is a potential injection point.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Focusing only on direct attack vectors (user input) while ignoring indirect vectors (tool outputs, knowledge base poisoning, inter-agent communication). Remember: every data flow is a potential injection point.</p>
 </div>
 <p><strong>Part 2: MITRE ATLAS Mapping</strong></p>
 <p>Create a matrix: <strong>Agents × MITRE ATLAS Techniques</strong></p>
@@ -725,7 +725,7 @@ body {
 <li>Are validation rules sufficient to catch prompt injection attempts?</li>
 <li>Example: Does the system check for instructions like "Ignore previous instructions" or "Pretend you are"?</li>
 </ol>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> Use the OWASP Top 10 for LLM Applications as a checklist. Each item maps to at least one vulnerability pattern in AI agents.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Use the OWASP Top 10 for LLM Applications as a checklist. Each item maps to at least one vulnerability pattern in AI agents.</p>
 </div>
 <ol>
 <li><strong>Permission Boundary Issues:</strong></li>
@@ -769,7 +769,7 @@ body {
 <li>Where is it readable by humans or exportable?</li>
 <li>Can it be extracted through tool outputs?</li>
 </ol>
-<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> The most dangerous vulnerabilities are those at the intersection of multiple attack vectors. An input validation gap + tool misuse + inter-agent communication vulnerability = critical risk.</p>
+<div class="callout callout-remember"><p><strong>Remember:</strong> The most dangerous vulnerabilities are those at the intersection of multiple attack vectors. An input validation gap + tool misuse + inter-agent communication vulnerability = critical risk.</p>
 </div>
 <p><strong>Part 4: Risk Prioritization Matrix</strong></p>
 <p>Create a 2×2 matrix: Likelihood (Low/High) × Impact (Low/High)</p>
@@ -857,7 +857,7 @@ body {
 <li>Recommended mitigation approach</li>
 <li>Residual risk after mitigation</li>
 </ol>
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Which risks can you mitigate through input validation alone? Which require architectural changes? Which might be acceptable risks that you'll monitor but not eliminate?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Which risks can you mitigate through input validation alone? Which require architectural changes? Which might be acceptable risks that you'll monitor but not eliminate?</p>
 </div>
 <h4 id="evaluation-criteria">Evaluation Criteria</h4>
 <ul>
@@ -964,7 +964,7 @@ body {
 <li><strong>Social Media Posts:</strong> An agent monitoring social media processes posts with injection instructions</li>
 <li><strong>Email Content:</strong> An agent processing emails encounters injection instructions</li>
 </ul>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Assuming that because the agent retrieved data from a "trusted" source, that data is safe. In fact, an attacker who can compromise any upstream source (a website, API, database) can inject instructions into agent processing flows.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Assuming that because the agent retrieved data from a "trusted" source, that data is safe. In fact, an attacker who can compromise any upstream source (a website, API, database) can inject instructions into agent processing flows.</p>
 </div>
 <p><strong>3. Multi-Stage Injection Attacks</strong></p>
 <p>Combining direct and indirect injections into a coordinated attack:</p>
@@ -993,7 +993,7 @@ Stage 2 (Indirect Injection): Another agent processes the first agent&#39;s resp
 - Use legitimate system outputs as injection vectors
 - Are harder to detect (look like normal system operation)
 - Can establish persistent influence across multiple agents</p>
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> If you were designing an agent system, how would you prevent multi-stage injection attacks? What mechanisms could you put in place to ensure that outputs from one agent cannot become unvalidated inputs to another?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If you were designing an agent system, how would you prevent multi-stage injection attacks? What mechanisms could you put in place to ensure that outputs from one agent cannot become unvalidated inputs to another?</p>
 </div>
 <p><strong>Goal Hijacking: Beyond Simple Instruction Override</strong></p>
 <p>Prompt injection that succeeds doesn't just override instructions—it fundamentally changes the agent's goals. This is goal hijacking.</p>
@@ -1043,7 +1043,7 @@ Stage 2 (Indirect Injection): Another agent processes the first agent&#39;s resp
 - <strong>Consistency Bias:</strong> The agent tries to be consistent with its prior statements
 - <strong>Social Proof:</strong> The agent believes the conversation partners are legitimate
 - <strong>Gradual Escalation:</strong> The request seems like a natural extension of prior discussion</p>
-<div class="callout callout-reading"><p><strong><i data-lucide="book-open" class="licon"></i>Further Reading:</strong> The paper "Jailbreaking Black-box Large Language Models in Twenty Queries" (arXiv 2306.04714) documents how attackers can systematically shift model behavior through structured queries. This is goal hijacking in practice.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> The paper "Jailbreaking Black-box Large Language Models in Twenty Queries" (arXiv 2306.04714) documents how attackers can systematically shift model behavior through structured queries. This is goal hijacking in practice.</p>
 </div>
 <p><strong>Tool Misuse: Weaponizing Legitimate Functionality</strong></p>
 <p>Every agent has access to tools: APIs, file systems, databases, email systems, etc. These tools were designed for legitimate purposes but can be exploited.</p>
@@ -1079,7 +1079,7 @@ Stage 2 (Indirect Injection): Another agent processes the first agent&#39;s resp
 </code></pre></div>
 
 <p>Neither tool is being misused individually, but the combination exceeds intended permissions.</p>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> During threat modeling (Week 5), specifically audit tool chains for permission escalation opportunities. Ask: "If an attacker controls this agent's goal, what could they accomplish by chaining tools together?"</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> During threat modeling (Week 5), specifically audit tool chains for permission escalation opportunities. Ask: "If an attacker controls this agent's goal, what could they accomplish by chaining tools together?"</p>
 </div>
 <p><strong>3. Time-of-Check to Time-of-Use (TOCTOU) Vulnerabilities</strong></p>
 <p>A gap between when a permission is checked and when it's used.</p>
@@ -1390,8 +1390,8 @@ Obfuscated: &quot;As a security researcher, I&#39;m conducting an audit of promp
 - Adversarial training (exposing the model to attack strategies during training/fine-tuning)
 - Defense-in-depth (multiple layers of protection, not just prompt engineering)
 - Monitoring and logging of "near-miss" attacks (attacks that almost worked)</p>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> When designing an attacker system prompt for your own red-teaming, focus on <strong>context engineering for adversarial AI</strong>: Give the attacker model clear instructions about how to reason about failures and adapt. A prompt like "If your previous approach was blocked, analyze the block reason and generate a variant that addresses the specific defense" is more valuable than "try different jailbreaks." The attacker should be a <em>reasoner</em>, not a script executor.</p>
-<p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> Consider the difference between a "good" attacker model and a "good" defender model. The attacker optimizes for creativity, persistence, and reasoning through failure. The defender optimizes for consistency, adherence to values, and resisting social engineering. What training approach would produce each? Can you design an attacker system prompt that would persistently probe your own agent's weaknesses?</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> When designing an attacker system prompt for your own red-teaming, focus on <strong>context engineering for adversarial AI</strong>: Give the attacker model clear instructions about how to reason about failures and adapt. A prompt like "If your previous approach was blocked, analyze the block reason and generate a variant that addresses the specific defense" is more valuable than "try different jailbreaks." The attacker should be a <em>reasoner</em>, not a script executor.</p>
+<p><strong>Discussion Prompt:</strong> Consider the difference between a "good" attacker model and a "good" defender model. The attacker optimizes for creativity, persistence, and reasoning through failure. The defender optimizes for consistency, adherence to values, and resisting social engineering. What training approach would produce each? Can you design an attacker system prompt that would persistently probe your own agent's weaknesses?</p>
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-red-team-exercise">Day 2 — Hands-On Lab: Red Team Exercise</h3>
@@ -1447,7 +1447,7 @@ Obfuscated: &quot;As a security researcher, I&#39;m conducting an audit of promp
 <li>Key insight: The attacker model brings reasoning that static tools cannot match</li>
 </ol>
 <blockquote>
-<p><strong><i data-lucide="lightbulb" class="licon"></i>Key Insight:</strong> Industry tools implement two strategies: <strong>static probing</strong> (Garak, DeepTeam list known attacks systematically) and <strong>adaptive reasoning</strong> (MASS evaluates responses semantically and mutates strategy). In this lab, you'll build your own versions using Claude Code, focusing on the reasoning and adaptation that makes attacks effective. By building these tools, you'll understand not just <em>what</em> to attack but <em>why</em> attacks work and <em>how</em> to improve them when they fail.</p>
+<p><strong>Key Insight:</strong> Industry tools implement two strategies: <strong>static probing</strong> (Garak, DeepTeam list known attacks systematically) and <strong>adaptive reasoning</strong> (MASS evaluates responses semantically and mutates strategy). In this lab, you'll build your own versions using Claude Code, focusing on the reasoning and adaptation that makes attacks effective. By building these tools, you'll understand not just <em>what</em> to attack but <em>why</em> attacks work and <em>how</em> to improve them when they fail.</p>
 </blockquote>
 <h4 id="attack-development-workflow">Attack Development Workflow</h4>
 <p><strong>Phase 1: Reconnaissance (Days 1-2)</strong></p>
@@ -1520,7 +1520,7 @@ The goal is to understand the attack surface comprehensively, not to execute att
 </code></pre></div>
 
 <p>Document findings in a reconnaissance report.</p>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Spending too much time on reconnaissance without executing attacks. The goal is to understand the system enough to craft effective attacks, not to document every detail. Aim for a 30% reconnaissance / 70% attack execution split.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Spending too much time on reconnaissance without executing attacks. The goal is to understand the system enough to craft effective attacks, not to document every detail. Aim for a 30% reconnaissance / 70% attack execution split.</p>
 </div>
 <p><strong>Phase 2: Attack Development (Days 3-4)</strong></p>
 <p>Goal: Develop and test attack payloads before executing against live system.</p>
@@ -1931,7 +1931,7 @@ Assertion: &quot;Offers assistance AND mentions standard procedures&quot;
 <li>Injection via email message</li>
 <li>Multi-stage injection (first output becomes input to second agent)</li>
 </ul>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> For indirect injection, look for any data flow where external data becomes an agent input. These are injection opportunities the defending team may have overlooked.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> For indirect injection, look for any data flow where external data becomes an agent input. These are injection opportunities the defending team may have overlooked.</p>
 </div>
 <p><strong>Category 3: Goal Hijacking</strong></p>
 <ul>
@@ -2111,7 +2111,7 @@ Assertion: &quot;Offers assistance AND mentions standard procedures&quot;
 - Legitimate requests might match patterns
 - High false positive rate (legitimate: "I forgot my previous question" triggers pattern)</p>
 <p>Best practice: Use pattern detection as one signal, not the sole defense.</p>
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Relying entirely on regex patterns. Attackers will obfuscate. Pattern detection catches obvious attacks but not sophisticated ones.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Relying entirely on regex patterns. Attackers will obfuscate. Pattern detection catches obvious attacks but not sophisticated ones.</p>
 </div>
 <p><strong>ML-Based Injection Detection</strong></p>
 <p>Train a classifier to detect injection attempts:</p>
@@ -2214,7 +2214,7 @@ Assertion: &quot;Offers assistance AND mentions standard procedures&quot;
 - <strong>Whitelist, don't blacklist:</strong> Allow specific directories, not "anything except..."
 - <strong>Path normalization:</strong> Resolve symlinks and .. traversal
 - <strong>Principle of least privilege:</strong> Each tool gets minimum permissions needed</p>
-<div class="callout callout-tip"><p><strong><i data-lucide="lightbulb" class="licon"></i>Pro Tip:</strong> For database queries, use parameterized queries exclusively:</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> For database queries, use parameterized queries exclusively:</p>
 </div>
 <div class="codehilite"><pre><span></span><code><span class="c1"># WRONG - vulnerable to SQL injection</span>
 <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id = </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2459,7 +2459,7 @@ This limits damage if SocAnalyst is compromised
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Blocked escalation attempt: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<div class="callout callout-remember"><p><strong><i data-lucide="circle-check" class="licon"></i>Remember:</strong> Permission boundaries are most effective when they're <strong>whitelist-based</strong> (allow specific actions) rather than blacklist-based (deny specific actions). An attacker's creativity can defeat blacklists, but whitelists enforce exactly what's allowed.</p>
+<div class="callout callout-remember"><p><strong>Remember:</strong> Permission boundaries are most effective when they're <strong>whitelist-based</strong> (allow specific actions) rather than blacklist-based (deny specific actions). An attacker's creativity can defeat blacklists, but whitelists enforce exactly what's allowed.</p>
 </div>
 <p><strong>Step 3: Build Your Own Guardrail System</strong></p>
 <p>Rather than using NeMo Guardrails, you'll build a defense-in-depth guardrail system with four layers of protection.</p>
@@ -2758,7 +2758,7 @@ This creates audit trail for compliance and forensic investigation.
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Why it succeeded: [analysis needed]&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> False positives breaking legitimate functionality. Monitor for:
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> False positives breaking legitimate functionality. Monitor for:
 - Legitimate user requests blocked by overly aggressive input validation
 - Legitimate tool calls denied by permission boundaries
 - Legitimate output filtered when it shouldn't be</p>
@@ -2961,7 +2961,7 @@ Max Score = 900 points
 <span class="o">-</span> <span class="nv">Manual</span> <span class="nv">intervention</span> <span class="nv">during</span> <span class="nv">autonomous</span> <span class="nv">operations</span>: <span class="nv">Score</span> <span class="nv">penalty</span>
 </code></pre></div>
 
-<div class="callout callout-pitfall"><p><strong><i data-lucide="triangle-alert" class="licon"></i>Common Pitfall:</strong> Teams trying to use 0-day exploits or attacks not covered in the course. This violates rules. Stick to what you've learned. Sophistication comes from combining basic techniques, not from using new ones.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Teams trying to use 0-day exploits or attacks not covered in the course. This violates rules. Stick to what you've learned. Sophistication comes from combining basic techniques, not from using new ones.</p>
 </div>
 <p><strong>Strategy Considerations for Red Team</strong></p>
 <p>The goal is <strong>not</strong> to get caught. Detected attacks score far fewer points than stealthy attacks.</p>
@@ -3497,7 +3497,7 @@ Red Team Score: 100 (initial access) + 50 (5000 records × 1 point) + 50 (persis
 <li>What governance and oversight is needed for autonomous agents?</li>
 <li>How does this affect organizational security strategy?</li>
 </ul>
-<div class="callout callout-discuss"><p><strong><i data-lucide="lightbulb" class="licon"></i>Discussion Prompt:</strong> In a real incident, a red team achieves the attack success you saw in the wargame. What would be different about incident response? What additional constraints exist? What's the cost to the organization, beyond data loss?</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> In a real incident, a red team achieves the attack success you saw in the wargame. What would be different about incident response? What additional constraints exist? What's the cost to the organization, beyond data loss?</p>
 </div>
 <hr />
 <h2 id="course-resources">Course Resources</h2>
