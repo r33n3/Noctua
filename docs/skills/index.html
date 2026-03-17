@@ -12,24 +12,44 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>These are starter Claude Code skills built for this course. Install one, try it, then make it yours.</p>
+<p>Four Claude Code skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
+
+<div class="callout callout-key">
+  <strong>Why This Cycle Exists</strong>
+  <p>The fastest way to build the wrong thing is to start building immediately. Claude will generate code confidently in whatever direction you point it — which means if your problem is unclear, you get a well-built solution to the wrong problem. The Think → Spec → Build → Retro cycle exists to prevent that.</p>
+  <p>Each skill enforces one phase:</p>
+  <ul>
+    <li><strong>/think</strong> — Forces you to understand the real problem before committing to an approach. Surfaces assumptions you didn't know you were making.</li>
+    <li><strong>/spec</strong> — Translates your thinking into a contract: what you're building, what you're not building, and how you'll know it works. Claude builds from this — not from vibes.</li>
+    <li><strong>/worktree-setup</strong> — Isolates parallel work into separate git branches so multiple components (or multiple Claude sessions) can build simultaneously without stepping on each other.</li>
+    <li><strong>/retro</strong> — Closes the loop. Compares what was built against the spec, captures what worked and what didn't, and feeds the findings into the next cycle.</li>
+  </ul>
+  <p>Run all four in sequence and you go from problem to working prototype in 110 minutes with a documented decision trail. Skip any of the first two and you spend the 110 minutes recovering from avoidable mistakes.</p>
+</div>
+
+<div class="callout callout-key">
+  <strong>How Skills Accelerate Ideation to Delivery</strong>
+  <p>Without skills, every Claude Code session starts from zero. You re-explain the context, re-establish the format, re-define what "done" means. Skills eliminate that overhead.</p>
+  <p>When you type <code>/think</code>, Claude already knows the output structure you need, the risk categories to check, and the confidence scale you use. When you type <code>/spec</code>, Claude already knows your architecture template, your AIUC-1 control table, and your definition of done. You spend the session on the problem — not on setup.</p>
+  <p>Over time, your modified skills become institutional memory. A new team member installs your skills and immediately works at your standard — not because you trained them, but because the workflow is encoded.</p>
+</div>
 
 <div class="callout callout-key">
   <strong>What is a Claude Code Skill?</strong>
   <p>A skill is a markdown file you place in <code>~/.claude/commands/</code> (global, available in all projects) or <code>.claude/commands/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
-  <p>Skills are just text files. You can read them, edit them, fork them, and share them. The four below are starting points — not finished products.</p>
+  <p>Skills are plain text files — read them, edit them, fork them, share them. The four below are starting points, not finished products. The best version of each skill is the one you've shaped for your specific work.</p>
 </div>
 
 <div class="callout callout-tip">
   <strong>The Goal: Build Your Own Workflow</strong>
-  <p>Don't just install these and run them as-is. Use them a few times, notice what's missing for your specific work, and modify them. Add your team's output format. Add security-specific checklists. Remove sections you never use. Over time your skills reflect <em>your</em> way of working — and every Claude Code session starts from that baseline.</p>
+  <p>Don't install these and run them as-is indefinitely. Use them a few times, notice what's missing for your work, and modify them. Add your team's output format. Add security-specific checklists. Remove sections you never use. Over time your skills reflect <em>your</em> way of working — and every Claude Code session starts from that baseline.</p>
   <p>Share what you build. Post your modified skills as GitHub gists. The security practitioner who needs a <code>/think-threatmodel</code> or a <code>/retro-soc</code> skill is out there right now, and you could already have the thing they need.</p>
 </div>
 
 <h2>Installation (all skills)</h2>
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>mkdir -p ~/.claude/skills
+  <pre><code>mkdir -p ~/.claude/commands
 
 # Download all four skills at once (run from your terminal)
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
@@ -46,6 +66,13 @@ ls ~/.claude/commands/</code></pre>
 <h2 id="think">/think — Critical Analysis Before Acting</h2>
 <p>Stop and think before touching code or making a decision. Surfaces assumptions, risks, alternatives, and unknowns. The starting point of every cycle.</p>
 <p><strong>Best used in:</strong> Unit 1 (CCT incident analysis), Unit 3 (ethical AI assessments), Unit 6 (threat modeling), Unit 8 (architecture review), any time a problem feels ambiguous.</p>
+
+<div class="callout callout-reading">
+  <strong>Why /think exists</strong>
+  <p>The most expensive mistake in a sprint is confidently building the wrong thing. <code>/think</code> is a forcing function — it makes you restate the problem in your own words, list the assumptions you're making, and identify what you don't know before you commit to an approach.</p>
+  <p>In security work this matters more than most domains. A threat model built on a wrong assumption doesn't just waste time — it creates false confidence. An incident response tool designed for the wrong attacker profile misses the actual threat. <code>/think</code> makes the assumptions visible so you can challenge them before they're baked into code.</p>
+  <p>The output also gives Claude the context it needs to help you well. A Claude session that starts with a clear problem statement, a list of risks, and a recommended direction produces significantly better output than one that starts with "build me a threat detection tool."</p>
+</div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
   <a href="think.md" download="think.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download think.md</a>
@@ -73,6 +100,13 @@ ls ~/.claude/commands/</code></pre>
 <p>Write a formal spec before writing a line of code. Defines agents, tools, data flow, success criteria, and scope. The shared contract for every build.</p>
 <p><strong>Best used in:</strong> Unit 2 (MCP server design), Unit 4 (sprint planning), Unit 5 (multi-agent architecture), Unit 8 (capstone architecture document).</p>
 
+<div class="callout callout-reading">
+  <strong>Why /spec exists</strong>
+  <p>Claude is an exceptional builder — but it builds what you describe, not what you meant. Without a spec, "build a vulnerability scanner" produces something. With a spec, it produces the right something: the right agents, the right tools, the right data flow, with security controls defined before the first line of code.</p>
+  <p>The spec is also your scope enforcer. Sprint labs give you 60 minutes to build. Without a written scope, every new idea that surfaces during the build phase looks reasonable to add. The spec gives you something to point to: "That's not in scope — deferred to next sprint." This is not a constraint — it's what lets you finish.</p>
+  <p>In a team context, the spec is the shared contract. If two people are building different components in parallel worktrees, the spec is what keeps them compatible. If you're using Claude Code to build one component and doing another yourself, the spec is what keeps you aligned with your own work.</p>
+</div>
+
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
   <a href="spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
   <a href="spec.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
@@ -99,6 +133,14 @@ ls ~/.claude/commands/</code></pre>
 <p>Configures git worktrees for isolated parallel development. Each component gets its own branch and directory. Multiple developers or Claude Code sessions build simultaneously without conflicts.</p>
 <p><strong>Best used in:</strong> Unit 4 (sprint I with 3-agent SOC), Unit 5 (multi-agent framework builds), Unit 8 (capstone team development).</p>
 
+<div class="callout callout-reading">
+  <strong>Why /worktree-setup exists</strong>
+  <p>Git worktrees let you check out multiple branches simultaneously into separate directories. In a sprint with three components — say a triage agent, an enrichment agent, and a reporting layer — you don't have to build them sequentially. Each lives in its own directory, on its own branch, and can be developed (or delegated to a separate Claude Code session) in parallel.</p>
+  <p>This is how the sprint's 60-minute build phase stays achievable. Sequential builds of three components would require 60 minutes each. Parallel worktrees compress that into the time of the longest single component.</p>
+  <p>It also keeps your main branch clean. Nothing gets merged until a component is complete and passing. If one component hits a dead end, you abandon that worktree without touching anything else. The <code>/worktree-setup</code> skill generates the exact shell commands for your specific spec — you don't have to remember the git worktree syntax, and every component gets consistent structure from the start.</p>
+  <p><strong>Note:</strong> Worktree management via <code>/worktree-setup</code> is a Claude Code skill — it works in Claude Code sessions. The underlying <code>git worktree</code> commands work in any terminal or IDE, but the skill automation is Claude Code-specific.</p>
+</div>
+
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
   <a href="worktree-setup.md" download="worktree-setup.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download worktree-setup.md</a>
   <a href="worktree-setup.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
@@ -114,6 +156,13 @@ ls ~/.claude/commands/</code></pre>
 <h2 id="retro">/retro — Structured Retrospective</h2>
 <p>Closes every cycle with an honest review: what was built vs. the spec, what worked, what didn't, what to carry forward. The retro output feeds the next <code>/think</code>.</p>
 <p><strong>Best used in:</strong> Unit 4 (sprint retros, Weeks 15–16), Unit 8 (capstone sprint retros), any session where something went differently than expected.</p>
+
+<div class="callout callout-reading">
+  <strong>Why /retro exists</strong>
+  <p>Most developers move straight from one build to the next. The retro is the step that makes the next cycle faster than the current one. Without it, you repeat the same mistakes because you never examined them. Without it, patterns that worked disappear because you never captured them.</p>
+  <p>The retro compares what you set out to build (the spec's success criteria) against what you actually built. That gap — what you cut, what you deferred, what took longer than expected — is your most valuable input for the next sprint. A retro that says "the tool detection worked but the enrichment step took 40 of 60 build minutes" tells you exactly where to focus Week 12 hardening.</p>
+  <p>The retro also generates your context library. Every sprint produces reusable patterns — a tool definition that worked, a system prompt structure that produced clean output, an agent orchestration approach worth keeping. The retro captures these before you move on and they're gone. Over time, your context library becomes the institutional knowledge that makes every new tool faster to build than the last.</p>
+</div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
   <a href="retro.md" download="retro.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download retro.md</a>
