@@ -133,18 +133,32 @@ The SDK is required starting Week 4 (Context Engineering) and used throughout th
 
 ## Required Accounts and Subscriptions
 
-### Claude Max Subscription (Primary)
+### Claude Subscription — Required
 
-A Claude Max subscription is required for all course work. This provides access to:
+#### Individual Students: Claude Max (~$100–200/month)
+
+**Claude Max is the practical minimum for the full course.** Sprint labs (Weeks 11–15 and all Semester 2 units) run 110-minute agent loops with heavy code generation, worktrees, and multi-agent orchestration. Rate limits mid-sprint kill the lab format.
+
+> **What students actually hit on Claude Pro during sprint labs:**
+> - Mid-sprint cutoff during the 60-minute build phase
+> - Agent loop timeouts on multi-agent Semester 2 labs
+> - Worktree sessions interrupted mid-task
+> - Forced wait periods that break sprint timing
+
+**Claude Pro ($20/month)** is acceptable if you are auditing the course or only completing Semester 1. Semester 1 labs are analysis and light code generation — Pro's rate limits are workable. Do not start Semester 2 on Pro.
+
+#### Institutional Cohorts: Claude Enterprise
+
+If your program or employer is purchasing seats, Claude Enterprise is the right choice. It adds SSO, audit logs, centralized billing, and cohort-level rate limits — all of which matter when a full class runs concurrent sprint labs.
+
+#### What your subscription provides:
 
 - **Claude Code CLI**: Command-line interface for autonomous code generation and iteration
 - **Claude Agent SDK**: Framework for building agentic workflows with tool use and autonomous decision-making
-- **Worktrees**: Isolated development branches for parallel experimentation
+- **Worktrees**: Isolated development branches for parallel experimentation — Claude Code-specific, not available in other IDEs
 - **Subagents**: Specialized agents delegated to specific security domains
 - **MCP (Model Context Protocol) Servers**: Bidirectional communication between Claude and custom tools, APIs, and data sources
 - **Agent Teams**: Orchestrated multi-agent systems for complex security operations
-
-Claude Max is available through institutional purchase (check with your program) or individual subscription at the current rate. Verify your subscription level grants access to all agent capabilities.
 
 ### Additional Accounts (Free Tier Sufficient)
 
@@ -155,9 +169,17 @@ Claude Max is available through institutional purchase (check with your program)
 
 ## Development Environment Setup
 
-Choose one of the following setup paths based on your preference and device.
+Choose one of the following setup paths based on your hardware.
 
-### Option A: GitHub Codespaces (Recommended)
+### Option A: Local Machine Setup (Recommended)
+
+Local setup is the recommended path for this course. Sprint labs (Weeks 11–15 and Semester 2) rely heavily on Claude Code worktrees, Docker, and Ollama — all of which run with less friction on a local macOS or Linux machine than in a cloud environment.
+
+See the [Local Machine Setup](#option-b-local-machine-setup) steps below.
+
+### Option B: GitHub Codespaces (Fallback)
+
+Use Codespaces if you do not have a capable local machine (minimum 16 GB RAM). It provides a pre-configured environment without local installation but has limitations: Ollama local models are not practical in Codespaces, and Docker-in-Codespaces adds latency to container labs.
 
 GitHub Codespaces provides a fully configured cloud development environment without local installation complexity.
 
@@ -213,9 +235,9 @@ The Codespace includes a `devcontainer.json` that automatically installs:
 
 **Cost:** GitHub Codespaces free tier provides 60 core-hours per month, sufficient for course labs. Paid tiers are available if needed.
 
-### Option B: Local Machine Setup
+### Local Machine Setup
 
-If you prefer a local development environment, follow these steps.
+Follow these steps for the recommended local setup path.
 
 **System Requirements:**
 - macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+)
@@ -319,7 +341,7 @@ gh --version
 
 **Step 6: Install AWS CLI v2**
 
-AWS CLI is used for ECR (Elastic Container Registry) and ECS (Elastic Container Service) operations when promoting containerized prototypes to cloud deployments.
+AWS CLI is used for ECR (container registry), ECS (Fargate deployment), S3 (artifact and log storage), IAM (permission boundary labs), and CloudWatch (agent observability) in production deployment labs.
 
 - **macOS**: `brew install awscli`
 - **Windows**: Download from https://aws.amazon.com/cli/
@@ -334,6 +356,23 @@ Configure and verify:
 aws configure  # Enter your Access Key ID, Secret, region (us-east-1), output format (json)
 aws --version
 aws sts get-caller-identity  # Verify authentication
+```
+
+**Step 6b: Install Azure CLI**
+
+Azure CLI is required for the Semester 2 multi-cloud unit (Azure Container Apps deployment, Azure AI Services comparisons, enterprise SSO simulation). Not needed until Semester 2 — install now to avoid setup overhead later.
+
+- **macOS**: `brew install azure-cli`
+- **Windows**: Download from https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows
+- **Linux**:
+  ```bash
+  curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+  ```
+
+Authenticate and verify:
+```bash
+az login
+az --version
 ```
 
 **Step 7: Install Claude Code CLI**
@@ -351,7 +390,7 @@ claude --version
 
 ### Claude Code CLI Setup
 
-Once installed, authenticate with your Claude Max account.
+Once installed, authenticate with your Claude account.
 
 **Step 1: Authenticate**
 
@@ -395,7 +434,29 @@ Key settings for the course:
 - **allowedTools**: Controls which tools Claude can use. The defaults above are recommended. MCP servers will be added per lab.
 - **timeout**: Maximum execution time in milliseconds (adjust if labs require longer runs).
 
-**Step 4: Run Your First Command**
+**Step 4: Install Course Skills**
+
+Claude Code reads custom slash commands from `~/.claude/commands/`. Install the four course skills used in every sprint lab:
+
+```bash
+mkdir -p ~/.claude/commands
+
+# Clone the course repo first if you haven't already, then:
+cp /path/to/Noctua/docs/skills/think.md ~/.claude/commands/think.md
+cp /path/to/Noctua/docs/skills/spec.md ~/.claude/commands/spec.md
+cp /path/to/Noctua/docs/skills/retro.md ~/.claude/commands/retro.md
+cp /path/to/Noctua/docs/skills/worktree-setup.md ~/.claude/commands/worktree-setup.md
+```
+
+Verify — inside any Claude Code session, these should now work:
+- `/think` — structured problem analysis before building
+- `/spec` — architecture document before coding
+- `/retro` — sprint retrospective
+- `/worktree-setup` — isolated git branch per task
+
+> Skills live in `~/.claude/commands/`, not `~/.claude/skills/`. Claude Code does not read the `skills/` directory.
+
+**Step 5: Run Your First Command**
 
 ```bash
 claude "Create a simple Python script that prints 'Noctua Lab Environment Ready'"
@@ -413,6 +474,13 @@ Python MCP SDK (primary for security tools):
 ```bash
 pip install mcp
 ```
+
+fastmcp (sprint prototyping — a decorated Python function becomes a working MCP tool in seconds):
+```bash
+pip install fastmcp
+```
+
+> Use fastmcp for sprint lab iteration (Weeks 11–15). Use the `mcp` SDK for production deliverables. Both are installed from Day 1.
 
 TypeScript MCP SDK (alternative, if you prefer Node.js):
 ```bash
@@ -455,6 +523,21 @@ python hello_mcp_server.py
 ```
 
 If it starts without errors, your MCP development environment is ready.
+
+## Data & Storage Setup (Week 5+)
+
+### ChromaDB — Local Vector Store
+
+Required for Week 5 RAG labs. ChromaDB runs locally and auto-generates embeddings — no separate embedding API call required for labs.
+
+```bash
+pip install chromadb
+python -c "import chromadb; print('ChromaDB:', chromadb.__version__)"
+```
+
+> **Production note:** Course labs use ChromaDB's default embedding function for simplicity. Production RAG deployments use a dedicated embedding model — Voyage AI (`voyage-3`) is the recommended option for Claude-based systems. Not required for coursework but worth knowing when you move to production.
+
+---
 
 ## Multi-Vendor Framework Setup (Semester 2)
 
@@ -515,13 +598,10 @@ Ollama runs open-weight models locally, useful for offline security work and sen
 **Pull a Model:**
 
 ```bash
-ollama pull llama2
+ollama pull llama3.2       # 2 GB — default for course labs
+ollama pull mistral        # 4 GB — alternative, stronger reasoning
+ollama pull nomic-embed-text  # embedding model for local RAG labs
 ```
-
-This downloads a 4GB model. Alternative models:
-- `ollama pull mistral` (faster, lighter)
-- `ollama pull neural-chat` (optimized for conversation)
-- `ollama pull openchat` (low-latency)
 
 **Verify:**
 
