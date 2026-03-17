@@ -165,7 +165,6 @@ function buildSidebar(activeLink, pathPrefix) {
   const nav = [
     ['nav-section', 'Overview'],
     ['link', 'index.html', 'Course Overview'],
-    ['link', 'assessment.html', 'Design Rationale'],
     ['nav-section', 'Semester 1: Foundations'],
     ['link', 'semester1.html', 'Semester 1 Overview'],
     ['sublink', 's1-unit1.html', 'Unit 1: CCT Foundations'],
@@ -189,6 +188,7 @@ function buildSidebar(activeLink, pathPrefix) {
     ['nav-section', 'Resources'],
     ['link', 'frameworks.html', 'Frameworks &amp; Protocols'],
     ['link', 'lab-setup.html', 'Lab Setup Guide'],
+    ['link', 'assessment.html', 'Design Rationale'],
     ['link', 'reading.html', 'Reading List'],
     ['link', 'skills/index.html', 'Claude Code Skills'],
     ['link', 'resources/course-cheatsheet.html', 'Course Cheatsheet'],
