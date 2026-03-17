@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Cheatsheet | Noctua</title>
+  <link rel="stylesheet" href="../labs.css">
+  <style>
+    /* ── Cheatsheet page layout ── */
+    .cs-page {
+      background: #0d1117;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+
+    .cs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #161b22;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .cs-header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .cs-header-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .cs-header-side {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      padding: 4px 10px;
+      border-radius: 3px;
+    }
+
+    /* ── 3-column grid ── */
+    .cs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .cs-col {
+      padding: 16px 14px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .cs-col:last-child { border-right: none; }
+
+    /* ── Section blocks ── */
+    .cs-section {
+      margin-bottom: 14px;
+    }
+
+    .cs-section-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+
+    .col-purple .cs-section-title { background: rgba(139,92,246,0.25); color: #c4b5fd; }
+    .col-teal   .cs-section-title { background: rgba(45,212,191,0.2);  color: #5eead4; }
+    .col-gold   .cs-section-title { background: rgba(251,191,36,0.2);  color: #fbbf24; }
+
+    /* ── Tables ── */
+    .cs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+      margin-bottom: 6px;
+    }
+
+    .cs-table th {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      padding: 3px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: left;
+    }
+
+    .cs-table td {
+      padding: 3px 6px;
+      color: rgba(255,255,255,0.82);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .cs-table tr:last-child td { border-bottom: none; }
+
+    .cs-table .label {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .col-purple .cs-table .label { color: #c4b5fd; }
+    .col-teal   .cs-table .label { color: #5eead4; }
+    .col-gold   .cs-table .label { color: #fbbf24; }
+
+    /* ── Phase blocks (cycle) ── */
+    .cs-phase {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 10.5px;
+    }
+
+    .cs-phase-badge {
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .badge-think  { background: rgba(139,92,246,0.3); color: #c4b5fd; }
+    .badge-spec   { background: rgba(45,212,191,0.2); color: #5eead4; }
+    .badge-build  { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .badge-retro  { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+
+    .cs-phase-body { color: rgba(255,255,255,0.8); line-height: 1.5; }
+    .cs-phase-body strong { color: #fff; font-size: 10.5px; }
+
+    /* ── Code blocks ── */
+    .cs-code {
+      background: #0b0f19;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 7px 9px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 9.5px;
+      color: #93c5fd;
+      line-height: 1.6;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .cs-code .comment { color: rgba(255,255,255,0.3); }
+    .cs-code .key     { color: #5eead4; }
+    .cs-code .val     { color: #fbbf24; }
+    .cs-code .str     { color: #86efac; }
+
+    /* ── Inline tags ── */
+    .tag {
+      display: inline-block;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-right: 2px;
+      vertical-align: middle;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-haiku  { background: rgba(45,212,191,0.2);  color: #5eead4; }
+    .tag-sonnet { background: rgba(251,191,36,0.2);  color: #fbbf24; }
+    .tag-opus   { background: rgba(139,92,246,0.25); color: #c4b5fd; }
+
+    /* ── Bullet lists ── */
+    .cs-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 6px 0;
+      font-size: 10.5px;
+    }
+
+    .cs-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      color: rgba(255,255,255,0.8);
+      padding: 2px 0;
+      line-height: 1.5;
+    }
+
+    .cs-list li::before {
+      content: '›';
+      flex-shrink: 0;
+      margin-top: 0;
+    }
+
+    .col-purple .cs-list li::before { color: #c4b5fd; }
+    .col-teal   .cs-list li::before { color: #5eead4; }
+    .col-gold   .cs-list li::before { color: #fbbf24; }
+
+    .cs-list .em { color: #fff; font-weight: 600; }
+
+    /* ── Divider ── */
+    .cs-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 10px 0;
+    }
+
+    /* ── Skill rows ── */
+    .skill-row {
+      margin-bottom: 10px;
+    }
+
+    .skill-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #c4b5fd;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 2px;
+    }
+
+    .skill-when {
+      font-size: 9px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 3px;
+    }
+
+    .skill-output {
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+    }
+
+    /* ── OWASP numbered list ── */
+    .owasp-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 10.5px;
+    }
+
+    .owasp-list li {
+      display: flex;
+      gap: 7px;
+      padding: 2px 0;
+      color: rgba(255,255,255,0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      line-height: 1.5;
+    }
+
+    .owasp-list li:last-child { border-bottom: none; }
+
+    .owasp-num {
+      font-size: 9px;
+      font-weight: 700;
+      color: #fbbf24;
+      min-width: 36px;
+      font-family: monospace;
+      padding-top: 1px;
+    }
+
+    /* ── Sidebar nav area — override for cheatsheet full-width feel ── */
+    .content { max-width: 100%; }
+  </style>
+</head>
+<body>
+<nav class="sidebar" id="sidebar-nav"></nav>
+
+<main class="main"><div class="content">
+
+<h1>Course Cheatsheet</h1>
+<p>Two-sided reference covering the full Noctua methodology — sprint cycle, frameworks, metrics, tools, and practice. Keep both sides open during labs.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDE 1 — FOUNDATION
+════════════════════════════════════════════════════════════════ -->
+<div class="cs-page">
+
+  <div class="cs-header">
+    <div>
+      <div class="cs-header-title">Noctua — AI Security Engineering</div>
+      <div class="cs-header-sub">Course Reference · noctua.ai-security.dev</div>
+    </div>
+    <div class="cs-header-side">Side 1 · Foundation</div>
+  </div>
+
+  <div class="cs-grid">
+
+    <!-- ── COL 1: CYCLE + ANTIPATTERNS ── -->
+    <div class="cs-col col-purple">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Think → Spec → Build → Retro Cycle</div>
+
+        <div class="cs-phase">
+          <span class="cs-phase-badge badge-think">THINK · 15 min</span>
+          <div class="cs-phase-body">
+            <strong>Problem definition.</strong> CCT + Assessment Stack. Write 3–5 measurable success criteria. Output: one-page problem analysis.
+          </div>
+        </div>
+
+        <div class="cs-phase">
+          <span class="cs-phase-badge badge-spec">SPEC · 20 min</span>
+          <div class="cs-phase-body">
+            <strong>Architecture before code.</strong> Agents, tools, data flow, MVP scope, AIUC-1 controls table. Output: one-page spec with ASCII diagram.
+          </div>
+        </div>
+
+        <div class="cs-phase">
+          <span class="cs-phase-badge badge-build">BUILD · 60 min</span>
+          <div class="cs-phase-body">
+            Structure (5) → Tool schemas (10) → Agents + prompts (15) → Orchestration (15) → Logging (10) → Test (5). Cut anything not in spec.
+          </div>
+        </div>
+
+        <div class="cs-phase">
+          <span class="cs-phase-badge badge-retro">RETRO · 15 min</span>
+          <div class="cs-phase-body">
+            <strong>Happy path + failure case.</strong> Capture metrics.json. Spec vs reality table. Top 3 items for next sprint.
+          </div>
+        </div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Sprint Antipatterns</div>
+        <table class="cs-table">
+          <thead><tr><th>Pattern</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td class="label">Perfectionism</td><td>CLI is fine. UI is next sprint.</td></tr>
+            <tr><td class="label">Over-generalization</td><td>Pick one use case. Iterate later.</td></tr>
+            <tr><td class="label">Scope creep</td><td>Note it. Defer to deferred items.</td></tr>
+            <tr><td class="label">Architecture paralysis</td><td>Pick one framework, move.</td></tr>
+            <tr><td class="label">Testing obsession</td><td>One happy path + one failure. Ship.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">CPT — Cost Per Transaction</div>
+        <div class="cs-code">
+          <span class="comment"># Formula</span><br>
+          CPT = total_tokens × model_price / 1_000_000<br><br>
+          <span class="comment"># Efficiency</span><br>
+          E = (Tasks × Quality Score) / Total Cost
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── COL 2: ASSESSMENT STACK + MODEL SELECTION ── -->
+    <div class="cs-col col-teal">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Engineering Assessment Stack</div>
+        <table class="cs-table">
+          <thead><tr><th>Layer</th><th>Question</th><th>Options</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="label">L1 · Problem</td>
+              <td>What type?</td>
+              <td>Classification · Correlation · Reasoning · Generation · Retrieval</td>
+            </tr>
+            <tr>
+              <td class="label">L2 · Compute</td>
+              <td>How solved?</td>
+              <td>Deterministic (rules/regex) · Statistical (ML) · Reasoning (novel)</td>
+            </tr>
+            <tr>
+              <td class="label">L3 · Model</td>
+              <td>Which tier?</td>
+              <td>Haiku · Sonnet · Opus — see model table below</td>
+            </tr>
+            <tr>
+              <td class="label">L4 · Data</td>
+              <td>Where stored?</td>
+              <td>Relational (lookup) · Vector (semantic) · Graph (traverse) · Time-series (trends)</td>
+            </tr>
+            <tr>
+              <td class="label">L5 · Integration</td>
+              <td>How connected?</td>
+              <td>Real-time MCP · Batch · A2A delegation · REST API</td>
+            </tr>
+            <tr>
+              <td class="label">L6 · Verification</td>
+              <td>How confirmed?</td>
+              <td>Test suite (deterministic) · Human review (reasoning) · Cross-reference (factual)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Model Selection</div>
+        <table class="cs-table">
+          <thead><tr><th>Model</th><th>Cost</th><th>Use When</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-haiku">Haiku</span></td>
+              <td>$1/MTok</td>
+              <td>High-throughput routing, extraction, classification, triage</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-sonnet">Sonnet</span></td>
+              <td>$3/MTok</td>
+              <td>Operational analysis, MCP tool orchestration, sprint builds</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-opus">Opus</span></td>
+              <td>$15/MTok</td>
+              <td>Deep attribution, novel threat scenarios, adversarial reasoning. Invoke rarely.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">MCP Tool Pattern</div>
+        <div class="cs-code">
+          <span class="comment"># fastmcp — sprint prototyping</span><br>
+          <span class="key">from</span> fastmcp <span class="key">import</span> FastMCP<br>
+          mcp = FastMCP(<span class="str">"security-tool"</span>)<br><br>
+          @mcp.tool()<br>
+          <span class="key">async def</span> analyze(input: str) -> str:<br>
+          &nbsp;&nbsp;<span class="comment"># 1. validate input schema</span><br>
+          &nbsp;&nbsp;<span class="comment"># 2. execute core logic</span><br>
+          &nbsp;&nbsp;<span class="comment"># 3. return structured result</span><br>
+          &nbsp;&nbsp;<span class="key">return</span> result
+        </div>
+      </div>
+
+      <div class="cs-section">
+        <div class="cs-section-title">A2A vs MCP</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">MCP</td><td>Agent → Tool. Claude calls your function directly.</td></tr>
+            <tr><td class="label">A2A</td><td>Agent → Agent. Claude delegates to a specialist agent.</td></tr>
+            <tr><td class="label">REST</td><td>Agent → API. Synchronous HTTP call to external service.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ── COL 3: METRICS + AIUC-1 ── -->
+    <div class="cs-col col-gold">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Security Metrics — Canonical Definitions</div>
+        <table class="cs-table">
+          <thead><tr><th>Metric</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td class="label">MTTS</td><td>Mean Time to <strong>Suppress</strong> — blast radius stops expanding</td></tr>
+            <tr><td class="label">MTTP</td><td>Mean Time to <strong>Prevent</strong> — preventive measures deployed</td></tr>
+            <tr><td class="label">MTTSol</td><td>Mean Time to <strong>Solution</strong> — detection to full closure</td></tr>
+            <tr><td class="label">MTTI</td><td>Mean Time to <strong>Investigate</strong> — forensic analysis complete</td></tr>
+            <tr><td class="label">aMTTR</td><td>Adjusted Mean Time to <strong>Remediate</strong> — weighted by severity, includes human review</td></tr>
+            <tr><td class="label">CPT</td><td>Cost Per Transaction — API tokens × price / 1M</td></tr>
+            <tr><td class="label">VR</td><td>Verification Rate — % of findings independently verified before action</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Canonical definitions set in week-01.md. MTTS &lt; MTTP &lt; aMTTR &lt; MTTSol in most incidents.</div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">AIUC-1 — Six Domains</div>
+        <table class="cs-table">
+          <thead><tr><th>Domain</th><th>Focus</th><th>Sprint Check</th></tr></thead>
+          <tbody>
+            <tr><td class="label">A · Data</td><td>Privacy &amp; PII</td><td>What PII is processed? Can it be minimized?</td></tr>
+            <tr><td class="label">B · Security</td><td>Input validation</td><td>What can an attacker inject? What schema does the tool accept?</td></tr>
+            <tr><td class="label">C · Safety</td><td>Irreversible actions</td><td>Does the tool take irreversible actions? If yes → human approval step.</td></tr>
+            <tr><td class="label">D · Reliability</td><td>Graceful degradation</td><td>What happens when the API times out? What's the fallback?</td></tr>
+            <tr><td class="label">E · Accountability</td><td>Audit trails</td><td>What events are logged? Can decisions be reconstructed?</td></tr>
+            <tr><td class="label">F · Society</td><td>Fairness &amp; bias</td><td>Who could be harmed? Does the tool treat populations equitably?</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Sprint I minimum: B + D + E baked in. C + F: document whether irreversible actions exist.</div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Sprint Metrics Template</div>
+        <div class="cs-code">
+{<br>
+&nbsp;<span class="key">"sprint"</span>: <span class="str">"week-11"</span>,<br>
+&nbsp;<span class="key">"execution_time_sec"</span>: <span class="val">0.0</span>,<br>
+&nbsp;<span class="key">"tokens_used"</span>: <span class="val">0</span>,<br>
+&nbsp;<span class="key">"cpt_usd"</span>: <span class="val">0.0</span>,<br>
+&nbsp;<span class="key">"mtts_sec"</span>: <span class="val">0.0</span>,<br>
+&nbsp;<span class="key">"mttp_sec"</span>: <span class="val">0.0</span>,<br>
+&nbsp;<span class="key">"verification_rate"</span>: <span class="val">0.0</span>,<br>
+&nbsp;<span class="key">"success_criteria_met"</span>: <span class="str">"X/Y"</span>,<br>
+&nbsp;<span class="key">"deferred_items"</span>: []<br>
+}
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /cs-grid -->
+</div><!-- /cs-page side 1 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDE 2 — TOOLS & PRACTICE
+════════════════════════════════════════════════════════════════ -->
+<div class="cs-page">
+
+  <div class="cs-header">
+    <div>
+      <div class="cs-header-title">Noctua — AI Security Engineering</div>
+      <div class="cs-header-sub">Course Reference · noctua.ai-security.dev</div>
+    </div>
+    <div class="cs-header-side">Side 2 · Tools &amp; Practice</div>
+  </div>
+
+  <div class="cs-grid">
+
+    <!-- ── COL 1: SKILLS REFERENCE ── -->
+    <div class="cs-col col-purple">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Skill Commands — ~/.claude/commands/</div>
+
+        <div class="skill-row">
+          <div class="skill-name">/think</div>
+          <div class="skill-when">Before any decision, code, or recommendation</div>
+          <div class="skill-output">Output: Goal (restated) · Assumptions · Risks · Alternatives · Unknowns · Direction + Confidence level</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/spec</div>
+          <div class="skill-when">After /think · before any build session</div>
+          <div class="skill-output">Output: Problem statement · Success criteria · Out of scope · Architecture table · Tool definitions · AIUC-1 controls · Definition of done</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/worktree-setup</div>
+          <div class="skill-when">After /spec · before parallel build</div>
+          <div class="skill-output">Output: git worktree commands per component · directory map table · per-worktree structure setup · merge + cleanup commands</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/retro</div>
+          <div class="skill-when">After every sprint or build session</div>
+          <div class="skill-output">Output: Spec vs reality table · What worked · What didn't · What slowed us · Next cycle changes · Context library updates · Metrics table</div>
+        </div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Install All Skills</div>
+        <div class="cs-code">
+mkdir -p ~/.claude/commands<br><br>
+curl -o ~/.claude/commands/think.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/<br>
+&nbsp;Noctua/main/docs/skills/think.md<br><br>
+<span class="comment"># repeat for spec.md, retro.md,</span><br>
+<span class="comment"># worktree-setup.md</span>
+        </div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);">Skills are plain text. Read, edit, fork them. See docs/skills/ for full install + modifications.</div>
+      </div>
+
+    </div>
+
+    <!-- ── COL 2: CCT + V&V + DARK FACTORY ── -->
+    <div class="cs-col col-teal">
+
+      <div class="cs-section">
+        <div class="cs-section-title">CCT — 5 Critical Thinking Pillars</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">Accuracy</td><td>Is the output factually correct? Verify before acting.</td></tr>
+            <tr><td class="label">Completeness</td><td>Is anything important missing from the analysis?</td></tr>
+            <tr><td class="label">Consistency</td><td>Does it contradict itself or prior outputs?</td></tr>
+            <tr><td class="label">Traceability</td><td>Can you follow the reasoning step by step?</td></tr>
+            <tr><td class="label">Calibration</td><td>Does expressed confidence match actual reliability?</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">V&V — 4 Dimensions</div>
+        <table class="cs-table">
+          <tbody>
+            <tr>
+              <td class="label">Output<br>Verification</td>
+              <td>Check facts before acting. A tool producing 10 verified findings beats 50 unverified. VR tracks this.</td>
+            </tr>
+            <tr>
+              <td class="label">Calibrated<br>Trust</td>
+              <td>Match trust level to track record. High confidence on tested tasks, skepticism on novel ones.</td>
+            </tr>
+            <tr>
+              <td class="label">Failure<br>Imagination</td>
+              <td>Anticipate failure modes before they occur. What breaks under adversarial input?</td>
+            </tr>
+            <tr>
+              <td class="label">Adversarial<br>Assumption</td>
+              <td>Assume someone is trying to manipulate the system. Design for the attacker, not the happy path.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Dark Factory — Maturity Stages</div>
+        <table class="cs-table">
+          <thead><tr><th>Stage</th><th>Model</th><th>Human Role</th></tr></thead>
+          <tbody>
+            <tr><td class="label">1 · Manual</td><td>Human-executed playbooks</td><td>Does everything</td></tr>
+            <tr><td class="label">2 · Assisted</td><td>AI recommends, human decides</td><td>Decision maker</td></tr>
+            <tr><td class="label">3 · Supervised</td><td>AI acts, human monitors</td><td>Oversight</td></tr>
+            <tr><td class="label">4 · Automated</td><td>AI acts within defined scope</td><td>Exception handler</td></tr>
+            <tr><td class="label">5 · Orchestrated</td><td>Agent teams, minimal human loop</td><td>Policy setter</td></tr>
+            <tr><td class="label">6 · Autonomous</td><td>Self-healing, self-improving</td><td>Auditor</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Most enterprises operate at Stage 2–3. Course builds tools targeting Stage 3–4 with Stage 5 architecture awareness.</div>
+      </div>
+
+    </div>
+
+    <!-- ── COL 3: OWASP LLM + DEFENSE IN DEPTH ── -->
+    <div class="cs-col col-gold">
+
+      <div class="cs-section">
+        <div class="cs-section-title">OWASP LLM Top 10</div>
+        <ol class="owasp-list">
+          <li><span class="owasp-num">LLM01</span>Prompt Injection — malicious input hijacks agent behavior</li>
+          <li><span class="owasp-num">LLM02</span>Insecure Output Handling — unvalidated output executed downstream</li>
+          <li><span class="owasp-num">LLM03</span>Training Data Poisoning — corrupted training data affects behavior</li>
+          <li><span class="owasp-num">LLM04</span>Model Denial of Service — resource exhaustion via crafted inputs</li>
+          <li><span class="owasp-num">LLM05</span>Supply Chain Vulnerabilities — compromised model or plugin</li>
+          <li><span class="owasp-num">LLM06</span>Sensitive Information Disclosure — PII/secrets in model output</li>
+          <li><span class="owasp-num">LLM07</span>Insecure Plugin Design — excessive tool permissions</li>
+          <li><span class="owasp-num">LLM08</span>Excessive Agency — agent takes unintended high-impact actions</li>
+          <li><span class="owasp-num">LLM09</span>Overreliance — treating AI output as ground truth without verification</li>
+          <li><span class="owasp-num">LLM10</span>Model Theft — extraction of proprietary model weights or behavior</li>
+        </ol>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Defense in Depth — Agent Security Layers</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">L1 · Input</td><td>Schema validation, injection detection, allowlist enforcement</td></tr>
+            <tr><td class="label">L2 · Prompt</td><td>System prompt hardening, role boundaries, instruction hierarchy</td></tr>
+            <tr><td class="label">L3 · Tool</td><td>Least-privilege tool permissions, scope limits per agent</td></tr>
+            <tr><td class="label">L4 · Output</td><td>Output filtering, PII scrubbing, format enforcement</td></tr>
+            <tr><td class="label">L5 · Auth</td><td>SPIFFE SVID identity, per-agent auth scopes</td></tr>
+            <tr><td class="label">L6 · Audit</td><td>Structured logging, decision reconstruction, event trail</td></tr>
+            <tr><td class="label">L7 · Human</td><td>Approval gates for irreversible or high-impact actions</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Key Frameworks — Quick Ref</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">MITRE ATLAS</td><td>Adversarial tactics against ML systems. Use for threat modeling AI pipelines.</td></tr>
+            <tr><td class="label">NIST AI RMF</td><td>Voluntary risk management framework. Govern · Map · Measure · Manage.</td></tr>
+            <tr><td class="label">AIUC-1</td><td>6-domain AI use control standard. Procurement-relevant, bake in from spec.</td></tr>
+            <tr><td class="label">EU AI Act</td><td>Binding law for EU deployments. Risk tiers: Unacceptable · High · Limited · Minimal.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div><!-- /cs-grid -->
+</div><!-- /cs-page side 2 -->
+
+</div></main>
+
+<script src="../labs.js"></script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('resources/course-cheatsheet.html', '../');
+</script>
+</body>
+</html>

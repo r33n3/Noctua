@@ -191,6 +191,7 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'lab-setup.html', 'Lab Setup Guide'],
     ['link', 'reading.html', 'Reading List'],
     ['link', 'skills/index.html', '&#x26a1; Claude Code Skills'],
+    ['link', 'resources/course-cheatsheet.html', '&#x1f4cb; Course Cheatsheet'],
   ];
 
   let html = '<div class="sidebar-header"><h1>AgentForge</h1><p>AI Security Engineering</p></div>\n';
