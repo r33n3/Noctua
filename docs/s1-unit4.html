@@ -2089,7 +2089,65 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 ✓ Harden prototypes for production: error handling, security, observability, and testing
 ✓ Evaluate agentic systems for ethical risks and responsible AI
 ✓ Present technical work clearly to technical and non-technical audiences
-✓ Reflect critically on your own development process and learning</p>
+✓ Reflect critically on your own development process and learning
+✓ Execute a disciplined shipping pipeline: pre-flight, test, quality gates, version bump, changelog, PR
+✓ Apply the Boil the Lake vs. MVP decision framework to determine when completeness matters
+✓ Build and run a pre-landing AI checklist before merging any agentic system to production</p>
+<hr />
+<h2 id="shipping-discipline-the-gstack-pattern">Shipping Discipline: The gstack Pattern</h2>
+<p>Rapid prototyping gets you to a working system fast. Shipping discipline gets it to production safely. These are two different skills — and most developers are only taught the first. This section introduces the <strong>gstack shipping pattern</strong>, developed by Garry Tan (Y Combinator CEO), as a reference model for what disciplined AI-assisted release engineering looks like in practice.</p>
+<h3 id="boil-the-lake-vs-mvp">Boil the Lake vs. MVP: Knowing When to Be Complete</h3>
+<p>The MVP (Minimum Viable Product) principle — ship the smallest thing that works — is foundational to rapid prototyping. But AI-assisted development changes the economics. When Claude can generate comprehensive implementations in the time it used to take to write partial ones, the cost of completeness drops dramatically.</p>
+<div class="callout callout-key"><p><strong>The Boil the Lake Principle (gstack):</strong> AI makes the marginal cost of completeness nearly zero. When building security tools, favor complete implementations over shortcuts — generate the missing tests, handle the edge cases, write the error messages. The only question worth asking is: <em>does completeness here serve the security outcome?</em> If yes, do it. If it's gold-plating, skip it. AI removes the excuse of "it would take too long."</p></div>
+<p><strong>Decision Framework — When to Boil the Lake:</strong></p>
+<table>
+<thead><tr><th>Signal</th><th>Boil the Lake</th><th>Stay MVP</th></tr></thead>
+<tbody>
+<tr><td>Security tool going to production</td><td>Yes — complete error handling, audit logging, edge cases</td><td>No</td></tr>
+<tr><td>Prototype for leadership demo</td><td>No — polish the happy path only</td><td>Yes</td></tr>
+<tr><td>Test coverage</td><td>Yes — AI can generate tests for every branch cheaply</td><td>No</td></tr>
+<tr><td>Documentation</td><td>Yes if it's a CLAUDE.md or runbook; No for API docs on a prototype</td><td>Situational</td></tr>
+<tr><td>Exploratory spike</td><td>No — throw-away code stays minimal</td><td>Yes</td></tr>
+</tbody>
+</table>
+<h3 id="the-ship-pipeline">The /ship Pipeline</h3>
+<p>After Sprint II hardening, your prototype should pass a structured release pipeline before it earns a PR. The gstack <code>/ship</code> workflow defines this as a repeatable sequence:</p>
+<div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>1. Pre-flight
+   └─ Detect target branch, validate not committing to base
+
+2. Merge & Test
+   └─ Fetch base, merge to test against merged state, run full suite
+
+3. Code Quality
+   ├─ Trace every changed code path through the diff
+   ├─ Generate tests for uncovered branches (cap at 20)
+   └─ Run pre-landing checklist (LLM safety, SQL, structural issues)
+
+4. Release Prep
+   ├─ Auto-bump version (MICRO/PATCH auto; MINOR/MAJOR requires approval)
+   ├─ Generate CHANGELOG from commit messages
+   └─ Create bisectable commits grouped by logical change
+
+5. Verify & Push
+   ├─ Re-run tests if code changed during prep
+   ├─ Push with upstream tracking
+   └─ Create PR with test counts, coverage summary, findings</code></div>
+<p>You won't run this exact tool in labs — but you will internalize the sequence. Every PR your prototype creates in Week 15 should follow this logic: test before you push, generate missing coverage, document what changed, make the PR reviewable by someone who wasn't in the room.</p>
+<h3 id="pre-landing-ai-checklist">Pre-Landing AI Checklist</h3>
+<p>Before merging any agentic security system to a shared branch, run this checklist. These are the categories gstack's <code>/review</code> command checks automatically — you should be able to answer each one manually for any system you build:</p>
+<table>
+<thead><tr><th>Category</th><th>Check</th><th>Why it matters for security tools</th></tr></thead>
+<tbody>
+<tr><td><strong>LLM Trust Boundaries</strong></td><td>Is external data ever passed directly to an LLM prompt without sanitization?</td><td>Prompt injection entry point</td></tr>
+<tr><td><strong>SQL Safety</strong></td><td>Are all database queries parameterized? No string interpolation into queries?</td><td>SQL injection risk in agent-generated queries</td></tr>
+<tr><td><strong>Race Conditions</strong></td><td>Do any two agents write to shared state without coordination?</td><td>Data corruption in multi-agent systems</td></tr>
+<tr><td><strong>Enum Completeness</strong></td><td>Do all switch/match statements handle every case (including unknown)?</td><td>Silent failures when new threat types appear</td></tr>
+<tr><td><strong>Error Propagation</strong></td><td>Does every tool call have explicit error handling? No bare excepts?</td><td>Silent failures in production security pipelines</td></tr>
+<tr><td><strong>Secrets</strong></td><td>Are credentials in environment variables, not hardcoded or logged?</td><td>Credential exposure via logs or git history</td></tr>
+<tr><td><strong>Blast Radius</strong></td><td>If this PR touches more than 5 files, is the scope justified?</td><td>Large diffs are hard to review and audit</td></tr>
+</tbody>
+</table>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your team is pressured to ship a new threat-hunting agent by Friday for a client demo. The pre-landing checklist flags two items: unparameterized queries in the evidence retrieval module and an LLM trust boundary issue in the alert summarizer. The fixes will take 4 hours. The demo is in 6. Do you Boil the Lake or ship with known issues? What's the conversation you have with the client?</p></div>
 <hr />
 <h2 id="agentic-engineering-book-references">Agentic Engineering References</h2>
 <p>Unit 4 applies this course's agentic development methodology and the Think → Spec → Build → Retro cycle for rapid agentic development. Throughout this unit, you've applied:</p>
@@ -2108,6 +2166,7 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 <li><a href="frameworks.html">Frameworks</a> — Templates for system design, sprint planning, hardening checklists</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Instructions for Claude Code, worktrees, and API setup</li>
 <li><strong><em>Agentic Engineering Book</em></strong> by Jaymin West — Additional reading; original source for many agentic engineering patterns used in this course.</li>
+<li><strong>gstack</strong> by Garry Tan — The shipping methodology, Boil the Lake principle, and pre-landing checklist in this unit draw directly from this open-source project. https://github.com/garrytan/gstack</li>
 </ul>
 <hr />
   </div>

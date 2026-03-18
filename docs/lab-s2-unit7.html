@@ -480,6 +480,48 @@ jobs:
   </div>
 </div>
 
+<div class="section">
+  <h4> Release Governance: Role Review + Changelog</h4>
+  <p>Before your Unit 7 capstone PR, apply the gstack role-based review pattern and produce the required governance artifacts. These are the practices that separate a working system from a production-ready one.</p>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-u7gov-1">
+      <label><input type="checkbox" onchange="toggleStep('u7gov-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Strategic Review: does capability match threat model?</div>
+        <div class="step-desc">Write one paragraph from the "CEO lens": Does this system's scope match what the threat model actually requires? Is anything over-engineered for the stated problem? Is anything under-engineered that creates security risk? Would you approve shipping this?</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-u7gov-2">
+      <label><input type="checkbox" onchange="toggleStep('u7gov-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Engineering Manager Review: architecture, coverage, rollback</div>
+        <div class="step-desc">Write one paragraph from the "EM lens": Is the architecture sound for production load? Is test coverage adequate for the security use case? Is the rollback plan documented? Are all dependencies pinned and scanned?</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-u7gov-3">
+      <label><input type="checkbox" onchange="toggleStep('u7gov-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">SOC Analyst Review: can a human understand agent actions?</div>
+        <div class="step-desc">Write one paragraph from the "analyst lens": Can an on-call SOC analyst read the logs and understand exactly what the agent did, why, and what action it expects them to take? Are escalation paths clear? Are false positive rates documented?</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-u7gov-4">
+      <label><input type="checkbox" onchange="toggleStep('u7gov-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">CHANGELOG.md: from Unit 4 prototype to Unit 7 production</div>
+        <div class="step-desc">Write a structured CHANGELOG covering: v0.1.0 (Sprint II prototype from Unit 4), and each major change made in Unit 7 as v0.x.0 entries. Every MAJOR behavioral change must include a note on its security impact. Format: <code>## v0.3.0 — NHI governance added / Security impact: all agent tool calls now require JWT; reduces blast radius if credentials are compromised.</code></div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-u7gov-5">
+      <label><input type="checkbox" onchange="toggleStep('u7gov-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Debug log: document one production issue using the 4-phase method</div>
+        <div class="step-desc">Pick a real bug or unexpected behavior you encountered during Unit 7. Write a short post-mortem using the systematic debug methodology: (1) Evidence collected, (2) Pattern identified, (3) Hypotheses tested (max 3, document outcome of each), (4) Fix implemented and regression test written. This goes in your capstone documentation.</div>
+      </div></label>
+    </div>
+  </div>
+</div>
+
 <div class="deliverables">
   <h5>Unit 7 Deliverables Summary</h5>
   <ul>
@@ -488,6 +530,9 @@ jobs:
     <li><strong>OTel Instrumentation</strong> — working traces and cost metrics with anomaly alerting</li>
     <li><strong>Hardened Dockerfile + GitHub Actions Pipeline</strong> — multi-stage build with all security gates active</li>
     <li><strong>Deployment Runbook</strong> — documented operational procedures for production deployment</li>
+    <li><strong>CHANGELOG.md</strong> — versioned history from Unit 4 prototype to Unit 7 production with security impact annotations</li>
+    <li><strong>Role Review Document</strong> — strategic, EM, and analyst review paragraphs for your capstone system</li>
+    <li><strong>Debug Post-Mortem</strong> — one real issue documented using the 4-phase systematic debug methodology</li>
   </ul>
 </div>
 

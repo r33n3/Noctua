@@ -417,6 +417,68 @@ class JSONFormatter(logging.Formatter):
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Present your hardened prototype to the class and instructor panel. Defend architectural decisions using CCT. Conduct peer reviews. Reflect on the semester's learning trajectory.</p></div>
 
 <div class="lab-section">
+  <h4> Ship It: Release Pipeline Checklist</h4>
+  <p>Before your prototype earns a PR and goes to leadership review, run it through this shipping checklist. This is the gstack <code>/ship</code> pattern applied to your security tool — each step has a reason.</p>
+  <div class="lab-steps">
+    <div class="lab-step" id="step-ship-1">
+      <label><input type="checkbox" onchange="toggleStep('ship-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Pre-flight: All tests pass on a clean branch</div>
+        <div class="step-desc">Run your full test suite from a clean state — not just the last test you ran. <code>git stash && python -m pytest</code> (or equivalent). If tests only pass in your local environment, they don't count.</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-ship-2">
+      <label><input type="checkbox" onchange="toggleStep('ship-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Pre-landing AI checklist: all 7 items reviewed</div>
+        <div class="step-desc">Work through the Unit 4 pre-landing checklist: LLM trust boundaries, SQL safety, race conditions, enum completeness, error propagation, secrets in env vars, blast radius under 5 files. Document any item you knowingly skip and why.</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-ship-3">
+      <label><input type="checkbox" onchange="toggleStep('ship-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Boil the Lake decision: what did you complete vs. defer?</div>
+        <div class="step-desc">Write 3 sentences: (1) What you completed fully because AI made it cheap. (2) What you deferred and why. (3) Whether any deferred item is a security risk that needs to be tracked. Add deferred items to a TODOS.md in your repo.</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-ship-4">
+      <label><input type="checkbox" onchange="toggleStep('ship-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Version tag and CHANGELOG entry created</div>
+        <div class="step-desc">Tag your release: <code>git tag -a v0.1.0 -m "Sprint II: hardened threat hunter"</code>. Write a one-paragraph CHANGELOG entry: what the system does, what changed from Sprint I to Sprint II, what's known-missing. This is the foundation of the audit trail Unit 7 will formalize.</div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-ship-5">
+      <label><input type="checkbox" onchange="toggleStep('ship-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">PR created with structured description</div>
+        <div class="step-desc">Use <code>gh pr create</code> with a description covering: problem solved, architecture decisions, test coverage summary, known gaps, and what leadership needs to evaluate. A PR that just says "Sprint II prototype" is not reviewable.</div>
+      </div></label>
+      <div class="code-block"><pre><code>gh pr create \
+  --title "Sprint II: Threat Hunter v0.1.0 — Hardened" \
+  --body "## Problem
+Analysts spend 45 min/day triaging phishing alerts manually.
+
+## What this does
+3-agent system: classifier → enricher → reporter. 94% accuracy on test set.
+
+## Architecture decisions
+- Claude Sonnet for classification (cost/accuracy tradeoff)
+- Async enrichment with 30s timeout + fallback
+- Human escalation at confidence < 0.7
+
+## Test coverage
+- 23 unit tests, 4 integration tests, all passing
+- Pre-landing checklist: all 7 items reviewed, 0 deferred
+
+## Known gaps
+- No rate limiting on the enrichment API (tracked in TODOS.md)
+- Evaluation dataset is synthetic; production data may differ"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
   <h4> Presentation Preparation Checklist</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-w16-1">

@@ -4343,6 +4343,57 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 </code></pre></div>
 
 <hr />
+<h2 id="release-engineering-governance">Release Engineering Governance: The gstack Pattern</h2>
+<p>Production security systems don't just need working code — they need release discipline. This section draws from Garry Tan's <strong>gstack</strong> project to introduce three governance practices that complement the DevSecOps pipeline you've built in this unit.</p>
+<h3 id="role-based-review-gates">Role-Based Review Gates</h3>
+<p>gstack models the engineering organization as a set of review personas, each asking a different class of questions before code ships. In a security engineering context, these map directly to the stakeholders who must sign off on a production agentic system:</p>
+<table>
+<thead><tr><th>Review Role</th><th>Core Questions</th><th>Security Engineering Equivalent</th></tr></thead>
+<tbody>
+<tr><td><strong>CEO / Strategic Review</strong></td><td>Does this expand, hold, or reduce scope? Is the blast radius understood? Is completeness justified by the outcome?</td><td>Security architecture sign-off: does this system's capabilities match what the threat model requires?</td></tr>
+<tr><td><strong>Engineering Manager Review</strong></td><td>Is the architecture sound? Are code quality and test coverage adequate? Are performance implications understood?</td><td>Technical lead review: error handling, observability hooks, dependency health, rollback plan</td></tr>
+<tr><td><strong>QA / Release Review</strong></td><td>Have affected code paths been tested? Is there a diff-aware test plan? Are known failures documented?</td><td>Security regression testing: does the new deployment break any existing detection logic or guardrail?</td></tr>
+<tr><td><strong>Design / UX Review</strong></td><td>Is the operator interface clear? Are alerts actionable? Does the dashboard communicate system health accurately?</td><td>SOC analyst review: can a human understand what the agent did, why, and what action to take?</td></tr>
+</tbody>
+</table>
+<div class="callout callout-key"><p><strong>Practice:</strong> Before your Unit 7 capstone PR, conduct a structured self-review using each of these four lenses. Write one paragraph per role. This isn't busywork — it's how production security teams catch the issues that automated gates miss.</p></div>
+<h3 id="systematic-debug-methodology">Systematic Debug Methodology</h3>
+<p>When a production agentic security system fails, instinct is to start changing code immediately. gstack's <code>/debug</code> workflow formalizes a better approach — one that maps naturally to incident response thinking you already have:</p>
+<div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>Phase 1: Investigation
+  └─ Reproduce the failure. Collect all available evidence:
+     logs, traces, tool call history, agent reasoning output.
+     Do NOT change any code yet.
+
+Phase 2: Pattern Analysis
+  └─ Identify what changed. Compare working vs. broken state.
+     Check: deployment diff, config changes, upstream model updates,
+     data distribution shifts, token budget changes.
+
+Phase 3: Hypothesis Testing (max 3)
+  └─ Form at most 3 hypotheses, ranked by likelihood.
+     Test the highest-likelihood one first with the smallest
+     possible change. Document outcome before moving to next.
+     If no hypothesis is confirmed after 3, restart Phase 1.
+
+Phase 4: Implementation
+  └─ Fix only what the evidence supports. Flag blast radius > 5 files.
+     Write the regression test before closing the incident.
+     Update the runbook with what you learned.</code></div>
+<p>The <strong>max 3 hypothesis rule</strong> is the most important constraint. It prevents the spiral of random code changes that characterizes debugging without discipline — which in production security systems can introduce new vulnerabilities while chasing the original bug.</p>
+<div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your multi-agent threat hunter starts producing false negatives after a deployment. You suspect it's the model, the prompt, or the detection threshold — but you're not sure. Walk through the four phases. At Phase 3, which hypothesis do you test first? What's the minimum change that tests it? What's your rollback plan if all three hypotheses fail?</p></div>
+<h3 id="changelog-version-governance">Changelog and Version Governance</h3>
+<p>Production security systems must be auditable over time. Every behavioral change — new detection logic, updated thresholds, prompt modifications — needs to be traceable. gstack automates this; you should understand why it matters:</p>
+<table>
+<thead><tr><th>Artifact</th><th>What it records</th><th>Why security teams need it</th></tr></thead>
+<tbody>
+<tr><td><strong>CHANGELOG.md</strong></td><td>Every logical change grouped by version, auto-generated from commit messages</td><td>Audit trail for compliance; enables pinpointing when detection behavior changed</td></tr>
+<tr><td><strong>Semantic Versioning</strong></td><td>MAJOR = breaking behavior change; MINOR = new capability; PATCH = bug fix</td><td>MAJOR bumps require security re-review; PATCH can fast-track through gates</td></tr>
+<tr><td><strong>Bisectable Commits</strong></td><td>One logical change per commit, enabling <code>git bisect</code> to isolate regressions</td><td>When an agent starts misclassifying threats, bisect to the exact change</td></tr>
+<tr><td><strong>TODOS.md</strong></td><td>Known limitations, deferred decisions, in-progress work marked as completed per release</td><td>Prevents known gaps from being forgotten; creates accountability for deferred security issues</td></tr>
+</tbody>
+</table>
+<p><strong>Required deliverable for Unit 7 capstone:</strong> A <code>CHANGELOG.md</code> covering all changes from your Unit 4 prototype to the production system you're deploying, with semantic versioning applied and every MAJOR change annotated with its security impact.</p>
+<hr />
 <h2 id="resources-and-references">Resources and References</h2>
 <p><strong>Supply Chain Security (Week 9):</strong>
 - <a href="reading.html">Reading List</a>
@@ -4360,6 +4411,8 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 - Docker best practices
 - Kubernetes deployment strategies
 - CI/CD patterns and anti-patterns</p>
+<p><strong>Shipping Governance:</strong>
+- <strong>gstack</strong> by Garry Tan — role-based review gates, /ship pipeline, systematic debug methodology, and changelog governance that inform this unit's capstone requirements. https://github.com/garrytan/gstack</p>
 <hr />
 <p><strong>End of Unit 7: Production Security Engineering</strong></p>
   </div>
