@@ -194,7 +194,8 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'resources/course-cheatsheet.html', 'Course Cheatsheet'],
   ];
 
-  let html = '<div class="sidebar-header"><h1>Noctua</h1><p>AI Security Engineering</p></div>\n';
+  let html = '<div class="sidebar-header"><h1>Noctua</h1><p>AI Security Engineering</p></div>\n'
+    + '<div class="search-wrap"><input id="site-search-input" type="text" placeholder="Search course topics..." autocomplete="off" /><div id="site-search-results"></div></div>\n';
   nav.forEach(item => {
     if (item[0] === 'nav-section') {
       html += '<div class="nav-section">' + item[1] + '</div>\n';
