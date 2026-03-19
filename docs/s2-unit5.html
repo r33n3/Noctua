@@ -670,6 +670,10 @@ No hierarchy.
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on orchestration patterns for coverage of the <strong>Orchestrator Pattern</strong> (one supervisor coordinates specialized agents) and the <strong>Expert Swarm Pattern</strong> (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See <a href="frameworks.html">Frameworks Documentation</a> for implementation examples.</p>
 <p><strong>🔑 Key Concept:</strong> <strong>Context Isolation and Sharing</strong> — Multi-agent systems require careful management of what context each agent can access. Agentic Engineering practice covers how to design context so agents have sufficient information to act without unnecessary exposure to sensitive data. Your SOC system uses this principle: the Analyst agent sees threat intel but not full customer PII; the Response Recommender sees severity but not raw logs.</p>
 </div>
+<div class="callout callout-tip"><p><strong>Looking Ahead — Week 4: Deep Agents</strong></p>
+<p>In Weeks 1–3, you're learning how agents communicate and coordinate. In Week 4, you'll connect those patterns to a question that determines whether your multi-agent systems actually work in practice: <em>what does each agent know before it starts?</em></p>
+<p>The three-tier context architecture (institutional knowledge → project state → session context) is the framework that makes multi-agent systems compound over time instead of starting from zero every session. The AGENTS.md, SQLite handoff databases, and scoped TASK.md files you'll build in Week 4 are the persistent layer that separates a "deep agent" from a stateless one. Keep that destination in mind as you build Weeks 1–3 — you're assembling the components that will plug into that architecture.</p>
+</div>
 <hr />
 <h2 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h2>
 <h3 id="lab-objectives">Lab Objectives</h3>
@@ -2917,6 +2921,64 @@ Use my pattern as the template. Adapt agent roles and communication as needed.
 - Version your library (v1.0 at semester start, v2.0 as you improve)</p>
 <p>By end of Semester 2, your context library won't just be reference material—it will be YOUR production toolkit, hardened by real-world (and capstone) testing.</p>
 <hr />
+<h2 id="deep-agents-three-tier-context">Deep Agents: The Three-Tier Context Architecture</h2>
+<p>A "deep agent" isn't a smarter model — it's an agent session backed by three tiers of context that took work to build. The model is the same. What's different is what the agent knows before it writes the first line of code.</p>
+<p>Before diving in: a <strong>one-shot session</strong> is a coding or analysis task completed in a single agent session without requiring you to intervene, correct, and restart. One-shot is the goal; everything in the harness exists to make it more achievable. When a session fails to one-shot, it's almost always because the agent had to <em>discover</em> something it should have already <em>known</em> — a context architecture failure, not a model capability problem.</p>
+<p>LinkedIn found that out of the box, AI coding agents weren't effective because they lacked context about internal systems, frameworks, and practices. After implementing an agentic knowledge base, they saw a 20% increase in AI coding adoption and issue triage time dropped approximately 70%. The three-tier framework below is how you close that gap.</p>
+
+<div class="callout callout-key">
+<strong>The Three Tiers</strong>
+<table>
+<thead><tr><th>Tier</th><th>What It Is</th><th>Where It Lives</th><th>Changes How?</th></tr></thead>
+<tbody>
+<tr><td><strong>1 — Institutional</strong></td><td>Conventions, architectural decisions, anti-patterns, org context</td><td>AGENTS.md, CLAUDE.md, ADRs, design docs (version-controlled)</td><td>Slowly — authored by humans</td></tr>
+<tr><td><strong>2 — Project</strong></td><td>Task state, findings across sessions, database schemas, handoff data</td><td>SQLite, structured JSON, temp databases, retro logs</td><td>Constantly — produced by agent work</td></tr>
+<tr><td><strong>3 — Session</strong></td><td>Current task spec, files being read, errors in flight</td><td>Context window — what your /worktree phase manages</td><td>Per-session — ephemeral</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="tier-1-institutional-knowledge">Tier 1: Institutional Knowledge — Writing AGENTS.md That Actually Works</h3>
+<p>Tier 1 is your AGENTS.md, CLAUDE.md, and design docs. It answers questions the model can't infer from reading your code: why you made architectural decisions, what went wrong in that outage, which patterns are deprecated and why, which services are owned by which teams.</p>
+<p>The ETH Zurich research finding here is counterintuitive and important: <strong>LLM-generated context files reduce task success rate by 3% compared to no context file at all, while human-written files offer a 4% increase.</strong> The takeaway: don't have Claude write your AGENTS.md. The biggest use case for institutional context files is domain knowledge the model is not aware of and cannot instantly infer from the project. If the model can figure it out from reading your code, don't document it. Only document what the agent would get wrong without guidance.</p>
+
+<div class="callout callout-tip">
+<strong>The AGENTS.md Surgical Test</strong>
+<p>For every line in your AGENTS.md, ask: "Could Claude figure this out by reading 5 files in my codebase?" If yes, delete that line. Only keep what requires human institutional knowledge. Traps, non-obvious conventions, deprecated patterns, and decision history that isn't in the git log — that's what belongs here.</p>
+</div>
+
+<p>Practical examples for security codebases: your API response envelope format, auth patterns specific to your stack, naming conventions for database migrations, the fact that your staging schema differs from production, which threat intel sources are authoritative vs. deprecated, log format conventions that differ from framework defaults.</p>
+
+<h3 id="tier-2-project-knowledge">Tier 2: Project Knowledge — Database Handoffs as Context Bridges</h3>
+<p>Tier 2 is where your instinct for databases connects to the harness. Files work for knowledge that's <em>authored</em> — someone sits down and writes it. They don't work for knowledge that's <em>produced</em> — generated as a byproduct of agent work, multi-step analysis, or workflows that span multiple sessions.</p>
+<p>Databases enforce schemas, and schemas are harness artifacts. When you define a table structure for agent handoffs, you're creating an enforceable contract: Agent A can't just ramble — it has to produce rows that match the schema. Agent B can't misinterpret — it queries typed columns. This is constraint engineering at the data layer.</p>
+<p>SQLite files are ideal for this in a course context: portable, inspectable, zero-config, and disposable. Spin one up for a complex multi-agent task, let agents read and write to it, inspect it during /retro if something goes wrong, throw it away when you're done.</p>
+<p><strong>Where Tier 2 drives one-shot success:</strong></p>
+<ul>
+<li><strong>Analysis too large for the context window</strong> — A prep agent analyzes 15 API endpoints and writes structured findings to a temp database. The implementation agent queries only what it needs: "these 6 endpoints need changing, here's the current pattern, here's the target." The analysis doesn't eat the implementation agent's context window.</li>
+<li><strong>Sessions that span multiple days</strong> — Task state and findings persist across context windows. The fifth session has the same quality of context as the first.</li>
+<li><strong>Parallel worktrees needing coordination</strong> — Three agents in three worktrees can write to a shared lightweight database to avoid file conflicts without blocking each other.</li>
+</ul>
+
+<h3 id="tier-3-session-context">Tier 3: Session Context — What /worktree Manages</h3>
+<p>Tier 3 is what's in the agent's context window right now. The whole point of Tiers 1 and 2 is to be selective about what makes it into Tier 3. Successful harnesses include negative examples — what not to do — and contextual decision trees that help agents navigate edge cases, rather than raw data dumps.</p>
+<p>Your TASK.md (the scoped spec dropped into each worktree) is the primary Tier 3 artifact. It pulls the relevant slice from Tier 1 (conventions for this task) and the relevant slice from Tier 2 (pre-computed analysis for this specific work). The agent gets exactly what it needs for this task — not everything you know.</p>
+
+<div class="callout callout-reading">
+<strong>The Compounding Effect</strong>
+<p>Your first one-shot attempt with this setup might hit 60% success. But every /retro cycle adds lessons to your institutional context (Tier 1), tightens your spec templates, and adds constraints to your harness. After 20 cycles, your one-shot rate is materially higher — not because the model got better, but because your harness did. This is what it means to build a self-correcting system. The /harness skill audits whether your three tiers are connected and feeding each other.</p>
+</div>
+
+<h3 id="deep-agents-deliverable">Exercise: Build Your Tier 1 AGENTS.md</h3>
+<p>For your Unit 5 capstone system, write an AGENTS.md that encodes the institutional knowledge your agents need. Use the surgical test: only include what Claude can't infer from reading the code. Minimum viable content:</p>
+<ul>
+<li>One section: patterns and conventions (what the agent should follow)</li>
+<li>One section: anti-patterns (what the agent must not do, with brief reason)</li>
+<li>One section: known traps (inconsistencies or non-obvious constraints in this codebase)</li>
+</ul>
+<p>Then audit it: for each entry, confirm it passes the surgical test. Human-written, curated, not generated.</p>
+
+<hr />
 <h3 id="deliverables_3">Deliverables</h3>
 <ol>
 <li><strong>Evaluation framework</strong> (reusable harness code)</li>
@@ -3006,7 +3068,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
@@ -3092,5 +3154,6 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
+<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
 </body>
 </html>

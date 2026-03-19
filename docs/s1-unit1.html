@@ -535,6 +535,15 @@ body {
 - Python 3.10+ installed for running agent scripts
 - Access to an API key for Claude (Opus recommended for this unit)</p>
 <p>See <a href="lab-setup.html">Lab Setup Guide</a> for detailed environment configuration.</p>
+<div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the five slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, and <code>/harness</code> to audit whether your workflows are improving.</p>
+<div class="codehilite"><pre><span></span><code>mkdir -p ~/.claude/commands
+curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
+curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
+curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
+curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md</code></pre></div>
+<p>Full documentation for each skill: <a href="skills/index.html">Course Skills →</a></p>
+</div>
 <h4 id="hands-on-exercise-incident-analysis-with-claude-agents">Hands-On Exercise: Incident Analysis with Claude Agents</h4>
 <p><strong>Scenario:</strong> You're a junior SOC analyst at Meridian Financial, a mid-sized investment bank. On March 3rd, 2026, your SIEM triggered an alert: a single user account (John Chen, VP of Operations) accessed the data warehouse from an unusual IP address (203.45.12.89) at 2:34 AM EST, downloaded 47 CSV files, and disconnected. The account is still active. The IP resolves to a proxy service in Singapore. You have 30 minutes before leadership requires a preliminary assessment.</p>
 <p><strong>Phase 1: Initial Investigation (10 minutes)</strong></p>
@@ -2388,7 +2397,7 @@ function copyCode(btn) {
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
@@ -2474,5 +2483,6 @@ function copyCode(btn) {
   document.head.appendChild(s);
 })();
 </script>
+<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
 </body>
 </html>

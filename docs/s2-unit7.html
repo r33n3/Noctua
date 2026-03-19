@@ -681,8 +681,8 @@ def load_verified_model<span class="o">(</span>model_path, pub_key<span class="o
 <td>GitHub-native: scans <code>requirements.txt</code>, creates PRs for updates</td>
 </tr>
 <tr>
-<td><strong>Snyk</strong></td>
-<td>Real-time vulnerability scanning, remediation guidance</td>
+<td><strong>Snyk</strong> <em>(Enterprise)</em></td>
+<td>Real-time vulnerability scanning, remediation guidance — commercial product; free tier limited. Use Safety or pip-audit for open-source equivalent.</td>
 </tr>
 <tr>
 <td><strong>Safety</strong></td>
@@ -715,7 +715,9 @@ safety check --json &gt; vulnerability-report.json
 <h4 id="lab-setup">Lab Setup</h4>
 <p><strong>Environment and Tools:</strong>
 - Python 3.11+
-- <code>pip install safety snyk-cli syft cosign</code>
+- <code>pip install safety pip-audit syft</code>
+# cosign: https://docs.sigstore.dev/cosign/system_config/installation/
+# Snyk (enterprise option): https://docs.snyk.io/snyk-cli/install-or-update-the-snyk-cli
 - Git repository with <code>requirements.txt</code> and model artifacts</p>
 <p><strong>Conceptual Architecture:</strong></p>
 <div class="mermaid">flowchart TD
@@ -743,7 +745,7 @@ safety check --json &gt; vulnerability-report.json
 
 <h4 id="step-1-dependency-scanning">Step 1: Dependency Scanning</h4>
 <p><strong>Architecture Decision:</strong></p>
-<p>Your lab needs a module that wraps existing security tools (Safety, Snyk, Syft) to provide unified scanning. The key design choices:</p>
+<p>Your lab needs a module that wraps existing security tools (Safety, pip-audit, Syft) to provide unified scanning. Design the abstraction layer so enterprise tools like Snyk can be plugged in without changing the interface. The key design choices:</p>
 <ol>
 <li><strong>Tool Abstraction Layer:</strong> Different tools have different output formats. Abstract them behind a consistent scanner interface.</li>
 <li><strong>Pluggable Reporting:</strong> Risk aggregation must work whether you use Safety alone or multiple tools.</li>
@@ -752,7 +754,7 @@ safety check --json &gt; vulnerability-report.json
 </ol>
 <p><strong>Context Engineering Note:</strong></p>
 <p>When you ask Claude Code to generate a dependency scanner, provide:
-- The list of tools to integrate (Safety, Syft, optional Snyk)
+- The list of tools to integrate (Safety, pip-audit, Syft — Snyk as optional enterprise plugin)
 - Expected output format (JSON risk report)
 - Risk scoring logic (how many vulns = CRITICAL vs HIGH)
 - Integration points (CI/CD pipeline, pre-commit hook)</p>
@@ -1967,11 +1969,11 @@ Include example showing dashboard being generated and printed.
         <span class="sd">&quot;&quot;&quot;Calculate cost based on model pricing.&quot;&quot;&quot;</span>
         <span class="c1"># Anthropic Claude 4.5 family pricing (as of March 2026)</span>
         <span class="n">pricing</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;claude-sonnet-4-5&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;claude-sonnet-4-6&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="mf">0.003</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">,</span>      <span class="c1"># $3 per 1M tokens</span>
                 <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="mf">0.015</span> <span class="o">/</span> <span class="mi">1_000_000</span>      <span class="c1"># $15 per 1M tokens</span>
             <span class="p">},</span>
-            <span class="s2">&quot;claude-opus-4-5&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;claude-opus-4-6&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="mf">0.015</span> <span class="o">/</span> <span class="mi">1_000_000</span><span class="p">,</span>
                 <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="mf">0.075</span> <span class="o">/</span> <span class="mi">1_000_000</span>
             <span class="p">}</span>
@@ -2019,7 +2021,7 @@ Include example showing dashboard being generated and printed.
     <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;incident-2026-03-05-001&quot;</span><span class="p">,</span>
     <span class="n">input_tokens</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
     <span class="n">output_tokens</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
-    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-sonnet-4-5&quot;</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-sonnet-4-6&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Another call</span>
@@ -2028,7 +2030,7 @@ Include example showing dashboard being generated and printed.
     <span class="n">task_id</span><span class="o">=</span><span class="s2">&quot;incident-2026-03-05-002&quot;</span><span class="p">,</span>
     <span class="n">input_tokens</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="n">output_tokens</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
-    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-sonnet-4-5&quot;</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-sonnet-4-6&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Get cost summary</span>
@@ -4338,6 +4340,7 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 
 <hr />
 <h2 id="release-engineering-governance">Release Engineering Governance: The gstack Pattern</h2>
+<p>In Unit 4, you used gstack's <strong>/ship pipeline</strong> and pre-landing AI checklist to ship your prototype safely. This section extends those practices to production agentic systems — where the stakes are higher, the review gates are broader, and the audit trail becomes a compliance requirement. If you need a refresher on the /ship pipeline or the Boil the Lake principle, revisit <a href="s1-unit4.html#shipping-discipline">Unit 4: Shipping Discipline</a>.</p>
 <p>Production security systems don't just need working code — they need release discipline. This section draws from Garry Tan's <strong>gstack</strong> project to introduce three governance practices that complement the DevSecOps pipeline you've built in this unit.</p>
 <h3 id="role-based-review-gates">Role-Based Review Gates</h3>
 <p>gstack models the engineering organization as a set of review personas, each asking a different class of questions before code ships. In a security engineering context, these map directly to the stakeholders who must sign off on a production agentic system:</p>
@@ -4454,7 +4457,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
@@ -4540,5 +4543,6 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
+<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
 </body>
 </html>

@@ -1,18 +1,24 @@
 # /spec — Specification Before Building
 
 Write a formal specification document for the current task before any
-implementation begins. A spec answered: What are we building, why,
-how will we know it works, and what are we explicitly NOT building.
+implementation begins. The spec answers: What are we building, why,
+how will we know it works, what are we explicitly NOT building, and
+what constraints must the agent never violate.
 
 This skill is the second step of the Think → Spec → Build → Retro cycle.
-Use after `/think` has validated the direction.
+Use after `/think` has validated the direction and completed the Harness Audit.
+
+The spec is your primary harness artifact. A good spec makes the agent's
+solution space smaller and more correct. Every ambiguity you leave in the
+spec is a decision the agent will make without you.
 
 ---
 
 ## What to Produce
 
-A complete spec document that anyone on the team could use to build
-the system independently. If the spec is ambiguous, the build will be.
+A complete spec document that anyone on the team — or any Claude session —
+could use to build the system independently. If the spec is ambiguous,
+the build will be.
 
 ---
 
@@ -29,15 +35,26 @@ the system independently. If the spec is ambiguous, the build will be.
 [2–3 sentences: what problem does this solve, for whom, and why now?]
 
 ## Success Criteria
-[How will we know this is done and working? Make these measurable.]
-- [ ] [Criterion 1 — observable, testable]
+Verifiable checks, not prose. "The API returns 200 with a valid token"
+beats "authentication should work." Each criterion must be falsifiable.
+
+- [ ] [Criterion 1 — observable, testable, specific]
 - [ ] [Criterion 2]
 - [ ] [Criterion 3]
 
+## Anti-Requirements (things the agent must NOT do)
+These are as important as the requirements. Explicit constraints prevent
+the agent from making plausible but wrong decisions.
+
+- DO NOT touch [module/file] — reason: [why]
+- DO NOT add dependencies beyond [list] — reason: [cost/complexity]
+- DO NOT refactor code outside the scope of this task
+- DO NOT [pattern] — use [alternative] instead (see [example file])
+
 ## Out of Scope
-[What are we explicitly NOT building in this iteration?]
-- [Not doing X]
-- [Not doing Y]
+[What are we explicitly not building in this iteration?]
+- [Not doing X — deferred to next sprint]
+- [Not doing Y — tracked in TODOS.md]
 
 ---
 
@@ -48,6 +65,18 @@ the system independently. If the spec is ambiguous, the build will be.
 |------|------|-------|--------|---------|
 | [Agent 1] | [responsibility] | [tool list] | [what it receives] | [what it produces] |
 | [Agent 2] | ... | ... | ... | ... |
+
+### Files In Scope
+[Explicitly list which files this task touches. Anything not listed is
+out of bounds unless the agent flags it first.]
+- [file1.py] — [what changes]
+- [file2.py] — [what changes]
+
+### Architectural Boundaries
+[Which patterns must be followed? Point to an existing file as the example.]
+- Follow the pattern in [existing_file.py] for [pattern name]
+- Import graph constraint: [module A] must not import [module B]
+- [Any other structural rules]
 
 ### Orchestration Pattern
 [Sequential / Hierarchical / Expert Swarm / Pipeline]
@@ -83,6 +112,17 @@ For each tool the agents will use:
 
 ---
 
+## Lessons from Past Retros
+[If you've run /retro on similar work, encode the findings here so this
+cycle starts with those lessons already applied. This is the feedback
+loop that makes your harness improve over time.]
+
+- [Retro finding → how it changes this spec]
+- [e.g., "Last sprint: enrichment step ballooned to 40 min. This spec:
+   enrichment is capped at 3 tool calls max, any more requires human approval"]
+
+---
+
 ## Open Questions
 - [ ] [Question 1 — decision needed before build]
 - [ ] [Question 2]
@@ -90,9 +130,11 @@ For each tool the agents will use:
 ## Definition of Done
 The build is complete when:
 - [ ] All success criteria above pass
+- [ ] All anti-requirements verified (review diff against the list)
 - [ ] Integration test covers the happy path end-to-end
 - [ ] Structured logging from all agents/components
 - [ ] Security considerations documented and mitigated
+- [ ] TASK.md dropped into each worktree for agent reference
 ```
 
 ---
@@ -109,12 +151,14 @@ The build is complete when:
 
 ## Modify This Skill
 
-- Add a "Grading checklist" section if you want to self-evaluate before submission
+- Add a "Grading checklist" section for course deliverables
 - Add a "MITRE ATLAS threat model" section for security-specific work
 - Add an "AIUC-1 domain mapping" section for ethical AI assessments
-- Shorten the template for quick one-agent tools; expand it for multi-agent systems
+- Shorten the template for quick one-agent tools; expand for multi-agent systems
 - Create a `/spec-mcp` variant tuned for MCP server design
 - Create a `/spec-agent` variant tuned for multi-agent orchestration systems
+- Grow the "Lessons from Past Retros" section into a running library that
+  auto-loads relevant lessons based on the task type
 
 ---
 

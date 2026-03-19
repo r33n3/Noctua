@@ -6,6 +6,10 @@ implementation, decision, or recommendation.
 This skill is the first step of the Think → Spec → Build → Retro cycle.
 It forces structured reasoning before any code or commitment.
 
+Think of this phase as the manager handing off work to a capable but
+context-less contractor. Your job is to make the problem so clear that
+the contractor (Claude) cannot build the wrong thing.
+
 ---
 
 ## What to Do
@@ -30,9 +34,30 @@ It forces structured reasoning before any code or commitment.
 
 ---
 
-## Output Format
+## Harness Audit (run at the end of /think)
 
-Produce structured output in this format:
+Before moving to /spec, answer these three questions. If you can't answer
+them, the spec will be incomplete and the agent will fill the gaps badly.
+
+**What guardrails does this work need?**
+Think about what the agent is likely to get *wrong*, not just what it needs
+to get right. Where is the solution space largest? Where could a plausible
+but incorrect output do the most damage?
+
+**What constraints already exist?**
+Map the existing harness: tests, linters, type system, CI gates, CLAUDE.md
+rules, architectural patterns. Which of these already constrain this work?
+Which gaps exist that the agent could exploit by accident?
+
+**What is the verification strategy?**
+Decide *before* any code gets written how you will check the output.
+If you cannot describe a concrete check — a test, a diff review, a
+behavioral assertion — the agent cannot verify its own work either.
+Write the check criteria now; they become acceptance criteria in /spec.
+
+---
+
+## Output Format
 
 ```
 ## Think: [Topic / Task]
@@ -63,6 +88,24 @@ Produce structured output in this format:
 
 **Confidence:** [Low / Medium / High]
 [One sentence explaining what would increase confidence]
+
+---
+
+## Harness Audit
+
+**Guardrails needed:**
+- [What the agent is likely to get wrong]
+- [Where incorrect output would cause most harm]
+
+**Existing constraints that apply:**
+- [tests / linters / CI gates / CLAUDE.md rules already in place]
+
+**Gaps — no constraint covers these yet:**
+- [gap 1 → will address in spec as anti-requirement or acceptance criterion]
+- [gap 2]
+
+**Verification strategy:**
+[How will I check the output? Name the specific test, diff, or assertion.]
 ```
 
 ---
@@ -80,17 +123,13 @@ Produce structured output in this format:
 
 ## Modify This Skill
 
-This is a starting point. Adapt it to your workflow:
-
 - Add domain-specific risk categories (e.g., "MITRE ATLAS threat vectors"
   for security work, or "bias and fairness" for ethical AI work)
 - Change the output format to match how your team documents decisions
-- Add a "CCT pillars check" section if you want to tie this to the
-  five-pillar framework from Unit 1
+- Add a "CCT pillars check" section to tie this to the five-pillar framework
 - Create a `/think-security` variant that always includes threat modeling
 - Create a `/think-ethics` variant that always surfaces AIUC-1 domain requirements
-
-The best version of this skill is the one you've shaped for your context.
+- Expand the Harness Audit with your team's known failure patterns from past retros
 
 ---
 

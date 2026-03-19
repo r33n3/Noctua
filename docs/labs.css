@@ -148,6 +148,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
   .content h1 { font-size: 26px; } .content h2 { font-size: 20px; }
 }
 
+/* === SITE SEARCH === */
+.search-wrap { padding: 12px 16px 4px; position: relative; }
+.search-wrap input { width: 100%; background: #0b1020; border: 1px solid rgba(212,160,23,0.3); border-radius: 6px; color: var(--text); font-size: 13px; font-family: inherit; padding: 7px 10px; outline: none; transition: border-color 0.15s; }
+.search-wrap input::placeholder { color: var(--text-muted); }
+.search-wrap input:focus { border-color: var(--accent); }
+#site-search-results { display: none; position: absolute; top: calc(100% - 4px); left: 16px; right: 16px; background: #0d1525; border: 1px solid rgba(212,160,23,0.35); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); z-index: 9999; max-height: 380px; overflow-y: auto; }
+#site-search-results.open { display: block; }
+.ssr-item { display: block; padding: 9px 14px; border-bottom: 1px solid #1a2035; text-decoration: none; color: inherit; }
+.ssr-item:last-child { border-bottom: none; }
+.ssr-item:hover { background: rgba(212,160,23,0.08); }
+.ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
+.ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+.ssr-tag { display: inline-block; font-size: 10px; background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25); color: var(--accent); border-radius: 3px; padding: 1px 5px; margin-top: 3px; margin-right: 3px; }
+.ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
+
 /* === SCROLLBAR === */
 ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.25); border-radius: 4px; }

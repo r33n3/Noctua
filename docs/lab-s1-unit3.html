@@ -210,12 +210,12 @@ mkdir -p ~/noctua-labs/unit3/week10 && cd ~/noctua-labs/unit3/week10</code></pre
         <div class="step-title">Step 2: Run Garak prompt injection probes</div>
         <div class="step-desc">Run Garak's prompt injection probe module against your agent system. This sends hundreds of crafted injection payloads and measures the model's susceptibility. Review the HTML report for failures.</div>
       </div></label>
-      <div class="code-block"><pre><code># Run prompt injection probes (against claude-sonnet-4-5)
-python3 -m garak --model_type anthropic --model_name claude-sonnet-4-5 \
+      <div class="code-block"><pre><code># Run prompt injection probes (against claude-sonnet-4-6)
+python3 -m garak --model_type anthropic --model_name claude-sonnet-4-6 \
   --probes promptinjection --report_prefix garak-injection-report
 
 # Also run jailbreak probes
-python3 -m garak --model_type anthropic --model_name claude-sonnet-4-5 \
+python3 -m garak --model_type anthropic --model_name claude-sonnet-4-6 \
   --probes jailbreak --report_prefix garak-jailbreak-report</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
@@ -228,7 +228,7 @@ python3 -m garak --model_type anthropic --model_name claude-sonnet-4-5 \
       <div class="code-block"><pre><code># promptfoo.yaml
 description: Noctua Unit 2 Security Assessment
 providers:
-  - id: anthropic:claude-sonnet-4-5
+  - id: anthropic:claude-sonnet-4-6
     config:
       temperature: 0
 tests:
@@ -505,7 +505,7 @@ cd ~/noctua-labs/unit3/week12
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},

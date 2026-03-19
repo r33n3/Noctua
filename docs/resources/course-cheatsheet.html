@@ -284,7 +284,7 @@
 <main class="main"><div class="content">
 
 <h1>Course Cheatsheet</h1>
-<p>Two-sided reference covering the full Noctua methodology — sprint cycle, frameworks, metrics, tools, and practice. Keep both sides open during labs.</p>
+<p>Three-sided reference covering the full Noctua methodology — sprint cycle, frameworks, metrics, tools, and practitioner field guide. Side 1: foundations. Side 2: tools and practice. Side 3: plain-language concepts for assessing and securing AI deployments in the field.</p>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SIDE 1 — FOUNDATION
@@ -574,7 +574,15 @@
         <div class="skill-row">
           <div class="skill-name">/retro</div>
           <div class="skill-when">After every sprint or build session</div>
-          <div class="skill-output">Output: Spec vs reality table · What worked · What didn't · What slowed us · Next cycle changes · Context library updates · Metrics table</div>
+          <div class="skill-output">Output: Spec vs reality table · What worked · What didn't · Gap classification (spec/constraint/context/process) · Three Strikes check · Context library updates · Metrics table</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/harness</div>
+          <div class="skill-when">When session loses direction · same mistake recurring · before capstone sprint</div>
+          <div class="skill-output">Output: Current phase · Spec layer gaps · Runtime layer gaps · Context layer gaps · Last retro applied? · Three Strikes candidates · Next action</div>
         </div>
       </div>
 
@@ -585,10 +593,15 @@
         <div class="cs-code">
 mkdir -p ~/.claude/commands<br><br>
 curl -o ~/.claude/commands/think.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/<br>
-&nbsp;Noctua/main/docs/skills/think.md<br><br>
-<span class="comment"># repeat for spec.md, retro.md,</span><br>
-<span class="comment"># worktree-setup.md</span>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md<br>
+curl -o ~/.claude/commands/spec.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md<br>
+curl -o ~/.claude/commands/worktree-setup.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md<br>
+curl -o ~/.claude/commands/retro.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md<br>
+curl -o ~/.claude/commands/harness.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
         </div>
         <div style="font-size:9.5px;color:rgba(255,255,255,0.4);">Skills are plain text. Read, edit, fork them. See docs/skills/ for full install + modifications.</div>
       </div>
@@ -710,6 +723,209 @@ curl -o ~/.claude/commands/think.md \<br>
     </div>
   </div><!-- /cs-grid -->
 </div><!-- /cs-page side 2 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDE 3 — PRACTITIONER FIELD GUIDE
+     For students walking into a company and assessing AI security posture.
+════════════════════════════════════════════════════════════════ -->
+<div class="cs-page">
+
+  <div class="cs-header">
+    <div>
+      <div class="cs-header-title">Noctua — AI Security Engineering</div>
+      <div class="cs-header-sub">Course Reference · noctua.ai-security.dev</div>
+    </div>
+    <div class="cs-header-side">Side 3 · Field Guide</div>
+  </div>
+
+  <div class="cs-grid">
+
+    <!-- ── COL 1: PROTOCOLS IN PLAIN LANGUAGE ── -->
+    <div class="cs-col col-purple">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Protocols — What They Actually Do</div>
+
+        <div class="skill-row">
+          <div class="skill-name">MCP — Model Context Protocol</div>
+          <div class="skill-when">Agent calls a tool (function) you expose</div>
+          <div class="skill-output"><strong>Plain language:</strong> You write a function. Claude calls it. That's it. MCP is the standard wire format that lets any MCP-compatible agent call your function without custom glue code. Think of it as a shared plugin interface for AI.</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">A2A — Agent-to-Agent</div>
+          <div class="skill-when">One agent delegates work to another agent</div>
+          <div class="skill-output"><strong>Plain language:</strong> Instead of calling a tool, one agent hands a task to another specialized agent and waits for a result. Enables pipelines: triage agent → analysis agent → report agent. The handoff is structured JSON over HTTP, not a custom API per pair.</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">SPIFFE / SVIDs</div>
+          <div class="skill-when">Agent needs to prove its identity to a service</div>
+          <div class="skill-output"><strong>Plain language:</strong> Every agent gets a short-lived cryptographic ID card (SVID) issued by a trust authority. When the agent calls a service, it presents that card. No more shared API keys rotated by hand. If the agent is compromised, its card expires in minutes.</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">NHI — Non-Human Identity</div>
+          <div class="skill-when">Any service account, bot, or agent acting on behalf of a user</div>
+          <div class="skill-output"><strong>Plain language:</strong> NHI is the category of identity that isn't a person. Agents, pipelines, and CI runners are all NHIs. They need their own lifecycle: provisioned, scoped, rotated, revoked. Most orgs don't manage this well — it's a common attack surface.</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="cs-section-title" style="margin-top:8px;">What to Look for in a Company</div>
+        <table class="cs-table">
+          <thead><tr><th>Check</th><th>Good sign</th><th>Red flag</th></tr></thead>
+          <tbody>
+            <tr><td class="label">MCP</td><td>Tools have input schemas + validation</td><td>Tools accept arbitrary strings, no schema</td></tr>
+            <tr><td class="label">A2A</td><td>Agent boundaries defined, structured handoffs</td><td>Agents call each other via ad-hoc prompts</td></tr>
+            <tr><td class="label">SPIFFE</td><td>Short-lived SVIDs, SPIRE deployed</td><td>Long-lived API keys in environment variables</td></tr>
+            <tr><td class="label">NHI</td><td>Inventory exists, rotation policy in place</td><td>Shared service accounts, unknown owners</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ── COL 2: HARNESS + AGENT MEMORY ── -->
+    <div class="cs-col col-teal">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Harness Engineering — Plain Language</div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,0.7);margin:0 0 8px;">A harness makes correct agent behavior the easy path. When it's missing, agents drift. When it's present, agents self-correct.</p>
+
+        <table class="cs-table">
+          <thead><tr><th>Layer</th><th>What it is</th><th>What breaks without it</th></tr></thead>
+          <tbody>
+            <tr><td class="label">Spec</td><td>Written definition of what the agent must and must not do. Includes anti-requirements.</td><td>Agent interprets intent differently every session.</td></tr>
+            <tr><td class="label">Runtime</td><td>Constraints enforced at execution: tool scopes, output schemas, approval gates.</td><td>Agent takes unintended high-impact actions.</td></tr>
+            <tr><td class="label">Context</td><td>Knowledge the agent carries in: AGENTS.md, task state, prior retro lessons.</td><td>Agent relearns the same lessons every session.</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="cs-divider">
+
+        <div class="cs-section-title">Three-Tier Context Architecture</div>
+        <table class="cs-table">
+          <thead><tr><th>Tier</th><th>Plain language</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr><td class="label">T1 · Institutional</td><td>Permanent lessons about how this agent works in this codebase. Human-written. Surgical — only what can't be inferred from code.</td><td>AGENTS.md</td></tr>
+            <tr><td class="label">T2 · Project</td><td>Current task state, database snapshots, handoff summaries. Changes per sprint. Acts as agent memory across sessions.</td><td>Structured handoff files</td></tr>
+            <tr><td class="label">T3 · Session</td><td>What fits in the context window right now. Constructed fresh each session from T1 + T2 + task prompt.</td><td>Context window</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="cs-divider">
+
+        <div class="cs-section-title">Agent Memory Types</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">Sensory</td><td>Current context window. Fast, bounded. Gone when session ends.</td></tr>
+            <tr><td class="label">Episodic</td><td>Records of past sessions: retro notes, what worked, what failed.</td></tr>
+            <tr><td class="label">Semantic</td><td>Factual knowledge base: domain patterns, codebase conventions, known traps.</td></tr>
+            <tr><td class="label">External</td><td>Databases, vector stores, knowledge graphs the agent can query at runtime.</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="cs-divider">
+
+        <div class="cs-section-title">Gap Classification (from /retro)</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">Spec gap</td><td>The spec didn't say it. Fix: add to spec + anti-requirements.</td></tr>
+            <tr><td class="label">Constraint gap</td><td>The spec said it but runtime didn't enforce it. Fix: add tool scope or gate.</td></tr>
+            <tr><td class="label">Context gap</td><td>Agent didn't have the knowledge to succeed. Fix: add to AGENTS.md or T2 handoff.</td></tr>
+            <tr><td class="label">Process gap</td><td>Workflow broke down (review skipped, retro missed). Fix: update checklist or gate.</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:9.5px;color:rgba(255,255,255,0.4);margin:4px 0 0;"><strong>Three Strikes Rule:</strong> Same gap type 3× across retros → build a permanent harness component.</p>
+      </div>
+
+    </div>
+
+    <!-- ── COL 3: PRACTITIONER ASSESSMENT + SHIPPING ── -->
+    <div class="cs-col col-gold">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Practitioner Assessment — Walking into a Company</div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,0.7);margin:0 0 8px;">Your goal: understand their current AI posture, identify gaps, and propose security agent deployments that add immediate value.</p>
+
+        <table class="cs-table">
+          <thead><tr><th>Phase</th><th>Questions to ask</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="label">1 · Inventory</td>
+              <td>What AI/LLM systems are deployed? Who owns each? Are agents listed in a registry?</td>
+            </tr>
+            <tr>
+              <td class="label">2 · Identity</td>
+              <td>How do agents authenticate? Are NHIs inventoried? Are credentials short-lived?</td>
+            </tr>
+            <tr>
+              <td class="label">3 · Permissions</td>
+              <td>What can each agent do? Is it least-privilege? Are tool scopes documented?</td>
+            </tr>
+            <tr>
+              <td class="label">4 · Observability</td>
+              <td>Are agent decisions logged? Can you reconstruct what an agent did and why?</td>
+            </tr>
+            <tr>
+              <td class="label">5 · Harness</td>
+              <td>Does each agent have a spec? AGENTS.md? Retro process? Or is it ad-hoc?</td>
+            </tr>
+            <tr>
+              <td class="label">6 · Human gates</td>
+              <td>What triggers human approval? Are irreversible actions gated?</td>
+            </tr>
+            <tr>
+              <td class="label">7 · Threat model</td>
+              <td>Has prompt injection been considered? Supply chain? Model theft? MITRE ATLAS run?</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Shipping Discipline — gstack Principles</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">Boil the Lake</td><td>Don't expand scope mid-sprint. Ship what's scoped, retro, then extend.</td></tr>
+            <tr><td class="label">/ship pipeline</td><td>think → spec → build → retro → ship. Each gate earns the next.</td></tr>
+            <tr><td class="label">Pre-landing check</td><td>AI output reviewed by human before merging. No auto-commit to main.</td></tr>
+            <tr><td class="label">Role gates</td><td>Architect reviews spec. Security reviews tool scopes. Lead reviews final diff.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">What Good Looks Like — Maturity Levels</div>
+        <table class="cs-table">
+          <thead><tr><th>Level</th><th>What you see</th></tr></thead>
+          <tbody>
+            <tr><td class="label">0 · Ad-hoc</td><td>AI used informally. No specs, no logging, no harness. High drift risk.</td></tr>
+            <tr><td class="label">1 · Documented</td><td>Agents have specs and AGENTS.md. Retros happen. Some logging.</td></tr>
+            <tr><td class="label">2 · Enforced</td><td>Runtime constraints active. NHIs managed. Approval gates on high-impact actions.</td></tr>
+            <tr><td class="label">3 · Measured</td><td>MTTS/MTTP tracked per agent. Harness components refined by retro data.</td></tr>
+            <tr><td class="label">4 · Security-native</td><td>Security agents deployed. Threat models maintained. AIUC-1 controls mapped.</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:9.5px;color:rgba(255,255,255,0.4);margin:4px 0 0;">Most companies are Level 0–1. Your security agent deployments move them to Level 2+.</p>
+      </div>
+
+    </div>
+
+  </div><!-- /cs-grid -->
+</div><!-- /cs-page side 3 -->
 
 </div></main>
 

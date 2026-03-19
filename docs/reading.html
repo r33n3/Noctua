@@ -517,6 +517,21 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 <li><strong>Context Engineering: A Complete Guide</strong> — CodeConductor (2025). Structured approach to data, knowledge, tools, memory, and structure for LLMs. https://codeconductor.ai/blog/context-engineering</li>
 </ul>
 <hr />
+<h2 id="agent-knowledge-bases-memory">Agent Knowledge Bases &amp; Memory</h2>
+<p>How agents store, retrieve, and use knowledge across sessions. Covers both institutional context (what you write down for the agent) and dynamic memory (what the agent accumulates through work). Directly supports the three-tier context architecture in Unit 5 and the harness engineering patterns in Unit 4.</p>
+<h3 id="agent-kb-core">Core</h3>
+<ul>
+<li><strong>"How LinkedIn Improved AI Coding Agent Adoption Through Knowledge Bases"</strong> — The New Stack (2025). After implementing an agentic knowledge base encoding internal systems, frameworks, and practices, LinkedIn saw 20% increase in AI coding adoption and approximately 70% reduction in issue triage time. Demonstrates that out-of-the-box agents fail not because of model capability but because of missing institutional context. https://thenewstack.io/</li>
+<li><strong>"A Survey on the Memory Mechanism of Large Language Model based Agents"</strong> (arXiv:2404.13501). Comprehensive taxonomy of agent memory: sensory (in-context), short-term (working), long-term (external storage), and episodic vs. semantic distinctions. Core framework for understanding what agents can and cannot remember across sessions. https://arxiv.org/abs/2404.13501</li>
+<li><strong>Memory in AI Agents</strong> — LangChain Blog (2024). Practical breakdown of four memory types for production agents: in-context storage (fast, bounded by window), external storage (databases, vector stores), episodic memory (past experiences), semantic memory (facts and knowledge). https://blog.langchain.dev/memory-for-agents/</li>
+</ul>
+<h3 id="agent-kb-expanded">Expanded</h3>
+<ul>
+<li><strong>"What Are AGENTS.md Files? Practical Guidance from Field Research"</strong> — InfoQ (2025). Research on AI coding agent context files: human-authored context files increase task success rate; LLM-generated files reduce it compared to no context file at all. Key finding: the highest-value AGENTS.md content is domain knowledge the model cannot infer from the project. https://www.infoq.com/</li>
+<li><strong>"Building a Tiered Context Architecture for AI Agents"</strong> — Andersswanson (2025). Practical framework: filesystem as working memory for fast scratchpad work, vector or full-text search for recall, relational database for truth and policy enforcement. Covers agent handoff patterns using structured databases as context bridges between sessions. https://andersswanson.com/</li>
+<li><strong>"Context Files for AI Coding Agents — Research Findings"</strong> (InfoWorld, 2025). Successful knowledge bases include negative examples (what not to do) and contextual decision trees rather than raw data dumps. The highest-performing agents receive curated, surgical context — not comprehensive documentation dumps. https://www.infoworld.com/</li>
+</ul>
+<hr />
 <h2 id="agentic-ai-security-research-papers">Agentic AI Security — Research Papers</h2>
 <h3 id="core_3">Core</h3>
 <ul>
@@ -803,8 +818,8 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 </tr>
 <tr>
 <td>14</td>
-<td>Rapid Prototyping</td>
-<td>Knapp et al. — "Sprint" (prototyping chapters)</td>
+<td>Rapid Prototyping &amp; Shipping Discipline</td>
+<td>Knapp et al. — "Sprint" (prototyping chapters); gstack by Garry Tan — /ship pipeline, pre-landing AI checklist, Boil the Lake principle (https://github.com/garrytan/gstack)</td>
 </tr>
 <tr>
 <td>15</td>
@@ -845,8 +860,8 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 </tr>
 <tr>
 <td>4</td>
-<td>Evaluation</td>
-<td>West — evaluation chapter; Promptfoo Documentation</td>
+<td>Evaluation &amp; Agent Memory</td>
+<td>West — evaluation chapter; Promptfoo Documentation; "Survey on Memory Mechanism of LLM-based Agents" (arXiv:2404.13501); LinkedIn knowledge base case study (The New Stack)</td>
 </tr>
 <tr>
 <td>5</td>
@@ -946,7 +961,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
@@ -1032,5 +1047,6 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
+<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
 </body>
 </html>

@@ -211,6 +211,20 @@ function buildSidebar(activeLink, pathPrefix) {
   return html;
 }
 
+// Persist sidebar scroll position across page navigations
+(function() {
+  var KEY = 'noctua-sidebar-scroll';
+  document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    var saved = sessionStorage.getItem(KEY);
+    if (saved) sidebar.scrollTop = parseInt(saved, 10);
+    sidebar.addEventListener('scroll', function() {
+      sessionStorage.setItem(KEY, sidebar.scrollTop);
+    });
+  });
+})();
+
 // Load Lucide icons and initialize on DOMContentLoaded
 (function() {
   var s = document.createElement('script');

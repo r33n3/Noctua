@@ -12,19 +12,20 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>Four Claude Code skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
+<p>Five Claude Code skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
 
 <div class="callout callout-key">
   <strong>Why This Cycle Exists</strong>
   <p>The fastest way to build the wrong thing is to start building immediately. Claude will generate code confidently in whatever direction you point it — which means if your problem is unclear, you get a well-built solution to the wrong problem. The Think → Spec → Build → Retro cycle exists to prevent that.</p>
-  <p>Each skill enforces one phase:</p>
+  <p>Each skill enforces one phase — and each phase has harness engineering baked in:</p>
   <ul>
-    <li><strong>/think</strong> — Forces you to understand the real problem before committing to an approach. Surfaces assumptions you didn't know you were making.</li>
-    <li><strong>/spec</strong> — Translates your thinking into a contract: what you're building, what you're not building, and how you'll know it works. Claude builds from this — not from vibes.</li>
-    <li><strong>/worktree-setup</strong> — Isolates parallel work into separate git branches so multiple components (or multiple Claude sessions) can build simultaneously without stepping on each other.</li>
-    <li><strong>/retro</strong> — Closes the loop. Compares what was built against the spec, captures what worked and what didn't, and feeds the findings into the next cycle.</li>
+    <li><strong>/think</strong> — Forces you to understand the real problem before committing to an approach. Ends with a Harness Audit: what guardrails does this work need, what constraints already exist, what's the verification strategy?</li>
+    <li><strong>/spec</strong> — Translates your thinking into a contract the agent builds from. Includes anti-requirements (things the agent must NOT do), verifiable acceptance criteria, explicit file scope, and lessons from past retros encoded directly into the spec.</li>
+    <li><strong>/worktree-setup</strong> — Isolates parallel work into separate branches. Configures pre-commit hooks and output suppression (silence passing tests, surface only failures) so the agent hits constraints during execution, not after you review.</li>
+    <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
+    <li><strong>/harness</strong> — The meta-skill. Orients you when sessions lose direction, audits whether your workflow is self-correcting, and checks whether /retro output is actually changing your /spec and /think.</li>
   </ul>
-  <p>Run all four in sequence and you go from problem to working prototype with a documented decision trail. Skip either of the first two and you spend your build time recovering from avoidable mistakes.</p>
+  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /spec, /spec constrains /worktree, /worktree produces the evidence for /retro. Run all five and your system gets better every cycle.</p>
 </div>
 
 <div class="callout callout-key">
@@ -37,7 +38,7 @@
 <div class="callout callout-key">
   <strong>What is a Claude Code Skill?</strong>
   <p>A skill is a markdown file you place in <code>~/.claude/commands/</code> (global, available in all projects) or <code>.claude/commands/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
-  <p>Skills are plain text files — read them, edit them, fork them, share them. The four below are starting points, not finished products. The best version of each skill is the one you've shaped for your specific work.</p>
+  <p>Skills are plain text files — read them, edit them, fork them, share them. The five below are starting points, not finished products. The best version of each skill is the one you've shaped for your specific work.</p>
 </div>
 
 <div class="callout callout-tip">
@@ -51,11 +52,12 @@
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   <pre><code>mkdir -p ~/.claude/commands
 
-# Download all four skills at once (run from your terminal)
+# Download all five skills at once (run from your terminal)
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
 curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
 
 # Verify
 ls ~/.claude/commands/</code></pre>
@@ -71,7 +73,7 @@ ls ~/.claude/commands/</code></pre>
   <strong>Why /think exists</strong>
   <p>The most expensive mistake in a sprint is confidently building the wrong thing. <code>/think</code> is a forcing function — it makes you restate the problem in your own words, list the assumptions you're making, and identify what you don't know before you commit to an approach.</p>
   <p>In security work this matters more than most domains. A threat model built on a wrong assumption doesn't just waste time — it creates false confidence. An incident response tool designed for the wrong attacker profile misses the actual threat. <code>/think</code> makes the assumptions visible so you can challenge them before they're baked into code.</p>
-  <p>The output also gives Claude the context it needs to help you well. A Claude session that starts with a clear problem statement, a list of risks, and a recommended direction produces significantly better output than one that starts with "build me a threat detection tool."</p>
+  <p>The updated skill ends with a <strong>Harness Audit</strong>: three questions you answer before moving to /spec. What guardrails does this work need? What constraints already exist (tests, linters, CI gates)? What is the verification strategy — and if you can't name a specific check, you can't delegate this work to an agent yet. Think of this phase as the manager handing off to a capable but context-less contractor.</p>
 </div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
@@ -103,6 +105,7 @@ ls ~/.claude/commands/</code></pre>
 <div class="callout callout-reading">
   <strong>Why /spec exists</strong>
   <p>Claude is an exceptional builder — but it builds what you describe, not what you meant. Without a spec, "build a vulnerability scanner" produces something. With a spec, it produces the right something: the right agents, the right tools, the right data flow, with security controls defined before the first line of code.</p>
+  <p>The updated skill now requires two things that most specs omit. First: <strong>anti-requirements</strong> — an explicit list of what the agent must NOT do (don't touch this module, don't add dependencies, don't refactor outside scope). Every ambiguity you leave in the spec is a decision the agent makes without you. Anti-requirements shrink that space. Second: <strong>verifiable acceptance criteria</strong> — observable checks, not prose. "The API returns 200 with a valid token" is a criterion. "Authentication should work" is a wish.</p>
   <p>The spec is also your scope enforcer. Sprint labs give you 60 minutes to build. Without a written scope, every new idea that surfaces during the build phase looks reasonable to add. The spec gives you something to point to: "That's not in scope — deferred to next sprint." This is not a constraint — it's what lets you finish.</p>
   <p>In a team context, the spec is the shared contract. If two people are building different components in parallel worktrees, the spec is what keeps them compatible. If you're using Claude Code to build one component and doing another yourself, the spec is what keeps you aligned with your own work.</p>
 </div>
@@ -138,6 +141,7 @@ ls ~/.claude/commands/</code></pre>
   <p>Git worktrees let you check out multiple branches simultaneously into separate directories. In a sprint with three components — say a triage agent, an enrichment agent, and a reporting layer — you don't have to build them sequentially. Each lives in its own directory, on its own branch, and can be developed (or delegated to a separate Claude Code session) in parallel.</p>
   <p>This is how the sprint's 60-minute build phase stays achievable. Sequential builds of three components would require 60 minutes each. Parallel worktrees compress that into the time of the longest single component.</p>
   <p>It also keeps your main branch clean. Nothing gets merged until a component is complete and passing. If one component hits a dead end, you abandon that worktree without touching anything else. The <code>/worktree-setup</code> skill generates the exact shell commands for your specific spec — you don't have to remember the git worktree syntax, and every component gets consistent structure from the start.</p>
+  <p>The updated skill configures two harness elements in each worktree: <strong>pre-commit hooks</strong> (linting, type checks, fast unit tests that run during agent execution, not after you review) and <strong>output suppression</strong> (pytest configured to surface only failures — passing tests rot the context window and distract the agent). These constraints make correct behavior the easy path before code ever reaches review.</p>
   <p><strong>Note:</strong> Worktree management via <code>/worktree-setup</code> is a Claude Code skill — it works in Claude Code sessions. The underlying <code>git worktree</code> commands work in any terminal or IDE, but the skill automation is Claude Code-specific.</p>
 </div>
 
@@ -151,6 +155,17 @@ ls ~/.claude/commands/</code></pre>
   <pre><code>curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md</code></pre>
 </div>
 
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add your team's standard README template to the per-worktree setup</li>
+    <li>Expand pre-commit hooks with your specific linters and test suites</li>
+    <li>Add a security-specific hook: run Bandit or detect-secrets on every commit</li>
+    <li>Create <code>/worktree-agent</code> that pairs each worktree with a named Claude Code session for a specific agent role</li>
+    <li>Customize TASK.md template to always include your anti-requirements section from the spec</li>
+  </ul>
+</div>
+
 <hr>
 
 <h2 id="retro">/retro — Structured Retrospective</h2>
@@ -161,6 +176,8 @@ ls ~/.claude/commands/</code></pre>
   <strong>Why /retro exists</strong>
   <p>Most developers move straight from one build to the next. The retro is the step that makes the next cycle faster than the current one. Without it, you repeat the same mistakes because you never examined them. Without it, patterns that worked disappear because you never captured them.</p>
   <p>The retro compares what you set out to build (the spec's success criteria) against what you actually built. That gap — what you cut, what you deferred, what took longer than expected — is your most valuable input for the next sprint. A retro that says "the tool detection worked but the enrichment step took 40 of 60 build minutes" tells you exactly where to focus Week 12 hardening.</p>
+  <p>The updated skill adds <strong>gap classification</strong> to every problem you find. Each problem is one of four types: a <em>spec gap</em> (you didn't tell the agent something), a <em>constraint gap</em> (nothing prevented the mistake), a <em>context gap</em> (the agent couldn't see what it needed), or a <em>process gap</em> (a phase was skipped or out of order). Each type maps to a specific fix location — spec template, CI hook, AGENTS.md, or harness. Naming the gap type tells you exactly where to prevent it next time.</p>
+  <p>The <strong>Three Strikes Rule</strong>: when the same gap category appears three times across retros, stop noting it and build a permanent harness component instead. Three spec gaps of the same type → update the spec template. Three constraint gaps → add the rule to CI. Three context gaps → build the MCP or update AGENTS.md permanently.</p>
   <p>The retro also generates your context library. Every sprint produces reusable patterns — a tool definition that worked, a system prompt structure that produced clean output, an agent orchestration approach worth keeping. The retro captures these before you move on and they're gone. Over time, your context library becomes the institutional knowledge that makes every new tool faster to build than the last.</p>
 </div>
 
@@ -181,6 +198,42 @@ ls ~/.claude/commands/</code></pre>
     <li>Create <code>/retro-light</code> — a 5-minute version for quick end-of-session capture</li>
     <li>Add a "Share with community" prompt that extracts reusable patterns into a GitHub gist</li>
     <li>Link retro output automatically to a CHANGELOG.md entry</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="harness">/harness — Agent Harness Engineering</h2>
+<p>The meta-skill. Use it when a session loses direction, when the same mistake keeps recurring, or when you want to audit whether your workflow is actually getting better — or just running the same errors faster.</p>
+<p><strong>Best used in:</strong> Start of any new project (assess harness state), between sprints (check the feedback loop is connected), when something goes wrong in the same way twice, before a capstone sprint to verify the full cycle is wired up.</p>
+
+<div class="callout callout-reading">
+  <strong>Why /harness exists</strong>
+  <p>The Think → Spec → Build → Retro cycle is only self-correcting if the connections between phases are working. /retro must feed /think. /think must shape /spec. /spec must constrain /worktree. /worktree must produce the evidence /retro needs. If any connection is broken, you're not improving — you're running the same mistakes in a faster loop.</p>
+  <p><code>/harness</code> audits those connections. It has three layers to examine. The <strong>spec layer</strong>: does your spec template include anti-requirements, verifiable criteria, and lessons from past retros? The <strong>runtime layer</strong>: do pre-commit hooks run during agent execution, is test output suppressed to failures only, would at least one gate catch your most common mistake? The <strong>context layer</strong>: does the agent have access to patterns it needs, is a scoped TASK.md dropped into each worktree, have retro findings been encoded into AGENTS.md or skills?</p>
+  <p>The diagnostic question is simple: <em>"What did my last retro actually change?"</em> If the answer is "nothing," the loop is broken and /harness shows you exactly where.</p>
+  <p>Use /harness at the start of a session when you're not sure which phase applies. Use it periodically as a system health check. Use it before a capstone sprint to make sure all five skills are connected and each phase produces inputs the next phase can use.</p>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="harness.md" download="harness.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download harness.md</a>
+  <a href="harness.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/commands/harness.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add your team's most common failure patterns to the Health Check checklist</li>
+    <li>Add a "Harness maturity level" rating (1–4) to track improvement over time across sprints</li>
+    <li>Create <code>/harness-security</code> — a variant with security-specific constraint checks (prompt injection boundaries, LLM trust surfaces, credential handling rules)</li>
+    <li>Build a running gap log file that accumulates gap type counts across retros — this becomes your Three Strikes tracker</li>
+    <li>Add the Phase Navigation tree to your AGENTS.md so agents can orient themselves without invoking the skill</li>
+    <li>Add a three-tier context audit: "Is Tier 1 (AGENTS.md) human-written and surgical? Is Tier 2 (database handoffs) configured for multi-session tasks? Is Tier 3 (session context) scoped to only what this task needs?"</li>
   </ul>
 </div>
 

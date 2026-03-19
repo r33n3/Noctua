@@ -115,13 +115,13 @@ safety check --json > safety-results.json
       <label><input type="checkbox" onchange="toggleStep('u7w9-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Implement model configuration pinning</div>
-        <div class="step-desc">Create <code>model-config.yaml</code> pinning exact model versions used in production. For Claude: pin the specific model ID (e.g., claude-sonnet-4-5). For locally-run models (if any): record the SHA256 hash of the model weights file. This prevents silent version upgrades from changing agent behavior.</div>
+        <div class="step-desc">Create <code>model-config.yaml</code> pinning exact model versions used in production. For Claude: pin the specific model ID (e.g., claude-sonnet-4-6). For locally-run models (if any): record the SHA256 hash of the model weights file. This prevents silent version upgrades from changing agent behavior.</div>
       </div></label>
       <div class="code-block"><pre><code># model-config.yaml
 models:
   primary:
     provider: anthropic
-    model_id: claude-sonnet-4-5   # Pinned version
+    model_id: claude-sonnet-4-6   # Pinned version
     max_tokens: 4096
     temperature: 0.0
   fallback:
@@ -312,7 +312,7 @@ tracer = trace.get_tracer("soc-agent-system")
 # Instrument agent calls:
 with tracer.start_as_current_span("recon_agent") as span:
     span.set_attribute("agent.id", "soc-recon-001")
-    span.set_attribute("model.id", "claude-sonnet-4-5")
+    span.set_attribute("model.id", "claude-sonnet-4-6")
     result = recon_agent.run(alert)
     span.set_attribute("tokens.input", result.usage.input_tokens)
     span.set_attribute("tokens.output", result.usage.output_tokens)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
@@ -562,7 +562,7 @@ jobs:
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s2-unit5.html"},
+    {t:"Unit 2: Context Engineering",d:"Prompt engineering, system prompts, context window management, retrieval-augmented generation (RAG), embeddings.",tags:["unit2","context","prompts","rag"],url:"s1-unit2.html"},
     {t:"Unit 3: Ethical AI Use — AIUC-1",d:"AIUC-1 compliance framework, bias auditing, fairness, transparency, accountability for AI systems.",tags:["unit3","ethics","aiuc1","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
