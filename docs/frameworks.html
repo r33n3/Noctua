@@ -469,6 +469,18 @@ body {
     <h1 id="security-frameworks-and-agent-protocols-reference">Security Frameworks and Agent Protocols Reference</h1>
 <h2 id="overview">Overview</h2>
 <p>This document serves as a comprehensive reference for graduate students in Noctua. It covers both foundational security frameworks and the emerging agent protocol stack that has developed since 2023. The convergence of Model Context Protocol (MCP), Agent-to-Agent Protocol (A2A), Agent Communication Protocol (ACP), and Agent Network Protocol (ANP) represents a paradigm shift in how AI agents communicate and integrate with each other and external systems.</p>
+<h2 id="engagement-guide">Engagement Guide — Using These Frameworks in a Real Assessment</h2>
+<p>This reference is a catalog. When you're in a company engagement, you need to know which framework to reach for and when. The four questions that drive framework selection in practice:</p>
+<table>
+<thead><tr><th>Framework</th><th>Reach for it when...</th><th>Sequence in an engagement</th></tr></thead>
+<tbody>
+<tr><td><strong>AIUC-1</strong></td><td>You need a rapid maturity baseline: "Where is this organization relative to a defined standard for agentic systems?" Fast pass/fail across six domains.</td><td>Start here. 2–4 hour self-assessment gives you a map of where to dig.</td></tr>
+<tr><td><strong>MITRE ATLAS</strong></td><td>You need to model specific threats: "What would an attacker actually do to this system?" 66 documented adversarial techniques against ML/AI systems.</td><td>After the AIUC-1 baseline, identify which ATLAS techniques apply to this deployment's threat profile.</td></tr>
+<tr><td><strong>OWASP Top 10 (LLM / Agentic / NHI)</strong></td><td>You need to run a technical scan: "What specific vulnerabilities exist in the agent implementation?" Three separate lists for different layers.</td><td>Use after threat modeling to prioritize which vulnerabilities to test first.</td></tr>
+<tr><td><strong>NIST AI RMF</strong></td><td>You need to map findings to governance: "How does this organization's risk management process address AI?" Principle-based, maps to regulatory requirements.</td><td>Use last, to frame findings in language executives and compliance teams recognize.</td></tr>
+</tbody>
+</table>
+<div class="callout callout-key"><p><strong>When frameworks conflict:</strong> MITRE ATLAS is threat-focused (tactics/techniques), NIST is control-focused (governance stages), OWASP is vulnerability-focused (specific weaknesses), EU AI Act is regulatory (legal obligations). They don't map 1:1 and they will give you different priorities for the same system. Your job is to reconcile them into a ranked remediation plan — not to pick one and ignore the others.</p></div>
 <hr />
 <h2 id="part-1-agent-communication-protocols">Part 1: Agent Communication Protocols</h2>
 <p>The AI agent ecosystem in 2025-2026 has converged on four complementary interoperability protocols. Rather than competing, they address different layers of agent communication — analogous to how HTTP, WebSocket, and gRPC coexist in modern web infrastructure.</p>

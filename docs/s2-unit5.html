@@ -692,6 +692,13 @@ No hierarchy.
 
 <hr />
 <h3 id="lab-multi-agent-soc-triage-system-claude-agent-sdk">Lab: Multi-Agent SOC Triage System (Claude Agent SDK)</h3>
+<div class="callout callout-key"><p><strong>Choose your organization context before you design.</strong> The right multi-agent architecture depends on organizational constraints, not just technical requirements. Before reading the architecture diagram, pick one of these contexts and keep it in mind as you build — it will change your agent boundaries, escalation logic, and output format.</p>
+<ul>
+<li><strong>Option A — Early-stage fintech:</strong> 5-person team, high risk tolerance, no formal SIEM. Needs fraud detection under 5 minutes. Speed and cost matter more than auditability.</li>
+<li><strong>Option B — Mid-market healthcare:</strong> 50-person team, HIPAA-scoped, slow change approval process. Every agent action needs an audit trail. Explainability is a compliance requirement, not a nice-to-have.</li>
+<li><strong>Option C — Enterprise SOC:</strong> 200+ analysts, mature SIEM integration, formal escalation workflows. Agents must integrate with ticketing systems and support role-based access. Reliability over speed.</li>
+</ul>
+<p>In your deliverable, document which context you chose and where it changed your design decisions. This is the practitioner habit you're building: architecture follows context, not convention.</p></div>
 <h4 id="architecture-overview">Architecture Overview</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">RAW</span><span class="w"> </span><span class="n">ALERT</span><span class="w"> </span><span class="p">(</span><span class="n">IDS</span><span class="o">/</span><span class="n">SIEM</span><span class="p">)</span><span class="w"></span>
 <span class="w">       </span><span class="err">↓</span><span class="w"></span>
