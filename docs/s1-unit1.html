@@ -518,6 +518,21 @@ body {
 </div>
 <p>The timeline from 2023 to 2026 is instructive. In 2023, Claude and GPT-4 were impressive but single-message systems. By 2024, extended context windows (up to 200K tokens) made it feasible to inject entire incident response runbooks into a single prompt. By 2025, Claude Code emerged—a system where AI could not only write code but execute it, see results, and iterate. And in 2026, we have Claude Agent SDK, which lets you build multi-step autonomous workflows that can run for hours, manage complex state, handle errors gracefully, and integrate deeply with enterprise tools.</p>
 <p>This is the environment in which you're learning to be a security professional. The baseline expectation is no longer "can you analyze logs?" It's "can you build systems that analyze logs better than you can alone, and can you maintain critical oversight of those systems?"</p>
+<h4 id="why-claude-code">Why Claude Code — and What Transfers</h4>
+<p>This course runs on Claude Code and the Claude Agent SDK. That's a deliberate choice, not a default. Claude Code offers the most mature agentic engineering environment for security practitioners in 2026: a native CLAUDE.md configuration system, MCP tool-calling architecture, built-in worktree support for isolated agent execution, and a sub-agent orchestration model that maps directly to how production security workflows are structured. It has the deepest documentation, the most active practitioner community, and the most direct support for the build-harden-deploy pipeline this course teaches.</p>
+<p>Before your first lab session, you should understand what carries forward when you're not working in Claude Code — because in a company engagement, you will not always be:</p>
+<table>
+<thead><tr><th>Claude-specific</th><th>Cross-platform (transferable)</th></tr></thead>
+<tbody>
+<tr><td>CLAUDE.md context file</td><td>System prompt and agent configuration design — any platform</td></tr>
+<tr><td>Claude Code slash commands (/think, /spec, /retro, /harness)</td><td>Think → Spec → Build → Retro cycle — workflow-agnostic, runs on any agentic framework</td></tr>
+<tr><td>Claude Agent SDK orchestration patterns</td><td>MCP tool-calling — open protocol, adopted by OpenAI, Google, and open-source stacks</td></tr>
+<tr><td>Claude model tiers (Haiku / Sonnet / Opus)</td><td>Model selection by capability/cost tradeoff — every vendor has equivalent tiering</td></tr>
+<tr><td>Claude Code hooks and session management</td><td>System prompt governance, JSON output schemas, RAG architecture — cross-vendor by definition</td></tr>
+<tr><td>Sub-agent worktree isolation</td><td>Harness engineering — spec constraints, runtime constraints, context layers apply to any agent runtime</td></tr>
+</tbody>
+</table>
+<div class="callout callout-tip"><p><strong>The tradeoff we made:</strong> Standardizing on one vendor's stack for instructional clarity reduces cognitive overhead in labs but limits multi-vendor exposure. We made that tradeoff consciously. Semester 2 introduces CrewAI and LangGraph to partially address it. When you walk into a company running Azure OpenAI or Google Vertex, the right column above is your translation layer — the patterns are the same even when the tool names differ.</p></div>
 <hr />
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives">Lab Objectives</h4>

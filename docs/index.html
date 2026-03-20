@@ -487,6 +487,13 @@ body {
 - MITRE ATLAS (Adversarial Threat Landscape for AI Systems)
 - Goal hijacking and prompt injection in multi-agent systems
 - AI supply chain security and non-human identity (NHI) governance</p>
+<div class="callout callout-key">
+<strong>A note on the standards landscape</strong>
+<p>The AI security standards ecosystem is young — and that's not a disclaimer, it's a core skill to develop. NIST AI RMF (2023), OWASP LLM Top 10 (2023), OWASP Agentic Top 10 (2025), and AIUC-1 (2024) were all published within the last three years. None has the decades of practitioner refinement behind NIST CSF or the OWASP Web Top 10. All are still being revised as the threat landscape evolves ahead of the standards bodies tracking it.</p>
+<p>This course references all of them — not because they're settled consensus, but because security practitioners in 2026 cannot afford to wait for settled consensus. Part of what you'll practice here is how to evaluate and selectively adopt emerging frameworks: what governance body is behind it, what adoption it has, what it maps to, and where it fills genuine gaps. Those are the same source-evaluation skills CCT demands of every piece of evidence you analyze.</p>
+<p><strong>🔑 Principle: Citing a standard and critically evaluating a standard are not in conflict. Do both.</strong></p>
+<p>For the record: AIUC-1 is an industry consortium standard developed with 100+ enterprise CISOs and mapped to NIST, OWASP, and the EU AI Act. It carries less institutional weight than NIST and less community longevity than OWASP, but it's the only framework in this list designed specifically for agentic AI systems — which makes it the most directly applicable to what you're building. We use it on those terms.</p>
+</div>
 <h3 id="3-rapid-prototyping-production-delivery">3. Rapid Prototyping → Production Delivery</h3>
 <p>What was aspirational in 2023 is now operational. Agentic engineering tools (Claude Code, Agent SDK, worktrees, subagents, MCP servers) make it possible to go from concept to working prototype in a single lab session. Students will build real cybersecurity tools, not mockups.</p>
 <p>But prototyping is only half the story. This course teaches the <strong>full delivery pipeline</strong>: rapid prototype → leadership evaluation → production hardening → deployment. When leadership selects a prototype for delivery, students learn to accelerate that prototype into production-ready code — adding observability, security controls, CI/CD, governance gates, and operational runbooks. The goal is not just "build fast" but "build fast, then ship."</p>
@@ -500,6 +507,12 @@ body {
 <li><strong>Specs as Source Code</strong> — Treating specifications as executable artifacts that drive agent behavior, not as documentation that drifts from implementation.</li>
 <li><strong>12 Leverage Points</strong> — A framework for identifying where small changes in agentic systems produce outsized improvements, from AI developer workflows through context management.</li>
 </ul>
+<div class="callout callout-tip">
+<strong>Why Claude Code — and what transfers</strong>
+<p>This course runs on Claude Code and the Claude Agent SDK. That's a deliberate choice, not a default. Claude Code offers the most mature agentic engineering environment for security practitioners in 2026: native CLAUDE.md configuration, MCP tool-calling architecture, built-in worktree support for isolated agent execution, and a sub-agent model that maps directly to production security workflows.</p>
+<p>A significant portion of what you learn here is not Claude-specific. The Think → Spec → Build → Retro cycle is workflow-agnostic. MCP is an open protocol with growing adoption across OpenAI, Google, and open-source stacks. System prompt governance, JSON output schemas, and RAG architecture are cross-vendor by definition. Unit 1 maps out exactly what transfers and what doesn't — so if your organization runs on Azure OpenAI, Google Vertex, or an open-source stack, you know your translation layer from day one.</p>
+<p><strong>The tradeoff:</strong> standardizing on one vendor's stack reduces cognitive overhead in labs but limits multi-vendor exposure. Semester 2 introduces CrewAI and LangGraph to partially address this.</p>
+</div>
 <hr />
 <h2 id="whats-new-in-2026">What's New in 2026</h2>
 <p>The cybersecurity and AI landscape has shifted dramatically since the original 2023 course:</p>
