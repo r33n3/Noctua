@@ -2350,42 +2350,128 @@ Provide your analysis as JSON.
 <h4 id="part-3-implement-a-simple-rag-pipeline">Part 3: Implement a Simple RAG Pipeline</h4>
 <p>Retrieval-Augmented Generation (RAG) means retrieving relevant documents and injecting them into the context.</p>
 <p>Create <code>rag-pipeline.py</code>:</p>
-<p>```python</p>
-<h1 id="usrbinenv-python3">!/usr/bin/env python3</h1>
-<p>"""
+<div class="codehilite"><pre><span></span><code>#!/usr/bin/env python3
+&quot;&quot;&quot;
 Simple RAG: Retrieve threat intel and org knowledge, inject into context.
-"""</p>
-<p>import json
-from anthropic import Anthropic</p>
-<p>client = Anthropic()</p>
-<h1 id="simulate-a-knowledge-base-in-production-this-would-be-a-vector-database">Simulate a knowledge base (in production, this would be a vector database)</h1>
-<p>knowledge_base = {
-    "threat_intel": [
+&quot;&quot;&quot;
+
+import json
+from anthropic import Anthropic
+
+client = Anthropic()
+
+# Simulate a knowledge base (in production, this would be a vector database)
+knowledge_base = {
+    &quot;threat_intel&quot;: [
         {
-            "id": "TI-2026-001",
-            "date": "2026-03-02",
-            "content": "APT-X actively targeting financial services. Known indicators: RDP compromise leads to lateral movement. Primary goal: customer data exfiltration.",
-            "relevance_keywords": ["APT-X", "financial", "exfiltration"]
+            &quot;id&quot;: &quot;TI-2026-001&quot;,
+            &quot;date&quot;: &quot;2026-03-02&quot;,
+            &quot;content&quot;: &quot;APT-X actively targeting financial services. Known indicators: RDP compromise leads to lateral movement. Primary goal: customer data exfiltration.&quot;,
+            &quot;relevance_keywords&quot;: [&quot;APT-X&quot;, &quot;financial&quot;, &quot;exfiltration&quot;]
         },
         {
-            "id": "TI-2026-002",
-            "date": "2026-02-28",
-            "content": "Singapore proxies: 203.45.x.x range commonly used by legitimate business travelers. No malicious activity associated.",
-            "relevance_keywords": ["Singapore", "proxy", "203.45"]
+            &quot;id&quot;: &quot;TI-2026-002&quot;,
+            &quot;date&quot;: &quot;2026-02-28&quot;,
+            &quot;content&quot;: &quot;Singapore proxies: 203.45.x.x range commonly used by legitimate business travelers. No malicious activity associated.&quot;,
+            &quot;relevance_keywords&quot;: [&quot;Singapore&quot;, &quot;proxy&quot;, &quot;203.45&quot;]
         }
     ],
-    "org_policy": [
+    &quot;org_policy&quot;: [
         {
-            "id": "POL-001",
-            "name": "Data Access Control",
-            "content": "VPs are authorized to access customer data for financial reporting. Access must be logged and audited.",
-            "relevance_keywords": ["VP", "data access", "authorization"]
+            &quot;id&quot;: &quot;POL-001&quot;,
+            &quot;name&quot;: &quot;Data Access Control&quot;,
+            &quot;content&quot;: &quot;VPs are authorized to access customer data for financial reporting. Access must be logged and audited.&quot;,
+            &quot;relevance_keywords&quot;: [&quot;VP&quot;, &quot;data access&quot;, &quot;authorization&quot;]
         }
     ],
-    "incident_history": [
+    &quot;incident_history&quot;: [
         {
-            "id": "INC-2026-005",
-            "date": "2026-02-14",</p>
+            &quot;id&quot;: &quot;INC-2026-005&quot;,
+            &quot;date&quot;: &quot;2026-02-14&quot;,
+            &quot;content&quot;: &quot;John Chen accessed data warehouse from London hotel. Confirmed legitimate — business trip verified with travel calendar.&quot;,
+            &quot;relevance_keywords&quot;: [&quot;John Chen&quot;, &quot;jchen&quot;, &quot;London&quot;, &quot;hotel&quot;, &quot;false alarm&quot;]
+        }
+    ]
+}
+
+def retrieve(query: str, top_k: int = 3) -&gt; list:
+    &quot;&quot;&quot;
+    Keyword-based retrieval (production would use vector similarity).
+    Returns top_k documents most relevant to the query.
+    &quot;&quot;&quot;
+    query_lower = query.lower()
+    scored = []
+    for category, docs in knowledge_base.items():
+        for doc in docs:
+            score = sum(
+                1 for kw in doc[&quot;relevance_keywords&quot;]
+                if kw.lower() in query_lower
+            )
+            if score &gt; 0:
+                scored.append({&quot;category&quot;: category, &quot;doc&quot;: doc, &quot;score&quot;: score})
+    scored.sort(key=lambda x: x[&quot;score&quot;], reverse=True)
+    return scored[:top_k]
+
+def build_rag_context(query: str) -&gt; str:
+    &quot;&quot;&quot;Retrieve relevant documents and format them as injected context.&quot;&quot;&quot;
+    retrieved = retrieve(query)
+    if not retrieved:
+        return &quot;No relevant documents found in knowledge base.&quot;
+
+    context_parts = []
+    for item in retrieved:
+        doc = item[&quot;doc&quot;]
+        category = item[&quot;category&quot;].replace(&quot;_&quot;, &quot; &quot;).title()
+        context_parts.append(
+            f&quot;[{category} | {doc[&#39;id&#39;]} | {doc[&#39;date&#39;]}]\n{doc[&#39;content&#39;]}&quot;
+        )
+    return &quot;\n\n&quot;.join(context_parts)
+
+def analyze_incident(incident_description: str) -&gt; str:
+    &quot;&quot;&quot;Analyze an incident using RAG-enriched context.&quot;&quot;&quot;
+    rag_context = build_rag_context(incident_description)
+
+    system_prompt = f&quot;&quot;&quot;You are a senior SOC analyst at Meridian Financial.
+
+RETRIEVED KNOWLEDGE BASE CONTEXT:
+{rag_context}
+
+Use the context above when relevant to your analysis. If you cite a document,
+reference its ID. State confidence levels (0-100%). Flag assumptions explicitly.&quot;&quot;&quot;
+
+    response = client.messages.create(
+        model=&quot;claude-haiku-4-5-20251001&quot;,
+        max_tokens=1024,
+        system=system_prompt,
+        messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: incident_description}]
+    )
+    return response.content[0].text
+
+if __name__ == &quot;__main__&quot;:
+    incident = &quot;&quot;&quot;
+    User jchen@meridian.local (VP Operations) downloaded 47 CSV files from the
+    data warehouse via IP 203.45.12.89 (Singapore proxy). A follow-up phishing
+    email targeting the same user failed SPF/DKIM/DMARC. Is this a breach?
+    &quot;&quot;&quot;
+    print(&quot;=== RAG-Enriched Incident Analysis ===\n&quot;)
+    print(f&quot;Incident:\n{incident.strip()}\n&quot;)
+    print(&quot;[Retrieved context injected into system prompt automatically.]\n&quot;)
+    result = analyze_incident(incident)
+    print(result)
+</code></pre></div>
+
+<p><strong>Run it and observe:</strong></p>
+<div class="codehilite"><pre><span></span><code>python rag-pipeline.py
+</code></pre></div>
+
+<p>Notice that the model's analysis now references TI-2026-002 (Singapore proxies), POL-001 (VP data access authorization), and INC-2026-005 (prior false alarm). That's RAG in action — the same incident question produces a richer, more grounded answer because the context was retrieved and injected automatically, not hand-coded into the prompt.</p>
+
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> This keyword retrieval is a simplified stand-in for vector similarity search. In Unit 2 (Week 8), you'll replace the <code>retrieve()</code> function with embeddings and a proper vector store. The architecture — retrieve, inject, analyze — stays identical. Only the retrieval mechanism changes.</p>
+</div>
+
+<div class="callout callout-warn"><p><strong>Production gap:</strong> This knowledge base is a hardcoded Python dict. In production, your RAG corpus is a vector database (ChromaDB, Pinecone, OpenSearch) updated continuously from your SIEM, threat feeds, and policy repository. The retrieval function queries it with embedding similarity, not keyword matching. Staleness is a real risk — a threat intel entry from 6 months ago that wasn't updated can produce a wrong "no malicious activity" conclusion.</p>
+</div>
+
   </div>
 </main>
 
