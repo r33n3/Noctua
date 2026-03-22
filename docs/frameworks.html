@@ -482,6 +482,94 @@ body {
 </table>
 <div class="callout callout-key"><p><strong>When frameworks conflict:</strong> MITRE ATLAS is threat-focused (tactics/techniques), NIST is control-focused (governance stages), OWASP is vulnerability-focused (specific weaknesses), EU AI Act is regulatory (legal obligations). They don't map 1:1 and they will give you different priorities for the same system. Your job is to reconcile them into a ranked remediation plan — not to pick one and ignore the others.</p></div>
 <hr />
+<h2 id="external-enforcement-principle">The External Enforcement Principle</h2>
+<div class="callout callout-key">
+  <p><strong>The External Enforcement Principle:</strong> Security controls enforced only inside the model's reasoning loop are probabilistic, not deterministic. Controls that matter must be enforced at the infrastructure or identity layer — outside the model entirely.</p>
+</div>
+<p>A guardrail prompt that says "never exfiltrate data" is a probabilistic control — the model may comply, but compliance is not guaranteed and can be bypassed through prompt injection, jailbreaking, or simply model error. A network egress filter that blocks outbound connections to unknown destinations is a deterministic control — it enforces the constraint regardless of what the model decides.</p>
+<p>When auditing an AI system, apply this principle to every security control you find:</p>
+<ul>
+  <li><strong>Inside the reasoning loop</strong> (probabilistic): system prompt instructions, output filtering by the model, self-imposed tool call restrictions, in-context policy reminders</li>
+  <li><strong>Outside the reasoning loop</strong> (deterministic): network egress controls, IAM policies, Cedar/OPA policy enforcement, rate limiting at the API gateway, audit logging at the infrastructure layer</li>
+</ul>
+<p>The goal is not to eliminate in-loop controls — they add useful signal. The goal is to ensure that controls which matter are not <em>only</em> in-loop. Critical security properties must have a deterministic enforcement layer.</p>
+<hr />
+<h2 id="three-layer-security-architecture">Three-Layer Security Architecture</h2>
+<p>Before applying any specific framework, you need a structural model for <em>where</em> security controls can be enforced. Agentic AI systems span three distinct layers — each with different control mechanisms, failure modes, and ownership boundaries.</p>
+
+<table>
+<thead>
+  <tr>
+    <th>Layer</th>
+    <th>Scope</th>
+    <th>Example controls</th>
+    <th>Common gaps</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><strong>Layer 1 — Infrastructure</strong></td>
+    <td>Compute, networking, container isolation, egress filtering</td>
+    <td>VPC controls, security groups, egress allowlists, container runtime policies, network segmentation</td>
+    <td>Overly permissive egress; flat network architecture; no container isolation between agent components</td>
+  </tr>
+  <tr>
+    <td><strong>Layer 2 — Identity &amp; Data</strong></td>
+    <td>IAM roles, NHI credentials, data classification, access policies, audit logs</td>
+    <td>Least-privilege IAM, short-lived credentials, NHI lifecycle management, RBAC, append-only audit logs</td>
+    <td>Long-lived credentials; missing NHI inventory; audit logs stored in same environment as the agent</td>
+  </tr>
+  <tr>
+    <td><strong>Layer 3 — AI Application</strong></td>
+    <td>Prompt handling, tool call validation, output filtering, guardrails, agent orchestration</td>
+    <td>Input validation, schema enforcement, semantic guardrails, rate limiting, output classification</td>
+    <td>Relying exclusively on this layer for security; treating guardrail prompts as deterministic controls</td>
+  </tr>
+</tbody>
+</table>
+
+<div class="callout callout-key">
+  <p><strong>External Enforcement Principle applied:</strong> Security controls enforced only at Layer 3 (AI Application) are probabilistic, not deterministic. Controls that matter — data access boundaries, capability limits, audit logging — must be enforced at Layer 1 or Layer 2, outside the model's reasoning loop.</p>
+</div>
+
+<div class="callout">
+  <p><strong>Relationship to other models:</strong> The 9-Layer Defense in Depth model (covered in Semester 2, Unit 7) defines <em>what</em> controls exist. This Three-Layer model defines <em>where</em> they live in the stack. Use both: the three-layer model to map your findings to the right ownership layer; the nine-layer model to ensure you haven't missed a control category.</p>
+</div>
+<hr />
+<h2 id="security-scoping-matrices">Security Scoping Matrices</h2>
+<p>Before assessing any AI system, establish scope. These two matrices define the attack surface you are evaluating. Place the system on both matrices before selecting frameworks or beginning technical testing.</p>
+
+<h3 id="genai-scope">GenAI Scope (1–5): Where in the AI stack does this system operate?</h3>
+<table>
+<thead>
+  <tr><th>Scope</th><th>Layer</th><th>What's at risk</th><th>Primary frameworks</th></tr>
+</thead>
+<tbody>
+  <tr><td><strong>1 — Data</strong></td><td>Training data, fine-tuning datasets, evaluation datasets</td><td>Data poisoning, privacy leakage, bias injection</td><td>NIST AI RMF, OWASP LLM Top 10</td></tr>
+  <tr><td><strong>2 — Model</strong></td><td>Model weights, architecture, serving infrastructure</td><td>Model extraction, adversarial examples, weight tampering</td><td>MITRE ATLAS, NIST AI RMF</td></tr>
+  <tr><td><strong>3 — Inference</strong></td><td>API endpoints, prompt handling, output filtering</td><td>Prompt injection, jailbreaking, output manipulation</td><td>OWASP LLM Top 10, MITRE ATLAS</td></tr>
+  <tr><td><strong>4 — Orchestration</strong></td><td>Agent frameworks, tool calling, memory, multi-agent coordination</td><td>Tool misuse, privilege escalation, agent hijacking</td><td>OWASP Agentic Top 10, AIUC-1</td></tr>
+  <tr><td><strong>5 — Integration</strong></td><td>Downstream systems, data stores, human interfaces, external APIs</td><td>Data exfiltration, supply chain compromise, NHI exposure</td><td>OWASP NHI Top 10, NIST AI RMF</td></tr>
+</tbody>
+</table>
+
+<h3 id="agentic-scope">Agentic Scope (1–4): How autonomous is this system?</h3>
+<table>
+<thead>
+  <tr><th>Scope</th><th>Classification</th><th>Description</th><th>Key risk</th></tr>
+</thead>
+<tbody>
+  <tr><td><strong>1 — Informational</strong></td><td>Read-only, no external effects</td><td>Answers questions, retrieves information, generates reports for human review</td><td>Hallucination, data leakage in outputs</td></tr>
+  <tr><td><strong>2 — Influential</strong></td><td>Recommendations that humans act on</td><td>Suggests actions, ranks options, drafts communications — human approves before execution</td><td>Automation bias; humans stop verifying recommendations</td></tr>
+  <tr><td><strong>3 — Decisional</strong></td><td>Automated decisions within defined boundaries</td><td>Executes decisions within a defined scope (e.g., closes tickets below P3, blocks IPs matching rules)</td><td>Boundary drift; decisions outside intended scope</td></tr>
+  <tr><td><strong>4 — Autonomous Chain</strong></td><td>Multi-agent, self-directed, minimal human oversight</td><td>Agent teams that plan, delegate, execute, and adapt without per-action human review</td><td>Goal misgeneralization; cascading failures; accountability gaps</td></tr>
+</tbody>
+</table>
+
+<div class="callout callout-key">
+  <p><strong>How to use these matrices in an engagement:</strong> Start every assessment by placing the system on both matrices. Scope 3–5 GenAI combined with Agentic Scope 3–4 is the highest-risk profile — use AIUC-1 for the maturity baseline, MITRE ATLAS for threat modeling, and OWASP Agentic Top 10 for technical testing. Lower scope combinations can use a lighter framework selection. See the Engagement Guide above for sequencing.</p>
+</div>
+<hr />
 <h2 id="part-1-agent-communication-protocols">Part 1: Agent Communication Protocols</h2>
 <p>The AI agent ecosystem in 2025-2026 has converged on four complementary interoperability protocols. Rather than competing, they address different layers of agent communication — analogous to how HTTP, WebSocket, and gRPC coexist in modern web infrastructure.</p>
 <h3 id="model-context-protocol-mcp">Model Context Protocol (MCP)</h3>
@@ -1736,15 +1824,19 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <h2 id="glossary-of-key-terms">Glossary of Key Terms</h2>
 <p><strong>Agent</strong>: An autonomous software entity that perceives its environment, makes decisions, and takes actions to achieve specified goals.</p>
 <p><strong>Agent Card</strong>: Metadata published by an agent in A2A protocol describing its capabilities, requirements, and constraints.</p>
+<p><strong>Agentic Scope (1–4)</strong>: A classification framework for AI agent autonomy: (1) Informational — read-only; (2) Influential — recommendations requiring human approval; (3) Decisional — automated execution within defined boundaries; (4) Autonomous Chain — multi-agent, self-directed systems. Use to calibrate risk assessment depth.</p>
 <p><strong>Capability Discovery</strong>: The process by which agents locate and identify other agents, tools, and services they can interact with.</p>
 <p><strong>Delegation</strong>: An agent assigning a task to another agent through A2A protocol.</p>
+<p><strong>External Enforcement Principle</strong>: Security controls enforced only inside the model's reasoning loop are probabilistic, not deterministic. Controls that matter must be enforced at the infrastructure or identity layer — outside the model entirely.</p>
 <p><strong>Guardrails</strong>: Constraints and rules that define the boundaries of acceptable agent behavior.</p>
+<p><strong>GenAI Scope (1–5)</strong>: A classification of where in the AI stack a system operates: (1) Data, (2) Model, (3) Inference, (4) Orchestration, (5) Integration. Use to identify applicable frameworks and threat categories before beginning an assessment.</p>
 <p><strong>Hallucination</strong>: A generative AI producing confident but false information.</p>
 <p><strong>MCP Server</strong>: A standardized service providing tools and resources to AI agents via the Model Context Protocol.</p>
 <p><strong>Memory Poisoning</strong>: Attack where corrupted data is introduced into an agent's memory or context.</p>
 <p><strong>Prompt Injection</strong>: An attack where malicious instructions are embedded in inputs to manipulate agent behavior.</p>
 <p><strong>Supply Chain Attack</strong>: An attack targeting dependencies, tools, or frameworks used by agents rather than agents themselves.</p>
 <p><strong>Tool</strong>: An external function or service that an agent can invoke to accomplish tasks.</p>
+<p><strong>Three-Layer Security Architecture</strong>: A structural model for where security controls are enforced in AI systems: Layer 1 (Infrastructure), Layer 2 (Identity &amp; Data), Layer 3 (AI Application). Complements the 9-Layer Defense in Depth model — Three-Layer defines where controls live; nine-layer defines what controls exist.</p>
 <p><strong>Validation</strong>: The process of verifying that agent outputs, tool results, or external data are correct and trustworthy.</p>
 <p><strong>Zero Trust</strong>: Security principle requiring verification and authorization for every action rather than implicit trust based on identity.</p>
 <hr />

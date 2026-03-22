@@ -320,6 +320,10 @@ body {
   border-color: var(--text-muted);
   background: rgba(154, 142, 122, 0.08);
 }
+.callout-warn {
+  border-color: var(--orange);
+  background: rgba(230, 126, 34, 0.08);
+}
 
 /* === HR === */
 .content hr {
@@ -472,6 +476,9 @@ body {
 <hr />
 <h2 id="week-9-aiuc-1-standard-for-ai-agent-security">Week 9: AIUC-1 Standard for AI Agent Security</h2>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
+<div class="callout callout-key">
+<p><strong>AIUC-1 is a design-phase requirement, not a post-build audit.</strong> The most common mistake when applying AIUC-1: treating it as a checklist you run after the system is built. By that point, architectural decisions that created security gaps are already locked in. The right time to apply AIUC-1 is at the design stage — before writing code. As one student noted after completing the Unit 3 audit: <em>"These questions were never asked during Week 5–8 design."</em> That's the lesson. The audit in Week 9 should surface things to improve — not things that should have blocked deployment.</p>
+</div>
 <h4 id="learning-objectives">Learning Objectives</h4>
 <ul>
 <li>Understand the six AIUC-1 domains and their application to AI agent security systems</li>
@@ -490,6 +497,9 @@ body {
 </div>
 <p>The <strong>AIUC-1 Standard</strong> (2025) is the first security, safety, and reliability standard specifically designed for AI agents. Developed by the Artificial Intelligence Underwriting Company (AIUC) with technical contributors including MITRE, Cloud Security Alliance, Stanford Trustworthy AI Research Lab, MIT, Cisco, and Orrick, AIUC-1 addresses a critical gap: traditional governance frameworks tell organizations <em>what to care about</em>, but AIUC-1 tells them <em>what to test and how to verify it</em>. This is the difference between aspiration and verification.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> AIUC-1 bridges the gap between abstract AI ethics and concrete security engineering. Where principle-based frameworks say "be secure," AIUC-1 says "implement adversarial testing (B001), detect adversarial input (B002), and implement real-time input filtering (B005) — and prove it through independent third-party testing." Certification includes 5,000+ adversarial simulations and quarterly updates to keep pace with the evolving threat landscape.</p>
+</div>
+<div class="callout callout-key">
+<p><strong>The policy-enforcement gap is the core security problem in AI governance.</strong> A policy document says what should happen. A Cedar policy enforces what will happen. The distance between these two is an entire engineering problem — and it's where most AI governance fails. Every audit finding you identify this week should produce one of two outputs: a Cedar policy that enforces the control, or a documented justification for why it must remain an application-layer or operational control. "We have a policy" is not a security control. "The policy is enforced" is.</p>
 </div>
 <p><strong>The Six AIUC-1 Domains:</strong></p>
 <ol>
@@ -634,6 +644,46 @@ body {
 <li><strong>Risk Mitigation:</strong> Third-party technical testing validates that safeguards actually work, not just that policies exist. A biased threat detection system might flag innocent users; an unexplainable decision might trigger regulatory investigation.</li>
 <li><strong>Competitive Advantage:</strong> Certification differentiates vendors in a market where enterprises can't otherwise assess AI agent security. In regulated industries, demonstrating rigorous governance is a market differentiator.</li>
 </ul>
+<h4 id="aiuc-1-deployment-tiers">AIUC-1 Deployment Tiers — Classify Before You Audit</h4>
+<p>Before starting an AIUC-1 audit, classify the system being audited. Higher tiers require more rigorous coverage and carry greater risk if controls are missing.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Classification</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Informational</td>
+<td>Read-only AI output; human decides all actions</td>
+<td>Security report generation, threat briefing</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Influential</td>
+<td>AI recommendations humans act on without always verifying</td>
+<td>Prioritized alert queue, risk scoring</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Decisional</td>
+<td>AI executes decisions within defined, audited boundaries</td>
+<td>Auto-close P4 tickets, block known-bad IPs</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Autonomous</td>
+<td>Multi-agent chains with minimal per-action human oversight</td>
+<td>Autonomous incident response, SOC agent team</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-key"><p>Classify your system before starting the audit. Higher tiers require more rigorous AIUC-1 coverage. <em>In Week 12, you will express these tier boundaries as Cedar policies — executable enforcement rather than documentation.</em></p>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives">Lab Objectives</h4>
@@ -779,6 +829,8 @@ body {
 <h4 id="lecture-content_1">Lecture Content</h4>
 <p><strong>The OWASP Top 10 for Agentic Applications</strong> (2026) represents the security community's consensus on the highest-impact risks in systems where AI agents make autonomous decisions or recommendations. Unlike traditional software Top 10 risks (injection, broken authentication, etc.), agentic risks emerge from the <em>interaction between AI reasoning and external tool access</em>.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> An agentic AI system is fundamentally different from a traditional ML system. It doesn't just predict a label; it reasons about a task, decides which tools to call, interprets tool outputs, and iterates toward a goal. This autonomy creates new attack surfaces: if the reasoning is compromised, the tool-calling becomes unsafe.</p>
+</div>
+<div class="callout callout-warn"><p><strong>⚠ Indirect KB injection: your RAG corpus is an attack surface.</strong> Any document added to your knowledge base becomes a trusted retrieval source. A malicious document injected into the corpus — via a compromised upload pathway, a poisoned data source, or an insider threat — can steer agent behavior toward attacker-controlled outputs without ever directly prompting the model. The attack is indirect: the malicious content enters through the retrieval layer, not the prompt layer. Test: the RAG system you built in Week 8 is potentially vulnerable to this. Add a document containing instruction-like content to your corpus and observe whether the agent follows it.</p>
 </div>
 <h4 id="the-ten-risks">The Ten Risks</h4>
 <p><strong>1. Excessive Agency</strong></p>
@@ -1250,6 +1302,8 @@ Explain the security reasoning for each layer. Show working Python code.
 <li>Design systems that are fair, transparent, and auditable</li>
 </ul>
 <h4 id="lecture-content_2">Lecture Content</h4>
+<div class="callout callout-warn"><p><strong>⚠ The system in this lab should not have deployed without a fairness review.</strong> The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This system was built in the lab and deployed before this analysis was run. In production, the review comes first. Use this week as a rehearsal for what pre-deployment governance looks like — not as retrospective damage assessment.</p>
+</div>
 <p>Bias in AI systems is not an abstract ethical concern—it is a concrete security risk. When a threat detection system is biased against a certain geographic region, organization type, or user demographic, it creates unfair risk exposure. When an access control system discriminates, it violates regulatory requirements (EU AI Act, GDPR) and creates liability.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Bias in AI is not just about training data. Even well-intentioned systems can discriminate through:
 - <strong>Historical bias:</strong> Training data reflects past discrimination
@@ -1386,6 +1440,9 @@ Explain the security reasoning for each layer. Show working Python code.
 <li>Impact: Thousands of Black patients received lower priority for scarce medical resources</li>
 </ul>
 <p><em>Security application:</em> A security risk prioritization system using "past incidents" as a proxy for "future risk" might systematically deprioritize risks to less-resourced departments or regions, creating unfair risk exposure.</p>
+<div class="callout callout-key">
+<p><strong>Fixing bias requires process changes, not just algorithmic fixes.</strong> Reweighing the scoring model improved aggregate metrics but did not fully resolve the disparity. Why? The training data reflects historical decisions that were themselves biased. Algorithmic fixes adjust the output distribution without addressing the root cause. Organizational fixes required: (1) a fairness review gate before any scoring model deployment, (2) a feature review process that flags demographic proxies, (3) an appeals procedure for affected individuals. The algorithm is not the problem — the process that allowed deployment without review is.</p>
+</div>
 <h4 id="mitigation-strategies">Mitigation Strategies</h4>
 <p><strong>Balanced Data Collection</strong></p>
 <p>Collect training data intentionally from underrepresented groups. Don't wait for natural imbalance; actively seek out incidents from small companies, non-Western organizations, etc.</p>
@@ -1603,6 +1660,9 @@ Show me working Python code with explanation of LIME&#39;s process.
 <li>Write a comprehensive AI security policy</li>
 </ul>
 <h4 id="lecture-content_3">Lecture Content</h4>
+<div class="callout callout-key">
+<p><strong>Transfer path: Cedar to Rego.</strong> The organizations you'll work in may use OPA with Rego policies rather than Cedar. The concepts transfer directly — policy-as-code, permit/deny rules, entity-based authorization — but the syntax and data model differ. Three things to learn when moving from Cedar to Rego: (1) Rego uses a logic-programming model (rules derive facts); Cedar uses a simpler permit/forbid model. (2) Rego policies are more expressive but harder to analyze statically. (3) Cedar's formally verifiable properties (guaranteed termination, no side effects) don't apply to Rego. If you join a team using OPA/Rego, your Cedar mental model will transfer — the syntax won't.</p>
+</div>
 <p><strong>Privacy in Security AI Systems</strong></p>
 <p>Security agents process highly sensitive data: system logs, network traffic, user behavior, customer information. This data is necessary for security but creates privacy risks:</p>
 <ul>

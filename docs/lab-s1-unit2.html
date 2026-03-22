@@ -78,6 +78,7 @@
       <label><input type="checkbox" onchange="toggleStep('w5-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Set up MCP Python development environment</div>
+        <div class="step-desc"><em>(Theory: Week 5 Day 1 — MCP Architecture)</em></div>
       </div></label>
       <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit2/week5/cve-mcp
 cd ~/noctua-labs/unit2/week5/cve-mcp
@@ -89,9 +90,11 @@ pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="cop
       <label><input type="checkbox" onchange="toggleStep('w5-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Design the query_cve tool schema</div>
-        <div class="step-desc">Create <code>schema.py</code> defining the input schema (CVE ID with regex validation, optional include_remediation flag) and output schema (id, description, severity, cvss score, affected products, remediation). Document why each field and constraint exists from a security perspective.</div>
+        <div class="step-desc">Create <code>schema.py</code> defining the input schema (CVE ID with regex validation, optional include_remediation flag) and output schema (id, description, severity, cvss score, affected products, remediation). Document why each field and constraint exists from a security perspective. <em>(Theory: Week 5 Day 1 — Schema Design &amp; Input Validation)</em></div>
       </div></label>
     </div>
+
+    <div class="callout callout-tip"><p><strong>Optional extension — build a local mock API.</strong> Instead of calling the live NVD API, you can build a local Flask or FastAPI server that returns mock CVE data. This demonstrates the service layer pattern more clearly (your MCP server doesn't know or care whether it's talking to the real NVD or a local mock) and works offline. Instructions: create a simple server returning hardcoded CVE JSON at the same endpoint your MCP tool expects. Swap the base URL in your MCP config.</p><p><em>(Theory: Week 5 Day 1 — Service Layer Pattern)</em></p></div>
 
     <div class="lab-step" id="step-w5-3">
       <label><input type="checkbox" onchange="toggleStep('w5-3',this.checked)">
@@ -108,6 +111,8 @@ pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="cop
 # handle API errors with graceful fallback. Use stdio transport."
 claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
+
+    <div class="callout callout-warn"><p><strong>&#x26A0; Before registering tools: apply the Principle of Least Privilege.</strong> Every tool you expose increases your MCP server's attack surface. Before adding a tool, ask: Does this agent actually need this capability? What's the minimum scope needed? What should this tool never be able to do? Overpermissioned MCP servers enable capability amplification — an agent that should only read CVE data can scan networks if those tools exist. Define scope boundaries before you write the implementation.</p><p><em>(Theory: Week 5 Day 1 — Principle of Least Privilege)</em></p></div>
 
     <div class="lab-step" id="step-w5-4">
       <label><input type="checkbox" onchange="toggleStep('w5-4',this.checked)">
@@ -131,7 +136,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w5-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Test tool discovery in Claude Code</div>
-        <div class="step-desc">Launch Claude Code and ask: "What MCP tools do you have available?" Verify your <code>query_cve</code> tool appears with correct description and schema. If it doesn't appear, debug the registration config.</div>
+        <div class="step-desc">Launch Claude Code and ask: "What MCP tools do you have available?" Verify your <code>query_cve</code> tool appears with correct description and schema. If it doesn't appear, debug the registration config. <em>(Theory: Week 5 Day 1 — Tool Discovery as Attack Surface)</em></div>
       </div></label>
     </div>
 
@@ -139,7 +144,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w5-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Test with natural language CVE queries</div>
-        <div class="step-desc">In Claude Code: "Look up CVE-2021-44228 (Log4Shell) and tell me which of our systems are at risk given [paste a sample software inventory]." Verify Claude calls your tool, parses the response, and reasons about it.</div>
+        <div class="step-desc">In Claude Code: "Look up CVE-2021-44228 (Log4Shell) and tell me which of our systems are at risk given [paste a sample software inventory]." Verify Claude calls your tool, parses the response, and reasons about it. <em>(Theory: Week 5 Day 2 — MCP in Practice)</em></div>
       </div></label>
     </div>
 
@@ -147,7 +152,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w5-7',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 7: Test edge cases and error handling</div>
-        <div class="step-desc">Test: (1) invalid CVE format <code>CVE-ABC</code> — should be rejected before API call, (2) non-existent CVE — should return graceful error, (3) what happens if NVD API is unreachable — should return cached/fallback response.</div>
+        <div class="step-desc">Test: (1) invalid CVE format <code>CVE-ABC</code> — should be rejected before API call, (2) non-existent CVE — should return graceful error, (3) what happens if NVD API is unreachable — should return cached/fallback response. <em>(Theory: Week 5 Day 2 — Error Handling &amp; Resilience)</em></div>
       </div></label>
     </div>
   </div>
@@ -170,6 +175,8 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <li><strong>MCP Analysis Report</strong> (500 words) — how MCP solves the integration sprawl problem; what security advantages does tool discovery + schema validation provide?</li>
   </ul>
 </div>
+
+<div class="callout callout-key"><p><strong>Update your context library.</strong> Before moving to the next week, add one entry to your context library from this week's lab: a prompt that worked well, a pattern you discovered, or a schema you designed. Build the habit now.</p></div>
 <hr>
 
 <!-- ======== WEEK 6 ======== -->
@@ -224,30 +231,34 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <div class="lab-step" id="step-w6-1">
       <label><input type="checkbox" onchange="toggleStep('w6-1',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 1: Add ip_reputation tool</div>
-        <div class="step-desc">Add a tool that queries AbuseIPDB (free API key required) or returns mock reputation data. Input: IP address (validate with regex). Output: abuse confidence score, country, usage type, ISP, last reported. Block private/loopback IPs at validation layer.</div>
+        <div class="step-title">Step 1: Extend your Week 5 server — add query_asset_exposure tool</div>
+        <div class="step-desc">Extend your Week 5 <code>query_cve</code> server. Add a <code>query_asset_exposure</code> tool that cross-references a CVE ID against an asset inventory and returns affected systems. Input: CVE ID + optional asset tag. Output: list of affected assets, exposure level, remediation priority. <em>(Theory: Week 6 Day 1 — Tool Design Patterns)</em></div>
       </div></label>
       <div class="code-block"><pre><code># Claude Code prompt:
-# "Add an ip_reputation tool to my MCP server. It should:
-# 1. Validate IP is not private/loopback (reject 10.x, 192.168.x, 127.x)
-# 2. Call AbuseIPDB API or return mock data if no API key
-# 3. Return: abuse_score, country_code, usage_type, isp, last_reported_at
-# 4. Log every invocation with sanitized inputs"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# "Add a query_asset_exposure tool to my existing MCP server that:
+# 1. Accepts a CVE ID and optional asset_tag parameter
+# 2. Cross-references against a mock asset inventory (hardcoded for this lab)
+# 3. Returns: affected_assets (list), exposure_level (critical/high/medium/low), remediation_priority
+# 4. Validates CVE ID format before processing
+# 5. Logs every invocation with sanitized inputs"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w6-2">
       <label><input type="checkbox" onchange="toggleStep('w6-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Add hash_lookup tool</div>
-        <div class="step-desc">Add a tool that checks file hashes against VirusTotal (free tier API key) or a local mock threat intelligence database. Input: SHA256 hash (validate format). Output: malicious flag, detection ratio, threat name, first seen date.</div>
+        <div class="step-title">Step 2: Add a second security-relevant tool of your choosing</div>
+        <div class="step-desc">Choose one additional tool to add based on what would extend your server's value: an <code>ip_reputation</code> tool (AbuseIPDB or mock), a <code>hash_lookup</code> tool (VirusTotal or local mock), or another security data tool that complements your Week 5 CVE lookup. Define the scope boundary before implementing. <em>(Theory: Week 6 Day 1 — Single Responsibility &amp; Output Contracts)</em></div>
       </div></label>
     </div>
+
+    <div class="callout callout-warn"><p><strong>Rate limiting and audit logging are architectural foundations, not optional additions.</strong> Build them before you wire in your tools — not after. When rate limiting is built first, every tool inherits it automatically. When audit logging is built first, every tool call is logged from day one. Retrofitting these controls after the fact is where gaps appear.</p><p><em>(Theory: Week 6 Day 1 — Defense-in-Depth for Tool Servers)</em></p></div>
 
     <div class="lab-step" id="step-w6-3">
       <label><input type="checkbox" onchange="toggleStep('w6-3',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 3: Add rate limiting middleware</div>
-        <div class="step-desc">Implement per-tool rate limits (e.g., ip_reputation: 5 calls/minute, query_cve: 10 calls/minute). Return a structured error with retry-after when rate limit is exceeded. This prevents agent loops from exhausting external API quotas.</div>
+        <div class="step-desc">Implement per-tool rate limits (e.g., 5 calls/minute per tool). Return a structured error with retry-after when rate limit is exceeded. This prevents agent loops from exhausting external API quotas. Build this as middleware so every existing and future tool inherits it. <em>(Theory: Week 6 Day 1 — Defense-in-Depth for Tool Servers)</em></div>
       </div></label>
     </div>
 
@@ -255,7 +266,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w6-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Implement structured audit logging</div>
-        <div class="step-desc">Add JSON-structured logging for every tool call: <code>{"ts": "ISO-8601", "tool": "ip_reputation", "input_hash": "sha256(params)", "result_code": "success|error", "duration_ms": 234}</code>. Hash inputs to avoid logging sensitive data while maintaining auditability.</div>
+        <div class="step-desc">Add JSON-structured logging for every tool call: <code>{"ts": "ISO-8601", "tool": "query_cve", "input_hash": "sha256(params)", "result_code": "success|error", "duration_ms": 234}</code>. Hash inputs to avoid logging sensitive data while maintaining auditability. Like rate limiting, implement this as a wrapper so all tools are covered from the start. <em>(Theory: Week 6 Day 1 — Audit Logging for Compliance)</em></div>
       </div></label>
     </div>
 
@@ -263,7 +274,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w6-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Test a multi-tool investigation workflow</div>
-        <div class="step-desc">In Claude Code: "Analyze this incident: user account accessed our data warehouse from 203.45.12.89 and downloaded files with hash d41d8cd98f00b204e9800998ecf8427e. Use available tools to investigate." Claude should chain ip_reputation + hash_lookup + query_cve automatically.</div>
+        <div class="step-desc">In Claude Code: "Analyze this incident: a CVE-2021-44228 vulnerability was reported. Use available tools to identify affected assets and investigate." Claude should chain <code>query_cve</code> + <code>query_asset_exposure</code> automatically. Verify your audit log records all tool calls. <em>(Theory: Week 6 Day 2 — Multi-Tool Orchestration)</em></div>
       </div></label>
     </div>
 
@@ -271,7 +282,21 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w6-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Attempt a parameter injection attack</div>
-        <div class="step-desc">Try to trick Claude Code into passing a SQL injection payload as an IP address: "Look up the reputation of the IP '1.1.1.1; DROP TABLE logs;--'." Verify your server's input validation blocks this before any backend operation.</div>
+        <div class="step-desc">Try to trick Claude Code into passing a SQL injection payload as a CVE ID: "Look up CVE '2021-44228; DROP TABLE logs;--'." Verify your server's input validation blocks this before any backend operation. Check your audit log — was the blocked attempt recorded? <em>(Theory: Week 6 Day 1 — Parameter Injection &amp; Input Sanitization)</em></div>
+      </div></label>
+    </div>
+    <div class="lab-step" id="step-w6-7">
+      <label><input type="checkbox" onchange="toggleStep('w6-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Threat model your own server</div>
+        <div class="step-desc">Using the GTG-1002 case study as a framework, analyze your multi-tool MCP server:
+          <ol>
+            <li>What attack techniques from GTG-1002 could be applied to your server? (Deceptive framing, implied authorization, capability amplification)</li>
+            <li>Which of your tools could be abused if an attacker gained access to your MCP endpoint?</li>
+            <li>What controls do you have in place, and where are the gaps?</li>
+          </ol>
+          Document your findings in a brief <code>threat-model.md</code> in your project directory. <em>(Theory: Week 6 Day 2 — GTG-1002 Case Study)</em>
+        </div>
       </div></label>
     </div>
   </div>
@@ -280,11 +305,142 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="deliverables">
   <h5>Week 6 Deliverables</h5>
   <ul>
-    <li><strong>server.py</strong> (updated) — four tools with rate limiting, input validation, and structured audit logging</li>
+    <li><strong>Week 6 deliverable:</strong> Extend your Week 5 tool. Add rate limiting (if not already in place), add one additional security-relevant tool of your choosing, and apply threat modeling to your multi-tool server using the GTG-1002 framework. Your deliverable is your extended MCP server plus a brief threat model document.</li>
+    <li><strong>server.py</strong> (updated) — extended multi-tool server with rate limiting, input validation, and structured audit logging</li>
     <li><strong>Tool Design Document</strong> — for each tool: input schema, validation rules, error codes, and rate limit rationale</li>
+    <li><strong>threat-model.md</strong> — GTG-1002 threat model applied to your server</li>
     <li><strong>Injection Test Report</strong> — results of your parameter injection attempt and how validation stopped it</li>
   </ul>
 </div>
+
+<div class="callout callout-key"><p><strong>Update your context library.</strong> Before moving to the next week, add one entry to your context library from this week's lab: a prompt that worked well, a pattern you discovered, or a schema you designed. Build the habit now.</p></div>
+
+<hr>
+
+<!-- ======== WEEK 6.5 — OPTIONAL EXTENSION ======== -->
+<h2 id="week-6-forge-fire"><span style="background:#2d2d2d;color:#f0a500;padding:2px 10px;border-radius:4px;font-size:0.85em;vertical-align:middle;">Optional Extension &mdash; Week 6.5</span> Operation Forge Fire</h2>
+<div class="week-header"><span class="week-badge" style="background:#8b0000;">WEEK 6.5</span><span class="week-sub">Optional Extension: Red Team / Blue Team Lab Exercise</span></div>
+
+<div class="callout callout-warn"><p><strong>&#x26A0; This is an optional extension — complete the Week 6 main lab first.</strong> Operation Forge Fire is a red team / blue team exercise that requires your multi-tool MCP server from the main lab to be working. Before starting, verify: your MCP server is running, all tools respond correctly, rate limiting is in place.</p></div>
+
+<div class="callout callout-tip">
+  <p><strong>Prerequisites for Operation Forge Fire:</strong></p>
+  <ul>
+    <li><strong>Network recon basics:</strong> Port scanning identifies which ports on a target are open and what services are listening. This is legal only against systems you own or have explicit written permission to test.</li>
+    <li><strong>Red team / blue team structure:</strong> In this exercise, the red team (attacker) uses your MCP tools to simulate reconnaissance; the blue team (defender) monitors for anomalous tool call patterns. You play both roles.</li>
+    <li><strong>Authorization is required:</strong> The GTG-1002 attacker used a false persona to imply authorization. Your authorization is real and documented (your testing policy, below). The difference is not the tools — it's the authorization context.</li>
+    <li><strong>CCT in code:</strong> Your blue team monitor should embed Pillar 2 questions in its output ("What would the network team say about this pattern? Is this a legitimate service health check?")</li>
+  </ul>
+</div>
+
+<div class="callout callout-warn">
+  <p><strong>Required: Complete your security testing policy before running any red team tools.</strong></p>
+  <p>Create <code>responsible-testing-policy.md</code> in your project directory with at minimum:</p>
+  <ul>
+    <li><strong>Scope:</strong> What systems are in scope for this test (localhost only for this lab)</li>
+    <li><strong>Authorization:</strong> Who authorized this test and how it is documented</li>
+    <li><strong>Tools in use:</strong> What tools will be run and what they do</li>
+    <li><strong>Data handling:</strong> How findings will be stored and who can access them</li>
+    <li><strong>Transparency test:</strong> Would you be comfortable submitting your complete AI conversation transcript to your CISO alongside your findings report? If not, don't run the test.</li>
+  </ul>
+  <p>This is not bureaucracy. In professional security work, authorization documentation is what separates penetration testing from unauthorized access. The GTG-1002 attacker lacked it. You have it. Document it.</p>
+</div>
+
+<div class="lab-section">
+  <h4>Forge Fire Lab Steps</h4>
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-ff-1">
+      <label><input type="checkbox" onchange="toggleStep('ff-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step FF-1: Set up the Docker target environment</div>
+        <div class="step-desc">Launch the local Docker containers that serve as your authorized scan targets. These run entirely on localhost — no external systems are involved.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Target containers — authorized localhost lab environment only
+docker run -d -p 8080:80 --name forge-nginx nginx:alpine
+docker run -d -p 5432:5432 --name forge-postgres \
+  -e POSTGRES_PASSWORD=labpassword postgres:15-alpine
+python3 -m http.server 9000 &amp;
+
+# Expected environment:
+# Port 8080: nginx web server
+# Port 5432: PostgreSQL
+# Port 9000: Python HTTP server</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-ff-2">
+      <label><input type="checkbox" onchange="toggleStep('ff-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step FF-2: Add red team recon tools to your MCP server</div>
+        <div class="step-desc">Add <code>port_scan</code> and <code>banner_grab</code> tools to your server. These must enforce hard-coded scope restrictions: localhost only, <code>security_testing_authorized</code> flag required. Scope enforcement must be in the tool code (schema validation layer), not trusted to the operator. <em>(Theory: Week 6 Day 2 — Policy-in-the-Tool)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Add port_scan and banner_grab tools to my MCP server. Requirements:
+# 1. ALLOWED_TARGETS = frozenset({'localhost', '127.0.0.1'}) — hard-coded, not configurable
+# 2. security_testing_authorized parameter required (boolean) — schema validates presence
+# 3. port_scan: scan list of ports, return open/closed status per port
+# 4. banner_grab: connect to open port, read first 1024 bytes of response
+# 5. Both tools log every call to audit log with target, ports, timestamp"
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-ff-3">
+      <label><input type="checkbox" onchange="toggleStep('ff-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step FF-3: Red team — run the recon chain</div>
+        <div class="step-desc">With your testing policy documented, run the red team sequence. Start with port scan, then banner grab open ports, then query CVE for identified services. Observe what the attacker learns at each step. <em>(Theory: Week 6 Day 2 — GTG-1002 Phase 2 Recon)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt (red team framing — authorized, transparent):
+# "I am running an authorized red team lab exercise on localhost Docker containers.
+# Testing policy: responsible-testing-policy.md (scope: localhost only).
+# security_testing_authorized=true.
+# Step 1: Use port_scan to scan localhost ports 80, 443, 5432, 8080, 9000, 3306, 6379, 22.
+# Step 2: Use banner_grab on any open ports to identify services.
+# Step 3: Use query_cve to look up CVEs for identified service versions.
+# Report what an attacker would learn from this reconnaissance."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout callout-warn"><p><strong>What Forge Fire reveals: individual tools cannot detect multi-tool attack chains.</strong> Each tool (<code>port_scan</code>, <code>banner_grab</code>, <code>query_cve</code>, <code>query_asset_exposure</code>) sees only its own invocations. The attack pattern — port_scan &rarr; banner_grab &rarr; query_cve &rarr; query_asset_exposure — is only visible when you analyze tool call sequences across tools. This is what behavioral monitoring requires, and why a blue team that monitors individual tool calls will miss coordinated attacks. Keep this in mind for Semester 2 Unit 5, where multi-agent architectures address this gap.</p></div>
+
+    <div class="lab-step" id="step-ff-4">
+      <label><input type="checkbox" onchange="toggleStep('ff-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step FF-4: Blue team — add the monitoring tools</div>
+        <div class="step-desc">Add <code>detect_port_scan</code> and <code>analyze_reconnaissance_pattern</code> tools to your MCP server. The detection tool reads your audit log and flags rapid sequential port accesses. The CCT analysis tool applies the five pillars to the detected pattern. Embed Pillar 2 questions directly in the tool output. <em>(Theory: Week 6 Day 2 — Behavioral Detection)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt:
+# "Add blue team monitoring tools to my MCP server:
+# 1. detect_port_scan(time_window_seconds): reads audit log, finds source IPs
+#    with >4 unique destination ports in the window, returns alert with severity
+# 2. analyze_reconnaissance_pattern(source_ip, time_window_seconds): applies CCT
+#    framework — embed Pillar 2 output: 'What would the network team say about
+#    this pattern? Is this a legitimate service health check?'
+# Both tools read from the JSON audit log, not live network data."
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout callout-tip"><p><strong>Lab vs. production:</strong> In this lab, the blue team monitor receives log data passed directly from the red team exercise. In a production environment, the equivalent of <code>log_connection()</code> would be called by a network tap, SIEM webhook, eBPF probe, or security data pipeline — not manually. The detection logic you're writing here is the same; only the data ingestion layer changes.</p></div>
+
+    <div class="lab-step" id="step-ff-5">
+      <label><input type="checkbox" onchange="toggleStep('ff-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step FF-5: Run the blue team analysis and document the gap</div>
+        <div class="step-desc">After completing the red team recon chain, run <code>detect_port_scan</code> and <code>analyze_reconnaissance_pattern</code> on the same log data. Compare what the red team learned vs. what the blue team detected. What did the blue team miss? Document your findings. <em>(Theory: Week 6 Day 2 — GTG-1002 Lessons)</em></div>
+      </div></label>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Week 6.5 Deliverables (optional)</h5>
+  <ul>
+    <li><strong>responsible-testing-policy.md</strong> — required before running any Forge Fire tools</li>
+    <li><strong>forge-fire-report.md</strong> — red team findings, blue team detection results, gap analysis</li>
+    <li><strong>Updated server.py</strong> — with port_scan, banner_grab, detect_port_scan, analyze_reconnaissance_pattern tools</li>
+  </ul>
+</div>
+
 <hr>
 
 <!-- ======== WEEK 7 ======== -->
@@ -328,15 +484,35 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w7-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Define the Incident Report JSON Schema</div>
-        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst.</div>
+        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst. Connect this to your Week 4 V2 schema if you defined output fields there — reuse those fields here rather than redefining. <em>(Theory: Week 7 Day 1 — Schema-Driven Decomposition)</em></div>
       </div></label>
     </div>
+
+    <div class="callout callout-tip">
+      <p><strong>Anthropic SDK primer — what you need to know for this step:</strong></p>
+      <div class="code-block"><pre><code>import anthropic
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from environment
+
+# Basic call
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Your prompt here"}]
+)
+result_text = response.content[0].text
+
+# To enforce JSON output: add to system prompt
+system = "Respond only with valid JSON matching this schema: {...}"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <p>Two patterns for structured output: (1) instruct via system prompt ("respond only with JSON matching schema X"), or (2) use <code>tool_use</code> mode where Claude fills tool parameters as structured output. This lab uses the system prompt approach.</p>
+    </div>
+
+    <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Connect to your Week 4 V2 schema — if you defined output fields there, reuse them here rather than redefining. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
 
     <div class="lab-step" id="step-w7-2">
       <label><input type="checkbox" onchange="toggleStep('w7-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Add generate_incident_report tool to your MCP server</div>
-        <div class="step-desc">Use Claude Code to implement a tool that takes raw incident data (text) and returns a validated JSON report. The tool should call Claude's API internally to structure the data, then validate the output against your JSON Schema before returning it.</div>
+        <div class="step-desc">Use Claude Code to implement a tool that takes raw incident data (text) and returns a validated JSON report. The tool should call Claude's API internally to structure the data, then validate the output against your JSON Schema before returning it. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></div>
       </div></label>
       <div class="code-block"><pre><code># Claude Code prompt:
 # "Add a generate_incident_report tool to my MCP server that:
@@ -347,11 +523,13 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 # 5. Raises ValidationError with details if schema validation fails"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-key"><p><strong>You've just implemented "Claude Calling Claude."</strong> One Claude session (your agent) called a tool that internally called Claude again (the report generator). This is composition: each Claude call has a focused, narrow task. The orchestrating Claude handles conversation; the tool-level Claude handles a single reasoning task (classification, extraction, generation). This pattern scales — you can chain multiple specialized Claude calls through your tool layer without the orchestrating Claude needing to know about them.</p></div>
+
     <div class="lab-step" id="step-w7-3">
       <label><input type="checkbox" onchange="toggleStep('w7-3',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 3: Generate a report from the Meridian Financial incident</div>
-        <div class="step-desc">In Claude Code, pass the raw incident description from Week 1 to your generate_incident_report tool. Verify the output validates against your schema with <code>python3 -m jsonschema</code>.</div>
+        <div class="step-desc">In Claude Code, pass the raw incident description from Week 1 to your generate_incident_report tool. Verify the output validates against your schema with <code>python3 -m jsonschema</code>. <em>(Theory: Week 7 Day 1 — Schema Validation Gates)</em></div>
       </div></label>
       <div class="code-block"><pre><code>pip install jsonschema
 python3 -c "
@@ -367,7 +545,7 @@ print('Report is valid!')
       <label><input type="checkbox" onchange="toggleStep('w7-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Test schema enforcement — force a validation failure</div>
-        <div class="step-desc">Manually edit the generated report to remove a required field or use an invalid severity value. Run validation — verify it fails with a clear error. Document how this defense prevents silently corrupt reports entering downstream systems.</div>
+        <div class="step-desc">Manually edit the generated report to remove a required field or use an invalid severity value. Run validation — verify it fails with a clear error. Document how this defense prevents silently corrupt reports entering downstream systems. <em>(Theory: Week 7 Day 1 — Validation Gates)</em></div>
       </div></label>
     </div>
 
@@ -375,7 +553,7 @@ print('Report is valid!')
       <label><input type="checkbox" onchange="toggleStep('w7-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Build the Markdown rendering for human review</div>
-        <div class="step-desc">Add a <code>render_report_markdown(report_json)</code> function that converts the validated JSON into a well-formatted Markdown document suitable for emailing to leadership or adding to a ticketing system. Test with your Meridian Financial report.</div>
+        <div class="step-desc">Add a <code>render_report_markdown(report_json)</code> function that converts the validated JSON into a well-formatted Markdown document suitable for emailing to leadership or adding to a ticketing system. Test with your Meridian Financial report. <em>(Theory: Week 7 Day 2 — Dual-Format Outputs)</em></div>
       </div></label>
     </div>
   </div>
@@ -390,6 +568,8 @@ print('Report is valid!')
     <li><strong>Validation Test Results</strong> — screenshots/logs showing both passing and failing validation</li>
   </ul>
 </div>
+
+<div class="callout callout-key"><p><strong>Update your context library.</strong> Before moving to the next week, add one entry to your context library from this week's lab: a prompt that worked well, a pattern you discovered, or a schema you designed. Build the habit now.</p></div>
 <hr>
 
 <!-- ======== WEEK 8 ======== -->
@@ -428,22 +608,28 @@ print('Report is valid!')
 
 <div class="lab-section">
   <h4> Lab Exercise: Security Knowledge Base with ChromaDB + Claude</h4>
+
+  <div class="callout callout-tip"><p><strong>Starter corpus — download before Step 1.</strong> For this lab, use these three documents as your initial knowledge base: your <code>threat-model.md</code> from Week 6, the OWASP Agentic Top 10 summary, and the Meridian IR runbook from your context library. If you don't have these, ask Claude to help you generate brief placeholder versions. The corpus content matters less than the retrieval pipeline — focus on getting retrieval working correctly first. <em>(Theory: Week 8 Day 1 — MCP vs. RAG Decision)</em></p></div>
+
   <div class="lab-steps">
     <div class="lab-step" id="step-w8-1">
       <label><input type="checkbox" onchange="toggleStep('w8-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Install RAG dependencies</div>
+        <div class="step-desc"><em>(Theory: Week 8 Day 1 — RAG System Architecture)</em></div>
       </div></label>
       <div class="code-block"><pre><code>pip install chromadb anthropic sentence-transformers
 mkdir -p ~/noctua-labs/unit2/week8/security-kb
 cd ~/noctua-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-warn"><p><strong>&#x26A0; First-run download warning.</strong> The <code>sentence-transformers</code> library downloads embedding model weights on first use (~90MB for the default model). This happens once and is cached locally. If you're on a metered connection or slow network, start this download before continuing with other steps.</p></div>
+
     <div class="lab-step" id="step-w8-2">
       <label><input type="checkbox" onchange="toggleStep('w8-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Curate the security knowledge base documents</div>
-        <div class="step-desc">Create 5-10 security documents in <code>kb-docs/</code>: (1) OWASP Top 10 for Agentic Apps summary, (2) Meridian Financial IR runbook, (3) prompt injection defense guide, (4) NHI governance policy, (5) your CCT framework reference. These will be your retrieval corpus.</div>
+        <div class="step-desc">Create 5-10 security documents in <code>kb-docs/</code>: (1) your <code>threat-model.md</code> from Week 6, (2) OWASP Agentic Top 10 summary, (3) Meridian Financial IR runbook from your context library, (4) prompt injection defense guide, (5) NHI governance policy. If you don't have all of these, ask Claude to generate brief placeholder versions. <em>(Theory: Week 8 Day 1 — Corpus Design)</em></div>
       </div></label>
     </div>
 
@@ -451,7 +637,7 @@ cd ~/noctua-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" on
       <label><input type="checkbox" onchange="toggleStep('w8-3',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 3: Build the document ingestion pipeline</div>
-        <div class="step-desc">Use Claude Code to build <code>ingest.py</code> that: chunks documents into 500-token segments with 50-token overlap, generates embeddings using sentence-transformers, stores in ChromaDB with metadata (source, chunk_id, created_at).</div>
+        <div class="step-desc">Use Claude Code to build <code>ingest.py</code> that: chunks documents into 500-token segments with 50-token overlap, generates embeddings using sentence-transformers, stores in ChromaDB with metadata (source, chunk_id, created_at). <em>(Theory: Week 8 Day 1 — Chunking Strategy &amp; Embedding Models)</em></div>
       </div></label>
       <div class="code-block"><pre><code># Claude Code prompt:
 # "Build a document ingestion script that:
@@ -467,7 +653,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w8-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Add search_security_kb tool to your MCP server</div>
-        <div class="step-desc">Add a tool that takes a natural language query, retrieves the top-5 most semantically similar document chunks from ChromaDB, and returns them with source citations. Claude then synthesizes an answer grounded in these retrieved documents.</div>
+        <div class="step-desc">Add a tool that takes a natural language query, retrieves the top-5 most semantically similar document chunks from ChromaDB, and returns them with source citations. Claude then synthesizes an answer grounded in these retrieved documents. <em>(Theory: Week 8 Day 1 — Retrieval Pipeline)</em></div>
       </div></label>
     </div>
 
@@ -475,7 +661,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w8-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Test knowledge retrieval and grounding</div>
-        <div class="step-desc">Query: "What are the top defenses against prompt injection in our security policy?" Verify Claude: (1) retrieves relevant documents, (2) cites sources, (3) does NOT hallucinate procedures not in the knowledge base. Test a topic NOT in your KB and verify Claude says it lacks information.</div>
+        <div class="step-desc">Query: "What are the top defenses against prompt injection in our security policy?" Verify Claude: (1) retrieves relevant documents, (2) cites sources, (3) does NOT hallucinate procedures not in the knowledge base. Test a topic NOT in your KB and verify Claude says it lacks information. <em>(Theory: Week 8 Day 2 — RAG Evaluation)</em></div>
       </div></label>
     </div>
 
@@ -483,7 +669,22 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w8-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Measure RAG vs. no-RAG quality</div>
-        <div class="step-desc">Ask the same question with and without your RAG tool. Compare: (1) specificity (does RAG answer cite your runbook procedures?), (2) accuracy (does no-RAG hallucinate?), (3) citations (does RAG link to sources?). Document findings for your Unit 2 report.</div>
+        <div class="step-desc">Ask the same question with and without your RAG tool. Compare: (1) specificity (does RAG answer cite your runbook procedures?), (2) accuracy (does no-RAG hallucinate?), (3) citations (does RAG link to sources?). Document findings for your Unit 2 report. <em>(Theory: Week 8 Day 2 — RAG Evaluation)</em></div>
+      </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w8-7">
+      <label><input type="checkbox" onchange="toggleStep('w8-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Test RAG failure modes</div>
+        <div class="step-desc">A retrieval system that only works on expected queries is not production-ready. Test these failure modes:
+          <ol>
+            <li><strong>No-match query:</strong> Ask a question your corpus has no answer for. Does the system say "I don't know" or does it hallucinate?</li>
+            <li><strong>Outdated document query:</strong> If your corpus has a dated document, ask a question where the answer has changed. Does the system acknowledge staleness?</li>
+            <li><strong>Partial match:</strong> Ask a question where only part of the answer is in the corpus. Does the system correctly acknowledge the partial coverage?</li>
+          </ol>
+          Document what you observe. These failure modes are why RAG evaluation matters more than RAG implementation. <em>(Theory: Week 8 Day 2 — RAG Failure Modes &amp; Hallucination Risk)</em>
+        </div>
       </div></label>
     </div>
   </div>
@@ -495,9 +696,12 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <li><strong>kb-docs/</strong> — curated security knowledge base (minimum 5 documents)</li>
     <li><strong>ingest.py</strong> + <strong>server.py</strong> (with search_security_kb tool) — fully working RAG pipeline</li>
     <li><strong>RAG Evaluation Report</strong> — side-by-side comparison of RAG vs. no-RAG responses, with accuracy and grounding analysis</li>
+    <li><strong>RAG Failure Mode Report</strong> — documented results from Step 7 failure mode tests</li>
     <li><strong>Unit 2 Final Summary</strong> (1 page) — how your MCP server evolved from a single CVE tool into a multi-tool, RAG-powered security assistant</li>
   </ul>
 </div>
+
+<div class="callout callout-key"><p><strong>Update your context library.</strong> Before moving to the next week, add one entry to your context library from this week's lab: a prompt that worked well, a pattern you discovered, or a schema you designed. Build the habit now.</p></div>
 
 <div class="callout callout-tip">
   <strong>Portfolio Checkpoint — Push This to GitHub Now</strong>
@@ -508,7 +712,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <hr>
 <div class="unit-complete">
   <h3> Unit 2 Complete</h3>
-  <p>You have built a production-capable MCP server with CVE lookup, IP reputation, hash analysis, report generation, and RAG-based knowledge retrieval.</p>
+  <p>You have built a production-capable MCP server with the following tools: <code>query_cve</code>, <code>query_asset_exposure</code>, <code>generate_incident_report</code>, and <code>search_security_kb</code>.</p>
   <p style="margin-top:8px;"><a href="lab-s1-unit3.html">Next: Unit 3 Lab — Ethical AI &amp; Security Governance &rarr;</a></p>
 </div>
 

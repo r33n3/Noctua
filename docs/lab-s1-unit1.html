@@ -99,6 +99,10 @@
   <p><strong>Scenario:</strong> You are a junior SOC analyst at Meridian Financial. At 2:34 AM EST on March 3, 2026, your SIEM fires: VP John Chen's account (jchen@meridian.local) accessed the production data warehouse from 203.45.12.89 (Singapore proxy), downloaded 47 CSV files (2.3 GB of revenue reports, client balances, transaction histories) in 8 minutes 34 seconds using valid credentials + successful MFA. Leadership requires a preliminary assessment in 30 minutes.</p>
   </div>
 
+  <div class="callout">
+  <p><strong>Separate the security track from the personnel track.</strong> Investigation data (logs, alerts, access records) and personnel data (HR records, role, employment status) must be handled in separate workstreams. Attribution and containment are distinct processes. Do not include personnel judgments in technical incident documentation. The suspect in an investigation has not been determined to be a perpetrator.</p>
+  </div>
+
   <div class="callout callout-tip">
   <strong>Try the <code>/think</code> Skill Before You Start</strong>
   <p>Before opening Claude Code, use the <code>/think</code> skill to structure your approach. It maps directly to CCT — surface your assumptions, identify risks, and consider alternatives before touching any tool. Perfect for incident analysis where gut instinct can lead you astray.</p>
@@ -177,12 +181,30 @@ cp ./incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class="copy
       </div></label>
     </div>
 
+    <div class="callout callout-warn">
+    <p><strong>AI recommendations must overlay your organization's IR playbooks.</strong>
+    The model in this lab recommended "soft containment" — session token revocation and IP block, but explicitly not account lockout. A student reviewer correctly identified this as too lax for a P1 incident. Standard IR practice at most organizations mandates immediate account lockout at P1 severity.</p>
+    <p>AI-generated recommendations are starting points, not authority. Always overlay model output with your organization's documented procedures: P1 playbooks, containment checklists, escalation matrices. Use the model as a thinking partner — not as a replacement for organizational policy.</p>
+    <p><strong>CCT connection:</strong> This is Pillar 4 (Adaptive Innovation) applied to the model's own output. The student caught something the model missed because they had real-world IR context the model lacked. That's human-AI collaboration working correctly.</p>
+    </div>
+
     <div class="lab-step" id="step-w1-6">
       <label><input type="checkbox" onchange="toggleStep('w1-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Submit Phase 2 structured JSON analysis prompt</div>
         <div class="step-desc">Ask Claude to produce the same analysis formatted as JSON with fields: <code>evidence_summary</code>, <code>alternative_hypotheses</code> (array of 3), <code>next_steps</code>, <code>assumptions</code>, <code>confidence_scores</code>.</div>
       </div></label>
+    </div>
+
+    <div class="callout callout-warn">
+    <p><strong>Containment sequence matters: isolate before terminate.</strong> Terminating a running instance before isolating it destroys forensic evidence — memory contents, process tree, open network connections, active sessions. Standard IR procedure:</p>
+    <ol>
+    <li>Network quarantine (cut external access)</li>
+    <li>Forensic image capture (memory + disk)</li>
+    <li>Preserve and document</li>
+    <li>Then terminate if needed</li>
+    </ol>
+    <p>Premature termination is one of the most common IR mistakes. It feels decisive; it destroys evidence.</p>
     </div>
 
     <div class="lab-step" id="step-w1-7">
@@ -193,6 +215,10 @@ cp ./incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class="copy
       </div></label>
       <div class="code-block"><pre><code>python3 -m json.tool threat-assessment.json
 # Should print formatted JSON without errors</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout">
+    <p><strong>What MTTI improvement should and shouldn't look like.</strong> Execution phases — prompt construction, Claude generation, output formatting — will get dramatically faster as your context engineering improves. That's legitimate improvement. CCT phases — reasoning, judgment, challenge, integration — should remain weighted. A compressed CCT phase is a failure mode, not a success metric. If your MTTI drops because you stopped challenging AI output, you've made yourself less effective, not more.</p>
     </div>
 
     <div class="lab-step" id="step-w1-8">
@@ -389,6 +415,9 @@ Do NOT notify the contractor — they will destroy evidence.</code></pre><button
 
 <div class="quiz-block" id="quiz-w3">
   <h4> Knowledge Check — Week 3</h4>
+  <div class="callout" style="margin-bottom:16px;">
+  <p><strong>Note:</strong> Some questions below draw on Week 1 and Week 2 material as well as Week 3. If a question feels unfamiliar, check: Week 1 covered CCT and prompt basics; Week 2 covered the 5 pillars; Week 3 covers the AI landscape, models, and token economics.</p>
+  </div>
 
   <div class="quiz-question" data-qid="w3q1" data-answer="c" data-explain="AI agents go beyond text generation: they can use tools (APIs, databases, file systems), maintain state across multiple steps, make decisions, and execute complex multi-step workflows autonomously. An LLM in a chat interface does none of this natively.">
     <p class="q-text">1. What fundamentally distinguishes an AI agent from a basic large language model?</p>
@@ -523,6 +552,17 @@ cd ~/noctua-labs/unit1/week3
     </div>
 
   </div>
+</div>
+
+<div class="callout">
+  <p><strong>Going Deeper — Explore What the Lecture Introduced</strong></p>
+  <p><strong>Explore on your own (optional but recommended):</strong></p>
+  <ol>
+  <li><strong>Transformer architecture:</strong> Ask Claude to explain the attention mechanism in a transformer model in terms of what it means for security analysis — what does "attention" actually compute?</li>
+  <li><strong>Context window comparison:</strong> Research current context window sizes for Claude Sonnet, GPT-4o, and Gemini 1.5 Pro. What does a 200K token context window actually enable?</li>
+  <li><strong>Open source model tradeoffs:</strong> Ask Claude to compare running a local Llama model vs. using the Claude API for a security use case. What are the tradeoffs around privacy, cost, and capability?</li>
+  <li><strong>Privacy tradeoffs:</strong> What data should never leave your network, even to a trusted AI API provider? Build a quick classification: (a) safe to send, (b) anonymize first, (c) never send.</li>
+  </ol>
 </div>
 
 <div class="deliverables">
@@ -701,6 +741,10 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   </ul>
 </div>
 
+<div class="callout">
+  <p><strong>Why you're creating CLAUDE.md here.</strong> In this lab, you're using Claude Code to review your own work from earlier weeks. CLAUDE.md tells Claude what kind of project this is, what your role is, and what context to bring to every session. Without it, Claude starts every conversation cold. With it, Claude enters already oriented. You'll update this file throughout the course as your project evolves.</p>
+</div>
+
 <div class="callout callout-key">
   <strong>Save Your Context Permanently — Create a CLAUDE.md</strong>
   <p>You now have a context library. Teach Claude Code to load it automatically. Create a <code>CLAUDE.md</code> file in your project root — Claude Code reads it at the start of every session before you type a single word. Put your context library references, working standards, and architectural preferences there. You'll never have to re-explain your style to a new session again.</p>
@@ -714,7 +758,51 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
 <div class="unit-complete" id="unit-complete">
   <h3> Unit 1 Complete</h3>
   <p>You have worked through all four weeks of CCT Foundations &amp; AI Landscape labs.</p>
-  <p style="margin-top:8px;">Next: <a href="lab-s1-unit2.html">Unit 2 Lab Guide — Context Engineering &amp; Tool Design &rarr;</a></p>
+
+  <div class="callout callout-key" style="margin-top:20px;">
+  <p><strong>Topics introduced this unit that return later:</strong></p>
+  <ul>
+  <li><strong>Slash commands</strong> (/think, /spec, /worktree-setup, /retro, /harness) — introduced briefly; full coverage in Unit 4</li>
+  <li><strong>MCP server configuration</strong> — you'll build your first MCP server in Unit 2</li>
+  <li><strong>RAG and retrieval</strong> — introduced as a concept; you'll build a RAG system in Unit 2 Week 8</li>
+  <li><strong>Open source model deployment</strong> — tradeoffs covered here; production deployment is a Semester 2 topic</li>
+  <li><strong>CLAUDE.md as ongoing memory</strong> — created in Week 4; you'll evolve it throughout the course</li>
+  </ul>
+  </div>
+
+  <div class="callout" style="margin-top:16px;">
+  <p><strong>What you mastered</strong></p>
+  <ul>
+  <li>CCT 5 pillars and how to apply them to AI-generated outputs</li>
+  <li>Context engineering as a first-class design decision</li>
+  <li>AI model landscape: capabilities, costs, tradeoffs</li>
+  <li>CLAUDE.md vs. context library distinction</li>
+  </ul>
+  <p><strong>What was introduced (returns in later units)</strong></p>
+  <ul>
+  <li>Slash commands and Claude Code skills (Unit 4)</li>
+  <li>MCP architecture and tool design (Unit 2)</li>
+  <li>RAG and knowledge retrieval (Unit 2)</li>
+  <li>Cedar policy enforcement (Unit 3)</li>
+  </ul>
+  <p><strong>What's waiting next</strong></p>
+  <p>Unit 2 moves from interacting with Claude to building with it — you'll design and deploy your first MCP server, giving Claude access to real security tools.</p>
+  </div>
+
+  <div class="callout callout-warn" style="margin-top:16px;">
+  <p><strong>Before starting Unit 2 — verify your setup:</strong></p>
+  <ul>
+  <li><label><input type="checkbox"> Python 3.11 or higher installed</label></li>
+  <li><label><input type="checkbox"> Claude Code installed and authenticated (<code>claude --version</code> works)</label></li>
+  <li><label><input type="checkbox"> Anthropic API key configured in your environment</label></li>
+  <li><label><input type="checkbox"> <code>uv</code> or <code>pip</code> available for package management</label></li>
+  <li><label><input type="checkbox"> Git configured with your name and email</label></li>
+  <li><label><input type="checkbox"> A code editor ready (VS Code recommended)</label></li>
+  </ul>
+  <p>If any of these are missing, set them up before Week 5. Unit 2 Day 2 starts with running Python code.</p>
+  </div>
+
+  <p style="margin-top:16px;">Next: <a href="lab-s1-unit2.html">Unit 2 Lab Guide — Context Engineering &amp; Tool Design &rarr;</a></p>
 </div>
 
 </div><!-- .content -->

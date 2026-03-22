@@ -59,13 +59,25 @@
     <p class="q-text">3. When should you NOT use a multi-agent architecture?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="u5w1q3" value="a"> A) When a single well-prompted agent can solve the problem — coordination overhead exceeds the benefit</label>
-      <label><input type="radio" name="u5w1q3" value="b"> A) When you need high accuracy on security tasks</label>
+      <label><input type="radio" name="u5w1q3" value="b"> B) When you need high accuracy on security tasks</label>
       <label><input type="radio" name="u5w1q3" value="c"> C) When the task involves multiple security domains</label>
       <label><input type="radio" name="u5w1q3" value="d"> D) When team size is larger than two developers</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w1q3')">Check Answer</button>
   </div>
+</div>
+
+<div class="callout callout-key">
+  <p><strong>Required: AIUC-1 pre-check before building (5 minutes).</strong></p>
+  <p>This system makes consequential recommendations — containment actions, escalations, account lockouts. Before writing code, answer these questions in <code>unit5/aiuc1-precheck.md</code>:</p>
+  <ol>
+    <li><strong>What data does this system process?</strong> Security alerts likely contain IP addresses, usernames, system names — potentially PII. How will you handle it?</li>
+    <li><strong>Who is affected by an incorrect decision?</strong> A false positive containment recommendation triggers unnecessary lockouts or isolation. A false negative misses a real threat. Who bears the cost?</li>
+    <li><strong>Which AIUC-1 domains are in scope?</strong> (B: Security, D: Reliability, E: Accountability — at minimum)</li>
+    <li><strong>What human oversight exists for high-severity recommendations?</strong> Does a "P1 — isolate host" recommendation execute automatically, or does a human review it first?</li>
+  </ol>
+  <p>The full AIUC-1 audit of this system happens in Unit 7. This pre-check ensures your architecture doesn't build in gaps that will surface there.</p>
 </div>
 
 <div class="lab-section">
@@ -95,6 +107,26 @@ mkdir -p ~/noctua-labs/unit5/week1 && cd ~/noctua-labs/unit5/week1
 # 4. Supervisor synthesizes specialist output into final recommendation
 # 5. Returns structured JSON: {routing, specialist_output, synthesis, confidence}"
 claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout callout-key">
+      <p><strong>These tools are mocks — and that's intentional.</strong> The tools in this lab simulate the output of your Unit 2 MCP server (<code>query_cve</code>, <code>query_asset_exposure</code>, <code>generate_incident_report</code>). The architecture is identical to what you built: an agent calls a tool, the tool returns structured data, the agent reasons about it. Only the transport changes. In Unit 7 (Hardening), these mock tools get replaced with calls to your actual MCP server via MCP client. Build the agent architecture correctly here — the tool swap in Unit 7 is a one-line configuration change, not a rewrite.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <p><strong>Lab vs. production architecture.</strong> In this lab, the supervisor agent receives simulated alert data passed directly to the triage function. In a production SOC, the equivalent input comes from a SIEM stream, Kafka topic, webhook, or security data pipeline — not a manual function call. The detection and triage logic you're writing is identical; only the data ingestion layer differs. When you deploy this in a real environment (Unit 8 capstone), the input wiring is what changes — the agent logic does not.</p>
+    </div>
+
+    <div class="callout callout-remember">
+      <p><strong>Add model attribution to your outputs.</strong> Every agent output that goes downstream — to another agent, to a human analyst, to an audit log — should declare how it was produced. Add a <code>pipeline_metadata</code> field to your triage output:</p>
+      <div class="code-block"><pre><code>"pipeline_metadata": {
+    "classifier_model": "claude-haiku-4-5-20251001",
+    "enricher_invoked": True,
+    "report_model": "claude-sonnet-4-6",
+    "total_duration_ms": elapsed_ms,
+    "pipeline_version": "1.0"
+}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <p>When a recommendation is wrong, you need to know which stage produced the error. Without attribution, you're debugging blind. This is the audit record for agentic pipelines.</p>
     </div>
 
     <div class="lab-step" id="step-u5w1-3">
@@ -337,8 +369,28 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('u5w4-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Write the Framework Comparison Report (Unit 5 Major Deliverable)</div>
-        <div class="step-desc">Write the 10% Framework Comparison Report: executive summary, methodology (test suite + metrics), quantitative results (with visualizations), framework-by-framework analysis (strengths, weaknesses, best use cases), and your recommended framework for each of 3 security operation scenarios.</div>
+        <div class="step-desc">Write the 10% Framework Comparison Report using the required structure below.</div>
       </div></label>
+    </div>
+
+    <div class="callout callout-key">
+      <p><strong>Framework Comparison Report — Required Structure (10% deliverable)</strong></p>
+      <p>This report is evaluated as a security practitioner document, not a generic benchmark report. Generic accuracy metrics are insufficient — include security-specific measures.</p>
+      <p><strong>Required sections:</strong></p>
+      <p><strong>1. Executive Summary</strong> (1 paragraph): Which framework do you recommend for each of the 3 security scenarios, and why? Lead with the decision.</p>
+      <p><strong>2. Methodology</strong>: What did you test? What did you NOT test? Who evaluated (and is there evaluator bias — did the same person write the test cases and grade results)?</p>
+      <p><strong>3. Security-Specific Metrics</strong> (required for each framework):</p>
+      <ul>
+        <li>False Negative Rate: what % of real threats did the system miss?</li>
+        <li>False Positive Rate: what % of legitimate activity was flagged?</li>
+        <li>Hallucination rate in threat attribution: when the system attributed a threat, how often was the attribution incorrect?</li>
+        <li>Latency under load (P95): can the system handle real alert volume?</li>
+      </ul>
+      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply to each of 3 security scenarios.</p>
+      <p><strong>5. What These Numbers Don't Capture</strong> <em>(required — this section cannot be omitted)</em>: What would a different evaluator find? What failure modes did your test set not cover? What adversarial inputs did you not test? This section demonstrates CCT Pillar 1 (Empirical Inquiry) applied to your own evaluation.</p>
+      <p><strong>Appendix: AIUC-1 Self-Audit</strong>: For the framework you recommend, complete a brief AIUC-1 check: what domains are in scope, what controls exist, what gaps remain. This connects your Unit 3 learning to your Unit 5 recommendation.</p>
+      <p><strong>Conversation starter before writing:</strong><br>
+      Ask Claude: "I'm writing a framework comparison report for multi-agent security systems evaluated on SOC operations. What metrics matter most for this use case, and what are the most common mistakes in framework comparison reports that security architects reject?"</p>
     </div>
   </div>
 </div>

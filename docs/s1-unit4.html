@@ -527,6 +527,16 @@ body {
 </div>
 <p><strong>Reading Connections:</strong></p>
 <p>The orchestration patterns described here map to real incident response: the orchestrator is the incident commander, subagents are the SOC specialists. Your Week 13 lab implements a small version of how modern security operations <em>should</em> be structured—parallel investigation, clear handoffs, specialized expertise.</p>
+<div class="callout callout-key"><p><strong>Integration estimation: existing tools cost more than new tools.</strong> When your sprint plan includes integrating tools you already built (your Unit 2 MCP server, your Unit 3 Cedar policies), budget approximately 2× your initial estimate. Interface friction — schema mapping, error propagation, authentication flows, format mismatches between what your tool returns and what your agent expects — always surfaces during integration. This is not a failure of planning; it is the nature of integration work. Plan for it explicitly: "integrate existing tool" is a sprint task, not a free action.</p>
+</div>
+<div class="callout callout-key"><p><strong>Practice: "What this sprint will NOT build."</strong> The scope definition for an agentic system sprint is incomplete without an explicit list of capabilities being deferred. Before finalizing any sprint spec, write this section:</p>
+<ul>
+<li><strong>Capability included:</strong> [what you will build, with acceptance criteria]</li>
+<li><strong>Capability deferred:</strong> [what you considered but are NOT building this sprint, with the reason and a note of which sprint it targets]</li>
+<li><strong>Known gaps:</strong> [gaps carried forward from prior audits — authentication, rate limiting, etc. — that this sprint acknowledges but does not close]</li>
+</ul>
+<p>The deferred list is not a failure — it's a scope decision. A sprint spec without a deferred list is a spec that hasn't finished thinking.</p>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab-multi-agent-security-operations">Day 2 — Hands-On Lab: Multi-Agent Security Operations</h3>
 <p><strong>Lab Objectives:</strong>
@@ -1008,6 +1018,28 @@ Show working Python code with error handling.
 </tbody>
 </table>
 <p>A hard truth: <strong>the best code written in a sprint is "good enough" code, not perfect code.</strong> Iterate from there.</p>
+<div class="callout callout-key"><p><strong>Evaluation methodology matters as much as evaluation results.</strong> A 5/5 pass rate means nothing if:</p>
+<ul>
+<li>The test set was designed by the same person who wrote the spec</li>
+<li>All 5 test cases were obvious, expected inputs (no adversarial cases)</li>
+<li>No one else reviewed the test design before running it</li>
+</ul>
+<p>Minimum standards for sprint evaluation:</p>
+<ol>
+<li><strong>Ground truth independence:</strong> the evaluator should not be the sole spec author</li>
+<li><strong>Adversarial test cases:</strong> at least 2 of your test inputs should be designed to challenge the system, not confirm it works on expected inputs</li>
+<li><strong>Declared methodology:</strong> your evaluation section must state what you tested and, critically, what you did NOT test</li>
+</ol>
+<p>From a student sprint retrospective: <em>"The 5/5 pass rate is based on comparing output to expected results defined by the sprint spec author (same person). That's not a valid evaluation."</em> Don't make this mistake.</p>
+</div>
+<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
+<ul>
+<li>MTTP tells you how fast you execute</li>
+<li>MTTS tells you how fast you make design decisions</li>
+<li>If MTTP improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
+</ul>
+<p>The spec phase should not be rushed. It is where security decisions are made.</p>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab-rapid-prototyping-sprint">Day 2 — Hands-On Lab: Rapid Prototyping Sprint</h3>
 <p><strong>Lab Objectives:</strong>

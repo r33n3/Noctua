@@ -80,6 +80,9 @@
 /worktree-setup three-agent SOC system: recon-agent, analysis-agent, reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
+<div class="callout callout-key"><p><strong>What you're learning here transfers beyond Claude Code.</strong> Worktrees are a git feature — not a Claude Code invention. The <code>git worktree add</code> command works in any git repository, with any development tool. Agent orchestration patterns (supervisor → specialist, parallel fanout, sequential pipeline) appear in LangGraph, AutoGen, CrewAI, and the Claude Agent SDK with different syntax but identical architecture. The mental model you build this week — how to decompose a complex task into a supervised multi-agent pipeline — is framework-independent. The syntax is not.</p>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: Three-Agent SOC System</h4>
 
@@ -104,7 +107,7 @@ git worktree add ../soc-reporting -b feature/reporting-agent</code></pre><button
       <label><input type="checkbox" onchange="toggleStep('w13-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Build the Recon Agent in its worktree</div>
-        <div class="step-desc">In <code>../soc-recon/</code>, use Claude Code to build <code>recon_agent.py</code>: a Claude-backed agent with access to your Unit 2 MCP tools (ip_reputation, query_cve, hash_lookup). Input: raw alert text. Output: structured reconnaissance JSON with all IoCs enriched.</div>
+        <div class="step-desc">In <code>../soc-recon/</code>, use Claude Code to build <code>recon_agent.py</code>: a Claude-backed agent with access to your Unit 2 MCP tools (<code>query_cve</code>, <code>query_asset_exposure</code>, <code>generate_incident_report</code>, <code>search_security_kb</code>). Input: raw alert text. Output: structured reconnaissance JSON with all IoCs enriched.</div>
       </div></label>
       <div class="code-block"><pre><code>cd ~/soc-recon
 claude
@@ -216,6 +219,26 @@ claude
 /spec phishing email triage pipeline — single sprint, Claude agent + MCP tools, 3-hour build window</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
+<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
+<ul>
+<li>MTTP tells you how fast you execute</li>
+<li>MTTS tells you how fast you make design decisions</li>
+<li>If MTTP improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
+</ul>
+<p>The spec phase should not be rushed. It is where security decisions are made.</p>
+</div>
+
+<div class="callout callout-key"><p><strong>Required: AIUC-1 pre-check before finalizing your spec (5 minutes).</strong></p>
+<p>Before writing a single line of code, answer these four questions and document them in <code>sprint1/aiuc1-precheck.md</code>:</p>
+<ol>
+<li><strong>What data does this system process?</strong> (Email content? Does it contain PII? Attachments?)</li>
+<li><strong>Who is affected by a wrong decision?</strong> (False positive = missed real threat reported to nobody. False negative = analyst alerted on legitimate email.)</li>
+<li><strong>Which AIUC-1 domains are in scope?</strong> (B: Security — does the system have access to security-sensitive data? D: Reliability — what happens when it's wrong? E: Accountability — who reviews its decisions?)</li>
+<li><strong>What human oversight exists for high-severity outputs?</strong> (Does a P1 classification auto-escalate, or does a human review first?)</li>
+</ol>
+<p>The full AIUC-1 audit happens in Unit 3 (which you've already completed). This pre-check ensures your Sprint I design avoids the gaps your Unit 3 audit identified.</p>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: Sprint I — Timed Prototype</h4>
 
@@ -321,6 +344,15 @@ claude
   </div>
 </div>
 
+<div class="callout callout-key"><p><strong>Dependency review before you plan.</strong> Before committing to Sprint II scope, audit your dependencies:</p>
+<ul>
+<li>What Python packages do you need that aren't currently installed?</li>
+<li>What does adding them require (compilation? system libraries? significant disk space?)</li>
+<li>Do any planned remediations (PII scanning, encryption, external API integrations) require new dependencies?</li>
+</ul>
+<p>Dependencies discovered mid-sprint become scope constraints. A PII scanner that requires a 200MB model download or a complex compilation step can block a sprint if discovered on day two. Five minutes of dependency review at sprint start saves hours of mid-sprint replanning.</p>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: Sprint II Hardening Checklist</h4>
   <div class="lab-steps">
@@ -418,7 +450,7 @@ class JSONFormatter(logging.Formatter):
 
 <div class="lab-section">
   <h4> Ship It: Release Pipeline Checklist</h4>
-  <p>Before your prototype earns a PR and goes to leadership review, run it through this shipping checklist. This is the gstack <code>/ship</code> pattern applied to your security tool — each step has a reason.</p>
+  <p>Before your prototype earns a PR and goes to leadership review, run it through this shipping checklist. Each step has a reason — this is the production shipping discipline practiced throughout the course: spec before build, test before ship, document before deploy.</p>
   <div class="lab-steps">
     <div class="lab-step" id="step-ship-1">
       <label><input type="checkbox" onchange="toggleStep('ship-1',this.checked)">
@@ -552,6 +584,34 @@ Analysts spend 45 min/day triaging phishing alerts manually.
 <div class="unit-complete">
   <h3> Semester 1 Complete!</h3>
   <p>You have completed all four units of CSEC 601: CCT Foundations, Context Engineering &amp; Tool Design, Ethical AI, and Rapid Prototyping. You are ready for Semester 2.</p>
+
+<div class="callout callout-key"><p><strong>What Semester 2 does with what you built.</strong></p>
+<p>The tools and systems you built this semester are the starting material for Semester 2 — not background context, but direct inputs.</p>
+<ul>
+<li><strong>Unit 5 (Multi-Agent Orchestration):</strong> Your phishing triage agent from Sprint I becomes a supervised multi-agent pipeline. The single agent that classifies and reports becomes a specialist team: a classifier agent, an enrichment agent, a report-writer agent.</li>
+<li><strong>Unit 6 (Red Teaming):</strong> You will attack your own Unit 2 MCP server using the techniques from Unit 6. The tools you built are the targets.</li>
+<li><strong>Unit 7 (Hardening):</strong> The Cedar policies you wrote in Week 12 are deployed to Amazon Verified Permissions. Your Unit 2 MCP server gets production security hardening. The gaps your Unit 3 audit identified get closed.</li>
+<li><strong>Unit 8 (Capstone):</strong> Your Sprint II prototype is the capstone starting point. You're not starting from scratch — you're hardening and scaling what's already there.</li>
+</ul>
+</div>
+
+<div class="callout callout-key"><p><strong>&#10003; What you mastered</strong></p>
+<ul>
+<li>Sprint planning: spec-first, scope definition, integration estimation</li>
+<li>Agentic prototype development under ethical constraints</li>
+<li>Evaluation methodology: ground truth independence, adversarial test cases</li>
+<li>Multi-agent architecture patterns (worktree-based, supervisor/specialist)</li>
+</ul>
+<p><strong>&#8635; What was introduced (returns later)</strong></p>
+<ul>
+<li>Production hardening (Unit 7)</li>
+<li>Red team testing of your own tools (Unit 6)</li>
+<li>Multi-agent orchestration at scale (Unit 5)</li>
+</ul>
+<p><strong>&#8594; What's waiting next</strong></p>
+<p>Semester 2 begins with Unit 5 — your prototype enters a multi-agent pipeline, and the security evaluation gets serious.</p>
+</div>
+
   <p style="margin-top:8px;"><a href="lab-s2-unit5.html">Continue: Semester 2 Lab Guide — Unit 5: Multi-Agent Orchestration &rarr;</a></p>
 </div>
 

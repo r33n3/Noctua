@@ -483,6 +483,8 @@ body {
 <li>Recognize how AI agents are reshaping threat detection and incident response workflows</li>
 <li>Situate the course within the broader context of AI-driven security transformation</li>
 </ul>
+<div class="callout callout-key"><p><strong>Context engineering is a design decision, not a feature.</strong> From day one, how you structure what Claude knows — what's in its context window, what's in CLAUDE.md, what's in your context library — determines the quality ceiling of every output it produces. In Week 4 you'll see a V1→V2 comparison showing a 22%→100% quality jump driven entirely by context design. Start thinking about this now.</p>
+</div>
 <h4 id="lecture-content">Lecture Content</h4>
 <p>The past three years have witnessed an unprecedented acceleration in AI capabilities, particularly within the cybersecurity domain. When this course began its design phase in 2023, large language models were powerful text generators. Today, in 2026, we are living in the age of AI agents—autonomous systems that can decompose complex security investigations, call APIs, chain tools together, and execute multi-step response workflows with minimal human intervention.</p>
 <p>This transformation was not inevitable, nor has it been without controversy. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) had used Claude Code to autonomously conduct reconnaissance, vulnerability discovery, credential harvesting, and data exfiltration against approximately 30 targets, operating at 80–90% autonomy without human intervention. What made this incident significant was not just its technical complexity, but what it revealed: AI systems had become both tools for and vectors against nation-state and high-capability criminal actors. The security industry's response was to embrace a counterintuitive strategy: use AI agents <em>with</em> better human oversight to defend against AI-powered attacks.</p>
@@ -780,6 +782,8 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 <li>Learn to distinguish between evidence-based claims and intuition masquerading as certainty</li>
 <li>Apply CCT to real security scenarios in a team setting</li>
 </ul>
+<div class="callout callout-key"><p><strong>CCT is the durable skill.</strong> As models improve, the value of AI outputs rises — but so does the cost of uncritical acceptance. The students who get the most from AI improvement are those with strong reasoning frameworks to direct, challenge, and integrate model output. CCT is not temporary scaffolding. It is the skill that compounds.</p>
+</div>
 <h4 id="lecture-content_1">Lecture Content</h4>
 <p>Last week, we introduced Collaborative Critical Thinking as a framework. This week, we make it concrete. CCT rests on five pillars, each grounded in decades of research into human decision-making, organizational behavior, and information analysis. Understanding each pillar deeply will transform how you work with AI agents—and with colleagues.</p>
 <p><strong>Pillar 1: Evidence-Based Analysis</strong></p>
@@ -853,6 +857,13 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 - CloudWatch logs read</p>
 <p>Initial response: The SOC escalated to Level 2 (team lead), but hasn't called an all-hands incident yet.</p>
 <p><strong>Supplementary Data (provided as separate files)</strong></p>
+<p>Download the lab data files before starting:</p>
+<div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
+  <a href="cloudshift-logs.txt" download="cloudshift-logs.txt" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; cloudshift-logs.txt</a>
+  <a href="team-perspectives.txt" download="team-perspectives.txt" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; team-perspectives.txt</a>
+  <a href="evidence-layer.md" download="evidence-layer.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; evidence-layer.md</a>
+</div>
+<p>Save these to your working directory for this lab. The file contents are also shown inline below for reference.</p>
 <p>Create three data files to support the analysis:</p>
 <p><strong>File: <code>cloudshift-logs.txt</code></strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">[EC2 Instance: prod-db-01]</span><span class="w"></span>
@@ -1443,6 +1454,8 @@ Did automation do the right thing? What would you do differently next time?
 </table>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your organization needs to analyze 10,000 SIEM alerts per day for threats. Budget is limited. Would you use a single frontier model (expensive but very accurate) or multiple cheaper models (Haiku + Mistral) in a ensemble (cheaper, but requires more coordination)? What are the tradeoffs?</p>
 </div>
+<div class="callout callout-key"><p><strong>Model selection is an architectural decision.</strong> The question is not "which model is best" — it's "which model is right for this task at this cost." A common production pattern: Haiku-class models handle high-volume triage (fast, cheap, good enough for classification). Sonnet-class models handle the top 5–10% of cases that need deeper analysis. Designing this tiering upfront is an architecture decision, not an optimization — it affects your system's economics from day one.</p>
+</div>
 <p><strong>Token Economics in Practice</strong></p>
 <p>Let's say you're using Claude Opus to analyze a complex incident. You include:</p>
 <ul>
@@ -1461,6 +1474,13 @@ Did automation do the right thing? What would you do differently next time?
 <p>Is that worth it? Compare to a human analyst at $80K/year salary. If Claude accelerates analysis by just 5%, it's ROI-positive.</p>
 <p>But here's the hidden cost: If you include irrelevant context (a full log file that only 5% applies), you might waste half your tokens. Same analysis, now ~$0.27 instead of $0.19. Over a year, that's an extra ~$3K wasted.</p>
 <p>This is why "context engineering" (curating what to include, in what format) matters.</p>
+<div class="callout"><p><strong>Three things to understand before the lab:</strong></p>
+<ol>
+<li><strong>Context files and attention</strong> — Every file in Claude's context window competes for attention. Large context files don't disappear when not referenced; they still consume tokens and can dilute focus on what matters.</li>
+<li><strong>Security data is token-expensive</strong> — Raw security logs, full CVE descriptions, and packet captures are verbose. Preprocessing (summarization, structured extraction) before passing to Claude improves quality and reduces cost.</li>
+<li><strong>Context window limit ≠ chunking problem</strong> — If your data exceeds the context window, you need a chunking/retrieval strategy. If it fits but is too large to reason about effectively, you need a summarization strategy. These are different problems with different solutions.</li>
+</ol>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab_2">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives_2">Lab Objectives</h4>
@@ -1741,6 +1761,18 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <hr />
 <h2 id="starting-your-context-library">Starting Your Context Library</h2>
 <p>Over the next four units, you'll build a personal <strong>context library</strong>—a curated collection of patterns, templates, prompts, and code snippets that you've refined with Claude Code. Think of it as a playbook of your best work.</p>
+<div class="callout"><p><strong>CLAUDE.md vs. your context library — know the difference.</strong></p>
+<table>
+<thead><tr><th></th><th>CLAUDE.md</th><th>Context Library</th></tr></thead>
+<tbody>
+<tr><td><strong>What it is</strong></td><td>Project memory file Claude reads at every session start</td><td>Curated reference files you pull into context deliberately</td></tr>
+<tr><td><strong>When Claude reads it</strong></td><td>Automatically, at session start</td><td>When you reference it or include it explicitly</td></tr>
+<tr><td><strong>What goes in it</strong></td><td>Persistent project context, preferences, team conventions</td><td>Techniques, examples, templates, domain knowledge</td></tr>
+<tr><td><strong>Scope</strong></td><td>Per-project</td><td>Per-task or per-conversation</td></tr>
+</tbody>
+</table>
+<p>Use CLAUDE.md to establish persistent context. Use your context library to bring in exactly what the current task needs.</p>
+</div>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Every time Claude Code generates something you like—a system prompt that works, an analysis framework that's clear, a tool definition that's reusable—extract it. Store it in your context library. In future sessions, feed your library back to Claude as context. This teaches the model YOUR style, YOUR standards, and YOUR architectural preferences. You get increasingly consistent, personalized outputs.</p>
 </div>
 <div class="callout callout-tip"><p><strong>Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, use this prompt:</p>

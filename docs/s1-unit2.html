@@ -471,6 +471,8 @@ body {
 <p><a href="semester1.html">← Back to Semester 1 Overview</a></p>
 <hr />
 <h2 id="week-5-model-context-protocol-mcp-the-agent-tool-interface">Week 5: Model Context Protocol (MCP) — The Agent-Tool Interface</h2>
+<div class="callout callout-key"><p><strong>Start your context library now.</strong> The context library is the collection of curated reference files you build throughout this course — prompts that worked, patterns you discovered, schemas you designed. Start it in Week 5. At the end of every lab this unit, you'll add one entry. By Unit 4 you'll have a personal reference library you can pull into any Claude session.</p>
+</div>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
 <h4 id="learning-objectives">Learning Objectives</h4>
 <ul>
@@ -484,6 +486,19 @@ body {
 <p>For the first generation of AI agents (2022–2023), integrating external tools into LLM workflows was chaotic. Engineers built custom connectors for each LLM provider. A tool that worked with Claude required separate integration for GPT-4, and yet another for Gemini. Security teams couldn't audit tool access in a standardized way. There was no common language for describing what a tool could do, what it required, or how it failed.</p>
 <p>Anthropic, in collaboration with community partners, recognized this fragmentation as a critical blocker for enterprise AI adoption. In late 2024, they released the <strong>Model Context Protocol (MCP)</strong>, an open standard that fundamentally changed how agents discover, access, and use external tools. Rather than building LLM-specific integrations, teams now build once and connect to any LLM that supports MCP.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> MCP solves the "integration sprawl" problem by establishing a standardized, transport-agnostic interface for agent-tool communication. This is analogous to how HTTPS became the standard for web security rather than requiring bespoke encryption for every web application.</p>
+</div>
+<div class="callout callout-key"><p><strong>MCP through an OOP lens.</strong></p>
+<table>
+<thead><tr><th>OOP concept</th><th>MCP equivalent</th></tr></thead>
+<tbody>
+<tr><td>Class</td><td>MCP Server</td></tr>
+<tr><td>Method</td><td>Tool</td></tr>
+<tr><td>Instance</td><td>Active session</td></tr>
+<tr><td>Interface/contract</td><td>Tool schema</td></tr>
+<tr><td>Access modifier</td><td>Permission scope</td></tr>
+</tbody>
+</table>
+<p>If you've built object-oriented systems, MCP follows the same patterns — with one critical difference: <strong>the agent controls the call graph.</strong> In OOP, you write the code that calls methods. In an agent system, Claude decides which tools to call and in what order. Your tool implementations are deterministic; the orchestration layer is not. Design tools as if the calling sequence is adversarial.</p>
 </div>
 <h4 id="the-mcp-architecture-three-layers-of-control">The MCP Architecture: Three Layers of Control</h4>
 <p>MCP defines three architectural components:</p>
@@ -514,6 +529,8 @@ body {
 <li><strong>Error codes</strong> — Documented failure modes and remediation steps</li>
 </ul>
 <p>This metadata allows agents to understand what's available without requiring hardcoded knowledge. A new security analyst can launch Claude Code, load an MCP server, and immediately see all available tools with documentation.</p>
+<div class="callout callout-discuss"><p><strong>Discussion: tool discovery as attack surface.</strong> Every tool your MCP server exposes is discoverable by any agent (or attacker) with access to the server. Overpermissioned MCP servers don't just risk misuse — they enable capability amplification: an agent that should only read CVE data can instead scan networks if those tools are available. The governance response is allowance profiles — pre-approved lists of which tools each agent role can invoke. You'll implement this with Cedar policies in Unit 3.</p>
+</div>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the <a href="https://modelcontextprotocol.io/spec">MCP Specification</a> for detailed schema examples and <a href="frameworks.html">Tool Design Patterns</a> for reference implementations.</p>
 </div>
 <h4 id="real-world-case-study-mass-as-an-mcp-server">Real-World Case Study: MASS as an MCP Server</h4>
@@ -574,7 +591,19 @@ body {
 <li><strong>Long-term stability</strong> — LF governance ensures MCP won't be abandoned or pivoted by a commercial entity</li>
 <li><strong>Extensibility process</strong> — New security features can be proposed and standardized across the ecosystem</li>
 </ol>
+<div class="callout callout-key"><p><strong>PeaRL and OPA: clarification.</strong> PeaRL (Pearl Governance Model) is built ON TOP of OPA (Open Policy Agent) — it is not a replacement. OPA is the policy engine: it evaluates Rego or Cedar policies at runtime. PeaRL is the governance framework: it defines how policies are structured, versioned, and applied across agentic systems. Think of OPA as the engine and PeaRL as the vehicle designed around it.</p>
+</div>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?</p>
+</div>
+<div class="callout"><p><strong>The service layer pattern.</strong> Your MCP server is not the business logic — it's a translation layer. The pattern: your REST API or Python service holds the core logic; the MCP server is a thin wrapper that translates between Claude's tool call format and your service's interface. This separation matters for security: you can add rate limiting, authentication, and audit logging at the MCP layer without touching the core logic, and you can test the core logic independently.</p>
+</div>
+<div class="callout callout-key"><p><strong>Principle of Least Privilege (PoLP) in tool design.</strong> Every tool you build should expose the minimum capability needed for its declared purpose. Three practices:</p>
+<ol>
+<li><strong>Scope boundaries</strong> — define what the tool will never return, not just what it will return</li>
+<li><strong>Single responsibility</strong> — one tool, one capability; resist adding convenience features that expand the attack surface</li>
+<li><strong>Output contracts</strong> — the tool's return schema is a security boundary; undocumented fields are unvalidated fields</li>
+</ol>
+<p>PoLP isn't a checkbox — it's a design discipline you apply before writing a single line of code.</p>
 </div>
 <h4 id="day-1-deliverable">Day 1 Deliverable</h4>
 <p>Write a <strong>2-page analysis</strong> (500–750 words) comparing how MCP would change your current tool integration workflow. If you're using REST APIs, Zapier, or custom connectors to link your security tools, describe:</p>
@@ -1021,6 +1050,8 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Rate limiting without clear feedback is frustrating for users and can cause agents to retry ineffectively. Always return a clear error with guidance: "Rate limit exceeded. Try again in 45 seconds." Don't silently drop requests.</p>
 </div>
+<div class="callout callout-key"><p><strong>Policy must be in the tool, not trusted to the operator.</strong> A tool's scope constraints must be baked into its implementation — hardcoded allowed targets, maximum operation counts, required authorization checks. Relying on the operator (or the agent) to "use the tool responsibly" is not a security control. If <code>ALLOWED_TARGETS</code> is a frozenset in the tool code, it cannot be overridden at runtime. If it's a parameter the operator sets, it can be changed. Know the difference.</p>
+</div>
 <h4 id="tool-versioning-and-deprecation">Tool Versioning and Deprecation</h4>
 <p>Security tools evolve. Your IP reputation API might improve its accuracy, your log query tool might add new filter options. How do you update tools without breaking agents that depend on them?</p>
 <p><strong>Semantic Versioning for Tools:</strong>
@@ -1123,6 +1154,14 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> Anthropic, "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign," Full Report, November 2025. This is the GTG-1002 primary source document. See also the June 2025 "vibe hacking" findings that documented the earlier, less autonomous precursor to this operation. Both are available in the <a href="reading.html">Reading List</a>.</p>
 </div>
 <hr />
+<div class="callout callout-key"><p><strong>Design before you build: the /think → /spec → build workflow.</strong></p>
+<ol>
+<li><strong><code>/think</code></strong> — use Claude Code's /think skill to surface your design reasoning: "What are the security implications of each tool I'm adding? What could go wrong?"</li>
+<li><strong><code>/spec</code></strong> — use <code>/spec</code> to capture your decisions in a spec document: interface contracts, error handling strategy, PoLP decisions, known gaps</li>
+<li><strong>Build</strong> — with the spec written, build to the spec; decisions already made don't slow you down</li>
+</ol>
+<p>The spec is not bureaucracy — it's the record of your security design choices. When you audit your own system in Unit 3, your spec is Exhibit A.</p>
+</div>
 <h4 id="day-1-deliverable_1">Day 1 Deliverable</h4>
 <p>Design a security tool (your choice of domain: log querying, IP reputation, alert enrichment, credential rotation, etc.) and document:</p>
 <ol>
@@ -1846,6 +1885,23 @@ would you need? What would the attacker do next after this reconnaissance phase?
 - Facilitates debugging (each step has clear input/output)</p>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Claude is better at complex reasoning when you break tasks into steps with clear schemas at each step. Instead of "analyze this alert and give me everything," try "first classify the alert type," then "then determine severity," then "finally recommend actions."</p>
 </div>
+<div class="callout callout-key"><p><strong>Pattern: Claude Calling Claude.</strong> When your MCP tool needs to analyze, classify, or generate structured content, it can call the Claude API internally. This creates a composition: one Claude session orchestrates (the user-facing agent), another Claude call specializes (the tool-level reasoning task).</p>
+<p>Design principles for this pattern:</p>
+<ul>
+<li><strong>Role separation</strong> — the orchestrating Claude handles conversation; the tool-level Claude handles a single focused task (classification, extraction, report generation)</li>
+<li><strong>Model selection</strong> — use a faster/cheaper model for the tool-level task if the task is well-defined; reserve Sonnet for complex reasoning</li>
+<li><strong>Context isolation</strong> — the tool-level Claude call should have only the data it needs; don't pass the full conversation history into a tool call</li>
+</ul>
+</div>
+<div class="callout callout-key"><p><strong>Pattern: Schema-Driven Decomposition.</strong> When a complex report requires multiple reasoning tasks (classification → enrichment → recommendation), decompose into sequential Claude calls, each with its own focused schema.</p>
+<p>Why this works:</p>
+<ul>
+<li>Each call is a narrow reasoning task with a clear validation target</li>
+<li>Validation gates between calls prevent bad data from propagating</li>
+<li>A failed validation at step 2 stops step 3 — no recommendations generated from bad enrichment data</li>
+</ul>
+<p>When validation fails repeatedly (&gt;2 retries), treat it as a signal of schema-model mismatch — your schema may be too strict, too ambiguous, or asking the model to reason about something it can't reliably output in that structure. Adjust the schema, not the retry count.</p>
+</div>
 <h4 id="integration-with-security-infrastructure">Integration with Security Infrastructure</h4>
 <p><strong>SIEM Integration (Splunk Example)</strong></p>
 <p>A SIEM can ingest structured reports and create dashboards:</p>
@@ -1908,6 +1964,15 @@ would you need? What would the attacker do next after this reconnaissance phase?
 3. <strong>Retry on validation failure</strong> (sometimes re-prompting Claude with the error fixes it)
 4. <strong>Have a fallback</strong> if validation repeatedly fails (e.g., escalate to human analyst)</p>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> <a href="frameworks.html">JSON Schema Best Practices</a> and <a href="https://www.first.org/cvss/v3.1/specification-document">CVSS v3.1 Specification</a>.</p>
+</div>
+<div class="callout"><p><strong>Include model attribution in structured outputs.</strong> Every agent output that goes downstream — to another system, to a human reviewer, to an audit log — should include metadata about how it was produced:</p>
+<ul>
+<li>Which model classified/analyzed the data</li>
+<li>Which model generated the output</li>
+<li>Timestamp and duration</li>
+<li>Invocation chain (what called what)</li>
+</ul>
+<p>This is not logging overhead — it's the audit record. When a recommendation is wrong, you need to know whether the classification was wrong, the enrichment was wrong, or the output generation was wrong. Without attribution, you're debugging blind.</p>
 </div>
 <h4 id="day-1-deliverable_2">Day 1 Deliverable</h4>
 <p>Design a complete structured reporting system for a security domain of your choice (breach detection, vulnerability triage, incident response, threat hunting, etc.):</p>
@@ -2193,6 +2258,18 @@ For each integration, show me: What data goes in? What format? What could go wro
 <p>Now Claude answers: "Our security policy (Section 3.2, last updated Jan 15 2025) requires passwords of at least 16 characters for privileged accounts. [Document excerpt]." And you know the answer came from your actual policy, not an LLM hallucination.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> RAG is not a replacement for LLMs; it's a pattern that augments LLM capabilities with retrieval. The LLM's role shifts from "know everything" to "synthesize retrieved information." This is a more honest and verifiable approach to AI in security.</p>
 </div>
+<div class="callout callout-key"><p><strong>When to use MCP, when to use RAG — the decision framework.</strong></p>
+<table>
+<thead><tr><th>Use MCP when</th><th>Use RAG when</th></tr></thead>
+<tbody>
+<tr><td>Data must be current (CVEs, live threat feeds)</td><td>Data is a curated static corpus (runbooks, policies)</td></tr>
+<tr><td>Lookup is deterministic (ID → record)</td><td>Retrieval is fuzzy (concept → relevant chunks)</td></tr>
+<tr><td>The source has an API</td><td>You own the documents</td></tr>
+<tr><td>Precision matters more than coverage</td><td>Coverage matters more than precision</td></tr>
+</tbody>
+</table>
+<p><strong>Common mistake:</strong> using RAG for CVE lookup. CVEs change — a RAG corpus goes stale. Hallucination risk is high when the model retrieves a near-match instead of the exact CVE. For CVE data, use the NVD API via MCP — deterministic, always current.</p>
+</div>
 <h4 id="context-engineering-the-capability-capacity-model">Context Engineering &amp; the Capability Capacity Model</h4>
 <p>Beyond RAG, strategic context management is fundamental to agent reliability. The <strong>Capability Capacity Model</strong> from Agentic Engineering practice establishes that when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.</p>
 <p>Context engineering means:
@@ -2237,6 +2314,8 @@ For each integration, show me: What data goes in? What format? What could go wro
 - <strong>OpenAI text-embedding-3-large</strong> — General-purpose, high-quality
 - <strong>Cohere embed-english-v3.0</strong> — Good for compliance/legal text
 - <strong>Open-source (all-MiniLM-L6-v2)</strong> — Runs locally, no API calls</p>
+<div class="callout"><p><strong>Embedding model selection is domain-specific.</strong> General-purpose embedding models (<code>all-MiniLM-L6-v2</code>, <code>text-embedding-3-small</code>) work well for most security content. For formal regulatory and compliance text (NIST, GDPR, legal language), domain-specific models like Cohere's <code>embed-english-v3.0</code> often outperform general models on retrieval recall. The test: run retrieval eval on a sample of your actual corpus before committing to a model.</p>
+</div>
 <p><strong>4. Storage &amp; Indexing</strong></p>
 <p>Embeddings are stored in a <strong>vector database</strong> (also called a vector index), which enables fast similarity search. Popular choices:</p>
 <ul>
@@ -2314,6 +2393,15 @@ Chunk 3: [sentences 25–40]  ← overlap with Chunk 2</p>
 
 <p>When retrieving, filter by metadata. "What controls apply to databases?" retrieves only chunks with <code>applicable_systems: ["databases"]</code>.</p>
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Storing too much metadata in the chunk itself increases embedding size and retrieval latency. Use a hybrid approach: store metadata separately in the vector database, use it for filtering, but don't embed it.</p>
+</div>
+<div class="callout"><p><strong>Metadata is a retrieval quality lever.</strong> Every chunk in your RAG corpus should carry metadata that enables filtered retrieval:</p>
+<ul>
+<li><code>source_date</code> — when the document was last updated (enables freshness filtering)</li>
+<li><code>doc_type</code> — runbook, policy, threat intel, CVE, vendor advisory</li>
+<li><code>classification_level</code> — public, internal, confidential</li>
+<li><code>relevant_tools</code> — which MCP tools this document supports</li>
+</ul>
+<p>A retrieval pipeline that ignores metadata will surface outdated runbooks alongside current ones. Timestamp-aware retrieval — downweighting chunks where <code>source_date</code> exceeds 90 days — is a simple technique with significant impact on answer quality.</p>
 </div>
 <h4 id="vector-databases-for-security-a-comparison">Vector Databases for Security: A Comparison</h4>
 <table>

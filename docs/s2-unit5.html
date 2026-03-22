@@ -467,7 +467,7 @@ body {
 <main class="main">
   <div class="content">
     <h1 id="unit-5-multi-agent-orchestration-for-security">Unit 5: Multi-Agent Orchestration for Security</h1>
-<p><strong>CSEC 602 — Semester 2 | Weeks 1–4</strong></p>
+<p><strong>CSEC 602 — Semester 2 | Weeks 5–8</strong></p>
 <p><a href="semester2.html">← Back to Semester 2 Overview</a></p>
 <hr />
 <h2 id="unit-overview">Unit Overview</h2>
@@ -647,6 +647,11 @@ No hierarchy.
 <p><strong>Task Queues:</strong> Supervisor or scheduler enqueues work; agents dequeue, process, enqueue results. Excellent for load balancing.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Communication pattern choice determines system properties. Direct messaging = fast + coupled. Shared state = eventual consistency + decoupled. Event buses = asynchronous + loosely coupled + hard to reason about. Pick based on your constraints (latency, consistency, complexity budget).</p>
 </div>
+<div class="callout callout-remember"><p><strong>The A2A <code>scope</code> field is your Cedar policy at runtime.</strong> In Unit 3, you wrote Cedar policies that enforce which tools each agent principal can invoke:</p>
+<pre><code>permit(principal is Agent, action == Action::"invoke_tool", resource is Tool)
+when { principal.api_key_valid && principal.authorized_tools.contains(resource.identifier) };</code></pre>
+<p>When the orchestrator sends an A2A message with <code>"scope": ["invoke:threat_analyst"]</code>, it is asserting a Cedar policy claim at runtime. In production, the AgentBus validates this scope claim against your Cedar policy (via Amazon Verified Permissions) before dispatching to the subagent. The Cedar policies you wrote in Week 12 are not theoretical exercises — they are the authorization layer for every A2A call in production. The scope field is <code>authorized_tools</code> expressed as a runtime message.</p>
+</div>
 <hr />
 <h3 id="when-multi-agent-is-overkill">When Multi-Agent is Overkill</h3>
 <ul>
@@ -718,6 +723,8 @@ No hierarchy.
 </code></pre></div>
 
 <p>Each agent is a Claude instance with specialized tools.</p>
+<div class="callout callout-remember"><p><strong>Model attribution is a first-class output requirement.</strong> In multi-agent systems, outputs pass through multiple models before reaching the analyst. An alert is classified by Model A, enriched by Model B, and reported by Model C. When the report is wrong, which model failed? Without attribution metadata in every output, the answer requires re-running the entire pipeline. Include <code>pipeline_metadata</code> in every agent output: which model handled which stage, when, and how long it took. This is not logging overhead — it is the minimum viable audit record for agentic systems.</p>
+</div>
 <hr />
 <h4 id="architecture-data-flow-and-state-management">Architecture: Data Flow and State Management</h4>
 <p>Instead of starting with complete code, let's think about the data architecture. A multi-agent SOC system needs:</p>
@@ -1467,6 +1474,17 @@ prompts and tool assignments.
 <p>If backstories are generic, ask Claude to make them more specific. If an agent has too many tools, ask for a narrower focus.</p>
 <hr />
 <h3 id="architecture-tool-design-for-multi-agent-systems">Architecture: Tool Design for Multi-Agent Systems</h3>
+<div class="callout callout-key"><p><strong>Reconciling Unit 2 and Unit 5 tool output philosophy.</strong> Unit 2 taught structured JSON tool outputs for Pydantic validation and downstream data contracts. You may notice that some multi-agent frameworks prefer human-readable strings for agent reasoning. Both are correct — the choice depends on architectural context:</p>
+<table>
+<thead><tr><th>Use structured JSON outputs when</th><th>Use human-readable strings when</th></tr></thead>
+<tbody>
+<tr><td>Output feeds another system or schema-validated pipeline</td><td>Output feeds agent reasoning that needs flexibility</td></tr>
+<tr><td>You need type safety and validation guarantees</td><td>You're using a framework that handles tool outputs as conversation text</td></tr>
+<tr><td>The consumer is code</td><td>The consumer is an agent's reasoning process</td></tr>
+</tbody>
+</table>
+<p>In practice, production systems use both: structured outputs at system boundaries (data pipelines, APIs, audit logs), readable strings for intra-agent reasoning. The principle from Unit 2 (schema as a security boundary) applies wherever data crosses a system boundary.</p>
+</div>
 <p><strong>Key Principle from CrewAI:</strong> Tools should return human-readable text that agents can reason about, not structured data. This allows agents to process results as they would conversation text, extracting meaning and responding to explanations.</p>
 <p><strong>Design Principle:</strong> Each tool should be:
 - <strong>Focused:</strong> Does one thing well (not a Swiss Army knife)
