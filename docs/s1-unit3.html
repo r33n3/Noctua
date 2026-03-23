@@ -546,19 +546,19 @@ body {
 </li>
 <li>Fairness, bias mitigation, non-discrimination, and societal impact</li>
 <li>AI agents must not discriminate based on protected characteristics. Fairness must be actively measured through stratified evaluation and fairness metrics</li>
-<li>Example: A DLP system must not disproportionately flag legitimate business practices from certain regions or populations.</li>
+<li>Example: A threat detection model trained primarily on Western enterprise telemetry may systematically underperform against threat actors from underrepresented geographies — not from intent, but from training data composition. Coverage parity across threat actor profiles is as much a fairness requirement as output equity.</li>
 </ol>
 <h4 id="aiuc-1-context">AIUC-1 Context</h4>
 <p>AIUC-1 emerged because enterprises could not reliably assess AI agent security. Traditional frameworks provide governance structure but don't validate that safeguards actually work through testing. Security leaders have described the gap as needing "a SOC 2 for AI agents" — a certification standard specifically designed for autonomous systems rather than adapted from static software audits. AIUC-1 fills this gap with mandatory third-party technical testing. The agent-specific focus matters because autonomous agents create risks that general AI governance doesn't address: delegated authority, tool access, memory persistence, and multi-agent trust boundaries. Real incidents that motivated the framework:</p>
 <ul>
 <li>
-<p><strong>Algorithmic Discrimination in Credit Scoring:</strong> In the early 2000s, several financial institutions deployed automated credit scoring systems that, while not explicitly using race as a feature, used proxy variables (zip code, transaction patterns) that correlated strongly with race, resulting in systematic denial of credit to communities of color. These systems were not auditable—customers could not understand why they were denied credit.</p>
+<p><strong>Threat Intel Geographic Bias:</strong> Most commercial threat intelligence platforms train on telemetry from US and European customers and English-language incident reporting. Detection models built on this data are well-calibrated for heavily-documented APT groups but systematically underperform against less-reported actors targeting organizations in other regions. Teams relying on these models develop geographic blindspots — gaps invisible in aggregate accuracy metrics.</p>
 </li>
 <li>
-<p><strong>Flash Crash (2010):</strong> automated high-frequency trading (HFT) algorithms amplified market volatility, causing a temporary $1 trillion loss in market value in minutes. The algorithms operated with insufficient safeguards and no human oversight, demonstrating the need for resilience principles and human-in-the-loop controls.</p>
+<p><strong>EDR Detection Drift:</strong> EDR vendors have documented significant model drift as adversary tactics evolve. A detection model trained on 2020 ransomware deployment patterns may have near-zero recall against 2023 living-off-the-land techniques that use the same legitimate binaries. Without continuous validation against current TTPs, "high detection rate" claims reflect the threat landscape at training time, not today.</p>
 </li>
 <li>
-<p><strong>Model Drift in Fraud Detection:</strong> Banks deployed fraud models that performed well in 2020 but degraded significantly by 2023 as criminal tactics evolved. Without continuous validation, these systems flagged legitimate transactions as fraudulent, frustrating customers and damaging trust.</p>
+<p><strong>Insider Threat Scoring Disparity:</strong> Analytics platforms for insider threat detection have exhibited systematic scoring disparities between employee populations based on geography or work patterns. Non-US employees, contractors, and employees in certain departments receive elevated risk scores for identical access behaviors — not because they pose more risk, but because the training data reflects historical investigation rates that were themselves biased.</p>
 </li>
 </ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?</p>
@@ -617,26 +617,25 @@ body {
 <li><strong>E. Accountability:</strong> No public accountability; the vendor treated the algorithm as a trade secret</li>
 </ul>
 <p><em>Security application:</em> A threat-scoring system with similar properties might systematically rate threats from certain organizations or geographies as higher-risk without transparent justification, leading to unfair access controls and regulatory exposure.</p>
-<p><strong>Case 2: Amazon's Recruiting AI</strong></p>
-<p>Amazon built a machine learning system to automate resume screening. The system was trained on historical hiring data from the tech industry, where male engineers dominated. The system learned to penalize resumes containing the word "women's" (as in "women's chess club"), systematically downranking female candidates. The system failed on:</p>
+<p><strong>Case 2: Threat Intelligence Training Data Bias</strong></p>
+<p>Commercial threat intelligence platforms aggregate telemetry primarily from large US and European enterprises and English-language security research. The resulting detection models are highly optimized for well-documented APT groups — Russian GRU, Chinese MSS-affiliated actors, North Korean Lazarus — while producing significantly higher false-negative rates against less-reported threat groups. Organizations operating in sectors or geographies underrepresented in training data receive systematically worse protection without being told. The system failed on:</p>
 <ul>
-<li><strong>F. Society:</strong> Proxy discrimination based on gender-correlated features</li>
-<li><strong>D. Reliability:</strong> The system was not validated on diverse datasets before deployment</li>
-<li><strong>E. Accountability:</strong> Amazon discovered the bias only through internal auditing; no external accountability mechanism existed</li>
+<li><strong>F. Society:</strong> Detection coverage is asymmetric — threat actors targeting less-represented geographies and industries are more likely to go undetected</li>
+<li><strong>D. Reliability:</strong> Models were validated against labeled samples from known groups, not against threat actor diversity in the wild</li>
+<li><strong>E. Accountability:</strong> Vendors report aggregate detection rates that mask per-actor and per-geography gaps; customers cannot assess their actual coverage profile</li>
 </ul>
-<p><em>Security application:</em> A security tools authorization system might systematically deprioritize security requests from certain teams or regions based on biased historical patterns.</p>
-<p><em>(Source: Reuters, "Amazon scraps secret AI recruiting tool that showed bias against women," 2018)</em></p>
-<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Many teams assume that "just remove the sensitive variable" (e.g., gender, race) will eliminate bias. But proxy variables—features that correlate with the sensitive attribute—create disparate impact anyway. Fairness requires active measurement and mitigation, not just feature engineering.</p>
+<p><em>Security application:</em> When you train or fine-tune a detection model on your own telemetry, your organization's incident history becomes your threat coverage. If you've historically had more visibility into one class of attacks, your model will be better at finding more of the same — and blind to what you haven't seen before.</p>
+<div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> A common assumption is that "just add more training data" will eliminate detection gaps. But if the additional data comes from the same telemetry sources — the same customer base, the same reporting ecosystem, the same labeled sample pools — the coverage bias persists. Fixing geographic or actor-type blindspots requires actively sourcing data from underrepresented regions and threat categories, not just collecting more of what you already have. Fairness in security tools requires deliberate coverage measurement, not just volume.</p>
 </div>
-<p><strong>Case 3: Healthcare Algorithms and Racial Bias</strong></p>
-<p>In 2019, researchers discovered that a widely-used algorithm for determining patient care allocation in the healthcare system was systematically biased against Black patients. The algorithm used healthcare spending as a proxy for health needs, but because of systemic racism and lower healthcare access in Black communities, the proxy was biased. Black patients with the same health needs received lower care scores than white patients. This algorithm failed on:</p>
+<p><strong>Case 3: ML-Based Detection and the Coverage Gap Problem</strong></p>
+<p>Machine learning detection models for malware and behavioral anomalies are trained on sample submissions from vendor customer bases, which skew toward large North American and European enterprises. Malware families common in attacks against targets in Southeast Asia, Latin America, OT/ICS environments, and the public sector are systematically underrepresented in training data. When defenders in those sectors evaluate detection tools against vendor-published accuracy claims, they are looking at performance metrics that do not reflect their threat environment. The system failed on:</p>
 <ul>
-<li><strong>F. Society:</strong> Proxy discrimination based on race-correlated features (spending patterns)</li>
-<li><strong>D. Reliability:</strong> The algorithm was not validated on subgroups before deployment</li>
-<li><strong>C. Safety:</strong> The algorithm caused direct harm through unfair resource allocation</li>
+<li><strong>D. Reliability:</strong> Detection rates vary significantly by threat actor geography and target sector, but this variance is not surfaced in vendor claims</li>
+<li><strong>F. Society:</strong> Organizations in underrepresented sectors and regions receive lower effective protection from tools they have paid for and trusted</li>
+<li><strong>E. Accountability:</strong> No per-region or per-sector benchmarking standard exists; buyers cannot make informed comparisons</li>
 </ul>
-<p><em>Security application:</em> A security investigation prioritization system might systematically deprioritize incidents affecting less-resourced teams or regions, creating unfair risk exposure.</p>
-<p><em>(Source: Obermeyer et al., "Dissecting racial bias in an algorithm used to manage the health of populations," Science, 2019)</em></p>
+<p><em>(Note: This pattern is documented across EDR and threat intelligence vendor evaluations. No single vendor is named because the pattern is industry-wide, not company-specific.)</em></p>
+<p><em>Security application:</em> Before deploying any ML-based detection tool, evaluate it against your specific threat profile — not the vendor's benchmark suite. If you operate in a sector or geography underrepresented in the vendor's customer base, assume the published accuracy numbers do not apply to you.</p>
 <h4 id="the-business-case-for-aiuc-1-certification">The Business Case for AIUC-1 Certification</h4>
 <p>Organizations implementing AIUC-1 realize tangible benefits beyond those of principle-based frameworks:</p>
 <ul>

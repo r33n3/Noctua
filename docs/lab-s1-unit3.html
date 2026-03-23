@@ -368,7 +368,7 @@ tests:
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Apply IBM AI Fairness 360 to analyze a simulated security threat-scoring dataset for demographic bias. Produce fairness metrics, visualizations, and a bias remediation plan.</p></div>
 
-<div class="callout callout-warn"><p><strong>⚠ The system in this lab should not have deployed without a fairness review.</strong> The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This system was built in the lab and deployed before this analysis was run. In production, the review comes first. Use this week as a rehearsal for what pre-deployment governance looks like — not as retrospective damage assessment.</p></div>
+<div class="callout callout-warn"><p><strong>⚠ The system in this lab should not have deployed without a fairness review.</strong> The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This geography-based disparity mirrors a wider class of bias in security tools: when training data reflects historical investigation rates or incident telemetry from a non-representative population, the model systematically over-flags some groups and under-flags others — creating both liability exposure and operational blindspots. In production, the review comes first. Use this week as a rehearsal for what pre-deployment governance looks like — not as retrospective damage assessment.</p></div>
 
 <div class="quiz-block" id="quiz-w11">
   <h4> Knowledge Check — Week 11</h4>
@@ -454,14 +454,14 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w11-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Write the Bias Analysis Report</div>
-        <div class="step-desc">Document: (1) which metrics showed bias, (2) real-world harm this bias would cause (who is investigated unfairly?), (3) whether reweighing fixed the problem, (4) what AIUC-1 domain this violates (F. Society — fairness and bias mitigation), (5) three organizational changes beyond algorithmic fixes.</div>
+        <div class="step-desc">Document: (1) which metrics showed bias, (2) real-world harm this bias would cause — who gets over-investigated, and what threats go undetected because analyst time is consumed by false positives from biased scoring?, (3) whether reweighing fixed the problem, (4) what AIUC-1 domain this violates (F. Society — fairness and bias mitigation), (5) three organizational changes beyond algorithmic fixes.</div>
       </div></label>
     </div>
   </div>
 </div>
 
 <div class="callout callout-key">
-  <p><strong>Fixing bias requires process changes, not just algorithmic fixes.</strong> Reweighing the scoring model improved aggregate metrics but did not fully resolve the disparity. Why? The training data reflects historical decisions that were themselves biased. Algorithmic fixes adjust the output distribution without addressing the root cause. Organizational fixes required: (1) a fairness review gate before any scoring model deployment, (2) a feature review process that flags demographic proxies, (3) an appeals procedure for affected individuals. The algorithm is not the problem — the process that allowed deployment without review is.</p>
+  <p><strong>Fixing bias requires process changes, not just algorithmic fixes.</strong> Reweighing the scoring model improved aggregate metrics but did not fully resolve the disparity. Why? The training data reflects historical decisions that were themselves biased. Algorithmic fixes adjust the output distribution without addressing the root cause. Organizational fixes required: (1) a fairness review gate before any scoring model deployment, (2) a feature review process that flags demographic proxies, (3) an appeals procedure for affected individuals, (4) a coverage audit process that evaluates model performance across the full range of threat actor geographies and sectors you are responsible for defending — not just against the vendor's benchmark suite. The algorithm is not the problem — the process that allowed deployment without review is.</p>
 </div>
 
 <div class="deliverables">
