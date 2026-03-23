@@ -40,7 +40,7 @@ Within the Rapid Prototyping pillar, you'll apply the **Core Four** from Agentic
 
 > **📖 Further Reading:** See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for deeper discussion. Also see Anthropic's "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" blog post (November 2025, detection: September 2025) and the detailed incident timeline in the [Reading List](resources/READING-LIST.md). This is the GTG-1002 case study we'll use throughout Unit 1.
 
-To measure success in this new landscape, we need metrics that go beyond traditional incident counts. The field has converged on five key metrics, each of which you'll track throughout this course:
+To measure success in this new landscape, we need metrics that go beyond traditional incident counts. This course uses five key metrics as its measurement framework — this is my approach as your instructor, chosen for their practical relevance to agentic security work:
 
 1. **Mean Time to Suppress (MTTS):** The time from when an attack is detected until the blast radius stops expanding. For a ransomware attack, this might be when the initial compromised account is isolated.
 
