@@ -549,7 +549,7 @@ body {
 <li>Example: A DLP system must not disproportionately flag legitimate business practices from certain regions or populations.</li>
 </ol>
 <h4 id="aiuc-1-context">AIUC-1 Context</h4>
-<p>AIUC-1 emerged because enterprises could not reliably assess AI agent security. Traditional frameworks provide governance structure but don't validate that safeguards actually work through testing. Phil Venables (former Google Cloud CISO) described the need as "a SOC 2 for AI agents." AIUC-1 fills this gap with mandatory third-party technical testing. The agent-specific focus matters because autonomous agents create risks that general AI governance doesn't address: delegated authority, tool access, memory persistence, and multi-agent trust boundaries. Real incidents that motivated the framework:</p>
+<p>AIUC-1 emerged because enterprises could not reliably assess AI agent security. Traditional frameworks provide governance structure but don't validate that safeguards actually work through testing. Security leaders have described the gap as needing "a SOC 2 for AI agents" — a certification standard specifically designed for autonomous systems rather than adapted from static software audits. AIUC-1 fills this gap with mandatory third-party technical testing. The agent-specific focus matters because autonomous agents create risks that general AI governance doesn't address: delegated authority, tool access, memory persistence, and multi-agent trust boundaries. Real incidents that motivated the framework:</p>
 <ul>
 <li>
 <p><strong>Algorithmic Discrimination in Credit Scoring:</strong> In the early 2000s, several financial institutions deployed automated credit scoring systems that, while not explicitly using race as a feature, used proxy variables (zip code, transaction patterns) that correlated strongly with race, resulting in systematic denial of credit to communities of color. These systems were not auditable—customers could not understand why they were denied credit.</p>
@@ -625,6 +625,7 @@ body {
 <li><strong>E. Accountability:</strong> Amazon discovered the bias only through internal auditing; no external accountability mechanism existed</li>
 </ul>
 <p><em>Security application:</em> A security tools authorization system might systematically deprioritize security requests from certain teams or regions based on biased historical patterns.</p>
+<p><em>(Source: Reuters, "Amazon scraps secret AI recruiting tool that showed bias against women," 2018)</em></p>
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Many teams assume that "just remove the sensitive variable" (e.g., gender, race) will eliminate bias. But proxy variables—features that correlate with the sensitive attribute—create disparate impact anyway. Fairness requires active measurement and mitigation, not just feature engineering.</p>
 </div>
 <p><strong>Case 3: Healthcare Algorithms and Racial Bias</strong></p>
@@ -635,6 +636,7 @@ body {
 <li><strong>C. Safety:</strong> The algorithm caused direct harm through unfair resource allocation</li>
 </ul>
 <p><em>Security application:</em> A security investigation prioritization system might systematically deprioritize incidents affecting less-resourced teams or regions, creating unfair risk exposure.</p>
+<p><em>(Source: Obermeyer et al., "Dissecting racial bias in an algorithm used to manage the health of populations," Science, 2019)</em></p>
 <h4 id="the-business-case-for-aiuc-1-certification">The Business Case for AIUC-1 Certification</h4>
 <p>Organizations implementing AIUC-1 realize tangible benefits beyond those of principle-based frameworks:</p>
 <ul>
@@ -1420,7 +1422,7 @@ Explain the security reasoning for each layer. Show working Python code.
 <li>The algorithm was not transparent; defendants couldn't understand or appeal the rating</li>
 </ul>
 <p><em>Security application:</em> A threat scoring system with similar properties would unfairly prioritize security incidents from certain demographics, leading to unfair access controls and regulatory exposure.</p>
-<div class="callout callout-reading"><p><strong>Further Reading:</strong> <a href="https://www.propublica.org/article/machine-bias">ProPublica's COMPAS investigation</a> is the seminal work on algorithmic bias in high-stakes decision making.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> <a href="https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing">ProPublica's COMPAS investigation</a> is the seminal work on algorithmic bias in high-stakes decision making.</p>
 </div>
 <p><strong>Amazon's Recruiting AI (2014–2018)</strong></p>
 <p>Amazon built an ML-based system to screen resumes. The system was trained on historical hiring data from the tech industry, where male engineers dominated. Key findings:</p>
@@ -1809,7 +1811,7 @@ Limitation: Slower training, requires synchronization
 <li><strong>Accountability</strong> — Audit trails, decision attribution, governance chain documentation</li>
 <li><strong>Society</strong> — Fairness, bias mitigation, societal impact assessment, transparency</li>
 </ol>
-<p>Each domain maps to specific control objectives that organizations can implement and auditors can verify. Schellman became the first accredited AIUC-1 auditor in early 2026, making certification a practical reality.</p>
+<p>Each domain maps to specific control objectives that organizations can implement and auditors can verify. Third-party audit firms have begun developing AIUC-1 certification capabilities, making independent certification a practical option for organizations seeking to validate their AI agent systems.</p>
 <p><strong>AIUC-1 + NIST AI RMF Alignment:</strong></p>
 <table>
 <thead>
@@ -2265,7 +2267,7 @@ Use these as the foundation for documenting this tool.
 </code></pre></div>
 
 <hr />
-<div class="callout callout-remember"><p><strong>Remember:</strong> Your policy should map to AIUC-1 domains — this is the emerging certification standard for AI agents. Organizations that align policies to AIUC-1 now will be better positioned for formal certification when auditors (like Schellman) come knocking.</p>
+<div class="callout callout-remember"><p><strong>Remember:</strong> Your policy should map to AIUC-1 domains — this is the emerging certification standard for AI agents. Organizations that align policies to AIUC-1 now will be better positioned for formal certification when third-party auditors come knocking.</p>
 </div>
 <h4 id="deliverables_3">Deliverables</h4>
 <ol>
@@ -2316,7 +2318,7 @@ Use these as the foundation for documenting this tool.
 <li><strong>OWASP Top 10 for Agentic Applications:</strong> https://owasp.org/www-project-top-10-for-large-language-model-applications/</li>
 <li><strong>NIST AI Risk Management Framework:</strong> https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf</li>
 <li><strong>EU AI Act:</strong> https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689</li>
-<li><strong>ProPublica — Machine Bias:</strong> https://www.propublica.org/article/machine-bias</li>
+<li><strong>ProPublica — Machine Bias:</strong> https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing</li>
 <li><strong>Buolamwini &amp; Gebru — Gender Shades:</strong> https://www.media.mit.edu/publications/gender-shades-intersectional-accuracy-disparities-in-commercial-gender-classification/</li>
 <li><strong>O'Neil — Weapons of Math Destruction:</strong> https://weaponsofmathdestructionbook.com/</li>
 <li><strong>Mitchell et al. — Model Cards for Model Reporting:</strong> https://arxiv.org/abs/1810.03993</li>
