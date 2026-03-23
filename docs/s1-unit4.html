@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 4: Rapid Prototyping — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -443,7 +27,7 @@ body {
   <a href="lab-s1-unit2.html" class="sub">Lab: Unit 2</a>
   <a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
   <a href="lab-s1-unit3.html" class="sub">Lab: Unit 3</a>
-  <a href="s1-unit4.html" class="sub active">Unit 4: Rapid Prototyping</a>
+  <a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
   <a href="lab-s1-unit4.html" class="sub">Lab: Unit 4</a>
   <div class="nav-section">Semester 2: Advanced</div>
   <a href="semester2.html">Semester 2 Overview</a>
@@ -472,12 +56,14 @@ body {
 <hr />
 <h2 id="week-13-claude-code-deep-dive-worktrees-subagents-and-agent-teams">Week 13: Claude Code Deep Dive — Worktrees, Subagents, and Agent Teams</h2>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Understand the Claude agentic architecture: Claude Code, worktrees, subagents, and agent teams
-- Analyze real-world multi-agent orchestration patterns (hierarchical, peer-to-peer, pipeline)
-- Evaluate trade-offs in multi-agent systems: cost, resilience, and complexity
-- Identify failure modes and recovery strategies in distributed agent systems
-- Apply token budgeting and cost optimization to multi-agent workflows</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Understand the Claude agentic architecture: Claude Code, worktrees, subagents, and agent teams</li>
+<li>Analyze real-world multi-agent orchestration patterns (hierarchical, peer-to-peer, pipeline)</li>
+<li>Evaluate trade-offs in multi-agent systems: cost, resilience, and complexity</li>
+<li>Identify failure modes and recovery strategies in distributed agent systems</li>
+<li>Apply token budgeting and cost optimization to multi-agent workflows</li>
+</ul>
 <p><strong>Lecture Content:</strong></p>
 <p>The Claude platform provides a complete <strong>agentic stack</strong> for building sophisticated AI-powered security tools. Unlike monolithic agents, this stack enables <em>orchestrated multi-agent systems</em> where specialized agents delegate work, collaborate on complex problems, and maintain isolated development environments.</p>
 <p><strong>The Claude Agentic Stack</strong></p>
@@ -539,11 +125,13 @@ body {
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-multi-agent-security-operations">Day 2 — Hands-On Lab: Multi-Agent Security Operations</h3>
-<p><strong>Lab Objectives:</strong>
-- Build a multi-agent incident response system with one orchestrator + three subagents
-- Use worktrees to develop agents in parallel with teammates
-- Implement resilient control flow, tool definitions, and agent communication
-- Measure performance: time, cost, and output quality</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Build a multi-agent incident response system with one orchestrator + three subagents</li>
+<li>Use worktrees to develop agents in parallel with teammates</li>
+<li>Implement resilient control flow, tool definitions, and agent communication</li>
+<li>Measure performance: time, cost, and output quality</li>
+</ul>
 <p><strong>Setup &amp; Architecture</strong></p>
 <p>Your team (2–3 students) will build a <strong>Security Operations Center (SOC) Agent Team</strong>. The scenario: your company receives a suspicious alert—"Unusual outbound traffic detected from finance server 14:32 UTC"—and your agent team must investigate and produce a comprehensive incident report.</p>
 <p><strong>Architecture:</strong></p>
@@ -599,20 +187,26 @@ git worktree add worktrees/reporting-agent -b feature/reporting
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The orchestrator is a <strong>state machine</strong>, not a reasoning engine. Its job is routing: accept an incident → delegate to recon agent → collect results → delegate to analysis agent → delegate to reporting agent → return final report. The orchestrator's system prompt is <em>minimal</em>—it's just instructions for control flow.</p>
 </div>
 <p><strong>Architecture Decision: Orchestrator Responsibilities</strong></p>
-<p>The orchestrator should be responsible for:
-- <strong>State tracking:</strong> What stage of the pipeline are we in?
-- <strong>Data flow:</strong> What output from stage N becomes input to stage N+1?
-- <strong>Error handling:</strong> What if a subagent fails?
-- <strong>Timeouts &amp; retries:</strong> What if a subagent is slow?</p>
-<p>The orchestrator should NOT be responsible for:
-- Doing analysis (that's the analysis agent)
-- Understanding threat intelligence (that's the recon agent)
-- Formatting reports (that's the reporting agent)</p>
+<p>The orchestrator should be responsible for:</p>
+<ul>
+<li><strong>State tracking:</strong> What stage of the pipeline are we in?</li>
+<li><strong>Data flow:</strong> What output from stage N becomes input to stage N+1?</li>
+<li><strong>Error handling:</strong> What if a subagent fails?</li>
+<li><strong>Timeouts &amp; retries:</strong> What if a subagent is slow?</li>
+</ul>
+<p>The orchestrator should NOT be responsible for:</p>
+<ul>
+<li>Doing analysis (that's the analysis agent)</li>
+<li>Understanding threat intelligence (that's the recon agent)</li>
+<li>Formatting reports (that's the reporting agent)</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<p>When designing the orchestrator's system prompt, be minimal:
-- Tell it the sequence of steps (recon → analysis → reporting)
-- Tell it the success criteria (final report must have {incident_id, severity, indicators})
-- Don't try to teach it threat analysis—that's not its job</p>
+<p>When designing the orchestrator's system prompt, be minimal:</p>
+<ul>
+<li>Tell it the sequence of steps (recon → analysis → reporting)</li>
+<li>Tell it the success criteria (final report must have {incident_id, severity, indicators})</li>
+<li>Don't try to teach it threat analysis—that's not its job</li>
+</ul>
 <p><strong>Claude Code Prompt for Building the Orchestrator:</strong></p>
 <div class="codehilite"><pre><span></span><code>I&#39;m building a three-stage incident response orchestrator agent.
 
@@ -656,10 +250,12 @@ Include methods: orchestrate_incident(), invoke_recon_subagent(), invoke_analysi
 2. <strong>Tool definitions:</strong> What tools can it call? (threat_db lookup, MITRE ATT&amp;CK query, etc.)
 3. <strong>Agentic loop:</strong> Repeat until the agent says it's done</p>
 <p><strong>Context Engineering: Tool Definitions</strong></p>
-<p>When defining tools, be precise:
-- <strong>Name:</strong> Short, descriptive (e.g., <code>check_threat_intelligence</code>)
-- <strong>Description:</strong> What does this tool do? When should the agent use it?
-- <strong>Input schema:</strong> What parameters does the tool accept? (JSON Schema format)</p>
+<p>When defining tools, be precise:</p>
+<ul>
+<li><strong>Name:</strong> Short, descriptive (e.g., <code>check_threat_intelligence</code>)</li>
+<li><strong>Description:</strong> What does this tool do? When should the agent use it?</li>
+<li><strong>Input schema:</strong> What parameters does the tool accept? (JSON Schema format)</li>
+</ul>
 <p>Bad tool definition: "Look up stuff"
 Good tool definition: "Check a single IOC (IP, domain, or hash) against the threat intelligence database. Returns reputation (malicious/benign/unknown), last seen date, and attribution."</p>
 <p><strong>Claude Code Prompt for Building the Recon Agent:</strong></p>
@@ -700,12 +296,14 @@ Show me working Python code.
 </code></pre></div>
 
 <p><strong>Review Checklist After Claude Generates Code:</strong></p>
-<p>After Claude generates the recon agent, verify:
-- [ ] The agent loop correctly handles tool calls (tool_use stop reason)
-- [ ] Tool results are sent back to the agent as <code>tool_result</code> content blocks
-- [ ] The final output is structured JSON (not free-form text)
-- [ ] The agent can handle incidents with no IOCs (graceful degradation)
-- [ ] Error handling for failed tool calls (e.g., unknown IOC)</p>
+<p>After Claude generates the recon agent, verify:</p>
+<ul>
+<li>[ ] The agent loop correctly handles tool calls (tool_use stop reason)</li>
+<li>[ ] Tool results are sent back to the agent as <code>tool_result</code> content blocks</li>
+<li>[ ] The final output is structured JSON (not free-form text)</li>
+<li>[ ] The agent can handle incidents with no IOCs (graceful degradation)</li>
+<li>[ ] Error handling for failed tool calls (e.g., unknown IOC)</li>
+</ul>
 <p><strong>Error Handling &amp; Resilience</strong></p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Real systems fail. Networks are unreliable. APIs timeout. Agents hallucinate. Your orchestrator must <strong>survive failures gracefully</strong>. The principle: <em>fail safe, not catastrophically</em>.</p>
 </div>
@@ -742,11 +340,13 @@ Show working Python code with error handling.
 </code></pre></div>
 
 <p><strong>Graceful Degradation Example:</strong></p>
-<p>If the recon agent times out, rather than failing the entire incident response:
-- Orchestrator sends to analysis agent: <code>"Recon timed out. Proceeding with manual analysis baseline."</code>
-- Analysis agent analyzes the raw incident data (no threat intel context)
-- Reporting agent flags: <code>"Limited intelligence due to recon timeout; recommend human review"</code>
-- Incident gets escalated to SOC analyst with a note about what failed</p>
+<p>If the recon agent times out, rather than failing the entire incident response:</p>
+<ul>
+<li>Orchestrator sends to analysis agent: <code>"Recon timed out. Proceeding with manual analysis baseline."</code></li>
+<li>Analysis agent analyzes the raw incident data (no threat intel context)</li>
+<li>Reporting agent flags: <code>"Limited intelligence due to recon timeout; recommend human review"</code></li>
+<li>Incident gets escalated to SOC analyst with a note about what failed</li>
+</ul>
 <p>The incident response continues, but with transparency about limitations.</p>
 <p><strong>Measurement During Lab</strong></p>
 <p>Track these metrics:</p>
@@ -835,28 +435,34 @@ Show working Python code with error handling.
    }</code></p>
 </li>
 </ol>
-<p><strong>Sources &amp; Tools:</strong>
-- <a href="https://docs.anthropic.com/en/docs/build-a-system-with-agents">Claude Agent SDK Documentation</a>
-- <a href="https://docs.anthropic.com/en/api/messages">Anthropic API Reference</a>
-- <a href="https://attack.mitre.org/">MITRE ATT&amp;CK Framework</a>
-- <a href="frameworks.html">Incident Response Best Practices</a></p>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li><a href="https://docs.anthropic.com/en/docs/build-a-system-with-agents">Claude Agent SDK Documentation</a></li>
+<li><a href="https://docs.anthropic.com/en/api/messages">Anthropic API Reference</a></li>
+<li><a href="https://attack.mitre.org/">MITRE ATT&amp;CK Framework</a></li>
+<li><a href="frameworks.html">Incident Response Best Practices</a></li>
+</ul>
 <hr />
 <h2 id="week-14-rapid-prototyping-sprint-i-from-concept-to-demo-in-3-hours">Week 14: Rapid Prototyping Sprint I — From Concept to Demo in 3 Hours</h2>
 <h3 id="day-1-theory-foundations_1">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Understand rapid prototyping methodology: MVP design, timeboxing, and iteration cycles
-- Apply Collaborative Critical Thinking (CCT) to scope security problems quickly
-- Measure security tools using mean-time metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)
-- Identify when a prototype is "done enough" to ship
-- Accelerate delivery by ruthlessly eliminating non-essential features</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Understand rapid prototyping methodology: MVP design, timeboxing, and iteration cycles</li>
+<li>Apply Collaborative Critical Thinking (CCT) to scope security problems quickly</li>
+<li>Measure security tools using mean-time metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)</li>
+<li>Identify when a prototype is "done enough" to ship</li>
+<li>Accelerate delivery by ruthlessly eliminating non-essential features</li>
+</ul>
 <p><strong>Lecture Content:</strong></p>
 <p>Three hours. That's your timeline to go from "we have a problem" to "here's a working solution." This is not a thought experiment—it's a real methodology used in modern incident response, threat hunting teams, and startup security. The key: <strong>ruthless prioritization</strong>.</p>
-<p>In a 110-minute sprint, you have roughly:
-- 15 minutes to understand the problem (CCT)
-- 15 minutes to design the solution
-- 60 minutes to build
-- 15 minutes to test and iterate
-- 10 minutes to prepare a demo</p>
+<p>In a 110-minute sprint, you have roughly:</p>
+<ul>
+<li>15 minutes to understand the problem (CCT)</li>
+<li>15 minutes to design the solution</li>
+<li>60 minutes to build</li>
+<li>15 minutes to test and iterate</li>
+<li>10 minutes to prepare a demo</li>
+</ul>
 <p>This forces clarity. You cannot afford ambiguity. You cannot afford gold-plating. You build exactly what solves the problem—nothing more.</p>
 <p><strong>Case Study: Real-World Fast Prototyping</strong></p>
 <p>Incident response teams don't wait for a polished, feature-complete tool before engaging a breach. The field approach is to deploy the minimal capability that answers the immediate question — "Is this system compromised?" — and iterate from there. Speed saves lives (or millions in remediation costs). The same discipline applies to prototyping: build what answers the question, measure, then harden.</p>
@@ -894,11 +500,13 @@ Show working Python code with error handling.
 <p><strong>MVP Design Thinking</strong></p>
 <p>MVP = Minimum Viable Product. It's the smallest, simplest version that solves the core problem.</p>
 <p>Example: "Build a vulnerability scanner for cloud infrastructure."</p>
-<p>What's the MVP?
-- Query a single cloud provider (AWS, not AWS + Azure + GCP)
-- Check one vulnerability class (unencrypted storage, not all OWASP categories)
-- Output a simple list (IP, finding, severity), not a full report
-- No authentication hardening yet (that's Week 15)</p>
+<p>What's the MVP?</p>
+<ul>
+<li>Query a single cloud provider (AWS, not AWS + Azure + GCP)</li>
+<li>Check one vulnerability class (unencrypted storage, not all OWASP categories)</li>
+<li>Output a simple list (IP, finding, severity), not a full report</li>
+<li>No authentication hardening yet (that's Week 15)</li>
+</ul>
 <p>The MVP is 10x faster to build and gets 80% of the value.</p>
 <p><strong>The Think → Spec → Build → Retro Cycle</strong></p>
 <p>This 3-hour sprint implements the <strong>Think → Spec → Build → Retro</strong> cycle, powered by four Claude Code skills:</p>
@@ -935,12 +543,14 @@ Show working Python code with error handling.
 <span class="ss">(</span><span class="nv">Properly</span> <span class="nv">decoupled</span>, <span class="nv">ready</span> <span class="k">for</span> <span class="nv">ECS</span> <span class="nv">deployment</span><span class="ss">)</span>
 </code></pre></div>
 
-<p><strong>Why the refactor matters:</strong> A prototype might call a database directly from the MCP server. That works for testing. But when you containerize for production, you need:
-- <strong>Authentication at the API boundary</strong> (not in the MCP server)
-- <strong>Rate limiting</strong> on the service (not in the agent)
-- <strong>Audit logging</strong> on the REST endpoints
-- <strong>Multiple consumers</strong> (same API serves dashboard, CLI tools, CI/CD pipelines)
-- <strong>Testability</strong> (hit the API directly without needing an agent)</p>
+<p><strong>Why the refactor matters:</strong> A prototype might call a database directly from the MCP server. That works for testing. But when you containerize for production, you need:</p>
+<ul>
+<li><strong>Authentication at the API boundary</strong> (not in the MCP server)</li>
+<li><strong>Rate limiting</strong> on the service (not in the agent)</li>
+<li><strong>Audit logging</strong> on the REST endpoints</li>
+<li><strong>Multiple consumers</strong> (same API serves dashboard, CLI tools, CI/CD pipelines)</li>
+<li><strong>Testability</strong> (hit the API directly without needing an agent)</li>
+</ul>
 <p>The refactor takes 2–4 hours: extract the business logic into FastAPI endpoints, make the MCP server call those endpoints, and you've transformed a prototype into a production artifact. This is the prototype-to-production acceleration pipeline mentioned in Unit 2.</p>
 <p><strong>The Five Metrics for Security Tools</strong></p>
 <p>When you build a security tool, measure yourself against these:</p>
@@ -1042,11 +652,13 @@ Show working Python code with error handling.
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-rapid-prototyping-sprint">Day 2 — Hands-On Lab: Rapid Prototyping Sprint</h3>
-<p><strong>Lab Objectives:</strong>
-- Execute a complete 110-minute sprint: analysis → design → build → test → demo
-- Deliver a working prototype (functional, not polished)
-- Measure performance using security metrics
-- Document process in a retrospective</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Execute a complete 110-minute sprint: analysis → design → build → test → demo</li>
+<li>Deliver a working prototype (functional, not polished)</li>
+<li>Measure performance using security metrics</li>
+<li>Document process in a retrospective</li>
+</ul>
 <p><strong>Sprint Format:</strong></p>
 <p>Teams of 2–3 students, 110 minutes total. Each sprint is grounded in a real company context — not an abstract tool spec, but a specific organization with constraints, a user, and a measurable problem. Before you write a line of code, you need to understand who you're building for and what success looks like in their environment.</p>
 <div class="callout callout-key"><p><strong>Practitioner framing:</strong> In a real engagement, the sprint starts with a customer conversation, not a tool idea. "Build a threat hunter" is not a spec. "A mid-market retail company is seeing 300+ alerts per day with a 2-person SOC and a 4-hour MTTI — what's the one thing you'd build to move that number?" is a spec. Practice framing problems this way from Week 14 forward.</p></div>
@@ -1166,11 +778,13 @@ Show working Python code with error handling.
 <p><strong>Containerizing Your Prototype: Docker from Day 1</strong></p>
 <p>The most expensive mistake in software delivery is building a tool on your laptop, then discovering at Week 16 that it's "not containerizable" for production. You avoid this by containerizing your prototype immediately.</p>
 <p><strong>Why Containerize Now?</strong></p>
-<p>Containers solve the "it works on my machine" problem and enable the DevSecOps promotion pipeline (Unit 7). A containerized prototype:
-- Runs identically on your laptop, CI/CD pipeline, and production ECS
-- Allows security scanning in the build stage (no surprises at deployment time)
-- Enables reproducible builds (dependencies pinned, outputs deterministic)
-- Demonstrates "production-readiness" to stakeholders</p>
+<p>Containers solve the "it works on my machine" problem and enable the DevSecOps promotion pipeline (Unit 7). A containerized prototype:</p>
+<ul>
+<li>Runs identically on your laptop, CI/CD pipeline, and production ECS</li>
+<li>Allows security scanning in the build stage (no surprises at deployment time)</li>
+<li>Enables reproducible builds (dependencies pinned, outputs deterministic)</li>
+<li>Demonstrates "production-readiness" to stakeholders</li>
+</ul>
 <p><strong>Minimal Dockerfile Pattern for Your Prototype</strong></p>
 <p>Create a <code>Dockerfile</code> in your project root:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
@@ -1207,10 +821,12 @@ Show working Python code with error handling.
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Containerizing now means no "production rewrite." When your prototype gets selected for deployment, you simply add security gates to the build pipeline (container image scanning via Trivy, supply chain validation). The container already exists. You're just hardening the path to ECR and ECS, not refactoring code.</p>
 </div>
 <p><strong>Context Engineering: System Prompt Design</strong></p>
-<p>The system prompt should be:
-- <strong>Specific:</strong> "Detect lateral movement" not "analyze logs"
-- <strong>Behavioral:</strong> "Return JSON with structure {anomalies: [...]}" (tell agent the expected output format)
-- <strong>Constrained:</strong> "Identify only: spike, unusual_access, brute_force" (limit what the agent looks for)</p>
+<p>The system prompt should be:</p>
+<ul>
+<li><strong>Specific:</strong> "Detect lateral movement" not "analyze logs"</li>
+<li><strong>Behavioral:</strong> "Return JSON with structure {anomalies: [...]}" (tell agent the expected output format)</li>
+<li><strong>Constrained:</strong> "Identify only: spike, unusual_access, brute_force" (limit what the agent looks for)</li>
+</ul>
 <p><strong>Claude Code Prompt for Threat Hunter MVP:</strong></p>
 <div class="codehilite"><pre><span></span><code>I&#39;m building a threat hunter tool for detecting lateral movement in cloud IAM logs.
 
@@ -1234,19 +850,23 @@ Show me working Python code with:
 </code></pre></div>
 
 <p><strong>Review Checklist After Implementation:</strong></p>
-<p>After Claude Code generates the tool, test it:
-- [ ] <code>python threat_hunter.py missing.json</code> → Graceful error message
-- [ ] <code>python threat_hunter.py bad_data.json</code> (invalid JSON) → Error handling works
-- [ ] <code>python threat_hunter.py normal_events.json</code> → Completes in &lt; 10 seconds
-- [ ] Output JSON is valid and has required fields
-- [ ] Report file is written to threat_report.json</p>
+<p>After Claude Code generates the tool, test it:</p>
+<ul>
+<li>[ ] <code>python threat_hunter.py missing.json</code> → Graceful error message</li>
+<li>[ ] <code>python threat_hunter.py bad_data.json</code> (invalid JSON) → Error handling works</li>
+<li>[ ] <code>python threat_hunter.py normal_events.json</code> → Completes in &lt; 10 seconds</li>
+<li>[ ] Output JSON is valid and has required fields</li>
+<li>[ ] Report file is written to threat_report.json</li>
+</ul>
 <p><strong>Key Insight:</strong></p>
 <p>This 60-minute implementation produces a working prototype. It won't be perfect. The agent might sometimes return text instead of JSON, or the JSON might be incomplete. <strong>That's fine.</strong> Week 15 is about hardening these edge cases. Right now, focus on getting something that works on the happy path.</p>
-<p><strong>During Implementation:</strong>
-- Use Claude Code to write and test incrementally
-- Test your code as you go: do you have mock data? Run it!
-- If something breaks, fix it quickly or skip it for Week 15
-- Keep a list of deferred items (they become Week 15 tasks)</p>
+<p><strong>During Implementation:</strong></p>
+<ul>
+<li>Use Claude Code to write and test incrementally</li>
+<li>Test your code as you go: do you have mock data? Run it!</li>
+<li>If something breaks, fix it quickly or skip it for Week 15</li>
+<li>Keep a list of deferred items (they become Week 15 tasks)</li>
+</ul>
 <p><strong>Phase 4: Test &amp; Iterate (15 min)</strong></p>
 <ol>
 <li><strong>Happy Path Test</strong> (5 min): Run your tool on normal data. Does it complete?</li>
@@ -1326,20 +946,24 @@ Show me working Python code with:
    }</code></p>
 </li>
 </ol>
-<p><strong>Sources &amp; Tools:</strong>
-- <a href="https://docs.anthropic.com/en/api/messages">Anthropic API Reference</a>
-- <a href="frameworks.html">Rapid Prototyping Guide</a>
-- <a href="https://www.thesprintbook.com/">Sprint: How to Solve Big Problems and Test New Ideas in Just Five Days</a> by Jake Knapp (reference)
-- <a href="reading.html">Cloud IAM Security Patterns</a></p>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li><a href="https://docs.anthropic.com/en/api/messages">Anthropic API Reference</a></li>
+<li><a href="frameworks.html">Rapid Prototyping Guide</a></li>
+<li><a href="https://www.thesprintbook.com/">Sprint: How to Solve Big Problems and Test New Ideas in Just Five Days</a> by Jake Knapp (reference)</li>
+<li><a href="reading.html">Cloud IAM Security Patterns</a></li>
+</ul>
 <hr />
 <h2 id="week-15-rapid-prototyping-sprint-ii-iteration-and-hardening">Week 15: Rapid Prototyping Sprint II — Iteration and Hardening</h2>
 <h3 id="day-1-theory-foundations_2">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Understand production readiness: error handling, edge cases, security, observability
-- Apply security hardening patterns to agentic tools (input validation, least privilege, rate limiting)
-- Conduct peer code review and red-teaming (find your own bugs before users do)
-- Measure and optimize performance and cost
-- Transition from MVP to deployable tool</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Understand production readiness: error handling, edge cases, security, observability</li>
+<li>Apply security hardening patterns to agentic tools (input validation, least privilege, rate limiting)</li>
+<li>Conduct peer code review and red-teaming (find your own bugs before users do)</li>
+<li>Measure and optimize performance and cost</li>
+<li>Transition from MVP to deployable tool</li>
+</ul>
 <p><strong>Lecture Content:</strong></p>
 <p>Your Week 14 prototype is a <em>proof of concept</em>. It works on the happy path. But production systems must handle reality: slow APIs, malformed input, adversaries trying to break it, and users doing unexpected things.</p>
 <p>Week 15 is about <strong>hardening</strong>: taking working code and making it production-grade.</p>
@@ -1395,28 +1019,38 @@ Show working Python code with docstrings explaining each function.
 <li><strong>Transparent degradation:</strong> Log when you're in degraded mode; alert the user</li>
 </ul>
 <p><strong>Security Hardening for Agentic Tools</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Agentic tools introduce new attack surfaces:
-- <strong>Prompt injection:</strong> Attacker manipulates agent via malicious input
-- <strong>Tool abuse:</strong> Agent calls tools it shouldn't have access to
-- <strong>Output exploitation:</strong> Agent generates malicious output (commands, scripts) that bypasses safeguards</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Agentic tools introduce new attack surfaces:</p>
+<ul>
+<li><strong>Prompt injection:</strong> Attacker manipulates agent via malicious input</li>
+<li><strong>Tool abuse:</strong> Agent calls tools it shouldn't have access to</li>
+<li><strong>Output exploitation:</strong> Agent generates malicious output (commands, scripts) that bypasses safeguards</li>
+</ul>
 </div>
 <p>Three security principles: <strong>Input sanitization, Tool access control, Output validation</strong>.</p>
 <p><strong>Security Hardening Patterns:</strong></p>
-<p><strong>1. Prompt Injection Defense:</strong>
-- Separate data from instructions (don't put user input directly in system prompt)
-- Validate input for common injection patterns
-- Use structured formats (JSON, XML) instead of free-form text</p>
-<p><strong>2. Tool Access Control (Least Privilege):</strong>
-- Each agent only gets tools it needs
-- Recon agent has threat_db, mitre_attack tools; no "delete_file" tool
-- Analysis agent has correlate, mapping tools; no external API tool</p>
-<p><strong>3. Rate Limiting:</strong>
-- Limit API calls per user/minute to prevent DoS
-- Log suspicious patterns (100 calls/sec = attack)</p>
-<p><strong>4. Output Validation:</strong>
-- Validate agent output has required structure (is it JSON? Does it have action_type?)
-- Whitelist allowed actions (don't let agent invent new actions)
-- Sanity-check targets (is the IP address valid? Is the filename in an allowed directory?)</p>
+<p><strong>1. Prompt Injection Defense:</strong></p>
+<ul>
+<li>Separate data from instructions (don't put user input directly in system prompt)</li>
+<li>Validate input for common injection patterns</li>
+<li>Use structured formats (JSON, XML) instead of free-form text</li>
+</ul>
+<p><strong>2. Tool Access Control (Least Privilege):</strong></p>
+<ul>
+<li>Each agent only gets tools it needs</li>
+<li>Recon agent has threat_db, mitre_attack tools; no "delete_file" tool</li>
+<li>Analysis agent has correlate, mapping tools; no external API tool</li>
+</ul>
+<p><strong>3. Rate Limiting:</strong></p>
+<ul>
+<li>Limit API calls per user/minute to prevent DoS</li>
+<li>Log suspicious patterns (100 calls/sec = attack)</li>
+</ul>
+<p><strong>4. Output Validation:</strong></p>
+<ul>
+<li>Validate agent output has required structure (is it JSON? Does it have action_type?)</li>
+<li>Whitelist allowed actions (don't let agent invent new actions)</li>
+<li>Sanity-check targets (is the IP address valid? Is the filename in an allowed directory?)</li>
+</ul>
 <p><strong>Claude Code Prompt for Security Hardening:</strong></p>
 <div class="codehilite"><pre><span></span><code>I&#39;m hardening my threat hunter tool against security attacks.
 
@@ -1488,12 +1122,14 @@ Show working Python code.
 
 <hr />
 <h3 id="day-2-hands-on-lab-hardening-sprint">Day 2 — Hands-On Lab: Hardening Sprint</h3>
-<p><strong>Lab Objectives:</strong>
-- Improve Week 14 prototype in five hardening dimensions
-- Conduct peer code review
-- Perform red-teaming (try to break your own tool)
-- Measure improvements in reliability and security
-- Prepare for deployment</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Improve Week 14 prototype in five hardening dimensions</li>
+<li>Conduct peer code review</li>
+<li>Perform red-teaming (try to break your own tool)</li>
+<li>Measure improvements in reliability and security</li>
+<li>Prepare for deployment</li>
+</ul>
 <p><strong>Structure:</strong></p>
 <p>Each team spends 110 minutes hardening their Week 14 prototype. Required improvements:</p>
 <p><strong>1. Error Handling (20 min)</strong></p>
@@ -1604,12 +1240,14 @@ Show working Python code.
 
 <p><strong>4. Peer Code Review (15 min)</strong></p>
 <p>Swap with another team. Review each other's code:</p>
-<p>Review checklist:
-- [ ] Error handling: Are all failure modes covered?
-- [ ] Security: Any input validation gaps? Privilege escalation risks?
-- [ ] Logging: Can we debug failures?
-- [ ] Performance: Any obvious inefficiencies?
-- [ ] Clarity: Is the code understandable?</p>
+<p>Review checklist:</p>
+<ul>
+<li>[ ] Error handling: Are all failure modes covered?</li>
+<li>[ ] Security: Any input validation gaps? Privilege escalation risks?</li>
+<li>[ ] Logging: Can we debug failures?</li>
+<li>[ ] Performance: Any obvious inefficiencies?</li>
+<li>[ ] Clarity: Is the code understandable?</li>
+</ul>
 <p>Document feedback in a shared doc.</p>
 <p><strong>5. Basic Red-Teaming (20 min)</strong></p>
 <p>Try to break your own tool:</p>
@@ -1710,21 +1348,25 @@ Show working Python code.
 <li>Example input/output</li>
 <li>Test cases (if automated tests were added)</li>
 </ol>
-<p><strong>Sources &amp; Tools:</strong>
-- <a href="reading.html">OWASP Top 10 for Agentic Applications</a>
-- <a href="frameworks.html">Secure Coding Practices</a>
-- <a href="https://docs.python.org/3/howto/logging-cookbook.html">Python Logging Best Practices</a>
-- <a href="reading.html">API Security &amp; Rate Limiting</a></p>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li><a href="reading.html">OWASP Top 10 for Agentic Applications</a></li>
+<li><a href="frameworks.html">Secure Coding Practices</a></li>
+<li><a href="https://docs.python.org/3/howto/logging-cookbook.html">Python Logging Best Practices</a></li>
+<li><a href="reading.html">API Security &amp; Rate Limiting</a></li>
+</ul>
 <hr />
 <h2 id="context-library-architecture-prototyping-patterns-unit-4-capstone">Context Library: Architecture &amp; Prototyping Patterns (Unit 4 Capstone)</h2>
 <p>By now, your context library contains prompts, tool patterns, and governance templates. In Unit 4, after building rapid prototypes and hardening them for production, you'll capture the <strong>architecture patterns</strong>—orchestrator designs, error handling approaches, security hardening checklists, and performance optimization strategies. This becomes your reference for rapid prototyping in every future project.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The best security engineers don't memorize solutions. They maintain libraries of proven patterns. By the end of Unit 4, your context library is a substantial reference—not just for YOU, but as a foundation for Semester 2. Every project starts by reviewing your patterns and asking: "What from my library applies here?" This is how you move from learning to mastering.</p>
 </div>
-<p><strong>Why This Matters for Unit 4 Specifically:</strong>
-- <strong>Rapid Prototyping is Iterative:</strong> You've built Week 14 (MVP) and Week 15 (hardened). Both taught you patterns. Capture them before moving to Semester 2.
-- <strong>Architecture Decisions Are Expensive:</strong> When you discover an orchestrator pattern that works, or an error handling approach that's robust, that's worth its weight in gold. Document it.
-- <strong>Production Readiness:</strong> Hardening code teaches you what "production-ready" means. Your checklists become templates for every future project.
-- <strong>Semester 2 Foundation:</strong> In Semester 2, you'll prototype at even higher speeds. Your Unit 4 library becomes the starting point.</p>
+<p><strong>Why This Matters for Unit 4 Specifically:</strong></p>
+<ul>
+<li><strong>Rapid Prototyping is Iterative:</strong> You've built Week 14 (MVP) and Week 15 (hardened). Both taught you patterns. Capture them before moving to Semester 2.</li>
+<li><strong>Architecture Decisions Are Expensive:</strong> When you discover an orchestrator pattern that works, or an error handling approach that's robust, that's worth its weight in gold. Document it.</li>
+<li><strong>Production Readiness:</strong> Hardening code teaches you what "production-ready" means. Your checklists become templates for every future project.</li>
+<li><strong>Semester 2 Foundation:</strong> In Semester 2, you'll prototype at even higher speeds. Your Unit 4 library becomes the starting point.</li>
+</ul>
 <p><strong>Expand Your Context Library: Final Structure</strong></p>
 <p>Add new directories to capture architecture and hardening patterns:</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/context-library/architectures/<span class="o">{</span>orchestrators,multi-agent,error-handling,security-hardening<span class="o">}</span>
@@ -1892,16 +1534,20 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 <p><strong>As part of Unit 4 Deliverables, submit:</strong></p>
 <blockquote>
 <p><strong>📦 Context Library Submission</strong></p>
-<p>Submit your <code>context-library/</code> directory as a companion to your final project. It will be evaluated on:
-- <strong>Breadth:</strong> Does it cover prompts, patterns, governance, and architecture?
-- <strong>Depth:</strong> Are entries detailed enough to be useful? Do they include examples?
-- <strong>Quality of Documentation:</strong> Can someone else understand and reuse your patterns?
-- <strong>Evidence of Iteration:</strong> Have you refined entries based on what you learned?
-- <strong>Organization:</strong> Is the structure logical and easy to navigate?</p>
-<p><strong>Reflection Prompt for Your Library:</strong>
-- Which patterns surprised you? What did you learn about good design?
-- How will you maintain this library in Semester 2?
-- What patterns from Unit 4 are you most excited to reuse?</p>
+<p>Submit your <code>context-library/</code> directory as a companion to your final project. It will be evaluated on:</p>
+<ul>
+<li><strong>Breadth:</strong> Does it cover prompts, patterns, governance, and architecture?</li>
+<li><strong>Depth:</strong> Are entries detailed enough to be useful? Do they include examples?</li>
+<li><strong>Quality of Documentation:</strong> Can someone else understand and reuse your patterns?</li>
+<li><strong>Evidence of Iteration:</strong> Have you refined entries based on what you learned?</li>
+<li><strong>Organization:</strong> Is the structure logical and easy to navigate?</li>
+</ul>
+<p><strong>Reflection Prompt for Your Library:</strong></p>
+<ul>
+<li>Which patterns surprised you? What did you learn about good design?</li>
+<li>How will you maintain this library in Semester 2?</li>
+<li>What patterns from Unit 4 are you most excited to reuse?</li>
+</ul>
 </blockquote>
 <p><strong>The Bigger Picture: Meta-Learning</strong></p>
 <p>Your context library teaches you to <strong>engineer context at a meta-level</strong>—to think about what makes good patterns, what makes good templates, what makes good documentation. This is the true skill: not just building with Claude Code, but building the environment in which Claude Code is most effective.</p>
@@ -1914,11 +1560,13 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 <hr />
 <h2 id="week-16-midyear-project-presentations">Week 16: Midyear Project Presentations</h2>
 <h3 id="day-1-theory-foundations_3">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Synthesize learning across 16 weeks: security, agentic AI, rapid prototyping, ethics
-- Prepare and deliver a compelling technical presentation
-- Apply critical thinking to reflect on your own work
-- Give and receive constructive feedback from peers</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Synthesize learning across 16 weeks: security, agentic AI, rapid prototyping, ethics</li>
+<li>Prepare and deliver a compelling technical presentation</li>
+<li>Apply critical thinking to reflect on your own work</li>
+<li>Give and receive constructive feedback from peers</li>
+</ul>
 <p><strong>Lecture Content:</strong></p>
 <p>Week 16 is not a lecture week. Instead, we dedicate the full week to <strong>presentation preparation and delivery</strong>.</p>
 <p>This is your opportunity to:
@@ -2043,13 +1691,15 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 </li>
 </ol>
 <p><strong>Evaluation Rubric:</strong></p>
-<p>Peers and faculty will evaluate on:
-- <strong>Clarity (20%):</strong> Can we understand the problem and your solution?
-- <strong>Technical Quality (25%):</strong> Is the architecture sound? Well-implemented?
-- <strong>Impact (20%):</strong> Does the tool solve a real problem? Is it useful?
-- <strong>Presentation (15%):</strong> Well-organized slides? Clear demo? Good delivery?
-- <strong>Ethical Thinking (10%):</strong> Did you consider responsible AI and fairness?
-- <strong>Innovation (10%):</strong> Is there something clever or novel?</p>
+<p>Peers and faculty will evaluate on:</p>
+<ul>
+<li><strong>Clarity (20%):</strong> Can we understand the problem and your solution?</li>
+<li><strong>Technical Quality (25%):</strong> Is the architecture sound? Well-implemented?</li>
+<li><strong>Impact (20%):</strong> Does the tool solve a real problem? Is it useful?</li>
+<li><strong>Presentation (15%):</strong> Well-organized slides? Clear demo? Good delivery?</li>
+<li><strong>Ethical Thinking (10%):</strong> Did you consider responsible AI and fairness?</li>
+<li><strong>Innovation (10%):</strong> Is there something clever or novel?</li>
+</ul>
 <hr />
 <p><strong>Deliverables for Week 16:</strong></p>
 <ol>
@@ -2201,43 +1851,6 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
 </main>
 
 <script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
-<script>
 (function() {
   var IDX = [
     // Units
@@ -2328,6 +1941,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

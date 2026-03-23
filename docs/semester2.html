@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semester 2 Syllabus — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -446,7 +30,7 @@ body {
   <a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
   <a href="lab-s1-unit4.html" class="sub">Lab: Unit 4</a>
   <div class="nav-section">Semester 2: Advanced</div>
-  <a href="semester2.html" class="active">Semester 2 Overview</a>
+  <a href="semester2.html">Semester 2 Overview</a>
   <a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
   <a href="lab-s2-unit5.html" class="sub">Lab: Unit 5</a>
   <a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
@@ -536,9 +120,11 @@ body {
 <hr />
 <h2 id="course-structure">Course Structure</h2>
 <h3 id="weekly-format">Weekly Format</h3>
-<p>Each week consists of two class sessions:
-- <strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development
-- <strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</p>
+<p>Each week consists of two class sessions:</p>
+<ul>
+<li><strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development</li>
+<li><strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</li>
+</ul>
 <h3 id="time-commitment">Time Commitment</h3>
 <ul>
 <li>Day 1 (Theory): 2 hours per week</li>
@@ -730,12 +316,14 @@ body {
 </tr>
 </tbody>
 </table>
-<p><strong>Letter Grade Scale:</strong>
-- A: 90-100%
-- B: 80-89%
-- C: 70-79%
-- D: 60-69%
-- F: Below 60%</p>
+<p><strong>Letter Grade Scale:</strong></p>
+<ul>
+<li>A: 90-100%</li>
+<li>B: 80-89%</li>
+<li>C: 70-79%</li>
+<li>D: 60-69%</li>
+<li>F: Below 60%</li>
+</ul>
 <hr />
 <h2 id="course-policies">Course Policies</h2>
 <h3 id="attendance-and-participation">Attendance and Participation</h3>
@@ -841,21 +429,29 @@ body {
 </ul>
 <hr />
 <h2 id="contact-and-support">Contact and Support</h2>
-<p><strong>Instructor Office Hours:</strong>
-- Times and location TBD
-- Drop-in availability or by appointment
-- Available for technical questions, capstone guidance, career advice</p>
-<p><strong>Teaching Assistants:</strong>
-- Available for lab support and technical questions
-- Hours TBD</p>
-<p><strong>Course Communication:</strong>
-- Primary: Course management system (Slack, Teams, or similar)
-- Email: For formal communications and grade disputes
-- GitHub Issues: For technical questions and lab setup issues</p>
-<p><strong>Mental Health and Wellness:</strong>
-- University counseling services: [contact information]
-- Peer support groups: [contact information]
-- If you're struggling, reach out to instructor or advisors</p>
+<p><strong>Instructor Office Hours:</strong></p>
+<ul>
+<li>Times and location TBD</li>
+<li>Drop-in availability or by appointment</li>
+<li>Available for technical questions, capstone guidance, career advice</li>
+</ul>
+<p><strong>Teaching Assistants:</strong></p>
+<ul>
+<li>Available for lab support and technical questions</li>
+<li>Hours TBD</li>
+</ul>
+<p><strong>Course Communication:</strong></p>
+<ul>
+<li>Primary: Course management system (Slack, Teams, or similar)</li>
+<li>Email: For formal communications and grade disputes</li>
+<li>GitHub Issues: For technical questions and lab setup issues</li>
+</ul>
+<p><strong>Mental Health and Wellness:</strong></p>
+<ul>
+<li>University counseling services: [contact information]</li>
+<li>Peer support groups: [contact information]</li>
+<li>If you're struggling, reach out to instructor or advisors</li>
+</ul>
 <hr />
 <h2 id="course-modifications">Course Modifications</h2>
 <p>This syllabus represents the instructor's current plans and intentions for this course. The instructor reserves the right to make reasonable adjustments to topics, readings, assessments, and policies during the semester to enhance student learning, address emergent topics in agentic AI security, or accommodate unforeseen circumstances. Students will be notified of any significant changes.</p>
@@ -866,43 +462,6 @@ body {
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -994,6 +553,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

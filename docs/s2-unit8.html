@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 8: Capstone Projects — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -453,7 +37,7 @@ body {
   <a href="lab-s2-unit6.html" class="sub">Lab: Unit 6</a>
   <a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
   <a href="lab-s2-unit7.html" class="sub">Lab: Unit 7</a>
-  <a href="s2-unit8.html" class="sub active">Unit 8: Capstone</a>
+  <a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
   <a href="lab-s2-unit8.html" class="sub">Lab: Unit 8</a>
   <div class="nav-section">Resources</div>
   <a href="frameworks.html">Frameworks &amp; Protocols</a>
@@ -521,60 +105,78 @@ body {
 </div>
 <h4 id="capstone-project-ideas">Capstone Project Ideas</h4>
 <p>Here are concrete, achievable project ideas suitable for a 4-week capstone:</p>
-<p><strong>Autonomous SOC Analyst</strong>
-- Problem: Security teams are drowning in alerts and unable to investigate manually
-- Solution: Multi-agent system that triages alerts, correlates events, investigates threats, and recommends responses
-- Agents: Alert Ingester, Threat Analyst, Investigation Coordinator, Response Recommender
-- Multi-agent benefit: Agents debate severity levels, cross-validate findings against threat intel, catch false positives before escalation</p>
-<p><strong>Proactive Threat Hunting System</strong>
-- Problem: Compromises that don't trigger alerts go undetected for weeks (dwell time)
-- Solution: Agents that search for indicators of compromise (IOCs) and behavior anomalies continuously
-- Agents: Baseline Builder, Anomaly Detector, IOC Correlator, Threat Intel Researcher
-- Multi-agent benefit: Agents collaborate to build high confidence in detections and reduce false positives</p>
-<p><strong>Automated Compliance Auditor</strong>
-- Problem: Manual compliance checks are tedious, error-prone, and slow to update as policies change
-- Solution: Agents that audit systems against policies, generate compliance reports, and track remediation
-- Agents: Policy Interpreter, System Scanner, Gap Analyzer, Remediation Planner, Evidence Collector
-- Multi-agent benefit: Agents assess compliance holistically, accounting for interdependencies and exceptions</p>
-<p><strong>Intelligent Phishing Defense</strong>
-- Problem: Phishing attacks scale faster than human analysts can respond
-- Solution: Agents that analyze emails, detect phishing patterns, assess target risk, and recommend containment actions
-- Agents: Email Parser, Phishing Detector, Target Analyzer, Response Recommender, Feedback Learner
-- Multi-agent benefit: Multiple detection models vote; agents must reach consensus before blocking to avoid false positives</p>
-<p><strong>Vulnerability Management Orchestrator</strong>
-- Problem: Organizations have thousands of vulnerabilities; manual triage and prioritization is impossible
-- Solution: Agents that assess vulnerability impact, prioritize remediation, plan patches, and track risk
-- Agents: Vulnerability Enricher, Impact Assessor, Prioritizer, Remediation Planner, Risk Tracker
-- Multi-agent benefit: Agents understand complex interdependencies (e.g., a low-CVSS CVE might be critical if it affects a critical asset)</p>
-<p><strong>AI Red Team System</strong>
-- Problem: Organizations need continuous security testing but can't staff a dedicated red team
-- Solution: Agents that plan and execute controlled security tests, simulating red and blue team dynamics
-- Agents: Target Analyzer, Attack Planner, Executor, Blue Team Simulator, Report Generator
-- Multi-agent benefit: Simulates adversarial thinking; agents must justify attacks and defend against mitigations</p>
-<p><strong>MASS Plugin Development</strong>
-- Problem: Security applications need domain-specific checks (e.g., enterprise API security, custom compliance rules)
-- Solution: Build your own specialized security analyzer inspired by MASS's architecture. Clone the open-source repo (https://github.com/r33n3/MASS), study how MASS structures its 12 analyzers and compliance mapping across OWASP, MITRE ATLAS, NIST, and EU AI Act. Then design and implement a custom analyzer for your chosen domain using Claude Code.
-- Agents: Requirement Parser, Vulnerability Scanner, Compliance Checker, Report Generator
-- Multi-agent benefit: Coordinate your analyzer with reference patterns from MASS; ensure consistency and avoid conflicting recommendations
-- AIUC-1 integration: Extend your analyzer to map findings to AIUC-1 domains and score them with AIVSS, creating a complete risk identification → control selection → certification pipeline
-- <strong>Open Source:</strong> MASS is open source because security should be open to anyone. Study it, extend it, contribute back — that's how the security community gets stronger.</p>
-<p><strong>PeaRL Governance Extension</strong>
-- Problem: Organizations deploy agents across dev/pilot/preprod/prod but lack fine-grained governance rules per environment
-- Solution: Build your own governance layer inspired by PeaRL's architecture. Clone the open-source repo (https://github.com/r33n3/PeaRL), study its environment hierarchy, approval workflows, and anomaly detection patterns (AGP-01 through AGP-06), then design and implement governance extensions using Claude Code.
-- Agents: Policy Evaluator, Approval Orchestrator, Anomaly Detector, Compliance Logger
-- Multi-agent benefit: Coordinate governance enforcement across multiple independent agent deployments
-- AIUC-1 integration: Map your governance extension to all six AIUC-1 domains; score agent risks at each promotion gate using AIVSS
-- <strong>Open Source:</strong> PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.</p>
+<p><strong>Autonomous SOC Analyst</strong></p>
+<ul>
+<li>Problem: Security teams are drowning in alerts and unable to investigate manually</li>
+<li>Solution: Multi-agent system that triages alerts, correlates events, investigates threats, and recommends responses</li>
+<li>Agents: Alert Ingester, Threat Analyst, Investigation Coordinator, Response Recommender</li>
+<li>Multi-agent benefit: Agents debate severity levels, cross-validate findings against threat intel, catch false positives before escalation</li>
+</ul>
+<p><strong>Proactive Threat Hunting System</strong></p>
+<ul>
+<li>Problem: Compromises that don't trigger alerts go undetected for weeks (dwell time)</li>
+<li>Solution: Agents that search for indicators of compromise (IOCs) and behavior anomalies continuously</li>
+<li>Agents: Baseline Builder, Anomaly Detector, IOC Correlator, Threat Intel Researcher</li>
+<li>Multi-agent benefit: Agents collaborate to build high confidence in detections and reduce false positives</li>
+</ul>
+<p><strong>Automated Compliance Auditor</strong></p>
+<ul>
+<li>Problem: Manual compliance checks are tedious, error-prone, and slow to update as policies change</li>
+<li>Solution: Agents that audit systems against policies, generate compliance reports, and track remediation</li>
+<li>Agents: Policy Interpreter, System Scanner, Gap Analyzer, Remediation Planner, Evidence Collector</li>
+<li>Multi-agent benefit: Agents assess compliance holistically, accounting for interdependencies and exceptions</li>
+</ul>
+<p><strong>Intelligent Phishing Defense</strong></p>
+<ul>
+<li>Problem: Phishing attacks scale faster than human analysts can respond</li>
+<li>Solution: Agents that analyze emails, detect phishing patterns, assess target risk, and recommend containment actions</li>
+<li>Agents: Email Parser, Phishing Detector, Target Analyzer, Response Recommender, Feedback Learner</li>
+<li>Multi-agent benefit: Multiple detection models vote; agents must reach consensus before blocking to avoid false positives</li>
+</ul>
+<p><strong>Vulnerability Management Orchestrator</strong></p>
+<ul>
+<li>Problem: Organizations have thousands of vulnerabilities; manual triage and prioritization is impossible</li>
+<li>Solution: Agents that assess vulnerability impact, prioritize remediation, plan patches, and track risk</li>
+<li>Agents: Vulnerability Enricher, Impact Assessor, Prioritizer, Remediation Planner, Risk Tracker</li>
+<li>Multi-agent benefit: Agents understand complex interdependencies (e.g., a low-CVSS CVE might be critical if it affects a critical asset)</li>
+</ul>
+<p><strong>AI Red Team System</strong></p>
+<ul>
+<li>Problem: Organizations need continuous security testing but can't staff a dedicated red team</li>
+<li>Solution: Agents that plan and execute controlled security tests, simulating red and blue team dynamics</li>
+<li>Agents: Target Analyzer, Attack Planner, Executor, Blue Team Simulator, Report Generator</li>
+<li>Multi-agent benefit: Simulates adversarial thinking; agents must justify attacks and defend against mitigations</li>
+</ul>
+<p><strong>MASS Plugin Development</strong></p>
+<ul>
+<li>Problem: Security applications need domain-specific checks (e.g., enterprise API security, custom compliance rules)</li>
+<li>Solution: Build your own specialized security analyzer inspired by MASS's architecture. Clone the open-source repo (https://github.com/r33n3/MASS), study how MASS structures its 12 analyzers and compliance mapping across OWASP, MITRE ATLAS, NIST, and EU AI Act. Then design and implement a custom analyzer for your chosen domain using Claude Code.</li>
+<li>Agents: Requirement Parser, Vulnerability Scanner, Compliance Checker, Report Generator</li>
+<li>Multi-agent benefit: Coordinate your analyzer with reference patterns from MASS; ensure consistency and avoid conflicting recommendations</li>
+<li>AIUC-1 integration: Extend your analyzer to map findings to AIUC-1 domains and score them with AIVSS, creating a complete risk identification → control selection → certification pipeline</li>
+<li><strong>Open Source:</strong> MASS is open source because security should be open to anyone. Study it, extend it, contribute back — that's how the security community gets stronger.</li>
+</ul>
+<p><strong>PeaRL Governance Extension</strong></p>
+<ul>
+<li>Problem: Organizations deploy agents across dev/pilot/preprod/prod but lack fine-grained governance rules per environment</li>
+<li>Solution: Build your own governance layer inspired by PeaRL's architecture. Clone the open-source repo (https://github.com/r33n3/PeaRL), study its environment hierarchy, approval workflows, and anomaly detection patterns (AGP-01 through AGP-06), then design and implement governance extensions using Claude Code.</li>
+<li>Agents: Policy Evaluator, Approval Orchestrator, Anomaly Detector, Compliance Logger</li>
+<li>Multi-agent benefit: Coordinate governance enforcement across multiple independent agent deployments</li>
+<li>AIUC-1 integration: Map your governance extension to all six AIUC-1 domains; score agent risks at each promotion gate using AIVSS</li>
+<li><strong>Open Source:</strong> PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.</li>
+</ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?</p>
 <p><strong>Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.</p>
 <p><strong>🔑 Key Concept:</strong> Both PeaRL and MASS are open source because their creator believes <strong>security should always be open to anyone to use</strong>. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?</p>
 </div>
 <h4 id="architecture-review-methodology">Architecture Review Methodology</h4>
 <p>Weeks 13 is structured around a <strong>peer and faculty architecture review</strong>. Here's how it works:</p>
-<p><strong>Timeline:</strong>
-- <strong>Monday–Wednesday:</strong> Teams finalize proposals and architecture documents
-- <strong>Wednesday afternoon:</strong> All teams present (15 min presentation + 15 min feedback per team)
-- <strong>Thursday–Friday:</strong> Teams incorporate feedback and finalize architecture before Week 14</p>
+<p><strong>Timeline:</strong></p>
+<ul>
+<li><strong>Monday–Wednesday:</strong> Teams finalize proposals and architecture documents</li>
+<li><strong>Wednesday afternoon:</strong> All teams present (15 min presentation + 15 min feedback per team)</li>
+<li><strong>Thursday–Friday:</strong> Teams incorporate feedback and finalize architecture before Week 14</li>
+</ul>
 <p><strong>What Reviewers Look For:</strong>
 1. <strong>Problem clarity</strong> — Is the cybersecurity problem well-defined and significant?
 2. <strong>Solution fit</strong> — Is an agentic multi-agent approach the right tool? Or is this overengineered?
@@ -594,10 +196,12 @@ body {
 <li>Finalize team composition and commit to a capstone project</li>
 </ul>
 <h4 id="step-1-form-teams-due-wednesday">Step 1: Form Teams (Due Wednesday)</h4>
-<p>Submit to faculty:
-- Team member names and roles (e.g., lead architect, lead developer, QA/testing lead)
-- Preliminary project idea (1–2 paragraphs)
-- Rationale: Why this problem? Why multi-agent?</p>
+<p>Submit to faculty:</p>
+<ul>
+<li>Team member names and roles (e.g., lead architect, lead developer, QA/testing lead)</li>
+<li>Preliminary project idea (1–2 paragraphs)</li>
+<li>Rationale: Why this problem? Why multi-agent?</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Choose a co-lead architect and lead developer early. Assign one person to champion security/hardening and one to champion observability/ops. These aren't "nice to have" roles—they're critical to your grade.</p>
 </div>
 <h4 id="step-2-write-your-proposal-due-thursday">Step 2: Write Your Proposal (Due Thursday)</h4>
@@ -615,64 +219,82 @@ body {
 <p><strong>Methodology:</strong> Your capstone follows the <strong>Think → Spec → Build → Retro cycle</strong>. Week 13 is the Think + Spec phase (critical analysis, architecture review, and formal specification of your design decisions). Weeks 14-15 are the Build phase (rapid development with Claude Code using <code>/worktree-setup</code> for isolated parallel work). The red team review closes the Retro phase (external validation and hardening). By Week 16, you've completed a full cycle and can reflect on how iteration improved your system.</p>
 </blockquote>
 <p><strong>Structure:</strong></p>
-<p><strong>1. System Overview (200 words)</strong>
-- What does the system do end-to-end?
-- Who are the users/stakeholders?
-- What are the main success criteria?</p>
-<p><strong>2. Multi-Agent Design (600 words)</strong>
-- <strong>Agent 1, 2, 3, ...:</strong> For each agent, describe:
-  - Name and role
-  - Responsibilities and expertise
-  - Tools and data sources
-  - How it communicates with other agents
-- <strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?
-- <strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?</p>
+<p><strong>1. System Overview (200 words)</strong></p>
+<ul>
+<li>What does the system do end-to-end?</li>
+<li>Who are the users/stakeholders?</li>
+<li>What are the main success criteria?</li>
+</ul>
+<p><strong>2. Multi-Agent Design (600 words)</strong></p>
+<ul>
+<li><strong>Agent 1, 2, 3, ...:</strong> For each agent, describe:</li>
+<li>Name and role</li>
+<li>Responsibilities and expertise</li>
+<li>Tools and data sources</li>
+<li>How it communicates with other agents</li>
+<li><strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?</li>
+<li><strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from Agentic Engineering principles means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
 </div>
-<p><strong>3. Collaborative Critical Thinking (CCT) Analysis (400 words)</strong>
-- How does your multi-agent architecture enable deeper thinking than a single agent?
-- <strong>Specific example:</strong> Describe a decision or analysis where agents debate/validate/challenge each other. What gets uncovered?
-- How do agents catch each other's blind spots?
-- Link to security outcomes: "Agent A might miss this threat, but Agent B catches it because of its threat intelligence specialization."</p>
+<p><strong>3. Collaborative Critical Thinking (CCT) Analysis (400 words)</strong></p>
+<ul>
+<li>How does your multi-agent architecture enable deeper thinking than a single agent?</li>
+<li><strong>Specific example:</strong> Describe a decision or analysis where agents debate/validate/challenge each other. What gets uncovered?</li>
+<li>How do agents catch each other's blind spots?</li>
+<li>Link to security outcomes: "Agent A might miss this threat, but Agent B catches it because of its threat intelligence specialization."</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> CCT isn't abstract. Show concrete examples. Don't just say "agents discuss threats." Say: "Agent A (Alert Triager) flags alert severity as LOW. Agent B (Threat Analyst) reviews threat intel and overrides to CRITICAL because this IP just attacked 3 other companies in our industry." That's CCT in action.</p>
 </div>
-<p><strong>4. Security Hardening Plan (400 words)</strong>
-- <strong>Threat model (MITRE ATLAS):</strong> What are the top 5 threats to your system?
-  - Example: prompt injection (ATLAS T0051), supply chain manipulation, model confusion
-- <strong>Mitigation for each:</strong> How will you prevent/detect/respond to this threat?
-- <strong>Input validation strategy:</strong> What user inputs do you accept? How do you validate them?
-- <strong>Output filtering:</strong> What do agents produce? How do you prevent harmful outputs?
-- <strong>Tool permission scoping:</strong> If agents use external tools, what permissions do they have? (Principle of least privilege)
-- <strong>AIUC-1 domain mapping:</strong> For each of the six AIUC-1 domains, identify which controls your system addresses. This is a systematic way to ensure comprehensive security coverage beyond just threat modeling.
-- <strong>AIVSS risk scores:</strong> For your top 5 AI-specific risks, provide AIVSS scores and explain how they informed your mitigation priorities.</p>
-<p><strong>5. Observability Plan (300 words)</strong>
-- <strong>What you'll monitor:</strong> Agent decisions, tool calls, data flows, error rates, latency
-- <strong>Key metrics:</strong> Define 5 metrics (e.g., mean time to detect, false positive rate, agent consensus rate, API cost per request)
-- <strong>Logging strategy:</strong> How will you audit all significant agent actions? (Regulatory/compliance requirement)
-- <strong>Dashboards/alerts:</strong> What dashboards will the ops team use? What triggers an alert?</p>
-<p><strong>6. Deployment Plan (300 words)</strong>
-- <strong>Architecture:</strong> Where will this run? Cloud? On-prem? Hybrid?
-- <strong>Containerization:</strong> Docker? Kubernetes?
-- <strong>CI/CD:</strong> How will you test and deploy updates?
-- <strong>Operations:</strong> Who runs this? What's the runbook for common issues?
-- <strong>Cost:</strong> What's your estimated monthly cost? (API calls, compute, storage)</p>
-<p><strong>7. Ethical Considerations (300 words)</strong>
-- <strong>Stakeholders:</strong> Who is impacted by this system? (Security team, end users, executives, external users?)
-- <strong>Potential harms:</strong> How could this system be misused? (False positives blocking legitimate activity, over-automating decisions without human oversight, bias in threat detection)
-- <strong>Mitigations:</strong> How will you prevent these harms?
-- <strong>Responsible AI:</strong> How does your system align with principles like transparency, fairness, human oversight, and accountability?</p>
-<p><strong>8. Success Criteria (200 words)</strong>
-- <strong>Technical:</strong> What does a working implementation look like? (All agents deployed, communications working, end-to-end workflow running)
-- <strong>Operational:</strong> How will your system perform in production? (Latency SLA, uptime target, cost budget)
-- <strong>Security:</strong> What threats will be mitigated? (Measured by red team findings, threat model coverage)</p>
+<p><strong>4. Security Hardening Plan (400 words)</strong></p>
+<ul>
+<li><strong>Threat model (MITRE ATLAS):</strong> What are the top 5 threats to your system?</li>
+<li>Example: prompt injection (ATLAS T0051), supply chain manipulation, model confusion</li>
+<li><strong>Mitigation for each:</strong> How will you prevent/detect/respond to this threat?</li>
+<li><strong>Input validation strategy:</strong> What user inputs do you accept? How do you validate them?</li>
+<li><strong>Output filtering:</strong> What do agents produce? How do you prevent harmful outputs?</li>
+<li><strong>Tool permission scoping:</strong> If agents use external tools, what permissions do they have? (Principle of least privilege)</li>
+<li><strong>AIUC-1 domain mapping:</strong> For each of the six AIUC-1 domains, identify which controls your system addresses. This is a systematic way to ensure comprehensive security coverage beyond just threat modeling.</li>
+<li><strong>AIVSS risk scores:</strong> For your top 5 AI-specific risks, provide AIVSS scores and explain how they informed your mitigation priorities.</li>
+</ul>
+<p><strong>5. Observability Plan (300 words)</strong></p>
+<ul>
+<li><strong>What you'll monitor:</strong> Agent decisions, tool calls, data flows, error rates, latency</li>
+<li><strong>Key metrics:</strong> Define 5 metrics (e.g., mean time to detect, false positive rate, agent consensus rate, API cost per request)</li>
+<li><strong>Logging strategy:</strong> How will you audit all significant agent actions? (Regulatory/compliance requirement)</li>
+<li><strong>Dashboards/alerts:</strong> What dashboards will the ops team use? What triggers an alert?</li>
+</ul>
+<p><strong>6. Deployment Plan (300 words)</strong></p>
+<ul>
+<li><strong>Architecture:</strong> Where will this run? Cloud? On-prem? Hybrid?</li>
+<li><strong>Containerization:</strong> Docker? Kubernetes?</li>
+<li><strong>CI/CD:</strong> How will you test and deploy updates?</li>
+<li><strong>Operations:</strong> Who runs this? What's the runbook for common issues?</li>
+<li><strong>Cost:</strong> What's your estimated monthly cost? (API calls, compute, storage)</li>
+</ul>
+<p><strong>7. Ethical Considerations (300 words)</strong></p>
+<ul>
+<li><strong>Stakeholders:</strong> Who is impacted by this system? (Security team, end users, executives, external users?)</li>
+<li><strong>Potential harms:</strong> How could this system be misused? (False positives blocking legitimate activity, over-automating decisions without human oversight, bias in threat detection)</li>
+<li><strong>Mitigations:</strong> How will you prevent these harms?</li>
+<li><strong>Responsible AI:</strong> How does your system align with principles like transparency, fairness, human oversight, and accountability?</li>
+</ul>
+<p><strong>8. Success Criteria (200 words)</strong></p>
+<ul>
+<li><strong>Technical:</strong> What does a working implementation look like? (All agents deployed, communications working, end-to-end workflow running)</li>
+<li><strong>Operational:</strong> How will your system perform in production? (Latency SLA, uptime target, cost budget)</li>
+<li><strong>Security:</strong> What threats will be mitigated? (Measured by red team findings, threat model coverage)</li>
+</ul>
 <blockquote>
 <p><strong>Design Thinking:</strong> As you finalize your capstone architecture, reflect on the <strong>mental models</strong> that underpin it. Agentic Engineering principles ask: What assumptions are you making about how users will interact with your system? How will operators understand what went wrong? Are you designing for the cognitive model of your users or against it? Use these questions to stress-test your architecture before building.</p>
 </blockquote>
-<p><strong>9. Timeline and Milestones (100 words)</strong>
-- Week 13: Architecture finalized (after review feedback)
-- Week 14: Core multi-agent system built and end-to-end workflow running
-- Week 15: Hardening, observability, red team review, and mitigations
-- Week 16: Polish, final testing, presentation prep</p>
+<p><strong>9. Timeline and Milestones (100 words)</strong></p>
+<ul>
+<li>Week 13: Architecture finalized (after review feedback)</li>
+<li>Week 14: Core multi-agent system built and end-to-end workflow running</li>
+<li>Week 15: Hardening, observability, red team review, and mitigations</li>
+<li>Week 16: Polish, final testing, presentation prep</li>
+</ul>
 <h4 id="step-4-present-your-architecture-thursday-afternoon">Step 4: Present Your Architecture (Thursday Afternoon)</h4>
 <p><strong>Format:</strong> 15-minute presentation + 15-minute feedback/Q&amp;A</p>
 <p><strong>Presentation structure (aim for ~10 slides):</strong>
@@ -688,17 +310,21 @@ body {
 <p><strong>Pro Tip:</strong> In the Q&amp;A, be honest about unknowns. "We haven't decided on framework yet, but we're between CrewAI and LangGraph because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.</p>
 </div>
 <h4 id="step-5-incorporate-feedback-and-finalize-thursdayfriday">Step 5: Incorporate Feedback and Finalize (Thursday–Friday)</h4>
-<p>After your presentation, you'll receive written feedback from reviewers focusing on:
-- Clarity of problem and solution fit
-- Technical feasibility and scope
-- Architectural soundness
-- Security and ethical thinking
-- Realistic timeline</p>
-<p><strong>Action:</strong> Meet with your team Friday. Read feedback. Refine your architecture document and confirm:
-- All critical/high feedback is addressed
-- Team is confident in the timeline
-- Roles and responsibilities are clear
-- Architecture document is final (you'll reference it all week 14)</p>
+<p>After your presentation, you'll receive written feedback from reviewers focusing on:</p>
+<ul>
+<li>Clarity of problem and solution fit</li>
+<li>Technical feasibility and scope</li>
+<li>Architectural soundness</li>
+<li>Security and ethical thinking</li>
+<li>Realistic timeline</li>
+</ul>
+<p><strong>Action:</strong> Meet with your team Friday. Read feedback. Refine your architecture document and confirm:</p>
+<ul>
+<li>All critical/high feedback is addressed</li>
+<li>Team is confident in the timeline</li>
+<li>Roles and responsibilities are clear</li>
+<li>Architecture document is final (you'll reference it all week 14)</li>
+</ul>
 <h4 id="deliverables-due-friday">Deliverables (Due Friday)</h4>
 <ol>
 <li><strong>Capstone Proposal</strong> (500–1000 words)</li>
@@ -729,11 +355,13 @@ body {
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Standups are a team synchronization tool, not a status report to management. Keep them tight. If a blocker needs deep discussion, take it offline after standup.</p>
 </div>
 <h4 id="mid-week-checkpoint-wednesday-30-minutes">Mid-Week Checkpoint (Wednesday, 30 minutes)</h4>
-<p>Each team demos progress to faculty:
-- Show working code and end-to-end workflow (even if rough)
-- Describe what agents are implemented
-- Highlight what's working and what's in progress
-- Surface risks or scope adjustments</p>
+<p>Each team demos progress to faculty:</p>
+<ul>
+<li>Show working code and end-to-end workflow (even if rough)</li>
+<li>Describe what agents are implemented</li>
+<li>Highlight what's working and what's in progress</li>
+<li>Surface risks or scope adjustments</li>
+</ul>
 <h3 id="day-2-hands-on-development-sprint">Day 2 — Hands-On Development Sprint</h3>
 <h4 id="lab-objectives_1">Lab Objectives</h4>
 <ul>
@@ -808,18 +436,22 @@ body {
 <p>On Wednesday of Week 15, your team will conduct a <strong>peer security review of another team's capstone project</strong>. Simultaneously, another team will red team your system. This is a 2-hour time-boxed exercise designed to find vulnerabilities through adversarial thinking.</p>
 <p><strong>What Red Teamers Will Do:</strong>
 1. Review your architecture and threat model
-2. Attempt 3–5 common attacks:
-   - Prompt injection (e.g., "Ignore your instructions and...")
-   - Goal hijacking (making the agent prioritize attacker goals)
-   - Tool misuse (e.g., calling tools with malicious arguments)
-   - Input manipulation (crafting inputs to trigger bugs)
-   - State corruption (manipulating memory or data stores)
-3. Document findings with evidence and severity ratings</p>
-<p><strong>How This Helps You:</strong>
-- Catch vulnerabilities before deployment
-- Learn what adversarial thinking looks like
-- Demonstrate your hardening and defensive design
-- Build resilience against real-world attacks</p>
+2. Attempt 3–5 common attacks:</p>
+<ul>
+<li>Prompt injection (e.g., "Ignore your instructions and...")</li>
+<li>Goal hijacking (making the agent prioritize attacker goals)</li>
+<li>Tool misuse (e.g., calling tools with malicious arguments)</li>
+<li>Input manipulation (crafting inputs to trigger bugs)</li>
+<li>State corruption (manipulating memory or data stores)</li>
+</ul>
+<p>3. Document findings with evidence and severity ratings</p>
+<p><strong>How This Helps You:</strong></p>
+<ul>
+<li>Catch vulnerabilities before deployment</li>
+<li>Learn what adversarial thinking looks like</li>
+<li>Demonstrate your hardening and defensive design</li>
+<li>Build resilience against real-world attacks</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Red team reviews are constructive, not punitive. The goal is to make your system better. Reviewers are peers, not adversaries. Treat findings as gifts—they show you where to focus hardening effort.</p>
 </div>
 <h4 id="preparing-for-red-team-review">Preparing for Red Team Review</h4>
@@ -880,26 +512,36 @@ body {
 </blockquote>
 <h4 id="hardening-checklist">Hardening Checklist</h4>
 <p>By end of week 15, your system should address:</p>
-<p><strong>Input Validation:</strong>
-- User inputs are validated and sanitized
-- Invalid inputs are rejected gracefully (not passed to agents)
-- Agents are instructed to reject suspicious inputs</p>
-<p><strong>Output Filtering:</strong>
-- Agent outputs are reviewed before being acted on
-- Harmful or nonsensical outputs are caught and logged
-- Users see helpful error messages, not raw LLM errors</p>
-<p><strong>Tool Permission Scoping:</strong>
-- If agents call APIs or system commands, they have minimal necessary permissions
-- Dangerous operations (delete, modify, deploy) require explicit approval
-- Tool calls are logged and auditable</p>
-<p><strong>Monitoring &amp; Alerts:</strong>
-- Every agent decision is logged with timestamp, agent name, input, reasoning, output
-- Key metrics are tracked: agent accuracy, tool success rate, latency, cost
-- Anomalies trigger alerts (e.g., agent calling same tool 100 times, unusual latency spike)</p>
-<p><strong>Error Handling:</strong>
-- Graceful degradation: if one agent fails, system continues or fails safely
-- Users are informed when something goes wrong
-- Errors are logged for troubleshooting</p>
+<p><strong>Input Validation:</strong></p>
+<ul>
+<li>User inputs are validated and sanitized</li>
+<li>Invalid inputs are rejected gracefully (not passed to agents)</li>
+<li>Agents are instructed to reject suspicious inputs</li>
+</ul>
+<p><strong>Output Filtering:</strong></p>
+<ul>
+<li>Agent outputs are reviewed before being acted on</li>
+<li>Harmful or nonsensical outputs are caught and logged</li>
+<li>Users see helpful error messages, not raw LLM errors</li>
+</ul>
+<p><strong>Tool Permission Scoping:</strong></p>
+<ul>
+<li>If agents call APIs or system commands, they have minimal necessary permissions</li>
+<li>Dangerous operations (delete, modify, deploy) require explicit approval</li>
+<li>Tool calls are logged and auditable</li>
+</ul>
+<p><strong>Monitoring &amp; Alerts:</strong></p>
+<ul>
+<li>Every agent decision is logged with timestamp, agent name, input, reasoning, output</li>
+<li>Key metrics are tracked: agent accuracy, tool success rate, latency, cost</li>
+<li>Anomalies trigger alerts (e.g., agent calling same tool 100 times, unusual latency spike)</li>
+</ul>
+<p><strong>Error Handling:</strong></p>
+<ul>
+<li>Graceful degradation: if one agent fails, system continues or fails safely</li>
+<li>Users are informed when something goes wrong</li>
+<li>Errors are logged for troubleshooting</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Don't try to prevent every possible attack. Instead, focus on <strong>defense in depth</strong>: multiple layers of protection (validation, filtering, monitoring, logging). If one layer fails, others catch it. Plus, comprehensive logging means you can detect attacks even if they partially succeed.</p>
 </div>
 <h4 id="red-team-findings-response">Red Team Findings Response</h4>
@@ -1115,24 +757,32 @@ body {
 <h4 id="course-retrospective-friday-afternoon-2-hours">Course Retrospective (Friday Afternoon, 2 Hours)</h4>
 <p>All students and faculty gather to reflect on the course and capstone projects.</p>
 <p><strong>Structure:</strong></p>
-<p><strong>1. Key Takeaways (Each student shares 1–2 minutes)</strong>
-- Most important thing you learned
-- Most challenging aspect you faced
-- How your understanding of agentic AI has evolved</p>
-<p><strong>2. Cohort Themes (Faculty synthesizes)</strong>
-- What patterns emerged across capstone projects?
-- What approaches worked well? What didn't?
-- What open questions remain?</p>
-<p><strong>3. Where Is the Field Heading? (Discussion)</strong>
-- What capabilities are agents gaining in cybersecurity?
-- What are the remaining challenges (technical, ethical, regulatory)?
-- How should organizations deploy agentic security systems responsibly?
-- Guest speaker or industry panel (if available)</p>
-<p><strong>4. Course Feedback</strong>
-- What worked well in CSEC 602?
-- What would you change for next semester?
-- What topics should be added? Removed?
-- How was the capstone experience?</p>
+<p><strong>1. Key Takeaways (Each student shares 1–2 minutes)</strong></p>
+<ul>
+<li>Most important thing you learned</li>
+<li>Most challenging aspect you faced</li>
+<li>How your understanding of agentic AI has evolved</li>
+</ul>
+<p><strong>2. Cohort Themes (Faculty synthesizes)</strong></p>
+<ul>
+<li>What patterns emerged across capstone projects?</li>
+<li>What approaches worked well? What didn't?</li>
+<li>What open questions remain?</li>
+</ul>
+<p><strong>3. Where Is the Field Heading? (Discussion)</strong></p>
+<ul>
+<li>What capabilities are agents gaining in cybersecurity?</li>
+<li>What are the remaining challenges (technical, ethical, regulatory)?</li>
+<li>How should organizations deploy agentic security systems responsibly?</li>
+<li>Guest speaker or industry panel (if available)</li>
+</ul>
+<p><strong>4. Course Feedback</strong></p>
+<ul>
+<li>What worked well in CSEC 602?</li>
+<li>What would you change for next semester?</li>
+<li>What topics should be added? Removed?</li>
+<li>How was the capstone experience?</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Be honest in the retrospective. Your feedback directly shapes future iterations of this course. We're building a curriculum together.</p>
 </div>
 <hr />
@@ -1198,18 +848,24 @@ body {
 <strong>A senior engineer</strong> builds a system, extracts reusable patterns, documents them, and shares them so the whole team gets better.</p>
 <p>Your context library is proof you think like a senior engineer. You're not just solving today's problem; you're building tools for tomorrow's problems.</p>
 <h3 id="your-library-after-graduation">Your Library After Graduation</h3>
-<p><strong>Immediately after CSEC 602:</strong>
-- Your context library is v1.0 (complete, documented, ready to use)
-- You can immediately apply these patterns in your next role
-- Your capstone code + patterns become portfolio work for interviews</p>
-<p><strong>In your first security role:</strong>
-- You import your library and customize it for your organization
-- You share patterns with teammates (they benefit from your semester of learning)
-- You continue refining patterns based on production incidents</p>
-<p><strong>Over your career:</strong>
-- Your library grows with experience (v1.0 → v2.0 → v5.0)
-- Patterns that worked get locked in; patterns that failed get replaced
-- Your library becomes your unique professional toolkit—what makes you uniquely effective</p>
+<p><strong>Immediately after CSEC 602:</strong></p>
+<ul>
+<li>Your context library is v1.0 (complete, documented, ready to use)</li>
+<li>You can immediately apply these patterns in your next role</li>
+<li>Your capstone code + patterns become portfolio work for interviews</li>
+</ul>
+<p><strong>In your first security role:</strong></p>
+<ul>
+<li>You import your library and customize it for your organization</li>
+<li>You share patterns with teammates (they benefit from your semester of learning)</li>
+<li>You continue refining patterns based on production incidents</li>
+</ul>
+<p><strong>Over your career:</strong></p>
+<ul>
+<li>Your library grows with experience (v1.0 → v2.0 → v5.0)</li>
+<li>Patterns that worked get locked in; patterns that failed get replaced</li>
+<li>Your library becomes your unique professional toolkit—what makes you uniquely effective</li>
+</ul>
 <h3 id="template-for-final-submission">Template for Final Submission</h3>
 <p>In your capstone presentation and deliverables, include:</p>
 <p><strong>Slide: "Context Library: My Professional Toolkit"</strong></p>
@@ -1280,33 +936,43 @@ Your context library is not academic. Every pattern was discovered and tested th
 <li><strong>Peer feedback &amp; professionalism:</strong> 5%</li>
 <li><strong>Capstone presentation + reflection:</strong> 10% (separate from project grade)</li>
 </ul>
-<p>Capstone grade components:
-- <strong>Proposal &amp; Architecture (Week 13):</strong> 10%
-- <strong>Sprint I Progress (Week 14):</strong> 10%
-- <strong>Sprint II Progress (Week 15):</strong> 10%
-- <strong>Final code, documentation, and deployability (Week 16):</strong> 30%
-- <strong>Presentation (Week 16):</strong> 10%
-- <strong>Reflection essay (Week 16):</strong> 5%</p>
+<p>Capstone grade components:</p>
+<ul>
+<li><strong>Proposal &amp; Architecture (Week 13):</strong> 10%</li>
+<li><strong>Sprint I Progress (Week 14):</strong> 10%</li>
+<li><strong>Sprint II Progress (Week 15):</strong> 10%</li>
+<li><strong>Final code, documentation, and deployability (Week 16):</strong> 30%</li>
+<li><strong>Presentation (Week 16):</strong> 10%</li>
+<li><strong>Reflection essay (Week 16):</strong> 5%</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> This is a mastery-based grading course. You're evaluated on depth of understanding and quality of work, not just completion. A simple system well-designed and well-documented scores higher than an ambitious system with gaps.</p>
 </div>
 <h4 id="next-steps-after-csec-602">Next Steps After CSEC 602</h4>
 <p>Congratulations! You've completed a graduate-level course in agentic security engineering. Here's how to continue your journey:</p>
-<p><strong>Publish Your Work</strong>
-- Consider publishing your capstone as an open-source project (GitHub, with README and docs)
-- Write a blog post about your approach and learnings
-- Present at a security conference or meetup</p>
-<p><strong>Contribute to the Field</strong>
-- Study the MASS and PeaRL repositories to understand how production AI security tools approach governance and assessment challenges
-- Join the agentic security research community
-- Participate in CTF competitions with agentic AI themes</p>
-<p><strong>Keep Learning</strong>
-- Explore advanced topics: multi-modal reasoning, embodied agents, curriculum learning
-- Follow emerging research in agentic systems, AI safety, and responsible AI
-- Build more capstone projects in related areas (incident response, compliance, threat hunting)</p>
-<p><strong>Professional Growth</strong>
-- List CSEC 602 and your capstone on your resume
-- Use your capstone code as portfolio work in interviews
-- Seek roles in AI security, DevSecOps, or red team automation</p>
+<p><strong>Publish Your Work</strong></p>
+<ul>
+<li>Consider publishing your capstone as an open-source project (GitHub, with README and docs)</li>
+<li>Write a blog post about your approach and learnings</li>
+<li>Present at a security conference or meetup</li>
+</ul>
+<p><strong>Contribute to the Field</strong></p>
+<ul>
+<li>Study the MASS and PeaRL repositories to understand how production AI security tools approach governance and assessment challenges</li>
+<li>Join the agentic security research community</li>
+<li>Participate in CTF competitions with agentic AI themes</li>
+</ul>
+<p><strong>Keep Learning</strong></p>
+<ul>
+<li>Explore advanced topics: multi-modal reasoning, embodied agents, curriculum learning</li>
+<li>Follow emerging research in agentic systems, AI safety, and responsible AI</li>
+<li>Build more capstone projects in related areas (incident response, compliance, threat hunting)</li>
+</ul>
+<p><strong>Professional Growth</strong></p>
+<ul>
+<li>List CSEC 602 and your capstone on your resume</li>
+<li>Use your capstone code as portfolio work in interviews</li>
+<li>Seek roles in AI security, DevSecOps, or red team automation</li>
+</ul>
 <hr />
 <h2 id="key-resources">Key Resources</h2>
 <ul>
@@ -1319,43 +985,6 @@ Your context library is not academic. Every pattern was discovered and tested th
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -1447,6 +1076,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

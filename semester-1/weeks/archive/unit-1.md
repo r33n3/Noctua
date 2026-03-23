@@ -52,7 +52,7 @@ To measure success in this new landscape, we need metrics that go beyond traditi
 
 5. **Adjusted Mean Time to Remediate (aMTTR):** A weighted metric accounting for incident severity. A critical zero-day gets more weight than a failed login attempt, even if both take the same clock time to resolve.
 
-> **💡 Discussion Prompt:** Think about a recent incident (real or hypothetical) at an organization you know. If an AI agent could compress MTTI from 8 hours to 30 minutes, what would the security team do with those 7.5 hours? What new risk emerges if teams treat agent-generated analyses as gospel without CCT-level scrutiny?
+> **💬 Discussion Prompt:** Think about a recent incident (real or hypothetical) at an organization you know. If an AI agent could compress MTTI from 8 hours to 30 minutes, what would the security team do with those 7.5 hours? What new risk emerges if teams treat agent-generated analyses as gospel without CCT-level scrutiny?
 
 The timeline from 2023 to 2026 is instructive. In 2023, Claude and GPT-4 were impressive but single-message systems. By 2024, extended context windows (up to 200K tokens) made it feasible to inject entire incident response runbooks into a single prompt. By 2025, Claude Code emerged—a system where AI could not only write code but execute it, see results, and iterate. And in 2026, we have Claude Agent SDK, which lets you build multi-step autonomous workflows that can run for hours, manage complex state, handle errors gracefully, and integrate deeply with enterprise tools.
 
@@ -372,7 +372,7 @@ The Anthropic GTG-1002 espionage campaign (disclosed November 2025) perfectly il
 
 Strategic connections are also about *dependencies*. If your detection depends on a firewall log, but the attacker compromised the firewall, your detection is broken. If your response depends on a single person (the SOC lead), and that person is compromised, your response fails. Strategic thinking means asking: What are the dependencies in our detection and response, and what happens if each one fails?
 
-> **💡 Discussion Prompt:** Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant? This is strategic thinking—understanding not just what happened, but why the sequence matters.
+> **💬 Discussion Prompt:** Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant? This is strategic thinking—understanding not just what happened, but why the sequence matters.
 
 **Pillar 4: Adaptive Innovation**
 
@@ -1039,7 +1039,7 @@ There's no universal "best" model. It depends on your constraints:
 | **Vulnerability research (generate exploit code)** | Code-Llama or GPT-4 | Code generation quality matters. Specialized for this task. |
 | **Customer-facing chat (threat hunting assistance)** | Sonnet or GPT-4o | Reliable, fast, professional. Consider privacy policies before sending customer data. |
 
-> **💡 Discussion Prompt:** Your organization needs to analyze 10,000 SIEM alerts per day for threats. Budget is limited. Would you use a single frontier model (expensive but very accurate) or multiple cheaper models (Haiku + Mistral) in a ensemble (cheaper, but requires more coordination)? What are the tradeoffs?
+> **💬 Discussion Prompt:** Your organization needs to analyze 10,000 SIEM alerts per day for threats. Budget is limited. Would you use a single frontier model (expensive but very accurate) or multiple cheaper models (Haiku + Mistral) in a ensemble (cheaper, but requires more coordination)? What are the tradeoffs?
 
 **Token Economics in Practice**
 
@@ -1737,7 +1737,7 @@ Now your response is:
 
 You enforce structured outputs by providing a JSON schema to the model and having it comply.
 
-> **💡 Discussion Prompt:** Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?
+> **💬 Discussion Prompt:** Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?
 
 ---
 

@@ -221,7 +221,7 @@ safety check --json > vulnerability-report.json
 
 > **📖 Further Reading:** NIST AI Security and Governance Resource Center: https://airc.nist.gov
 
-> **💡 Discussion Prompt:** Your organization uses TensorFlow 2.8.0. A critical CVE is announced in a transitive dependency (protobuf 3.19.0). Do you upgrade immediately? What are the risks of each choice?
+> **💬 Discussion Prompt:** Your organization uses TensorFlow 2.8.0. A critical CVE is announced in a transitive dependency (protobuf 3.19.0). Do you upgrade immediately? What are the risks of each choice?
 
 ---
 
@@ -940,7 +940,7 @@ flowchart TD
     class E prod
 ```
 
-> **💡 Discussion Prompt:** If an agent has different permissions in dev vs. prod, how do you prevent it from exploiting the dev → prod transition to escalate privileges?
+> **💬 Discussion Prompt:** If an agent has different permissions in dev vs. prod, how do you prevent it from exploiting the dev → prod transition to escalate privileges?
 
 #### Zero Trust and Audit for NHI
 
@@ -2083,7 +2083,7 @@ if result["status"] == "escalated":
     # Queue for human review
 ```
 
-> **💡 Discussion Prompt:** If an agent is in "degraded mode" (using fallback rules), should you notify the user? What if it succeeds anyway—was the notification necessary?
+> **💬 Discussion Prompt:** If an agent is in "degraded mode" (using fallback rules), should you notify the user? What if it succeeds anyway—was the notification necessary?
 
 ---
 

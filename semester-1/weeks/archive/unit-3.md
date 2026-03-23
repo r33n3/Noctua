@@ -73,7 +73,7 @@ The AIUC-1 domains emerged from real incidents in the financial sector where AI 
 
 - **Model Drift in Fraud Detection:** Banks deployed fraud models that performed well in 2020 but degraded significantly by 2023 as criminal tactics evolved. Without continuous validation, these systems flagged legitimate transactions as fraudulent, frustrating customers and damaging trust.
 
-> **💡 Discussion Prompt:** In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?
+> **💬 Discussion Prompt:** In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?
 
 #### Mapping to NIST AI RMF
 
@@ -308,7 +308,7 @@ Agent behavior is not constrained to safe actions. The agent can be tricked, jai
 - **Example:** A customer service agent is instructed to "help the customer." An attacker tricks it into deleting customer data or revealing system information by framing the request as "helping" them recover a lost account.
 - **Mitigation:** Use explicit prompt constraints and behavioral guidelines. Test the agent against adversarial inputs. Implement output filtering to prevent unsafe actions. Use "system prompts" that the agent cannot override.
 
-> **💡 Discussion Prompt:** Why is adding more instructions ("don't do this") often ineffective at constraining agent behavior, while other mitigations work better? What does this tell us about how LLMs process constraints?
+> **💬 Discussion Prompt:** Why is adding more instructions ("don't do this") often ineffective at constraining agent behavior, while other mitigations work better? What does this tell us about how LLMs process constraints?
 
 **3. Insecure Tool Integration**
 
@@ -774,7 +774,7 @@ A financial institution uses an AI model to score the risk of enterprise custome
 
 Result: Unfair risk scoring for small businesses in certain regions. This violates fair lending law.
 
-> **💡 Discussion Prompt:** Why is it hard to detect bias just by looking at the training data? Give an example: A threat detection system is trained on network logs. The logs don't explicitly include "geography" or "organization type," but these attributes can be inferred from IP addresses and domain names. How would you detect this hidden bias?
+> **💬 Discussion Prompt:** Why is it hard to detect bias just by looking at the training data? Give an example: A threat detection system is trained on network logs. The logs don't explicitly include "geography" or "organization type," but these attributes can be inferred from IP addresses and domain names. How would you detect this hidden bias?
 
 #### Fairness Metrics
 
@@ -1250,7 +1250,7 @@ Provide working Python code with clear comments.
 
 The key trade-off: more privacy (lower ε) means more noise, which makes threat scores less precise. You must choose a privacy budget that balances user privacy with operational effectiveness.
 
-> **💡 Discussion Prompt:** Why is differential privacy useful for aggregated statistics (e.g., "threat frequency by region") but more challenging for individual decisions (e.g., "should I grant this user access")? What is the trade-off between privacy and decision quality?
+> **💬 Discussion Prompt:** Why is differential privacy useful for aggregated statistics (e.g., "threat frequency by region") but more challenging for individual decisions (e.g., "should I grant this user access")? What is the trade-off between privacy and decision quality?
 
 **Federated Learning**
 
@@ -1371,7 +1371,7 @@ AIVSS defines **10 core risk categories** that map directly to AIUC-1 domains, c
 3. **Select** controls from AIUC-1 that address the vulnerability
 4. **Verify** implementation through AIUC-1 certification audit
 
-> **💡 Discussion Prompt:** Your organization deploys an autonomous threat detection agent. Using AIUC-1's six domains, what controls would you implement for each? Which domain requires the most attention for a security-focused agent, and why?
+> **💬 Discussion Prompt:** Your organization deploys an autonomous threat detection agent. Using AIUC-1's six domains, what controls would you implement for each? Which domain requires the most attention for a security-focused agent, and why?
 
 **GDPR (General Data Protection Regulation)**
 

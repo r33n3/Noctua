@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 2: Context Engineering — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -439,7 +23,7 @@ body {
   <a href="semester1.html">Semester 1 Overview</a>
   <a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
   <a href="lab-s1-unit1.html" class="sub">Lab: Unit 1</a>
-  <a href="s1-unit2.html" class="sub active">Unit 2: Context Engineering</a>
+  <a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
   <a href="lab-s1-unit2.html" class="sub">Lab: Unit 2</a>
   <a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
   <a href="lab-s1-unit3.html" class="sub">Lab: Unit 3</a>
@@ -624,10 +208,12 @@ body {
 <li>Document the server, validate inputs, and measure performance</li>
 </ul>
 <h4 id="part-1-set-up-your-mcp-development-environment">Part 1: Set Up Your MCP Development Environment</h4>
-<p><strong>Prerequisites:</strong>
-- Python 3.11+ or Node.js 18+
-- Claude Code (or manual Claude Code API setup)
-- A public CVE database API key (NVD API is free; no key required for basic queries)</p>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li>Python 3.11+ or Node.js 18+</li>
+<li>Claude Code (or manual Claude Code API setup)</li>
+<li>A public CVE database API key (NVD API is free; no key required for basic queries)</li>
+</ul>
 <p><strong>Install MCP SDK and dependencies:</strong></p>
 <p>If using Python:</p>
 <div class="codehilite"><pre><span></span><code>pip install mcp
@@ -700,11 +286,13 @@ npm install axios  <span class="c1"># for API requests</span>
 2. Validates tool inputs using schemas (Pydantic models)
 3. Calls external APIs (e.g., NVD for CVE data)
 4. Returns structured responses back to Claude</p>
-<p>A complete MCP server requires:
-- Async I/O (handling multiple concurrent tool calls)
-- Input validation (preventing malformed requests)
-- Error handling (timeouts, API errors, invalid inputs)
-- Tool registration (defining schemas so Claude knows what to call)</p>
+<p>A complete MCP server requires:</p>
+<ul>
+<li>Async I/O (handling multiple concurrent tool calls)</li>
+<li>Input validation (preventing malformed requests)</li>
+<li>Error handling (timeouts, API errors, invalid inputs)</li>
+<li>Tool registration (defining schemas so Claude knows what to call)</li>
+</ul>
 <p>This is non-trivial infrastructure. In production, you'd deploy it. But for learning?</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Building a real MCP server teaches you infrastructure thinking. But the <em>logic</em> of the server (fetch CVE from NVD, parse CVSS, extract affected products) is the same whether you use MCP, FastAPI, or direct API calls.</p>
 </div>
@@ -733,29 +321,37 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 </code></pre></div>
 
 <p><strong>After Claude explains the architecture:</strong></p>
-<p>Ask:
-- "Show me the validation schema (Pydantic model) for a CVE query"
-- "Write the async function that calls NVD and parses the response"
-- "How would you implement error handling for timeouts?"
-- "What JSON schema would Claude see so it knows what parameters to pass?"</p>
-<p><strong>Why Claude Code instead of deploying a real MCP server:</strong>
-- Learn the <em>logic</em> without infrastructure overhead
-- See the entire flow (validation → API call → parsing → response) in minutes
-- No deployment, no async debugging, no SDK dependencies
-- Easy to iterate: "What if we also needed to fetch exploit PoCs?"
-- Quick path to understanding before building production code</p>
+<p>Ask:</p>
+<ul>
+<li>"Show me the validation schema (Pydantic model) for a CVE query"</li>
+<li>"Write the async function that calls NVD and parses the response"</li>
+<li>"How would you implement error handling for timeouts?"</li>
+<li>"What JSON schema would Claude see so it knows what parameters to pass?"</li>
+</ul>
+<p><strong>Why Claude Code instead of deploying a real MCP server:</strong></p>
+<ul>
+<li>Learn the <em>logic</em> without infrastructure overhead</li>
+<li>See the entire flow (validation → API call → parsing → response) in minutes</li>
+<li>No deployment, no async debugging, no SDK dependencies</li>
+<li>Easy to iterate: "What if we also needed to fetch exploit PoCs?"</li>
+<li>Quick path to understanding before building production code</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Once you understand the logic in Claude Code, building the actual Python/MCP server is straightforward. You've already designed it. You're just translating your design into infrastructure code.</p>
 </div>
 <p><strong>When to Build a Real MCP Server:</strong></p>
-<p>Build an actual MCP server when:
-- You have repeated tool calls (worth the infrastructure cost)
-- You need persistent state (caching, rate limiting)
-- You're deploying to production (security, reliability, monitoring)
-- You're integrating with proprietary APIs (credential management)</p>
-<p>Don't build one when:
-- You're learning (use Claude Code)
-- Tool calls are infrequent (overhead not justified)
-- You're prototyping (iteration is slow with infrastructure)</p>
+<p>Build an actual MCP server when:</p>
+<ul>
+<li>You have repeated tool calls (worth the infrastructure cost)</li>
+<li>You need persistent state (caching, rate limiting)</li>
+<li>You're deploying to production (security, reliability, monitoring)</li>
+<li>You're integrating with proprietary APIs (credential management)</li>
+</ul>
+<p>Don't build one when:</p>
+<ul>
+<li>You're learning (use Claude Code)</li>
+<li>Tool calls are infrequent (overhead not justified)</li>
+<li>You're prototyping (iteration is slow with infrastructure)</li>
+</ul>
 <div class="callout callout-remember"><p><strong>Remember:</strong> The <code>register_tool()</code> call defines the tool's interface. The agent will read this schema to understand what parameters to send and what to expect back. Always include clear descriptions and constraints in your schemas.</p>
 </div>
 <h4 id="part-4-connect-to-claude-code">Part 4: Connect to Claude Code</h4>
@@ -787,10 +383,12 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 3. Call <code>query_cve</code> with <code>{"cve_id": "CVE-2023-44487"}</code>
 4. Receive the JSON response
 5. Summarize the findings in natural language</p>
-<p>Try these follow-up queries:
-- "Are there any critical vulnerabilities in Apache Log4j released in 2023?"
-- "Find the CVSS score for CVE-2021-44228 and tell me the affected products."
-- "What recent vulnerabilities affect OpenSSL?"</p>
+<p>Try these follow-up queries:</p>
+<ul>
+<li>"Are there any critical vulnerabilities in Apache Log4j released in 2023?"</li>
+<li>"Find the CVSS score for CVE-2021-44228 and tell me the affected products."</li>
+<li>"What recent vulnerabilities affect OpenSSL?"</li>
+</ul>
 <p>Measure the response time and accuracy. Note whether the agent correctly parses CVE IDs and filters by date or severity.</p>
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> The NVD API has rate limits (~60 requests per minute for unauthenticated access). If you hit rate limits, implement exponential backoff or cache responses locally. Your MCP server should return a clear error message rather than hanging.</p>
 </div>
@@ -868,23 +466,29 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 <p>Modern secure tool design rests on five interdependent principles:</p>
 <p><strong>1. Single Responsibility</strong> — Each tool does exactly one thing. A "security operations" tool that can query logs, enrich alerts, check IP reputation, and remediate threats is unmaintainable and difficult to audit. Instead, build four separate tools, each with a narrow scope. This makes it easier to test, audit, and revoke access to specific functionality.</p>
 <p><strong>2. Clear Schemas</strong> — Input and output must be unambiguous and machine-readable. A tool that accepts "anything goes" parameters (e.g., a bare string like <code>log_query="SELECT * FROM events WHERE..."``) is vulnerable to injection. Instead, define strict JSON schemas with parameterized inputs. A log query tool should have discrete parameters:</code>source_type<code>,</code>time_range<code>,</code>event_type<code>,</code>limit`, not a free-form query field.</p>
-<p><strong>3. Error Handling</strong> — Tools must fail gracefully. When something goes wrong, provide:
-   - A clear error code (not a stack trace)
-   - Context about what failed and why
-   - Remediation steps if applicable
-   - No sensitive information in error messages (don't leak internal paths or credentials)</p>
-<p><strong>4. Security Boundaries</strong> — Enforce least privilege at every level:
-   - <strong>Input validation:</strong> Reject invalid requests before processing
-   - <strong>Rate limiting:</strong> Prevent agents from hammering a tool
-   - <strong>Data access scoping:</strong> Limit which records a tool can query
-   - <strong>Temporal scoping:</strong> Some sensitive tools should only be available during business hours
-   - <strong>Audit logging:</strong> Every call is logged with timestamp, requester, parameters, and result</p>
-<p><strong>5. Observability</strong> — Every tool invocation must be observable and auditable. This is non-negotiable for compliance. Log:
-   - Who called the tool (agent identity)
-   - What parameters were passed
-   - How long it took
-   - What the response was
-   - Any errors or exceptions</p>
+<p><strong>3. Error Handling</strong> — Tools must fail gracefully. When something goes wrong, provide:</p>
+<ul>
+<li>A clear error code (not a stack trace)</li>
+<li>Context about what failed and why</li>
+<li>Remediation steps if applicable</li>
+<li>No sensitive information in error messages (don't leak internal paths or credentials)</li>
+</ul>
+<p><strong>4. Security Boundaries</strong> — Enforce least privilege at every level:</p>
+<ul>
+<li><strong>Input validation:</strong> Reject invalid requests before processing</li>
+<li><strong>Rate limiting:</strong> Prevent agents from hammering a tool</li>
+<li><strong>Data access scoping:</strong> Limit which records a tool can query</li>
+<li><strong>Temporal scoping:</strong> Some sensitive tools should only be available during business hours</li>
+<li><strong>Audit logging:</strong> Every call is logged with timestamp, requester, parameters, and result</li>
+</ul>
+<p><strong>5. Observability</strong> — Every tool invocation must be observable and auditable. This is non-negotiable for compliance. Log:</p>
+<ul>
+<li>Who called the tool (agent identity)</li>
+<li>What parameters were passed</li>
+<li>How long it took</li>
+<li>What the response was</li>
+<li>Any errors or exceptions</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. This is the <strong>Pit of Success</strong> from Agentic Engineering practice—design your tools so that the right behavior (least privilege, validated input, audit-logged operations) is not just safe but <em>the easiest path for the agent to follow</em>.</p>
 <p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.</p>
 </div>
@@ -1004,11 +608,13 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
     <span class="k">return</span> <span class="n">execute_parameterized_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 </code></pre></div>
 
-<p>This approach:
-- Whitelists allowed values for categorical parameters
-- Validates ranges for numeric parameters
-- Uses parameterized queries (never string interpolation)
-- Provides clear error messages</p>
+<p>This approach:</p>
+<ul>
+<li>Whitelists allowed values for categorical parameters</li>
+<li>Validates ranges for numeric parameters</li>
+<li>Uses parameterized queries (never string interpolation)</li>
+<li>Provides clear error messages</li>
+</ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?</p>
 </div>
 <h4 id="least-privilege-for-agent-tool-access">Least Privilege for Agent Tool Access</h4>
@@ -1054,10 +660,12 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </div>
 <h4 id="tool-versioning-and-deprecation">Tool Versioning and Deprecation</h4>
 <p>Security tools evolve. Your IP reputation API might improve its accuracy, your log query tool might add new filter options. How do you update tools without breaking agents that depend on them?</p>
-<p><strong>Semantic Versioning for Tools:</strong>
-- <strong>MAJOR version</strong> — Incompatible changes (removing a parameter, changing output type)
-- <strong>MINOR version</strong> — Backward-compatible additions (new optional parameter)
-- <strong>PATCH version</strong> — Bug fixes (no behavior changes)</p>
+<p><strong>Semantic Versioning for Tools:</strong></p>
+<ul>
+<li><strong>MAJOR version</strong> — Incompatible changes (removing a parameter, changing output type)</li>
+<li><strong>MINOR version</strong> — Backward-compatible additions (new optional parameter)</li>
+<li><strong>PATCH version</strong> — Bug fixes (no behavior changes)</li>
+</ul>
 <p><strong>Deprecation Strategy:</strong></p>
 <ol>
 <li><strong>Release new MINOR version</strong> with new parameter, keeping old behavior</li>
@@ -1254,11 +862,13 @@ Show me: What would the agent ask at each step? What outputs would it receive? H
 </code></pre></div>
 
 <p><strong>After Claude walks through the logic:</strong></p>
-<p>Ask:
-- "What validation would you add to prevent malicious inputs to query_logs?"
-- "How would you handle if check_ip_reputation times out?"
-- "What if the tools return conflicting signals (logs say suspicious, IP reputation says clean)?"
-- "How would an agent decide whether to escalate to human SOC?"</p>
+<p>Ask:</p>
+<ul>
+<li>"What validation would you add to prevent malicious inputs to query_logs?"</li>
+<li>"How would you handle if check_ip_reputation times out?"</li>
+<li>"What if the tools return conflicting signals (logs say suspicious, IP reputation says clean)?"</li>
+<li>"How would an agent decide whether to escalate to human SOC?"</li>
+</ul>
 <p><strong>Key Takeaway:</strong></p>
 <p>MCP servers are infrastructure. The <em>pattern</em> of decomposing complex analysis into modular, composable tools is universal. You can learn that pattern in Claude Code before investing in building real infrastructure.</p>
 <p>When you're ready to build a production MCP server, you'll:
@@ -1878,11 +1488,13 @@ would you need? What would the attacker do next after this reconnaissance phase?
 <span class="p">}</span>
 </code></pre></div>
 
-<p>This approach:
-- Lets Claude focus on one task per call (better quality)
-- Allows intermediate validation (if classification is nonsense, stop)
-- Enables reuse (can use the classification in multiple downstream analyses)
-- Facilitates debugging (each step has clear input/output)</p>
+<p>This approach:</p>
+<ul>
+<li>Lets Claude focus on one task per call (better quality)</li>
+<li>Allows intermediate validation (if classification is nonsense, stop)</li>
+<li>Enables reuse (can use the classification in multiple downstream analyses)</li>
+<li>Facilitates debugging (each step has clear input/output)</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Claude is better at complex reasoning when you break tasks into steps with clear schemas at each step. Instead of "analyze this alert and give me everything," try "first classify the alert type," then "then determine severity," then "finally recommend actions."</p>
 </div>
 <div class="callout callout-key"><p><strong>Pattern: Claude Calling Claude.</strong> When your MCP tool needs to analyze, classify, or generate structured content, it can call the Claude API internally. This creates a composition: one Claude session orchestrates (the user-facing agent), another Claude call specializes (the tool-level reasoning task).</p>
@@ -1996,11 +1608,13 @@ would you need? What would the attacker do next after this reconnaissance phase?
 </ul>
 <h4 id="part-1-set-up-report-generation-infrastructure">Part 1: Set Up Report Generation Infrastructure</h4>
 <p><strong>Report Generation Architecture</strong></p>
-<p>The problem: Manually writing security reports is:
-- Time-consuming (2-4 hours per incident)
-- Inconsistent (different analysts write differently)
-- Hard to standardize (no fixed structure)
-- Error-prone (human typing mistakes)</p>
+<p>The problem: Manually writing security reports is:</p>
+<ul>
+<li>Time-consuming (2-4 hours per incident)</li>
+<li>Inconsistent (different analysts write differently)</li>
+<li>Hard to standardize (no fixed structure)</li>
+<li>Error-prone (human typing mistakes)</li>
+</ul>
 <p>The solution: Use Claude to generate reports from raw incident data.</p>
 <p>But "generate reports" is vague. You need:</p>
 <ol>
@@ -2064,11 +1678,13 @@ Include: Which sections are high-confidence (well-supported by evidence)? Which 
 </code></pre></div>
 
 <p><strong>After Claude generates a report:</strong></p>
-<p>Ask:
-- "What data would you need to increase confidence in the root cause?"
-- "For the affected_users count, how did you determine it?"
-- "The recommended_actions—are they ordered by urgency or impact?"
-- "If I disagree with the severity rating, what evidence would change your mind?"</p>
+<p>Ask:</p>
+<ul>
+<li>"What data would you need to increase confidence in the root cause?"</li>
+<li>"For the affected_users count, how did you determine it?"</li>
+<li>"The recommended_actions—are they ordered by urgency or impact?"</li>
+<li>"If I disagree with the severity rating, what evidence would change your mind?"</li>
+</ul>
 <p><strong>Iterative Refinement:</strong></p>
 <p>The power of Claude Code: You can refine the report in real-time.</p>
 <ul>
@@ -2078,24 +1694,30 @@ Include: Which sections are high-confidence (well-supported by evidence)? Which 
 <li>"Add compliance implications: How does this affect SOC 2 certification?"</li>
 </ul>
 <p><strong>Why Claude Code instead of building Python infrastructure:</strong></p>
-<p>With Python (structured outputs, JSON schemas, report generation), you need to:
-- Set up dependencies
-- Define Pydantic models
-- Handle parsing errors
-- Test edge cases
-- Debug mismatches between schema and actual Claude output</p>
-<p>With Claude Code, you:
-- Iterate on structure immediately
-- See prose quality in real-time
-- Test different formats (markdown, JSON, HTML) in seconds
-- Refine content without redeploying</p>
+<p>With Python (structured outputs, JSON schemas, report generation), you need to:</p>
+<ul>
+<li>Set up dependencies</li>
+<li>Define Pydantic models</li>
+<li>Handle parsing errors</li>
+<li>Test edge cases</li>
+<li>Debug mismatches between schema and actual Claude output</li>
+</ul>
+<p>With Claude Code, you:</p>
+<ul>
+<li>Iterate on structure immediately</li>
+<li>See prose quality in real-time</li>
+<li>Test different formats (markdown, JSON, HTML) in seconds</li>
+<li>Refine content without redeploying</li>
+</ul>
 <p><strong>When to Graduate to Python:</strong></p>
-<p>Once you've iterated on the report design in Claude Code and you're happy with the structure, <em>then</em> you build Python infrastructure to:
-- Integrate with your incident management system
-- Automatically generate reports for every incident
-- Store reports in a database
-- Distribute via email/Slack
-- Track metrics (time to report, quality scores)</p>
+<p>Once you've iterated on the report design in Claude Code and you're happy with the structure, <em>then</em> you build Python infrastructure to:</p>
+<ul>
+<li>Integrate with your incident management system</li>
+<li>Automatically generate reports for every incident</li>
+<li>Store reports in a database</li>
+<li>Distribute via email/Slack</li>
+<li>Track metrics (time to report, quality scores)</li>
+</ul>
 <p>But the "what should the report contain and how should it be structured?" question—answer that first in Claude Code.</p>
 <div class="callout callout-remember"><p><strong>Remember:</strong> Each Claude call should be focused and have clear output expectations. By chaining calls with different schemas, you enable validation at each step and can retry individual steps if they fail validation.</p>
 </div>
@@ -2118,11 +1740,13 @@ Include: Which sections are high-confidence (well-supported by evidence)? Which 
 3. <strong>Ticketing:</strong> Create a Jira/ServiceNow ticket
 4. <strong>Database:</strong> Store for compliance audit trail
 5. <strong>Slack:</strong> Notify the SOC team</p>
-<p>Each integration has different requirements:
-- SIEM needs structured fields (incident ID, severity, affected systems)
-- Email needs formatted prose (markdown, HTML)
-- Ticketing needs title + description + priority
-- Compliance database needs immutable record with signatures</p>
+<p>Each integration has different requirements:</p>
+<ul>
+<li>SIEM needs structured fields (incident ID, severity, affected systems)</li>
+<li>Email needs formatted prose (markdown, HTML)</li>
+<li>Ticketing needs title + description + priority</li>
+<li>Compliance database needs immutable record with signatures</li>
+</ul>
 <p>Rather than building connectors now, design them first.</p>
 <p><strong>Claude Code Workflow: Integration Design</strong></p>
 <p>Claude Code Prompt:</p>
@@ -2168,24 +1792,30 @@ For each integration, show me: What data goes in? What format? What could go wro
 </code></pre></div>
 
 <p><strong>Why design before building:</strong></p>
-<p>Integrations have operational impact:
-- Email to wrong person = data exposure
-- Jira ticket with wrong priority = misaligned response
-- SIEM ingestion without normalization = useless alerts
-- Compliance record without approval = audit failure</p>
+<p>Integrations have operational impact:</p>
+<ul>
+<li>Email to wrong person = data exposure</li>
+<li>Jira ticket with wrong priority = misaligned response</li>
+<li>SIEM ingestion without normalization = useless alerts</li>
+<li>Compliance record without approval = audit failure</li>
+</ul>
 <p>Design in Claude Code first. Test the logic. <em>Then</em> build the Python/API connectors.</p>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Most "integration failures" aren't code bugs—they're design mistakes. Wrong field mapped, wrong priority assigned, wrong person notified. Claude Code helps you catch these before code.</p>
 </div>
 <p><strong>When to Build Integration Code:</strong></p>
-<p>Build actual integrations when:
-- You have a stable incident response process
-- You know your SIEM/ticketing system APIs
-- You have credentials/authentication set up
-- You want to automate (every incident triggers exports)</p>
-<p>Don't build when:
-- You're still figuring out what data to capture
-- Your incident response process is changing
-- You're learning integrations (simulate them first)</p>
+<p>Build actual integrations when:</p>
+<ul>
+<li>You have a stable incident response process</li>
+<li>You know your SIEM/ticketing system APIs</li>
+<li>You have credentials/authentication set up</li>
+<li>You want to automate (every incident triggers exports)</li>
+</ul>
+<p>Don't build when:</p>
+<ul>
+<li>You're still figuring out what data to capture</li>
+<li>Your incident response process is changing</li>
+<li>You're learning integrations (simulate them first)</li>
+</ul>
 <h4 id="deliverables_2">Deliverables</h4>
 <ol>
 <li><strong>Report Generator Code</strong></li>
@@ -2272,11 +1902,13 @@ For each integration, show me: What data goes in? What format? What could go wro
 </div>
 <h4 id="context-engineering-the-capability-capacity-model">Context Engineering &amp; the Capability Capacity Model</h4>
 <p>Beyond RAG, strategic context management is fundamental to agent reliability. The <strong>Capability Capacity Model</strong> from Agentic Engineering practice establishes that when an agent's context fills beyond 40%, performance degradation becomes measurable. This is not just a theoretical concern—it's a practical design constraint. An agent given 200K tokens of context, plus detailed tool definitions, plus system prompts, plus error examples, can lose accuracy precisely when you need it most: during high-stakes investigations.</p>
-<p>Context engineering means:
-- <strong>Systematically structuring</strong> context in predictable formats (the ACE Playbook pattern)
-- <strong>Measuring context fill</strong> at each stage and staying below the 40% threshold
-- <strong>Prioritizing</strong> which context to include based on task relevance
-- <strong>Deferring</strong> auxiliary information to tool calls or retrieval systems rather than embedding it in every prompt</p>
+<p>Context engineering means:</p>
+<ul>
+<li><strong>Systematically structuring</strong> context in predictable formats (the ACE Playbook pattern)</li>
+<li><strong>Measuring context fill</strong> at each stage and staying below the 40% threshold</li>
+<li><strong>Prioritizing</strong> which context to include based on task relevance</li>
+<li><strong>Deferring</strong> auxiliary information to tool calls or retrieval systems rather than embedding it in every prompt</li>
+</ul>
 <p>RAG is one mechanism; others include MCP tool servers, structured examples, and dynamic context selection.</p>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on context engineering for the complete Capability Capacity Model and ACE Playbook format for organizing context systematically.</p>
 </div>
@@ -2309,11 +1941,13 @@ For each integration, show me: What data goes in? What format? What could go wro
 
 <p><strong>3. Embedding</strong></p>
 <p>Each chunk is converted into a high-dimensional vector (embedding) using an embedding model. Similar chunks have similar vectors. This enables semantic search: "What's our password policy?" matches documents about authentication even if they don't use the exact word "password."</p>
-<p>Common embedding models for security:
-- <strong>Anthropic's Claude Embeddings</strong> — Optimized for longer documents (8K tokens)
-- <strong>OpenAI text-embedding-3-large</strong> — General-purpose, high-quality
-- <strong>Cohere embed-english-v3.0</strong> — Good for compliance/legal text
-- <strong>Open-source (all-MiniLM-L6-v2)</strong> — Runs locally, no API calls</p>
+<p>Common embedding models for security:</p>
+<ul>
+<li><strong>Anthropic's Claude Embeddings</strong> — Optimized for longer documents (8K tokens)</li>
+<li><strong>OpenAI text-embedding-3-large</strong> — General-purpose, high-quality</li>
+<li><strong>Cohere embed-english-v3.0</strong> — Good for compliance/legal text</li>
+<li><strong>Open-source (all-MiniLM-L6-v2)</strong> — Runs locally, no API calls</li>
+</ul>
 <div class="callout"><p><strong>Embedding model selection is domain-specific.</strong> General-purpose embedding models (<code>all-MiniLM-L6-v2</code>, <code>text-embedding-3-small</code>) work well for most security content. For formal regulatory and compliance text (NIST, GDPR, legal language), domain-specific models like Cohere's <code>embed-english-v3.0</code> often outperform general models on retrieval recall. The test: run retrieval eval on a sample of your actual corpus before committing to a model.</p>
 </div>
 <p><strong>4. Storage &amp; Indexing</strong></p>
@@ -2472,10 +2106,12 @@ Chunk 3: [sentences 25–40]  ← overlap with Chunk 2</p>
 </tr>
 </tbody>
 </table>
-<p>Most security teams use <strong>all three</strong>:
-- <strong>RAG</strong> for policies, procedures, threat reports (documents)
-- <strong>MCP tools</strong> for live queries (incidents, IP reputation, system status)
-- <strong>Fine-tuning</strong> rarely; only for very specific style/tone requirements</p>
+<p>Most security teams use <strong>all three</strong>:</p>
+<ul>
+<li><strong>RAG</strong> for policies, procedures, threat reports (documents)</li>
+<li><strong>MCP tools</strong> for live queries (incidents, IP reputation, system status)</li>
+<li><strong>Fine-tuning</strong> rarely; only for very specific style/tone requirements</li>
+</ul>
 <h4 id="source-attribution-in-rag">Source Attribution in RAG</h4>
 <p>A critical requirement for compliance: every answer must cite where information came from. Bad practice:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">Q</span><span class="o">:</span><span class="w"> </span><span class="n">What</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="n">requirements</span><span class="o">?</span><span class="w"></span>
@@ -2651,26 +2287,32 @@ What documents would be most useful for Claude to see? In what order?
 </code></pre></div>
 
 <p><strong>After Claude designs the RAG logic:</strong></p>
-<p>Ask:
-- "How would you handle if no previous incidents match?"
-- "Should recent incidents weight higher than old ones?"
-- "What if conflicting policy documents (old vs. new version)?"
-- "How do you prevent false positives from irrelevant documents?"</p>
+<p>Ask:</p>
+<ul>
+<li>"How would you handle if no previous incidents match?"</li>
+<li>"Should recent incidents weight higher than old ones?"</li>
+<li>"What if conflicting policy documents (old vs. new version)?"</li>
+<li>"How do you prevent false positives from irrelevant documents?"</li>
+</ul>
 <p><strong>Why Claude Code instead of building RAG now:</strong></p>
-<p>RAG infrastructure is non-trivial:
-- Vector database (Pinecone, Weaviate, Elasticsearch)
-- Embedding model (how to represent documents as vectors)
-- Retrieval algorithm (semantic + keyword + filtering)
-- Indexing pipeline (parse documents, chunk them, embed them)
-- Monitoring (is retrieval working? are we getting relevant documents?)</p>
+<p>RAG infrastructure is non-trivial:</p>
+<ul>
+<li>Vector database (Pinecone, Weaviate, Elasticsearch)</li>
+<li>Embedding model (how to represent documents as vectors)</li>
+<li>Retrieval algorithm (semantic + keyword + filtering)</li>
+<li>Indexing pipeline (parse documents, chunk them, embed them)</li>
+<li>Monitoring (is retrieval working? are we getting relevant documents?)</li>
+</ul>
 <p>Before investing in that infrastructure, answer: "What documents do we need? How often do they change? How should they be searched?" Claude Code helps you answer these questions first.</p>
 <p><strong>When to Build a Real RAG System:</strong></p>
-<p>Build actual RAG when:
-- You have incident data to index (100+ previous incidents)
-- You have threat intelligence feeds (continuously updated)
-- You have organizational policies (stored as documents)
-- You want automation (every new incident automatically retrieves context)
-- Scale matters (analyzing dozens of incidents/day)</p>
+<p>Build actual RAG when:</p>
+<ul>
+<li>You have incident data to index (100+ previous incidents)</li>
+<li>You have threat intelligence feeds (continuously updated)</li>
+<li>You have organizational policies (stored as documents)</li>
+<li>You want automation (every new incident automatically retrieves context)</li>
+<li>Scale matters (analyzing dozens of incidents/day)</li>
+</ul>
 <p>For learning, simulating RAG in Claude Code is enough: "Imagine these are previous incidents. Which would be relevant? How would they change the analysis?"</p>
 <div class="callout callout-remember"><p><strong>Remember:</strong> The quality of RAG depends on three factors: document quality, chunking strategy, and retrieval ranking. Invest time in understanding why certain documents are retrieved and adjust chunking/metadata if needed.</p>
 </div>
@@ -2708,10 +2350,12 @@ What documents would be most useful for Claude to see? In what order?
 <p>In Unit 2, you've built MCP servers and defined tools. Now it's time to capture the patterns that work—tool definition schemas, error handling approaches, structured output templates. These become your "style guide" for Claude Code to follow.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A tool definition isn't just code—it's a contract. When you write a tool schema that's clear, validates input properly, and returns structured output, Claude learns to respect that contract. Save your best tool definitions in your context library. Next project, paste them as context: "Here are my preferred tool patterns. Use this style." Claude Code will follow your conventions.</p>
 </div>
-<p><strong>Why This Matters for Unit 2 Specifically:</strong>
-- <strong>Tool Design is Hard:</strong> Getting tool definitions right requires iteration—constraint specification, error handling, output validation. Your Unit 2 work is refined. Capture it.
-- <strong>Consistency Across Projects:</strong> When you build many MCP servers, tool definitions should feel familiar. Your library ensures this.
-- <strong>Onboarding New Projects:</strong> In Unit 3 and 4, you'll build different tools. Referencing your Unit 2 patterns ensures consistency and saves design time.</p>
+<p><strong>Why This Matters for Unit 2 Specifically:</strong></p>
+<ul>
+<li><strong>Tool Design is Hard:</strong> Getting tool definitions right requires iteration—constraint specification, error handling, output validation. Your Unit 2 work is refined. Capture it.</li>
+<li><strong>Consistency Across Projects:</strong> When you build many MCP servers, tool definitions should feel familiar. Your library ensures this.</li>
+<li><strong>Onboarding New Projects:</strong> In Unit 3 and 4, you'll build different tools. Referencing your Unit 2 patterns ensures consistency and saves design time.</li>
+</ul>
 <p><strong>Expand Your Context Library Structure</strong></p>
 <p>Add a new section to your existing <code>context-library/</code>:</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/context-library/patterns/tool-definitions
@@ -2849,43 +2493,6 @@ This ensures consistency and alignment with my standards.
 </main>
 
 <script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
-<script>
 (function() {
   var IDX = [
     // Units
@@ -2976,6 +2583,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

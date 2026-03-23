@@ -1,6 +1,6 @@
 # Noctua: Design Rationale — From 2023 to 2026
 
-**Original Course:** Noctua: The Fusion of Artificial and Human Intelligence (2023)
+**Original Course:** The Fusion of Artificial and Human Intelligence (2023)
 **Assessment Date:** March 2026
 **Status:** Complete — All design decisions implemented in course materials
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The original Noctua course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—**Collaborative Critical Thinking (CCT)**, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.
+The original course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—**Collaborative Critical Thinking (CCT)**, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.
 
 This assessment identified what remains timeless, what requires updating, and what must be newly incorporated. The 2026 course addresses all of these dimensions in its design and materials.
 

@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 7: Production Security — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -451,7 +35,7 @@ body {
   <a href="lab-s2-unit5.html" class="sub">Lab: Unit 5</a>
   <a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
   <a href="lab-s2-unit6.html" class="sub">Lab: Unit 6</a>
-  <a href="s2-unit7.html" class="sub active">Unit 7: Production Security</a>
+  <a href="s2-unit7.html" class="sub">Unit 7: Production Security</a>
   <a href="lab-s2-unit7.html" class="sub">Lab: Unit 7</a>
   <a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
   <a href="lab-s2-unit8.html" class="sub">Lab: Unit 8</a>
@@ -473,23 +57,27 @@ body {
 <h2 id="unit-7-overview-taking-agentic-systems-to-production">Unit 7 Overview: Taking Agentic Systems to Production</h2>
 <div class="callout callout-key"><p><strong>Real engagements are almost never greenfield.</strong> This unit teaches production security engineering — but in practice, you will rarely walk into a company and build from scratch. More often you'll inherit agents already in production without observability, NHIs without owners, and supply chains nobody has audited. The practitioner skill is not just knowing how to build these systems correctly, but knowing how to assess and remediate what's already running. As you work through each week, ask: "If I walked into a company and found this component missing or broken, what would I prioritize first? What's the minimum intervention that meaningfully reduces risk?" That's the engagement mindset.</p></div>
 <p>This unit transforms security concepts into <strong>production-ready systems</strong>. You'll move from building AI agents in isolation to deploying them at scale with enterprise controls: supply chain verification, identity governance, operational observability, and deployment automation. Every component you build integrates into a cohesive security posture.</p>
-<p><strong>Unit Learning Outcomes:</strong>
-- Audit and secure the AI supply chain from development through deployment
-- Implement non-human identity governance in multi-agent environments
-- Deploy production observability and cost tracking for agentic systems
-- Automate secure deployment with CI/CD, containerization, and runbooks</p>
+<p><strong>Unit Learning Outcomes:</strong></p>
+<ul>
+<li>Audit and secure the AI supply chain from development through deployment</li>
+<li>Implement non-human identity governance in multi-agent environments</li>
+<li>Deploy production observability and cost tracking for agentic systems</li>
+<li>Automate secure deployment with CI/CD, containerization, and runbooks</li>
+</ul>
 <blockquote>
 <p><strong>Prototype-to-Production Pipeline:</strong> This unit is where <strong>selected prototypes become production systems</strong>. If leadership selects your work from Unit 4, Unit 5, or Unit 6 for delivery, Unit 7 is where you transform it from a working proof-of-concept into a hardened, observable, governed, and deployable system. This course's agentic development methodology — including the Think → Spec → Build → Retro cycle — provides the framework for this transformation. The <strong>Pit of Success</strong> principle applies here: design your systems so secure, compliant deployment is the easy path, not the exception.</p>
 </blockquote>
 <hr />
 <h2 id="week-9-ai-supply-chain-security">Week 9: AI Supply Chain Security</h2>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Identify supply chain attack vectors targeting AI systems (model poisoning, dependency compromise, data tampering)
-- Understand the role of SBOMs, provenance tracking, and model signing in AI supply chain security
-- Analyze real-world supply chain attacks on AI/ML infrastructure
-- Apply SLSA framework and MITRE ATLAS supply chain techniques to AI systems
-- Design verification checkpoints for each stage of the AI development lifecycle</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Identify supply chain attack vectors targeting AI systems (model poisoning, dependency compromise, data tampering)</li>
+<li>Understand the role of SBOMs, provenance tracking, and model signing in AI supply chain security</li>
+<li>Analyze real-world supply chain attacks on AI/ML infrastructure</li>
+<li>Apply SLSA framework and MITRE ATLAS supply chain techniques to AI systems</li>
+<li>Design verification checkpoints for each stage of the AI development lifecycle</li>
+</ul>
 <h4 id="the-ai-supply-chain-attack-surface">The AI Supply Chain Attack Surface</h4>
 <p>The AI supply chain is <strong>uniquely complex</strong> because models are data artifacts, not just code. Every component—models, training data, dependencies, checkpoints, evaluation sets—can be poisoned, replaced, or tampered with before deployment.</p>
 <blockquote>
@@ -531,10 +119,12 @@ body {
 </ol>
 <h4 id="sbom-and-provenance-verification">SBOM and Provenance Verification</h4>
 <p>A <strong>Software Bill of Materials (SBOM)</strong> is a machine-readable list of all components in a system—analogous to ingredient labels on food.</p>
-<p><strong>Why SBOMs Matter for AI:</strong>
-- Enabling rapid identification of vulnerable dependencies when CVEs are published
-- Providing transparency to customers and compliance auditors
-- Enabling automated scanning and vulnerability tracking</p>
+<p><strong>Why SBOMs Matter for AI:</strong></p>
+<ul>
+<li>Enabling rapid identification of vulnerable dependencies when CVEs are published</li>
+<li>Providing transparency to customers and compliance auditors</li>
+<li>Enabling automated scanning and vulnerability tracking</li>
+</ul>
 <p><strong>SBOM Generation for AI Systems:</strong></p>
 <p>Using <strong>syft</strong> (CycloneDX format):</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Generate SBOM for your Python project</span>
@@ -708,18 +298,24 @@ safety check --json &gt; vulnerability-report.json
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-ai-supply-chain-audit-tool">Day 2 — Hands-On Lab: AI Supply Chain Audit Tool</h3>
-<p><strong>Lab Objectives:</strong>
-- Build an automated supply chain audit scanner for AI projects
-- Implement dependency scanning, model provenance verification, and SBOM generation
-- Create a risk report with actionable remediation guidance
-- Verify model integrity using cryptographic signatures</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Build an automated supply chain audit scanner for AI projects</li>
+<li>Implement dependency scanning, model provenance verification, and SBOM generation</li>
+<li>Create a risk report with actionable remediation guidance</li>
+<li>Verify model integrity using cryptographic signatures</li>
+</ul>
 <h4 id="lab-setup">Lab Setup</h4>
-<p><strong>Environment and Tools:</strong>
-- Python 3.11+
-- <code>pip install safety pip-audit syft</code>
-# cosign: https://docs.sigstore.dev/cosign/system_config/installation/
-# Snyk (enterprise option): https://docs.snyk.io/snyk-cli/install-or-update-the-snyk-cli
-- Git repository with <code>requirements.txt</code> and model artifacts</p>
+<p><strong>Environment and Tools:</strong></p>
+<ul>
+<li>Python 3.11+</li>
+<li><code>pip install safety pip-audit syft</code></li>
+</ul>
+<p># cosign: https://docs.sigstore.dev/cosign/system_config/installation/
+# Snyk (enterprise option): https://docs.snyk.io/snyk-cli/install-or-update-the-snyk-cli</p>
+<ul>
+<li>Git repository with <code>requirements.txt</code> and model artifacts</li>
+</ul>
 <p><strong>Conceptual Architecture:</strong></p>
 <div class="mermaid">flowchart TD
     A["AI Project<br/>Dependencies<br/>Models<br/>Training Data"]
@@ -754,11 +350,13 @@ safety check --json &gt; vulnerability-report.json
 <li><strong>Performance:</strong> Scanning takes time (30+ seconds). Cache results where possible or run scans in parallel.</li>
 </ol>
 <p><strong>Context Engineering Note:</strong></p>
-<p>When you ask Claude Code to generate a dependency scanner, provide:
-- The list of tools to integrate (Safety, pip-audit, Syft — Snyk as optional enterprise plugin)
-- Expected output format (JSON risk report)
-- Risk scoring logic (how many vulns = CRITICAL vs HIGH)
-- Integration points (CI/CD pipeline, pre-commit hook)</p>
+<p>When you ask Claude Code to generate a dependency scanner, provide:</p>
+<ul>
+<li>The list of tools to integrate (Safety, pip-audit, Syft — Snyk as optional enterprise plugin)</li>
+<li>Expected output format (JSON risk report)</li>
+<li>Risk scoring logic (how many vulns = CRITICAL vs HIGH)</li>
+<li>Integration points (CI/CD pipeline, pre-commit hook)</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Don't just run tools individually. Wrap them in a Python module that normalizes output, aggregates findings, and produces actionable reports. This is where AI solutioning adds value—turning tool outputs into decision support.</p>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
@@ -789,11 +387,13 @@ The main class should be called DependencyScanner with methods:
 Use subprocess to call external tools (safety, pip). Handle timeouts and errors gracefully.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Exception handling for missing tools (clear error messages)
-- Timeout handling for long-running scans
-- Proper parsing of requirements.txt with various version specifiers (==, &gt;=, ~=)
-- Structured JSON output, not raw tool output</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Exception handling for missing tools (clear error messages)</li>
+<li>Timeout handling for long-running scans</li>
+<li>Proper parsing of requirements.txt with various version specifiers (==, &gt;=, ~=)</li>
+<li>Structured JSON output, not raw tool output</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the output doesn't parse Safety JSON correctly, ask: "The Safety tool outputs JSON with structure <code>{vulnerabilities: [{package, version, advisory}]}</code>. Make sure you parse this correctly and only count actual vulnerabilities, not metadata."</p>
 <p>If risk scoring seems arbitrary, ask: "Add a docstring to _calculate_risk_score explaining the thresholds. Why is 5 vulnerabilities CRITICAL?"</p>
@@ -811,10 +411,12 @@ Use subprocess to call external tools (safety, pip). Handle timeouts and errors 
 <p><strong>Why This Matters:</strong></p>
 <p>A model without provenance is like software without version control—you can't audit it, can't roll back, and can't verify it hasn't been tampered with. Plus, old models may have been trained on data with known security issues.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>When asking Claude Code to build a model verifier:
-- Show it a sample MODEL_CARD.md format with required sections
-- Explain that signature verification can be hash-based (for lab) or cosign-based (for production)
-- Clarify the freshness thresholds (3 months = warning, 6+ months = critical)</p>
+<p>When asking Claude Code to build a model verifier:</p>
+<ul>
+<li>Show it a sample MODEL_CARD.md format with required sections</li>
+<li>Explain that signature verification can be hash-based (for lab) or cosign-based (for production)</li>
+<li>Clarify the freshness thresholds (3 months = warning, 6+ months = critical)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a ModelProvenanceVerifier class that audits model artifacts in an AI project.
 
@@ -847,12 +449,14 @@ The class should:
 Return dict format for each check with status and message fields.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper path handling (use pathlib.Path)
-- Glob pattern with proper directory exclusion
-- File I/O error handling
-- Checksum computation that works for large files (read in 4KB blocks)
-- Clear status field in every return dict</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper path handling (use pathlib.Path)</li>
+<li>Glob pattern with proper directory exclusion</li>
+<li>File I/O error handling</li>
+<li>Checksum computation that works for large files (read in 4KB blocks)</li>
+<li>Clear status field in every return dict</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If model discovery is slow, ask: "For large projects, finding all models can be slow. Add a parameter to limit search depth or exclude certain directories. Should we cache the model list?"</p>
 <p>If signature verification is unclear, ask: "Show me an example of what the .sig file should contain. Is it just the hex hash on one line?"</p>
@@ -869,11 +473,13 @@ Return dict format for each check with status and message fields.
 </ol>
 <p>This is intentionally simple—Syft does the heavy lifting. Your job is to integrate it into your audit pipeline and fail gracefully.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Handle the case where syft isn't installed (show helpful error message)
-- Parse CycloneDX JSON format (standard SBOM format)
-- Handle subprocess timeouts (scanning large projects takes 60+ seconds)
-- Save output in a way that works with git version control</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Handle the case where syft isn't installed (show helpful error message)</li>
+<li>Parse CycloneDX JSON format (standard SBOM format)</li>
+<li>Handle subprocess timeouts (scanning large projects takes 60+ seconds)</li>
+<li>Save output in a way that works with git version control</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a SBOMGenerator class that wraps the Syft tool to generate SBOMs.
 
@@ -897,12 +503,14 @@ Handle edge cases:
 Return consistent dict format for all outcomes.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper subprocess handling with timeout
-- JSON parsing with error handling
-- Clear status codes in return values
-- File write with appropriate permissions
-- Docstrings explaining CycloneDX format</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper subprocess handling with timeout</li>
+<li>JSON parsing with error handling</li>
+<li>Clear status codes in return values</li>
+<li>File write with appropriate permissions</li>
+<li>Docstrings explaining CycloneDX format</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the JSON parsing is fragile, ask: "Add validation to ensure the parsed JSON has 'components' key before trying to count them. What should we do if the structure is unexpected?"</p>
 <p>If timeout is too short, ask: "For a large project with 1000+ dependencies, 60 seconds might not be enough. Add a parameter to configure timeout with a sensible default."</p>
@@ -917,10 +525,12 @@ Return consistent dict format for all outcomes.
 </ol>
 <p>The report is human-readable (summary) and machine-readable (findings array for CI/CD integration).</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>When asking Claude Code to build the aggregator:
-- Show it what each scanner returns so it knows how to extract findings
-- Explain the risk score rollup logic (if ANY finding is CRITICAL, overall is CRITICAL)
-- Define what a "recommendation" should be (actionable, not vague)</p>
+<p>When asking Claude Code to build the aggregator:</p>
+<ul>
+<li>Show it what each scanner returns so it knows how to extract findings</li>
+<li>Explain the risk score rollup logic (if ANY finding is CRITICAL, overall is CRITICAL)</li>
+<li>Define what a "recommendation" should be (actionable, not vague)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a SupplyChainRiskReport class that aggregates findings from DependencyScanner, ModelProvenanceVerifier, and SBOMGenerator.
 
@@ -951,51 +561,67 @@ Return format:
 }
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper error handling if any scanner fails
-- Risk score rollup logic (any CRITICAL → overall CRITICAL)
-- Findings array with consistent structure
-- Recommendations that are specific and actionable
-- Main execution example that shows how to use it</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper error handling if any scanner fails</li>
+<li>Risk score rollup logic (any CRITICAL → overall CRITICAL)</li>
+<li>Findings array with consistent structure</li>
+<li>Recommendations that are specific and actionable</li>
+<li>Main execution example that shows how to use it</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the report feels incomplete, ask: "Add an 'executive_summary' field that counts total findings by severity and recommends next steps (e.g., 'Project has 3 CRITICAL findings. Do not deploy until resolved.')."</p>
 <p>If recommendations are too generic, ask: "For a CRITICAL dependency vulnerability, the recommendation should include: 'Run: safety check --json &gt; vulnerabilities.json to see details. Then update vulnerable packages with: pip install --upgrade {package}==new_version.'"</p>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Integrate this audit into your CI/CD pipeline so every commit triggers a supply chain check. Fail the build if risk score is CRITICAL.</p>
 </div>
 <h4 id="deliverables">Deliverables</h4>
-<p><strong>1. AI Supply Chain Audit Tool</strong>
-- Functional Python module with DependencyScanner, ModelProvenanceVerifier, SBOMGenerator
-- Automated scanning, risk aggregation, report generation</p>
-<p><strong>2. Audit Report on Sample Project</strong>
-- JSON report showing: vulnerable dependencies, model age, SBOM components
-- Risk score with remediation recommendations</p>
-<p><strong>3. SBOM Artifact</strong>
-- CycloneDX JSON SBOM generated for sample project
-- Suitable for version control and compliance audits</p>
-<p><strong>4. Model Signature Verification</strong>
-- Demo of cosign (or hash-based) model integrity checking
-- Documentation of signing/verification process</p>
-<p><strong>Sources &amp; Tools:</strong>
-- NIST AI Security Resource Center: https://airc.nist.gov/
-- MITRE ATLAS: https://atlas.mitre.org/
-- Syft: https://github.com/anchore/syft (SBOM generation)
-- Cosign: https://github.com/sigstore/cosign (Model signing)
-- Safety: https://pyup.io/safety/ (Python vulnerability scanning)</p>
+<p><strong>1. AI Supply Chain Audit Tool</strong></p>
+<ul>
+<li>Functional Python module with DependencyScanner, ModelProvenanceVerifier, SBOMGenerator</li>
+<li>Automated scanning, risk aggregation, report generation</li>
+</ul>
+<p><strong>2. Audit Report on Sample Project</strong></p>
+<ul>
+<li>JSON report showing: vulnerable dependencies, model age, SBOM components</li>
+<li>Risk score with remediation recommendations</li>
+</ul>
+<p><strong>3. SBOM Artifact</strong></p>
+<ul>
+<li>CycloneDX JSON SBOM generated for sample project</li>
+<li>Suitable for version control and compliance audits</li>
+</ul>
+<p><strong>4. Model Signature Verification</strong></p>
+<ul>
+<li>Demo of cosign (or hash-based) model integrity checking</li>
+<li>Documentation of signing/verification process</li>
+</ul>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li>NIST AI Security Resource Center: https://airc.nist.gov/</li>
+<li>MITRE ATLAS: https://atlas.mitre.org/</li>
+<li>Syft: https://github.com/anchore/syft (SBOM generation)</li>
+<li>Cosign: https://github.com/sigstore/cosign (Model signing)</li>
+<li>Safety: https://pyup.io/safety/ (Python vulnerability scanning)</li>
+</ul>
 <hr />
 <h2 id="week-10-non-human-identity-nhi-governance">Week 10: Non-Human Identity (NHI) Governance</h2>
 <h3 id="day-1-theory-foundations_1">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Understand the NHI explosion and why traditional identity governance fails for agents, service accounts, and API credentials
-- Design role-based and attribute-based access control (RBAC, ABAC) for agentic systems
-- Implement time-bound credentials, credential rotation, and just-in-time (JIT) access patterns
-- Apply Zero Trust principles to non-human identities
-- Leverage PeaRL environment hierarchy as a reference for agent governance gates</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Understand the NHI explosion and why traditional identity governance fails for agents, service accounts, and API credentials</li>
+<li>Design role-based and attribute-based access control (RBAC, ABAC) for agentic systems</li>
+<li>Implement time-bound credentials, credential rotation, and just-in-time (JIT) access patterns</li>
+<li>Apply Zero Trust principles to non-human identities</li>
+<li>Leverage PeaRL environment hierarchy as a reference for agent governance gates</li>
+</ul>
 <h4 id="the-non-human-identity-crisis">The Non-Human Identity Crisis</h4>
-<p><strong>The Numbers:</strong>
-- Human identities: ~100 per organization
-- Non-human identities: <strong>5,000–50,000 per organization</strong>
-- Growth rate: NHIs growing 50–200% year-over-year
-- <strong>Challenge:</strong> Most organizations have no inventory of their own NHIs</p>
+<p><strong>The Numbers:</strong></p>
+<ul>
+<li>Human identities: ~100 per organization</li>
+<li>Non-human identities: <strong>5,000–50,000 per organization</strong></li>
+<li>Growth rate: NHIs growing 50–200% year-over-year</li>
+<li><strong>Challenge:</strong> Most organizations have no inventory of their own NHIs</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Every service account, API key, OAuth token, agent credential, and bot is an <strong>identity that can be compromised, abused, or accidentally exposed</strong>—yet most organizations have zero governance over them.</p>
 </div>
 <p><strong>Types of Non-Human Identities:</strong></p>
@@ -1253,18 +879,24 @@ Result: ALLOW
     class prod prodStyle
 </div>
 
-<p><strong>Gate 1: Dev → Pilot Transition</strong>
-- Automated security checks: SBOM, dependency scanning, policy validation
-- No human approval required</p>
-<p><strong>Gate 2: Pilot → Preprod Transition</strong>
-- Automated tests passing
-- Cost/latency SLOs met
-- Human security review required</p>
-<p><strong>Gate 3: Preprod → Prod Transition</strong>
-- Full production simulation passed
-- Canary deployment plan approved
-- Explicit human approval required
-- Automated rollback configured</p>
+<p><strong>Gate 1: Dev → Pilot Transition</strong></p>
+<ul>
+<li>Automated security checks: SBOM, dependency scanning, policy validation</li>
+<li>No human approval required</li>
+</ul>
+<p><strong>Gate 2: Pilot → Preprod Transition</strong></p>
+<ul>
+<li>Automated tests passing</li>
+<li>Cost/latency SLOs met</li>
+<li>Human security review required</li>
+</ul>
+<p><strong>Gate 3: Preprod → Prod Transition</strong></p>
+<ul>
+<li>Full production simulation passed</li>
+<li>Canary deployment plan approved</li>
+<li>Explicit human approval required</li>
+<li>Automated rollback configured</li>
+</ul>
 <p><strong>PeaRL's Autonomous Agent Attack Chain Research:</strong></p>
 <p>PeaRL was red-team tested against a 7-level autonomous agent attack chain (L1–L7), where an AI agent systematically attempted to self-approve governance exceptions. The attack progressed from direct API calls (L1: blocked by RBAC) through social engineering the model (L4: persona-based bypass attempts) to supply chain manipulation (L7: attempting to modify MCP server configurations). Six hard controls were deployed:</p>
 <ol>
@@ -1397,12 +1029,14 @@ Result: ALLOW
 
 <hr />
 <h3 id="day-2-hands-on-lab-nhi-governance-implementation">Day 2 — Hands-On Lab: NHI Governance Implementation</h3>
-<p><strong>Lab Objectives:</strong>
-- Design and implement identity registry for multi-agent system
-- Build authorization engine with RBAC/ABAC policy evaluation
-- Implement credential rotation and JIT access
-- Create audit logging and real-time alerts
-- Build monitoring dashboard for NHI governance</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Design and implement identity registry for multi-agent system</li>
+<li>Build authorization engine with RBAC/ABAC policy evaluation</li>
+<li>Implement credential rotation and JIT access</li>
+<li>Create audit logging and real-time alerts</li>
+<li>Build monitoring dashboard for NHI governance</li>
+</ul>
 <h4 id="lab-setup-and-architecture">Lab Setup and Architecture</h4>
 <p><strong>Conceptual System:</strong></p>
 <div class="mermaid">flowchart TD
@@ -1437,17 +1071,21 @@ Result: ALLOW
 <li><strong>Status:</strong> Enabled/disabled flag</li>
 <li><strong>Audit Trail:</strong> When identities are registered, modified, rotated</li>
 </ol>
-<p>The registry enables:
-- Visibility (how many NHIs exist?)
-- Compliance (are credentials time-bound?)
-- Operations (which credentials expire soon?)
-- Audit (who created this identity and when?)</p>
+<p>The registry enables:</p>
+<ul>
+<li>Visibility (how many NHIs exist?)</li>
+<li>Compliance (are credentials time-bound?)</li>
+<li>Operations (which credentials expire soon?)</li>
+<li>Audit (who created this identity and when?)</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Define a NonHumanIdentity dataclass with the fields above
-- Implement an IdentityRegistry that stores and queries identities
-- Include a method to export registry to JSON (for audit/compliance)
-- Support filtering by tier, status, and expiration date</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Define a NonHumanIdentity dataclass with the fields above</li>
+<li>Implement an IdentityRegistry that stores and queries identities</li>
+<li>Include a method to export registry to JSON (for audit/compliance)</li>
+<li>Support filtering by tier, status, and expiration date</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create identity management classes for NHI governance:
 
@@ -1481,12 +1119,14 @@ Result: ALLOW
 Output should be JSON-serializable for compliance audits.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper datetime handling and timezone awareness
-- Dataclass with field defaults where appropriate
-- Registry methods that return filters, not mutate state
-- JSON export suitable for version control
-- Clear audit logging of all operations</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper datetime handling and timezone awareness</li>
+<li>Dataclass with field defaults where appropriate</li>
+<li>Registry methods that return filters, not mutate state</li>
+<li>JSON export suitable for version control</li>
+<li>Clear audit logging of all operations</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If tier assignment seems arbitrary, ask: "Add docstrings explaining tier classification: TIER_1 = critical paths (incident response), TIER_2 = sensitive data access, etc. What characteristics put an identity in each tier?"</p>
 <p>If the registry feels incomplete, ask: "Add a method disable_identity(identity_id) that marks an identity as disabled and logs the event. This is needed for credential revocation."</p>
@@ -1509,11 +1149,13 @@ Output should be JSON-serializable for compliance audits.
 <li><strong>Flexible:</strong> Easy to add new conditions without code changes</li>
 </ul>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Define Rule structure with clear schema (effect, action, resource, conditions)
-- Implement policy evaluation logic (check allow/deny, then conditions)
-- Support time window conditions (parse "HH:MM-HH:MM" format)
-- Support rate limit conditions (track calls per hour per resource)</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Define Rule structure with clear schema (effect, action, resource, conditions)</li>
+<li>Implement policy evaluation logic (check allow/deny, then conditions)</li>
+<li>Support time window conditions (parse "HH:MM-HH:MM" format)</li>
+<li>Support rate limit conditions (track calls per hour per resource)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create policy-as-code classes for NHI authorization:
 
@@ -1552,12 +1194,14 @@ Output should be JSON-serializable for compliance audits.
 Use datetime.now() to get current time for time window checks.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Clear rule structure with effect, action, resource, conditions
-- Proper time window parsing (HH:MM format)
-- Rate limit checking using context dict
-- Detailed reason messages ("Outside time window 09:00-17:00")
-- Example policies that show ALLOW, DENY, and conditional rules</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Clear rule structure with effect, action, resource, conditions</li>
+<li>Proper time window parsing (HH:MM format)</li>
+<li>Rate limit checking using context dict</li>
+<li>Detailed reason messages ("Outside time window 09:00-17:00")</li>
+<li>Example policies that show ALLOW, DENY, and conditional rules</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If time window parsing is fragile, ask: "Add error handling for malformed time windows (e.g., '25:00-30:00'). What should be the default if time_window is missing?"</p>
 <p>If rate limiting seems simplistic, ask: "Right now you just check current_rate vs max_rate. In production, you'd need to track historical rate. For this lab, add a comment explaining how you'd integrate with a real rate limiter."</p>
@@ -1573,11 +1217,13 @@ Use datetime.now() to get current time for time window checks.
 </ol>
 <p><strong>Critical Principle:</strong> Never cache policy decisions. Policies can change in seconds; cached decisions could allow revoked credentials to work for hours.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Implement rate limiting with hourly reset windows
-- Generate cryptographically-sound temporary tokens
-- Log every authorization decision (success and failure)
-- Make policy evaluation real-time (no caching)</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Implement rate limiting with hourly reset windows</li>
+<li>Generate cryptographically-sound temporary tokens</li>
+<li>Log every authorization decision (success and failure)</li>
+<li>Make policy evaluation real-time (no caching)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create an AuthorizationEngine class that gates all agent actions:
 
@@ -1614,12 +1260,14 @@ Helper methods:
 Include example usage showing agent authorization attempt.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Rate limiting with hourly windows
-- No policy caching (always fetch fresh)
-- Temporary token generation with timestamp
-- All authorization decisions logged
-- Proper dict return format</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Rate limiting with hourly windows</li>
+<li>No policy caching (always fetch fresh)</li>
+<li>Temporary token generation with timestamp</li>
+<li>All authorization decisions logged</li>
+<li>Proper dict return format</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If rate limiting seems wrong, ask: "The rate counter should reset every hour. Show me a concrete example: agent makes 50 calls in first hour (tracked), then at hour boundary the counter resets to 0. Is that what your code does?"</p>
 <p>If tokens are too simple, ask: "Right now tokens are just agent:resource:timestamp. In production, we'd need tokens to be signed/encrypted. For now, add a comment explaining what a real token system would look like."</p>
@@ -1636,11 +1284,13 @@ Include example usage showing agent authorization attempt.
 </ul>
 <p>You also need to generate alerts on suspicious activity (unauthorized access attempts, rapid policy changes).</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Write logs in JSONL format (appending, not overwriting)
-- Include timestamp, agent_id, action, resource, decision, reason in every event
-- Support querying by agent_id, event_type, or time range
-- Generate alerts for denied access and policy changes</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Write logs in JSONL format (appending, not overwriting)</li>
+<li>Include timestamp, agent_id, action, resource, decision, reason in every event</li>
+<li>Support querying by agent_id, event_type, or time range</li>
+<li>Generate alerts for denied access and policy changes</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create an AuditLogger class for NHI audit trail and alerting:
 
@@ -1668,12 +1318,14 @@ Methods:
 Store alerts in self.alerts list.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- JSONL format (append-only, not overwriting)
-- Timestamp on every event
-- Query functionality for forensics
-- Alert generation logic
-- Proper file I/O error handling</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>JSONL format (append-only, not overwriting)</li>
+<li>Timestamp on every event</li>
+<li>Query functionality for forensics</li>
+<li>Alert generation logic</li>
+<li>Proper file I/O error handling</li>
+</ul>
 <h4 id="step-5-monitoring-dashboard">Step 5: Monitoring Dashboard</h4>
 <p><strong>Architecture Decision:</strong></p>
 <p>The dashboard aggregates data from the identity registry and audit log to show governance health:</p>
@@ -1685,11 +1337,13 @@ Store alerts in self.alerts list.
 </ul>
 <p>This is operational visibility—not for customers, for your ops team.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Calculate compliance metrics (% of identities with time bounds, % with 2 or fewer roles)
-- Identify credentials expiring in next 30 days
-- Count unauthorized access attempts
-- Display as both machine-readable JSON and human-readable text</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Calculate compliance metrics (% of identities with time bounds, % with 2 or fewer roles)</li>
+<li>Identify credentials expiring in next 30 days</li>
+<li>Count unauthorized access attempts</li>
+<li>Display as both machine-readable JSON and human-readable text</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create an NHIGovernanceDashboard class:
 
@@ -1742,66 +1396,88 @@ Methods:
 Include example showing dashboard being generated and printed.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Compliance metrics calculation
-- Properly sorted rotation schedule
-- Alert aggregation from audit logger
-- Both machine-readable (JSON) and human-readable (text) output</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Compliance metrics calculation</li>
+<li>Properly sorted rotation schedule</li>
+<li>Alert aggregation from audit logger</li>
+<li>Both machine-readable (JSON) and human-readable (text) output</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Display this dashboard in a web UI or send it to your team's Slack channel daily. Make NHI governance visible so it stays top-of-mind.</p>
 </div>
 <h4 id="deliverables_1">Deliverables</h4>
-<p><strong>1. Identity Registry Document</strong>
-- Catalog of all NHIs in multi-agent system (JSON format)
-- Classification by tier
-- Rotation schedule</p>
-<p><strong>2. Policy-as-Code</strong>
-- YAML or JSON policy definitions for each agent/service account
-- RBAC and ABAC rules
-- Example: threat analyzer, data pipeline, response automation</p>
-<p><strong>3. Authorization Engine</strong>
-- Functional Python module evaluating policies in real-time
-- Rate limiting and time-window enforcement
-- Temporary token generation</p>
-<p><strong>4. Audit Log and Forensics</strong>
-- JSONL audit trail (immutable format)
-- Query tools for forensics
-- Sample forensics report: "Show all actions by agent X from 2026-03-01 to 2026-03-05"</p>
-<p><strong>5. Governance Dashboard</strong>
-- Visual or text-based display of NHI status
-- Alerts and compliance metrics
-- Next rotations and expiring credentials</p>
-<p><strong>Sources &amp; Tools:</strong>
-- Kubernetes RBAC: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
-- HashiCorp Vault: https://www.vaultproject.io/
-- NIST Zero Trust Architecture: https://csrc.nist.gov/publications/detail/sp/800-207/final
-- PeaRL (Policy-enforced Autonomous Risk Layer): https://github.com/r33n3/PeaRL — Open-source governance platform; clone and study the authorization middleware, reviewer gates, and attack chain research
-- MASS (Model &amp; Application Security Suite): https://github.com/r33n3/MASS — Open-source security assessment tool; study the 12 analyzers and compliance mapping approach
-- AIUC-1 Standard: https://www.aiuc-1.com/ — First AI agent certification standard
-- OWASP AIVSS: https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system — AI-specific vulnerability scoring</p>
+<p><strong>1. Identity Registry Document</strong></p>
+<ul>
+<li>Catalog of all NHIs in multi-agent system (JSON format)</li>
+<li>Classification by tier</li>
+<li>Rotation schedule</li>
+</ul>
+<p><strong>2. Policy-as-Code</strong></p>
+<ul>
+<li>YAML or JSON policy definitions for each agent/service account</li>
+<li>RBAC and ABAC rules</li>
+<li>Example: threat analyzer, data pipeline, response automation</li>
+</ul>
+<p><strong>3. Authorization Engine</strong></p>
+<ul>
+<li>Functional Python module evaluating policies in real-time</li>
+<li>Rate limiting and time-window enforcement</li>
+<li>Temporary token generation</li>
+</ul>
+<p><strong>4. Audit Log and Forensics</strong></p>
+<ul>
+<li>JSONL audit trail (immutable format)</li>
+<li>Query tools for forensics</li>
+<li>Sample forensics report: "Show all actions by agent X from 2026-03-01 to 2026-03-05"</li>
+</ul>
+<p><strong>5. Governance Dashboard</strong></p>
+<ul>
+<li>Visual or text-based display of NHI status</li>
+<li>Alerts and compliance metrics</li>
+<li>Next rotations and expiring credentials</li>
+</ul>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li>Kubernetes RBAC: https://kubernetes.io/docs/reference/access-authn-authz/rbac/</li>
+<li>HashiCorp Vault: https://www.vaultproject.io/</li>
+<li>NIST Zero Trust Architecture: https://csrc.nist.gov/publications/detail/sp/800-207/final</li>
+<li>PeaRL (Policy-enforced Autonomous Risk Layer): https://github.com/r33n3/PeaRL — Open-source governance platform; clone and study the authorization middleware, reviewer gates, and attack chain research</li>
+<li>MASS (Model &amp; Application Security Suite): https://github.com/r33n3/MASS — Open-source security assessment tool; study the 12 analyzers and compliance mapping approach</li>
+<li>AIUC-1 Standard: https://www.aiuc-1.com/ — First AI agent certification standard</li>
+<li>OWASP AIVSS: https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system — AI-specific vulnerability scoring</li>
+</ul>
 <hr />
 <h2 id="week-11-observability-cost-management-and-operational-excellence">Week 11: Observability, Cost Management, and Operational Excellence</h2>
 <h3 id="day-1-theory-foundations_2">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Distinguish observability (ability to infer state) from monitoring (predefined metrics)
-- Instrument agentic systems using OpenTelemetry for end-to-end tracing
-- Implement token usage tracking and cost attribution by agent/task
-- Design resilience patterns: error compounding, graceful degradation, human escalation
-- Build dashboards for system health, cost, and quality metrics</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Distinguish observability (ability to infer state) from monitoring (predefined metrics)</li>
+<li>Instrument agentic systems using OpenTelemetry for end-to-end tracing</li>
+<li>Implement token usage tracking and cost attribution by agent/task</li>
+<li>Design resilience patterns: error compounding, graceful degradation, human escalation</li>
+<li>Build dashboards for system health, cost, and quality metrics</li>
+</ul>
 <h4 id="observability-the-three-pillars">Observability: The Three Pillars</h4>
 <p>Traditional monitoring watches dashboards. <strong>Observability</strong> answers: "Why is the system behaving this way?"</p>
-<p><strong>Pillar 1: Metrics</strong> (quantitative)
-- Agent execution duration (histogram)
-- Error rate (counter)
-- Tokens per task (distribution)
-- Cost per request (distribution)</p>
-<p><strong>Pillar 2: Logs</strong> (events)
-- Agent started, completed task, encountered error
-- Tool called, received result
-- Policy updated, credential rotated
-- Each with structured context</p>
-<p><strong>Pillar 3: Traces</strong> (request flow)
-- User request → Agent A calls Tool X → Agent B processes result → Database write
-- Links all events in a single request lifecycle</p>
+<p><strong>Pillar 1: Metrics</strong> (quantitative)</p>
+<ul>
+<li>Agent execution duration (histogram)</li>
+<li>Error rate (counter)</li>
+<li>Tokens per task (distribution)</li>
+<li>Cost per request (distribution)</li>
+</ul>
+<p><strong>Pillar 2: Logs</strong> (events)</p>
+<ul>
+<li>Agent started, completed task, encountered error</li>
+<li>Tool called, received result</li>
+<li>Policy updated, credential rotated</li>
+<li>Each with structured context</li>
+</ul>
+<p><strong>Pillar 3: Traces</strong> (request flow)</p>
+<ul>
+<li>User request → Agent A calls Tool X → Agent B processes result → Database write</li>
+<li>Links all events in a single request lifecycle</li>
+</ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Observability matters for AI because agent behavior is <strong>non-deterministic</strong>. Same input can produce different outputs. Without detailed observability, you're debugging blind.</p>
 </div>
 <h4 id="opentelemetry-for-ai-agents">OpenTelemetry for AI Agents</h4>
@@ -2199,12 +1875,14 @@ Include example showing dashboard being generated and printed.
 </div>
 <hr />
 <h3 id="day-2-hands-on-lab-observability-and-cost-management">Day 2 — Hands-On Lab: Observability and Cost Management</h3>
-<p><strong>Lab Objectives:</strong>
-- Instrument multi-agent system with OpenTelemetry (traces, metrics, logs)
-- Implement token counting and cost attribution
-- Build dashboards for system health, cost, and quality
-- Design and test escalation workflows
-- Create SLO definitions and monitoring</p>
+<p><strong>Lab Objectives:</strong></p>
+<ul>
+<li>Instrument multi-agent system with OpenTelemetry (traces, metrics, logs)</li>
+<li>Implement token counting and cost attribution</li>
+<li>Build dashboards for system health, cost, and quality</li>
+<li>Design and test escalation workflows</li>
+<li>Create SLO definitions and monitoring</li>
+</ul>
 <h4 id="step-1-opentelemetry-instrumentation">Step 1: OpenTelemetry Instrumentation</h4>
 <p><strong>Architecture Decision:</strong></p>
 <p>OpenTelemetry is the standard for collecting observability data. Your instrumentation should:</p>
@@ -2215,16 +1893,20 @@ Include example showing dashboard being generated and printed.
 <li><strong>Export Data:</strong> Send to Jaeger (traces), Prometheus (metrics), logging system</li>
 </ol>
 <p><strong>Why This Matters:</strong></p>
-<p>Without instrumentation, you're debugging blind. With it, you can:
-- See exactly where a multi-agent request gets slow
-- Understand error propagation (which agent failed first?)
-- Track resource usage (tokens, cost) per agent</p>
+<p>Without instrumentation, you're debugging blind. With it, you can:</p>
+<ul>
+<li>See exactly where a multi-agent request gets slow</li>
+<li>Understand error propagation (which agent failed first?)</li>
+<li>Track resource usage (tokens, cost) per agent</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Set up Jaeger exporter and TracerProvider
-- Define key metrics (execution duration, error count, token count)
-- Create a StructuredLogger that outputs JSON
-- Build an ObservableAgent that wraps agent execution with tracing</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Set up Jaeger exporter and TracerProvider</li>
+<li>Define key metrics (execution duration, error count, token count)</li>
+<li>Create a StructuredLogger that outputs JSON</li>
+<li>Build an ObservableAgent that wraps agent execution with tracing</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create OpenTelemetry instrumentation for an agent system:
 
@@ -2274,13 +1956,15 @@ Include example showing dashboard being generated and printed.
 Include example showing agent execution with tracing.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper TracerProvider and exporter setup
-- Metrics with appropriate tags/attributes
-- Structured JSON logging
-- Spans that capture the call hierarchy
-- Error handling with exception recording
-- Token counting integrated</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper TracerProvider and exporter setup</li>
+<li>Metrics with appropriate tags/attributes</li>
+<li>Structured JSON logging</li>
+<li>Spans that capture the call hierarchy</li>
+<li>Error handling with exception recording</li>
+<li>Token counting integrated</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If spans aren't nested properly, ask: "When agent.execute calls _call_tool, the tool.call span should be a child of agent.execute span. Is your current context preserved across the nested <code>with</code> statements?"</p>
 <p>If metrics are incomplete, ask: "Right now you record execution_duration and token_counter. We should also track: error rate per agent, p99 latency, tokens per task. Add placeholder metrics for these."</p>
@@ -2296,12 +1980,14 @@ Include example showing agent execution with tracing.
 </ol>
 <p>This answers: "Which agents are expensive? Are we on track for budget? Any suspicious cost spikes?"</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Integrate with TokenTracker (from Day 1 theory)
-- Calculate costs using Anthropic pricing (example: $3/1M input tokens)
-- Forecast daily cost by extrapolating current hour
-- Detect anomalies using percentile-based thresholds
-- Generate cost alerts when forecast exceeds budget</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Integrate with TokenTracker (from Day 1 theory)</li>
+<li>Calculate costs using Anthropic pricing (example: $3/1M input tokens)</li>
+<li>Forecast daily cost by extrapolating current hour</li>
+<li>Detect anomalies using percentile-based thresholds</li>
+<li>Generate cost alerts when forecast exceeds budget</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a CostDashboard class for cost tracking and forecasting:
 
@@ -2346,12 +2032,14 @@ The TokenTracker.get_cost_summary(groupby=&quot;agent&quot;) returns dict like {
 The anomaly detection finds tasks with costs &gt; 95th percentile threshold.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Correct cost extrapolation (current hour * 24, not current_minute * 1440)
-- Budget alert that's configurable
-- Proper sorting of agents by cost (descending)
-- Anomaly detection integration
-- Both JSON and text output formats</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Correct cost extrapolation (current hour * 24, not current_minute * 1440)</li>
+<li>Budget alert that's configurable</li>
+<li>Proper sorting of agents by cost (descending)</li>
+<li>Anomaly detection integration</li>
+<li>Both JSON and text output formats</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If forecasting seems wrong, ask: "If current hour is 3 PM and I've spent $5 so far, the daily forecast should be $5 * 24 = $120. Show me a concrete example of how your forecast calculation works."</p>
 <p>If anomaly detection is unclear, ask: "Explain your anomaly threshold: we're looking for tasks in the top 5% most expensive. Use the TokenTracker.detect_cost_anomaly() method and sort by cost_usd descending."</p>
@@ -2366,11 +2054,13 @@ The anomaly detection finds tasks with costs &gt; 95th percentile threshold.
 </ol>
 <p>This answers: "Is the system healthy? Are agents working well? How often do we need human intervention?"</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Query audit log to count total requests and errors
-- Use ErrorCompoundingAnalyzer to calculate chain accuracy
-- Count escalation events
-- Compare against SLOs (95% success, 80% accuracy)</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Query audit log to count total requests and errors</li>
+<li>Use ErrorCompoundingAnalyzer to calculate chain accuracy</li>
+<li>Count escalation events</li>
+<li>Compare against SLOs (95% success, 80% accuracy)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a HealthDashboard class for system reliability monitoring:
 
@@ -2420,51 +2110,67 @@ Methods:
 SLO values: 95% success rate, 80% accuracy. Adjust if needed.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Correct success rate calculation (1 - error_ratio)
-- Integration with ErrorCompoundingAnalyzer
-- SLO-based alerting
-- Both JSON and text output formats
-- Clear distinction between system health (success rate) and quality (accuracy)</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Correct success rate calculation (1 - error_ratio)</li>
+<li>Integration with ErrorCompoundingAnalyzer</li>
+<li>SLO-based alerting</li>
+<li>Both JSON and text output formats</li>
+<li>Clear distinction between system health (success rate) and quality (accuracy)</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the SLOs seem arbitrary, ask: "Why 95% success and 80% accuracy? These are industry-typical, but for your domain (incident response), should they be higher?"</p>
 <p>If escalation tracking is incomplete, ask: "We're counting escalations from the audit log, but we should also track reasons for escalation. Add a breakdown: how many escalations due to errors vs low confidence vs timeouts?"</p>
 <h4 id="deliverables_2">Deliverables</h4>
-<p><strong>1. Instrumented Multi-Agent System</strong>
-- OpenTelemetry tracing integrated into all agents
-- Structured logging in JSON format
-- Prometheus metrics exported</p>
-<p><strong>2. Cost Management Report</strong>
-- Token usage breakdown by agent and task
-- Daily cost trend
-- Anomaly detection results
-- Recommendations for cost optimization</p>
-<p><strong>3. System Health Dashboard</strong>
-- Success rate and error rates
-- End-to-end accuracy analysis
-- Human escalation metrics
-- SLO tracking</p>
-<p><strong>4. Observability Export</strong>
-- Sample Jaeger trace showing multi-agent request flow
-- Sample metrics export (JSON/Prometheus format)
-- Sample logs (JSONL)</p>
-<p><strong>5. Escalation Procedures</strong>
-- Document escalation criteria
-- SLA definitions for human response
-- Escalation workflow example</p>
-<p><strong>Sources &amp; Tools:</strong>
-- OpenTelemetry: https://opentelemetry.io/
-- Jaeger (distributed tracing): https://www.jaegertracing.io/
-- Prometheus (metrics): https://prometheus.io/</p>
+<p><strong>1. Instrumented Multi-Agent System</strong></p>
+<ul>
+<li>OpenTelemetry tracing integrated into all agents</li>
+<li>Structured logging in JSON format</li>
+<li>Prometheus metrics exported</li>
+</ul>
+<p><strong>2. Cost Management Report</strong></p>
+<ul>
+<li>Token usage breakdown by agent and task</li>
+<li>Daily cost trend</li>
+<li>Anomaly detection results</li>
+<li>Recommendations for cost optimization</li>
+</ul>
+<p><strong>3. System Health Dashboard</strong></p>
+<ul>
+<li>Success rate and error rates</li>
+<li>End-to-end accuracy analysis</li>
+<li>Human escalation metrics</li>
+<li>SLO tracking</li>
+</ul>
+<p><strong>4. Observability Export</strong></p>
+<ul>
+<li>Sample Jaeger trace showing multi-agent request flow</li>
+<li>Sample metrics export (JSON/Prometheus format)</li>
+<li>Sample logs (JSONL)</li>
+</ul>
+<p><strong>5. Escalation Procedures</strong></p>
+<ul>
+<li>Document escalation criteria</li>
+<li>SLA definitions for human response</li>
+<li>Escalation workflow example</li>
+</ul>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li>OpenTelemetry: https://opentelemetry.io/</li>
+<li>Jaeger (distributed tracing): https://www.jaegertracing.io/</li>
+<li>Prometheus (metrics): https://prometheus.io/</li>
+</ul>
 <hr />
 <h2 id="week-12-deploying-agentic-security-systems">Week 12: Deploying Agentic Security Systems</h2>
 <h3 id="day-1-theory-foundations_3">Day 1 — Theory &amp; Foundations</h3>
-<p><strong>Learning Objectives:</strong>
-- Design CI/CD pipelines for agentic systems with automated security gates
-- Containerize AI agents using Docker best practices
-- Implement canary, blue-green, and shadow mode deployments
-- Build operational runbooks for production agentic systems
-- Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance</p>
+<p><strong>Learning Objectives:</strong></p>
+<ul>
+<li>Design CI/CD pipelines for agentic systems with automated security gates</li>
+<li>Containerize AI agents using Docker best practices</li>
+<li>Implement canary, blue-green, and shadow mode deployments</li>
+<li>Build operational runbooks for production agentic systems</li>
+<li>Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance</li>
+</ul>
 <h4 id="deployment-architectures-for-agents">Deployment Architectures for Agents</h4>
 <p>Choose based on your operational requirements:</p>
 <table>
@@ -2727,11 +2433,13 @@ SLO values: 95% success rate, 80% accuracy. Adjust if needed.
 <span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;--config&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/etc/agent/config.yaml&quot;</span><span class="p">]</span>
 </code></pre></div>
 
-<p>Key security principles:
-- <strong>Multi-stage builds:</strong> Reduce final image size (remove build tools)
-- <strong>Non-root user:</strong> Mitigate container escape vulnerabilities
-- <strong>Health checks:</strong> Kubernetes can restart unhealthy containers
-- <strong>Explicit versions:</strong> Pin all dependencies (no floating tags)</p>
+<p>Key security principles:</p>
+<ul>
+<li><strong>Multi-stage builds:</strong> Reduce final image size (remove build tools)</li>
+<li><strong>Non-root user:</strong> Mitigate container escape vulnerabilities</li>
+<li><strong>Health checks:</strong> Kubernetes can restart unhealthy containers</li>
+<li><strong>Explicit versions:</strong> Pin all dependencies (no floating tags)</li>
+</ul>
 <h4 id="cicd-pipeline-with-security-gates">CI/CD Pipeline with Security Gates</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># GitHub Actions example</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy Agentic System</span><span class="w"></span>
@@ -2951,14 +2659,16 @@ kubectl patch service agent-system -p <span class="s1">&#39;{&quot;spec&quot;:{&
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Many teams assume MCP server configs are "safe by default" because they're configuration files, not code. In reality, a single misconfigured tool can become an agent's attack surface. For example, an agent with access to <code>bash_execute</code> can bypass all application-level controls. <strong>Always audit MCP configurations as security-critical.</strong></p>
 </div>
 <p><strong>Security Audit Checklist:</strong></p>
-<p>For each tool in an agent's MCP configuration, ask:
-- <strong>Why does the agent need this tool?</strong> Remove it if not essential.
-- <strong>What can this tool do?</strong> If it's <code>bash_execute</code>, it can do anything the agent's user can do.
-- <strong>What data can it access?</strong> Does the tool read files? Can it read sensitive logs, keys, or config?
-- <strong>What can it modify?</strong> Can it delete files, change configs, or trigger deployments?
-- <strong>Is it rate-limited?</strong> Can an agent spam this tool and cause resource exhaustion?
-- <strong>Is it monitored?</strong> Are calls to this tool logged and audited?
-- <strong>Is it signed?</strong> Do you verify the tool's integrity before loading it?</p>
+<p>For each tool in an agent's MCP configuration, ask:</p>
+<ul>
+<li><strong>Why does the agent need this tool?</strong> Remove it if not essential.</li>
+<li><strong>What can this tool do?</strong> If it's <code>bash_execute</code>, it can do anything the agent's user can do.</li>
+<li><strong>What data can it access?</strong> Does the tool read files? Can it read sensitive logs, keys, or config?</li>
+<li><strong>What can it modify?</strong> Can it delete files, change configs, or trigger deployments?</li>
+<li><strong>Is it rate-limited?</strong> Can an agent spam this tool and cause resource exhaustion?</li>
+<li><strong>Is it monitored?</strong> Are calls to this tool logged and audited?</li>
+<li><strong>Is it signed?</strong> Do you verify the tool's integrity before loading it?</li>
+</ul>
 <h5 id="agentic-coding-security-pretooluse-hooks-and-governance">Agentic Coding Security: PreToolUse Hooks and Governance</h5>
 <p>PeaRL's deployment architecture demonstrates that <strong>configuration-level security is insufficient</strong>. You also need <strong>execution-time governance</strong>.</p>
 <p><strong>PreToolUse Hooks — The Gate Before Execution:</strong></p>
@@ -3638,13 +3348,15 @@ kubectl get hpa agent-system -w
 <span class="n">Also</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="o">.</span><span class="n">dockerignore</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="n">excluding</span><span class="p">:</span><span class="w"> </span><span class="o">.</span><span class="n">git</span><span class="p">,</span><span class="w"> </span><span class="n">__pycache__</span><span class="p">,</span><span class="w"> </span><span class="o">.</span><span class="n">pytest_cache</span><span class="p">,</span><span class="w"> </span><span class="o">*.</span><span class="n">pyc</span><span class="p">,</span><span class="w"> </span><span class="o">.</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="n">venv</span><span class="o">/</span><span class="w"></span>
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Multi-stage build with clear separation
-- Non-root user creation and switching
-- Health check with appropriate timeouts
-- Wheel-based installation (reproducible)
-- .dockerignore to exclude unnecessary files
-- Comments explaining key security choices</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Multi-stage build with clear separation</li>
+<li>Non-root user creation and switching</li>
+<li>Health check with appropriate timeouts</li>
+<li>Wheel-based installation (reproducible)</li>
+<li>.dockerignore to exclude unnecessary files</li>
+<li>Comments explaining key security choices</li>
+</ul>
 <h4 id="step-2-complete-cicd-configuration">Step 2: Complete CI/CD Configuration</h4>
 <p><strong>Architecture Decision:</strong></p>
 <p>CI/CD is your release gate. It must:</p>
@@ -3655,11 +3367,13 @@ kubectl get hpa agent-system -w
 <li><strong>Deploy:</strong> Stage → Canary → Production with human approval gates</li>
 </ol>
 <p><strong>Context Engineering Note:</strong></p>
-<p>The GitHub Actions YAML is in the Day 1 theory section. For the lab, ask Claude Code to:
-- Create the .github/workflows/deploy.yml file
-- Include all security gates (safety check, SAST, container scan)
-- Implement staging deployment (automatic)
-- Implement canary deployment (manual approval before production)</p>
+<p>The GitHub Actions YAML is in the Day 1 theory section. For the lab, ask Claude Code to:</p>
+<ul>
+<li>Create the .github/workflows/deploy.yml file</li>
+<li>Include all security gates (safety check, SAST, container scan)</li>
+<li>Implement staging deployment (automatic)</li>
+<li>Implement canary deployment (manual approval before production)</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a complete GitHub Actions CI/CD workflow for an agent system:
 
@@ -3699,13 +3413,15 @@ Jobs:
 Each step should be idempotent and include error handling.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- All security scanning gates
-- Staging deployment (automatic, no approval)
-- Canary deployment (10% traffic, monitored)
-- Production deployment (requires approval)
-- Environment-specific configurations
-- Proper dependency ordering between jobs</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>All security scanning gates</li>
+<li>Staging deployment (automatic, no approval)</li>
+<li>Canary deployment (10% traffic, monitored)</li>
+<li>Production deployment (requires approval)</li>
+<li>Environment-specific configurations</li>
+<li>Proper dependency ordering between jobs</li>
+</ul>
 <h4 id="step-3-canary-deployment-script">Step 3: Canary Deployment Script</h4>
 <p><strong>Architecture Decision:</strong></p>
 <p>Canary deployments reduce risk by releasing to a small percentage first. The workflow:</p>
@@ -3718,12 +3434,14 @@ Each step should be idempotent and include error handling.
 </ol>
 <p>This is safer than "deploy to all servers at once" because you catch issues early.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Implement canary creation (kubectl set image)
-- Monitor error rate and latency from Prometheus
-- Implement traffic shifting logic (would use Istio/Flagger in production)
-- Automatic rollback on health check failure
-- Promotion to stable once all traffic levels pass</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Implement canary creation (kubectl set image)</li>
+<li>Monitor error rate and latency from Prometheus</li>
+<li>Implement traffic shifting logic (would use Istio/Flagger in production)</li>
+<li>Automatic rollback on health check failure</li>
+<li>Promotion to stable once all traffic levels pass</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a CanaryDeployment class that orchestrates safe deployments:
 
@@ -3763,13 +3481,15 @@ For lab purposes, _get_error_rate and _get_metrics can return simulated values.
 Include example usage showing successful deployment.
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Proper deployment orchestration (create, monitor, ramp, promote)
-- Health checks at each traffic level
-- Automatic rollback on failure
-- Proper error handling and logging
-- Simulation-friendly for lab environment
-- Clear timestamps for understanding progression</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Proper deployment orchestration (create, monitor, ramp, promote)</li>
+<li>Health checks at each traffic level</li>
+<li>Automatic rollback on failure</li>
+<li>Proper error handling and logging</li>
+<li>Simulation-friendly for lab environment</li>
+<li>Clear timestamps for understanding progression</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the traffic ramping seems too fast, ask: "Each traffic level sleeps for 5 seconds. In production, you'd want longer (5-10 minutes) to collect enough data. Add a parameter for monitoring duration."</p>
 <p>If Prometheus integration seems fragile, ask: "In the lab, _get_error_rate returns random values. In production, it would query Prometheus. Show both the real query and the lab stub."</p>
@@ -3788,12 +3508,14 @@ Include example usage showing successful deployment.
 </ol>
 <p>This teaches students what production operations look like without waiting 24 actual hours.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<p>Ask Claude Code to:
-- Simulate traffic with time-of-day variation (peak 9am-5pm)
-- Generate random errors with configurable rate
-- Track costs with token-based pricing
-- Inject incidents at specific times (6:30am CVE, noon cost spike, 3:45pm agent down)
-- Generate alerts when error_rate &gt; 5% or cost on pace to exceed budget</p>
+<p>Ask Claude Code to:</p>
+<ul>
+<li>Simulate traffic with time-of-day variation (peak 9am-5pm)</li>
+<li>Generate random errors with configurable rate</li>
+<li>Track costs with token-based pricing</li>
+<li>Inject incidents at specific times (6:30am CVE, noon cost spike, 3:45pm agent down)</li>
+<li>Generate alerts when error_rate &gt; 5% or cost on pace to exceed budget</li>
+</ul>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a ProductionSimulator class for 24-hour operations simulation:
 
@@ -3855,14 +3577,16 @@ _print_summary():
 Include example usage: simulator = ProductionSimulator(speedup_factor=300)
 </code></pre></div>
 
-<p><strong>After Claude generates the code, verify it includes:</strong>
-- Time-of-day traffic variation (peak/off-peak)
-- Realistic error rates and error distribution
-- Cost calculation with token-based pricing
-- Scheduled incident injection at specific times
-- Alert triggering based on thresholds
-- Both real-time output (emoji alerts) and summary report
-- Simulation time advancement logic</p>
+<p><strong>After Claude generates the code, verify it includes:</strong></p>
+<ul>
+<li>Time-of-day traffic variation (peak/off-peak)</li>
+<li>Realistic error rates and error distribution</li>
+<li>Cost calculation with token-based pricing</li>
+<li>Scheduled incident injection at specific times</li>
+<li>Alert triggering based on thresholds</li>
+<li>Both real-time output (emoji alerts) and summary report</li>
+<li>Simulation time advancement logic</li>
+</ul>
 <p><strong>Iteration guidance:</strong></p>
 <p>If the simulation feels too scripted, ask: "Right now incidents happen at fixed times. Add randomization: incidents should have a probability of occurring in a time window rather than at exact times. This feels more realistic."</p>
 <p>If cost tracking is incomplete, ask: "We're tracking total cost, but we should also track cost by agent. Add cost_by_agent dict and attribute costs to the agents processing requests."</p>
@@ -3996,27 +3720,35 @@ Include example usage: simulator = ProductionSimulator(speedup_factor=300)
 <p>A junior engineer asks: "How do I set up CI/CD?"
 A senior engineer says: "Here's my vetted CI/CD template. It includes security gates we've found effective, deployment stages that work for our stack, and troubleshooting guides from real incidents."</p>
 <p><strong>Your context library is becoming that senior engineer's toolkit.</strong></p>
-<p>When you capture:
-- Dockerfile best practices → ensures every system is built securely
-- CI/CD pipeline → ensures consistent deployment quality
-- Canary strategy → ensures safer rollouts
-- Runbook → ensures incident response is repeatable
-- Observability config → ensures you catch problems early</p>
+<p>When you capture:</p>
+<ul>
+<li>Dockerfile best practices → ensures every system is built securely</li>
+<li>CI/CD pipeline → ensures consistent deployment quality</li>
+<li>Canary strategy → ensures safer rollouts</li>
+<li>Runbook → ensures incident response is repeatable</li>
+<li>Observability config → ensures you catch problems early</li>
+</ul>
 <p>...you're locking in standards that scale across projects and teams.</p>
 <h3 id="iterating-on-your-library">Iterating on Your Library</h3>
 <p>Production patterns improve over time:</p>
-<p><strong>Week 12 Version (Initial):</strong>
-- Your first CI/CD pipeline works
-- Your canary deployment handles basic cases
-- Your runbook covers common scenarios</p>
-<p><strong>Week 13-16 (Capstone):</strong>
-- You discover edge cases and refine your patterns
-- You add troubleshooting steps based on real incidents
-- You optimize deployment speed, cost, and safety</p>
-<p><strong>Future Projects:</strong>
-- You reuse and refine these patterns
-- You version your library (<code>v1.0</code> → <code>v1.1</code> → <code>v2.0</code>)
-- Your patterns get better with each deployment</p>
+<p><strong>Week 12 Version (Initial):</strong></p>
+<ul>
+<li>Your first CI/CD pipeline works</li>
+<li>Your canary deployment handles basic cases</li>
+<li>Your runbook covers common scenarios</li>
+</ul>
+<p><strong>Week 13-16 (Capstone):</strong></p>
+<ul>
+<li>You discover edge cases and refine your patterns</li>
+<li>You add troubleshooting steps based on real incidents</li>
+<li>You optimize deployment speed, cost, and safety</li>
+</ul>
+<p><strong>Future Projects:</strong></p>
+<ul>
+<li>You reuse and refine these patterns</li>
+<li>You version your library (<code>v1.0</code> → <code>v1.1</code> → <code>v2.0</code>)</li>
+<li>Your patterns get better with each deployment</li>
+</ul>
 <p>Save your version history. Document what changed and why. This creates an audit trail and learning record.</p>
 <h3 id="documentation-matters">Documentation Matters</h3>
 <p>Production patterns only work if teammates can use them. Your library README should answer:</p>
@@ -4041,39 +3773,53 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <p>The patterns you document now become the foundation of your organization's production standards.</p>
 <hr />
 <h4 id="deliverables_3">Deliverables</h4>
-<p><strong>1. Production Dockerfile</strong>
-- Multi-stage build
-- Non-root user
-- Health checks
-- Security best practices</p>
-<p><strong>2. CI/CD Pipeline Configuration</strong>
-- GitHub Actions YAML
-- Test, security scanning, build, deploy stages
-- Approval workflows</p>
-<p><strong>3. Canary Deployment Script</strong>
-- Automated traffic shifting
-- Health monitoring
-- Automatic rollback on failure</p>
-<p><strong>4. Operations Runbook</strong>
-- Normal operations procedures
-- Troubleshooting guide for 5+ scenarios
-- Incident response procedures
-- Escalation matrix</p>
-<p><strong>5. After-Action Report (24-Hour Simulation)</strong>
-- Incidents encountered and response
-- Metrics: requests, errors, cost
-- Lessons learned
-- Recommendations for improvement</p>
-<p><strong>6. Security Artifacts</strong>
-- SBOM (CycloneDX JSON)
-- Vulnerability scan report
-- Container image scan results</p>
-<p><strong>Sources &amp; Tools:</strong>
-- Docker: https://docs.docker.com/
-- Kubernetes: https://kubernetes.io/docs/
-- GitHub Actions: https://github.com/features/actions
-- Istio (service mesh): https://istio.io/
-- Prometheus: https://prometheus.io/</p>
+<p><strong>1. Production Dockerfile</strong></p>
+<ul>
+<li>Multi-stage build</li>
+<li>Non-root user</li>
+<li>Health checks</li>
+<li>Security best practices</li>
+</ul>
+<p><strong>2. CI/CD Pipeline Configuration</strong></p>
+<ul>
+<li>GitHub Actions YAML</li>
+<li>Test, security scanning, build, deploy stages</li>
+<li>Approval workflows</li>
+</ul>
+<p><strong>3. Canary Deployment Script</strong></p>
+<ul>
+<li>Automated traffic shifting</li>
+<li>Health monitoring</li>
+<li>Automatic rollback on failure</li>
+</ul>
+<p><strong>4. Operations Runbook</strong></p>
+<ul>
+<li>Normal operations procedures</li>
+<li>Troubleshooting guide for 5+ scenarios</li>
+<li>Incident response procedures</li>
+<li>Escalation matrix</li>
+</ul>
+<p><strong>5. After-Action Report (24-Hour Simulation)</strong></p>
+<ul>
+<li>Incidents encountered and response</li>
+<li>Metrics: requests, errors, cost</li>
+<li>Lessons learned</li>
+<li>Recommendations for improvement</li>
+</ul>
+<p><strong>6. Security Artifacts</strong></p>
+<ul>
+<li>SBOM (CycloneDX JSON)</li>
+<li>Vulnerability scan report</li>
+<li>Container image scan results</li>
+</ul>
+<p><strong>Sources &amp; Tools:</strong></p>
+<ul>
+<li>Docker: https://docs.docker.com/</li>
+<li>Kubernetes: https://kubernetes.io/docs/</li>
+<li>GitHub Actions: https://github.com/features/actions</li>
+<li>Istio (service mesh): https://istio.io/</li>
+<li>Prometheus: https://prometheus.io/</li>
+</ul>
 <hr />
 <h2 id="week-12-addendum-the-devsecops-promotion-pipeline">Week 12 Addendum: The DevSecOps Promotion Pipeline</h2>
 <h3 id="the-path-from-prototype-to-production">The Path from Prototype to Production</h3>
@@ -4285,25 +4031,33 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <hr />
 <h2 id="unit-7-capstone-deploying-a-production-ready-agentic-security-system">Unit 7 Capstone: Deploying a Production-Ready Agentic Security System</h2>
 <p>After completing all four weeks, you will have built:</p>
-<p><strong>1. Supply Chain Security Audit Tool</strong> (Week 9)
-- Scans dependencies, models, data provenance
-- Generates risk report with SBOM
-- Integrates into CI/CD</p>
-<p><strong>2. Non-Human Identity Governance Framework</strong> (Week 10)
-- Identity registry with classification
-- Policy engine with RBAC/ABAC
-- Credential rotation and JIT access
-- Audit logging and dashboard</p>
-<p><strong>3. Observability and Cost Management System</strong> (Week 11)
-- OpenTelemetry instrumentation (traces, metrics, logs)
-- Token tracking and cost attribution
-- System health and quality dashboards
-- Escalation workflows</p>
-<p><strong>4. Production Deployment Pipeline</strong> (Week 12)
-- Dockerized, hardened containers
-- Complete CI/CD with security gates
-- Canary deployment strategy
-- Operations runbook and incident playbook</p>
+<p><strong>1. Supply Chain Security Audit Tool</strong> (Week 9)</p>
+<ul>
+<li>Scans dependencies, models, data provenance</li>
+<li>Generates risk report with SBOM</li>
+<li>Integrates into CI/CD</li>
+</ul>
+<p><strong>2. Non-Human Identity Governance Framework</strong> (Week 10)</p>
+<ul>
+<li>Identity registry with classification</li>
+<li>Policy engine with RBAC/ABAC</li>
+<li>Credential rotation and JIT access</li>
+<li>Audit logging and dashboard</li>
+</ul>
+<p><strong>3. Observability and Cost Management System</strong> (Week 11)</p>
+<ul>
+<li>OpenTelemetry instrumentation (traces, metrics, logs)</li>
+<li>Token tracking and cost attribution</li>
+<li>System health and quality dashboards</li>
+<li>Escalation workflows</li>
+</ul>
+<p><strong>4. Production Deployment Pipeline</strong> (Week 12)</p>
+<ul>
+<li>Dockerized, hardened containers</li>
+<li>Complete CI/CD with security gates</li>
+<li>Canary deployment strategy</li>
+<li>Operations runbook and incident playbook</li>
+</ul>
 <p><strong>Integrated System Workflow:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">Developer</span><span class="w"> </span><span class="n">commits</span><span class="w"> </span><span class="n">code</span><span class="w"></span>
 <span class="w">    </span><span class="err">↓</span><span class="w"></span>
@@ -4393,66 +4147,39 @@ Phase 4: Implementation
 <p><strong>Required deliverable for Unit 7 capstone:</strong> A <code>CHANGELOG.md</code> covering all changes from your Unit 4 prototype to the production system you're deploying, with semantic versioning applied and every MAJOR change annotated with its security impact.</p>
 <hr />
 <h2 id="resources-and-references">Resources and References</h2>
-<p><strong>Supply Chain Security (Week 9):</strong>
-- <a href="reading.html">Reading List</a>
-- <a href="frameworks.html">SBOM and Provenance Tools</a>
-- <a href="lab-setup.html">Lab Setup Guide</a></p>
-<p><strong>Identity Governance (Week 10):</strong>
-- HashiCorp Vault documentation
-- Kubernetes RBAC documentation
-- PeaRL governance paper (arXiv:2310.18688)</p>
-<p><strong>Observability (Week 11):</strong>
-- OpenTelemetry documentation
-- "The Three Pillars of Observability" (O'Reilly)
-- SRE best practices (Google)</p>
-<p><strong>Deployment (Week 12):</strong>
-- Docker best practices
-- Kubernetes deployment strategies
-- CI/CD patterns and anti-patterns</p>
-<p><strong>Shipping Governance:</strong>
-- <strong>gstack</strong> by Garry Tan — role-based review gates, /ship pipeline, systematic debug methodology, and changelog governance that inform this unit's capstone requirements. https://github.com/garrytan/gstack</p>
+<p><strong>Supply Chain Security (Week 9):</strong></p>
+<ul>
+<li><a href="reading.html">Reading List</a></li>
+<li><a href="frameworks.html">SBOM and Provenance Tools</a></li>
+<li><a href="lab-setup.html">Lab Setup Guide</a></li>
+</ul>
+<p><strong>Identity Governance (Week 10):</strong></p>
+<ul>
+<li>HashiCorp Vault documentation</li>
+<li>Kubernetes RBAC documentation</li>
+<li>PeaRL governance paper (arXiv:2310.18688)</li>
+</ul>
+<p><strong>Observability (Week 11):</strong></p>
+<ul>
+<li>OpenTelemetry documentation</li>
+<li>"The Three Pillars of Observability" (O'Reilly)</li>
+<li>SRE best practices (Google)</li>
+</ul>
+<p><strong>Deployment (Week 12):</strong></p>
+<ul>
+<li>Docker best practices</li>
+<li>Kubernetes deployment strategies</li>
+<li>CI/CD patterns and anti-patterns</li>
+</ul>
+<p><strong>Shipping Governance:</strong></p>
+<ul>
+<li><strong>gstack</strong> by Garry Tan — role-based review gates, /ship pipeline, systematic debug methodology, and changelog governance that inform this unit's capstone requirements. https://github.com/garrytan/gstack</li>
+</ul>
 <hr />
 <p><strong>End of Unit 7: Production Security Engineering</strong></p>
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -4544,6 +4271,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

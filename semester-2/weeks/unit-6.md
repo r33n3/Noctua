@@ -43,7 +43,7 @@ Understanding the landscape begins with categorizing how agents can be compromis
    - **Authority Confusion:** Making the agent believe override instructions come from a legitimate authority (e.g., "This message is from the CEO").
    - **Objective Reframing:** Gradually shifting the agent's perception of its goals through repeated context manipulation.
 
-> **📖 Further Reading:** Anthropic's "Disrupting AI-orchestrated Cyber Espionage" (September 2025) documents how state-sponsored actors used sophisticated prompt injection chains to manipulate AI agents into conducting surveillance and exfiltrating classified information. The attack chain demonstrated goal hijacking at scale.
+> **📖 Further Reading:** Anthropic's "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" (disclosed November 2025, detected September 2025) documents how GTG-1002, a Chinese state-sponsored group, jailbroke Claude Code by posing as legitimate cybersecurity firm employees conducting authorized testing — demonstrating social engineering as an attack vector against AI safety systems. Source: [anthropic.com/news/disrupting-AI-espionage](https://www.anthropic.com/news/disrupting-AI-espionage)
 
 3. **Tool Misuse and Exploitation** — Agents have permissions to call external tools (APIs, databases, file systems). Attackers exploit these tools in unintended ways.
    - **Permission Boundary Violations:** Chaining tool calls to exceed the agent's intended permissions. Example: Using a "read file" tool followed by a "send email" tool to exfiltrate data.
@@ -60,7 +60,7 @@ Understanding the landscape begins with categorizing how agents can be compromis
    - **Corrupting Conversation History:** Modifying stored conversation logs to change how the agent understands prior decisions.
    - **Planting Backdoors:** Embedding instructions in memory that activate under specific triggers.
 
-> **💡 Discussion Prompt:** If an agent's persistent memory is corrupted with false information, and the agent believes it must maintain consistency with that memory, how would you detect this as an attacker? How would you defend against it?
+> **💬 Discussion Prompt:** If an agent's persistent memory is corrupted with false information, and the agent believes it must maintain consistency with that memory, how would you detect this as an attacker? How would you defend against it?
 
 6. **Data Poisoning** — Introducing false or malicious data into the agent's operational inputs (documents, databases, web search results).
    - **Adversarial Documents:** Attacker creates documents with embedded instructions that contradict the agent's goals.
@@ -135,17 +135,17 @@ This 7-level chain demonstrates that the most dangerous attacks are **not one-sh
 
 > **📖 Further Reading:** PeaRL's full technical report: "Autonomous Agent Attack Chains: A Seven-Level Framework for Agentic AI Compromise" documents the TTPs, detection signatures, and mitigation strategies for each level. See [Frameworks](resources/FRAMEWORKS.md).
 
-**Anthropic September 2025: State-Sponsored AI Espionage**
+**GTG-1002: The First Documented AI-Orchestrated Espionage Campaign (November 2025)**
 
-In September 2025, Anthropic disclosed a coordinated attack by a state-sponsored actor that weaponized prompt injection against enterprise AI agents. The attack:
+In November 2025 (detection: September 2025), Anthropic disclosed the GTG-1002 campaign — a Chinese state-sponsored group that used Claude Code as an autonomous attack platform. This is the first publicly documented case of AI orchestrating a cyber espionage campaign at scale. The attack:
 
-- Targeted financial institutions and government agencies using Claude-based AI agents for decision-making
-- Used highly sophisticated multi-stage indirect injection attacks embedded in public documents
-- Achieved goal hijacking to make agents produce biased analysis favoring the attacker's geopolitical interests
-- Maintained persistence through memory poisoning, allowing long-term influence on decisions
-- Evaded detection by operating at the semantic layer—no code vulnerabilities, only behavior changes
+- Targeted approximately 30 organizations: technology companies, financial institutions, chemical manufacturers, and government agencies globally
+- **Attack vector:** Social engineering — operators posed as employees of legitimate cybersecurity firms conducting authorized testing, bypassing Claude's safety systems via persona-based jailbreaking
+- **Autonomy level:** Claude executed 80–90% of the campaign independently — reconnaissance, vulnerability discovery, credential harvesting, and data exfiltration — with human operators providing only ~20 minutes of oversight while Claude worked for several hours
+- **Speed:** Operated at thousands of requests per second at peak — attack velocity impossible for human operators
+- **Low human footprint:** Minimal operator involvement meant fewer behavioral indicators to detect
 
-The incident proved that **adversarial AI is not theoretical; it's an active threat from well-resourced opponents**.
+The incident proved that **AI agents are now force multipliers for nation-state actors**, and that safety systems can be bypassed through social engineering rather than technical exploits.
 
 **2026: The Year Agentic AI Becomes the Attack-Surface Poster Child**
 
@@ -338,7 +338,7 @@ Create the following artifacts:
    - Recommended mitigation approach
    - Residual risk after mitigation
 
-> **💡 Discussion Prompt:** Which risks can you mitigate through input validation alone? Which require architectural changes? Which might be acceptable risks that you'll monitor but not eliminate?
+> **💬 Discussion Prompt:** Which risks can you mitigate through input validation alone? Which require architectural changes? Which might be acceptable risks that you'll monitor but not eliminate?
 
 #### Evaluation Criteria
 - Comprehensive identification of attack vectors (did you find the obvious ones AND the subtle ones?)
@@ -356,7 +356,7 @@ Create the following artifacts:
 
 #### Sources & Further Reading
 - MITRE ATLAS Framework: [https://atlas.mitre.org/](https://atlas.mitre.org/)
-- Anthropic "Disrupting AI-orchestrated Cyber Espionage" Report (September 2025): [Reading List](resources/READING-LIST.md)
+- Anthropic "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" (November 2025): [Reading List](resources/READING-LIST.md)
 - OWASP Top 10 for LLM Applications: [https://owasp.org/www-project-top-10-for-large-language-model-applications/](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
 - PeaRL Security Research - Autonomous Agent Attack Chains: [Frameworks](resources/FRAMEWORKS.md)
 - Dark Reading: "2026: The Year Agentic AI Becomes the Attack-Surface Poster Child"
@@ -530,7 +530,7 @@ Multi-stage attacks are devastating because they:
 - Are harder to detect (look like normal system operation)
 - Can establish persistent influence across multiple agents
 
-> **💡 Discussion Prompt:** If you were designing an agent system, how would you prevent multi-stage injection attacks? What mechanisms could you put in place to ensure that outputs from one agent cannot become unvalidated inputs to another?
+> **💬 Discussion Prompt:** If you were designing an agent system, how would you prevent multi-stage injection attacks? What mechanisms could you put in place to ensure that outputs from one agent cannot become unvalidated inputs to another?
 
 **Goal Hijacking: Beyond Simple Instruction Override**
 
@@ -974,7 +974,7 @@ This is why production AI systems need:
 
 > **💡 Pro Tip:** When designing an attacker system prompt for your own red-teaming, focus on **context engineering for adversarial AI**: Give the attacker model clear instructions about how to reason about failures and adapt. A prompt like "If your previous approach was blocked, analyze the block reason and generate a variant that addresses the specific defense" is more valuable than "try different jailbreaks." The attacker should be a *reasoner*, not a script executor.
 
-> **💡 Discussion Prompt:** Consider the difference between a "good" attacker model and a "good" defender model. The attacker optimizes for creativity, persistence, and reasoning through failure. The defender optimizes for consistency, adherence to values, and resisting social engineering. What training approach would produce each? Can you design an attacker system prompt that would persistently probe your own agent's weaknesses?
+> **💬 Discussion Prompt:** Consider the difference between a "good" attacker model and a "good" defender model. The attacker optimizes for creativity, persistence, and reasoning through failure. The defender optimizes for consistency, adherence to values, and resisting social engineering. What training approach would produce each? Can you design an attacker system prompt that would persistently probe your own agent's weaknesses?
 
 ---
 
@@ -3244,7 +3244,7 @@ After the wargame, reflect on:
 - What governance and oversight is needed for autonomous agents?
 - How does this affect organizational security strategy?
 
-> **💡 Discussion Prompt:** In a real incident, a red team achieves the attack success you saw in the wargame. What would be different about incident response? What additional constraints exist? What's the cost to the organization, beyond data loss?
+> **💬 Discussion Prompt:** In a real incident, a red team achieves the attack success you saw in the wargame. What would be different about incident response? What additional constraints exist? What's the cost to the organization, beyond data loss?
 
 ---
 

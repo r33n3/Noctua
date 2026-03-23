@@ -4,426 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 1: CCT Foundations — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-/* === PROMPT BLOCKS === */
-.prompt-block { position: relative; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 10px 52px 10px 14px; margin: 10px 0; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--text); }
-.prompt-block .copy-btn { top: 6px; right: 6px; }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -440,7 +21,7 @@ body {
   <a href="index.html">Course Overview</a>
   <div class="nav-section">Semester 1: Foundations</div>
   <a href="semester1.html">Semester 1 Overview</a>
-  <a href="s1-unit1.html" class="sub active">Unit 1: CCT Foundations</a>
+  <a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
   <a href="lab-s1-unit1.html" class="sub">Lab: Unit 1</a>
   <a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
   <a href="lab-s1-unit2.html" class="sub">Lab: Unit 2</a>
@@ -546,11 +127,13 @@ body {
 <li>Establish your baseline performance metrics and begin tracking them</li>
 </ul>
 <h4 id="lab-setup">Lab Setup</h4>
-<p>Before starting, ensure you have:
-- Claude Code installed (see <a href="lab-setup.html">Lab Setup Guide</a> for installation steps)
-- A text editor (VS Code recommended; Claude Code integrates seamlessly)
-- Python 3.10+ installed for running agent scripts
-- Access to an API key for Claude (Opus recommended for this unit)</p>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li>Claude Code installed (see <a href="lab-setup.html">Lab Setup Guide</a> for installation steps)</li>
+<li>A text editor (VS Code recommended; Claude Code integrates seamlessly)</li>
+<li>Python 3.10+ installed for running agent scripts</li>
+<li>Access to an API key for Claude (Opus recommended for this unit)</li>
+</ul>
 <p>See <a href="lab-setup.html">Lab Setup Guide</a> for detailed environment configuration.</p>
 <div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the five slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, and <code>/harness</code> to audit whether your workflows are improving.</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/.claude/commands
@@ -604,11 +187,13 @@ curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r3
 <p><strong>AI-augmented approach:</strong> Use Claude Code to guide the analyst through each pillar of the framework, ensuring nothing is missed and outputs are repeatable.</p>
 </li>
 </ol>
-<p>In a real incident, the AI doesn't replace the analyst's judgment. Instead, it ensures rigor by:
-- Forcing explicit documentation of evidence vs. inference
-- Surfacing blind spots through inclusive perspective questioning
-- Generating alternative hypotheses automatically
-- Recording assumptions that underlie each conclusion</p>
+<p>In a real incident, the AI doesn't replace the analyst's judgment. Instead, it ensures rigor by:</p>
+<ul>
+<li>Forcing explicit documentation of evidence vs. inference</li>
+<li>Surfacing blind spots through inclusive perspective questioning</li>
+<li>Generating alternative hypotheses automatically</li>
+<li>Recording assumptions that underlie each conclusion</li>
+</ul>
 <p>The trade-off: More structure takes slightly more time initially, but saves enormous time on incident escalations, post-mortems, and avoiding false positives.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A tempting approach is to hard-code CCT analysis into a Python script. But that's inflexible—each incident is unique. Instead, you should use Claude Code to apply CCT dynamically, adapting the framework to the specific context.</p>
 </div>
@@ -670,22 +255,28 @@ Analyze using this structure:
 Provide a structured analysis that&#39;s audit-able and defensible.
 </code></pre></div>
 
-<p><strong>After Claude generates the analysis, verify it includes:</strong>
-- Explicit separation of observations from inferences
-- At least 2 alternative hypotheses with supporting evidence for each
-- Specific investigation steps (not just "investigate more")
-- Clear confidence levels with reasoning
-- Documented assumptions that could change the conclusion</p>
-<p><strong>If the output lacks structure:</strong>
-- Ask Claude: "Format as JSON with fields: evidence_summary, alternative_hypotheses, next_steps, assumptions, reasoning"
-- Request: "Add a confidence score (0-100%) for each hypothesis"
-- Clarify: "For each assumption, state what would falsify it"</p>
-<p><strong>Why Claude Code instead of running Python scripts:</strong>
-- Each incident is different; Claude adapts dynamically
-- You see Claude's reasoning in real-time and can challenge it
-- Outputs are immediately usable (no copy-paste from terminal)
-- You can iterate: "I disagree about assumption X; reconsider it"
-- No infrastructure management (no need to deploy and maintain the Python tool)</p>
+<p><strong>After Claude generates the analysis, verify it includes:</strong></p>
+<ul>
+<li>Explicit separation of observations from inferences</li>
+<li>At least 2 alternative hypotheses with supporting evidence for each</li>
+<li>Specific investigation steps (not just "investigate more")</li>
+<li>Clear confidence levels with reasoning</li>
+<li>Documented assumptions that could change the conclusion</li>
+</ul>
+<p><strong>If the output lacks structure:</strong></p>
+<ul>
+<li>Ask Claude: "Format as JSON with fields: evidence_summary, alternative_hypotheses, next_steps, assumptions, reasoning"</li>
+<li>Request: "Add a confidence score (0-100%) for each hypothesis"</li>
+<li>Clarify: "For each assumption, state what would falsify it"</li>
+</ul>
+<p><strong>Why Claude Code instead of running Python scripts:</strong></p>
+<ul>
+<li>Each incident is different; Claude adapts dynamically</li>
+<li>You see Claude's reasoning in real-time and can challenge it</li>
+<li>Outputs are immediately usable (no copy-paste from terminal)</li>
+<li>You can iterate: "I disagree about assumption X; reconsider it"</li>
+<li>No infrastructure management (no need to deploy and maintain the Python tool)</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> This workflow transforms you from "run this script to get an analysis" to "collaborate with Claude to build analysis." The script approach doesn't scale past your first incident because every incident requires tweaking the code.</p>
 <p><strong>Common Pitfall:</strong> A common mistake is assuming that because a user has valid credentials and passed MFA, the access is "safe." MFA can be compromised through SIM-swap, malware that captures MFA codes, or through compromise of the device that stores MFA seeds. Always treat valid authentication as <em>necessary but not sufficient</em> proof of legitimate access.</p>
 </div>
@@ -786,6 +377,16 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 </div>
 <h4 id="lecture-content_1">Lecture Content</h4>
 <p>Last week, we introduced Collaborative Critical Thinking as a framework. This week, we make it concrete. CCT rests on five pillars, each grounded in decades of research into human decision-making, organizational behavior, and information analysis. Understanding each pillar deeply will transform how you work with AI agents—and with colleagues.</p>
+<table>
+<thead><tr><th>Pillar</th><th>Core Question</th><th>Common Failure Mode</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Evidence-Based Analysis</strong></td><td>What do we <em>observe</em> vs. what do we <em>infer</em>?</td><td>Confirmation bias — seeking evidence to confirm a hunch</td></tr>
+<tr><td><strong>2. Inclusive Perspective</strong></td><td>Whose voice is missing from this analysis?</td><td>Organizational silos — each team only sees their slice</td></tr>
+<tr><td><strong>3. Strategic Connections</strong></td><td>What patterns connect these indicators?</td><td>Tunnel vision — analyzing events in isolation</td></tr>
+<tr><td><strong>4. Adaptive Innovation</strong></td><td>What would prove us wrong?</td><td>Defensive thinking — protecting the initial hypothesis</td></tr>
+<tr><td><strong>5. Ethical Governance</strong></td><td>Is our response proportional and documented?</td><td>Skipping accountability — acting fast without audit trail</td></tr>
+</tbody>
+</table>
 <p><strong>Pillar 1: Evidence-Based Analysis</strong></p>
 <p>The most dangerous words in security are "I think" and "probably." In forensics, we say "observe, document, infer—in that order." Too often, analysts reverse this. They begin with inference (a hunch about what happened), then seek evidence that confirms it, then document selectively.</p>
 <p>This is confirmation bias, and it's rampant in security. An analyst who suspects an insider threat will interpret innocent log entries as suspicious. A threat hunter who believes a vulnerability is exploited in the wild will see false positives as "additional confirmations." The bias is not dishonesty; it's cognitive efficiency. The brain shortcuts data-gathering to confirm existing beliefs. Fast. Efficient. Dangerous.</p>
@@ -850,11 +451,13 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 <h4 id="lab-exercise-the-cloudshift-lateral-movement-case">Lab Exercise: The CloudShift Lateral Movement Case</h4>
 <p><strong>Scenario Overview</strong></p>
 <p>Your organization, CloudShift (a SaaS platform management company), uses AWS for infrastructure. On March 4, 2026, at 14:22 UTC, a security alert fired: an EC2 instance (prod-db-01, a database server in us-east-1) spawned an unusual child process: <code>cmd.exe /c powershell.exe -noprofile -c "Get-ChildItem C:\Users\ -recurse | Select-Object FullName"</code>. This is a reconnaissance command enumerating user directories.</p>
-<p>The process ran for 3 seconds and exited. No obvious follow-up activity. The instance has been running for 72 days without incident. The attached IAM role has permissions for:
-- S3 read (to buckets: customer-configs, logs, backups)
-- RDS read/write (to all databases)
-- EC2 describe/list
-- CloudWatch logs read</p>
+<p>The process ran for 3 seconds and exited. No obvious follow-up activity. The instance has been running for 72 days without incident. The attached IAM role has permissions for:</p>
+<ul>
+<li>S3 read (to buckets: customer-configs, logs, backups)</li>
+<li>RDS read/write (to all databases)</li>
+<li>EC2 describe/list</li>
+<li>CloudWatch logs read</li>
+</ul>
 <p>Initial response: The SOC escalated to Level 2 (team lead), but hasn't called an all-hands incident yet.</p>
 <p><strong>Supplementary Data (provided as separate files)</strong></p>
 <p>Download the lab data files before starting:</p>
@@ -933,15 +536,19 @@ Provide a structured analysis that&#39;s audit-able and defensible.
 
 <h4 id="part-1-unstructured-analysis-15-minutes">Part 1: Unstructured Analysis (15 minutes)</h4>
 <p>Assign roles within your team (2–3 people): Database Admin, Network Lead, Application Lead, Incident Commander.</p>
-<p>Without any structure or framework, spend 10 minutes discussing:
-- "What happened here?"
-- "Is this a security incident or false alarm?"
-- "What should we do?"</p>
-<p>Document the conversation. Record:
-- Did people agree?
-- Were there conflicting conclusions?
-- What was the decision reached?
-- How confident are you in that decision?</p>
+<p>Without any structure or framework, spend 10 minutes discussing:</p>
+<ul>
+<li>"What happened here?"</li>
+<li>"Is this a security incident or false alarm?"</li>
+<li>"What should we do?"</li>
+</ul>
+<p>Document the conversation. Record:</p>
+<ul>
+<li>Did people agree?</li>
+<li>Were there conflicting conclusions?</li>
+<li>What was the decision reached?</li>
+<li>How confident are you in that decision?</li>
+</ul>
 <h4 id="part-2-cct-structured-analysis-35-minutes">Part 2: CCT-Structured Analysis (35 minutes)</h4>
 <p>Now, analyze the <em>same</em> scenario using the five CCT pillars. Work through each pillar systematically.</p>
 <p><strong>Pillar 1: Evidence-Based Analysis (7 minutes)</strong></p>
@@ -1008,10 +615,12 @@ Hypothesis D: False alarm
 
 <p><strong>Pillar 2: Inclusive Perspective (8 minutes)</strong></p>
 <p>Create a file: <code>perspectives.md</code></p>
-<p>For each team (DBA, Network, Application, Incident Response):
-- What information do they have that others don't?
-- What assumption might they be making that the others would challenge?
-- What question would they ask to resolve the uncertainty?</p>
+<p>For each team (DBA, Network, Application, Incident Response):</p>
+<ul>
+<li>What information do they have that others don't?</li>
+<li>What assumption might they be making that the others would challenge?</li>
+<li>What question would they ask to resolve the uncertainty?</li>
+</ul>
 <div class="codehilite"><pre><span></span><code><span class="gu">## INCLUSIVE PERSPECTIVES</span>
 
 <span class="gu">### Database Administrator</span>
@@ -1086,38 +695,50 @@ covering tracks, or (b) this isn&#39;t actually a malicious incident.&quot;
 </div>
 
 <p><strong>Narrative Analysis</strong></p>
-<p><strong>Narrative A: Lateral Movement Attack</strong>
-- Attacker compromised another CloudShift system (maybe web app, maybe VPN, maybe employee laptop)
-- From that system, attacker discovered they could assume the prod-db-01 IAM role
-- Used that role to enumerate and exfiltrate data
-- Timeline: &lt;15 minutes of active activity suggests time-constrained exfil (maybe detected quickly)
-- Missing piece: Why the directory enumeration on the OS? That's odd for an IAM-only compromise.</p>
-<p><strong>Narrative B: Insider Threat or Legitimate Access Abuse</strong>
-- A CloudShift employee with legitimate database access intentionally exported customer data
-- They used the IAM role (which they have access to) to do so
-- The directory enumeration might be troubleshooting or testing
-- Timeline: Concentrated activity suggests deliberate exfil attempt, not probing</p>
-<p><strong>Narrative C: Buggy Code Deployment</strong>
-- New backup feature deployed Mar 3
-- Code has a bug that causes it to export at wrong time or with wrong filter
-- Directory enumeration was debug code left in production
-- Timeline: All activity concentrated &lt; 15 min suggests code-triggered, not attacker</p>
+<p><strong>Narrative A: Lateral Movement Attack</strong></p>
+<ul>
+<li>Attacker compromised another CloudShift system (maybe web app, maybe VPN, maybe employee laptop)</li>
+<li>From that system, attacker discovered they could assume the prod-db-01 IAM role</li>
+<li>Used that role to enumerate and exfiltrate data</li>
+<li>Timeline: &lt;15 minutes of active activity suggests time-constrained exfil (maybe detected quickly)</li>
+<li>Missing piece: Why the directory enumeration on the OS? That's odd for an IAM-only compromise.</li>
+</ul>
+<p><strong>Narrative B: Insider Threat or Legitimate Access Abuse</strong></p>
+<ul>
+<li>A CloudShift employee with legitimate database access intentionally exported customer data</li>
+<li>They used the IAM role (which they have access to) to do so</li>
+<li>The directory enumeration might be troubleshooting or testing</li>
+<li>Timeline: Concentrated activity suggests deliberate exfil attempt, not probing</li>
+</ul>
+<p><strong>Narrative C: Buggy Code Deployment</strong></p>
+<ul>
+<li>New backup feature deployed Mar 3</li>
+<li>Code has a bug that causes it to export at wrong time or with wrong filter</li>
+<li>Directory enumeration was debug code left in production</li>
+<li>Timeline: All activity concentrated &lt; 15 min suggests code-triggered, not attacker</li>
+</ul>
 <h3 id="second-order-effects-what-happens-next-if-each-narrative-is-true">Second-Order Effects (What happens next if each narrative is true?)</h3>
-<p><strong>If Lateral Movement:</strong>
-- Attacker has other CloudShift systems compromised (might not know which ones)
-- Need to audit all systems that share credentials or trust relationships
-- Customer data breach likely; need to notify customers and regulators
-- Reputational damage; potential loss of enterprise customers who need compliance assurance</p>
-<p><strong>If Insider Threat:</strong>
-- Need to investigate which employee, when they discovered the exfil vulnerability, what they did with the data
-- If malicious: criminal investigation; legal risk; HR action
-- If accidental: training and process gaps
-- Still a breach; still need customer notification</p>
-<p><strong>If Buggy Code:</strong>
-- Need to immediately audit and roll back the Mar 3 deployment
-- Check if anyone else accessed the same data via the feature
-- Likely NOT a breach, but might violate internal policy (unauthorized access)
-- Low external damage; focus on process improvements</p>
+<p><strong>If Lateral Movement:</strong></p>
+<ul>
+<li>Attacker has other CloudShift systems compromised (might not know which ones)</li>
+<li>Need to audit all systems that share credentials or trust relationships</li>
+<li>Customer data breach likely; need to notify customers and regulators</li>
+<li>Reputational damage; potential loss of enterprise customers who need compliance assurance</li>
+</ul>
+<p><strong>If Insider Threat:</strong></p>
+<ul>
+<li>Need to investigate which employee, when they discovered the exfil vulnerability, what they did with the data</li>
+<li>If malicious: criminal investigation; legal risk; HR action</li>
+<li>If accidental: training and process gaps</li>
+<li>Still a breach; still need customer notification</li>
+</ul>
+<p><strong>If Buggy Code:</strong></p>
+<ul>
+<li>Need to immediately audit and roll back the Mar 3 deployment</li>
+<li>Check if anyone else accessed the same data via the feature</li>
+<li>Likely NOT a breach, but might violate internal policy (unauthorized access)</li>
+<li>Low external damage; focus on process improvements</li>
+</ul>
 <h3 id="dependencies-what-breaks-our-response-if-it-fails">Dependencies (What breaks our response if it fails?)</h3>
 <ol>
 <li>
@@ -1352,62 +973,85 @@ Did automation do the right thing? What would you do differently next time?
 <p><strong>Large context:</strong> You include the full email (headers, body, HTML, attachments), previous emails from this attacker, threat intelligence reports about this actor, your organization's email policies, and examples of how the model should respond. The model now has much richer context for analysis.</p>
 </li>
 </ol>
-<p>The second scenario produces better results, but costs more. Specifically:
-- Input tokens cost less (maybe $0.003 per 1K tokens)
-- Output tokens cost more (maybe $0.006 per 1K tokens)
-- Longer contexts = more input tokens = higher cost</p>
+<p>The second scenario produces better results, but costs more. Specifically:</p>
+<ul>
+<li>Input tokens cost less (maybe $0.003 per 1K tokens)</li>
+<li>Output tokens cost more (maybe $0.006 per 1K tokens)</li>
+<li>Longer contexts = more input tokens = higher cost</li>
+</ul>
 <p>The tradeoff is between cost and quality. For some tasks (simple classification), you don't need much context. For others (complex investigation), context is what distinguishes a good analysis from a mediocre one.</p>
-<div class="callout callout-reading"><p><strong>Further Reading:</strong> Anthropic's guide "Context Windows and Token Economics" (see <a href="reading.html">Reading List</a>) dives deeper into cost optimization strategies. The short version: don't include irrelevant context just because you can.</p>
+<div class="callout callout-reading"><p><strong>Further Reading:</strong> See Anthropic's documentation on <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">prompt engineering</a> and token usage for cost optimization strategies. The short version: don't include irrelevant context just because you can.</p>
 </div>
 <p><strong>The Landscape of Models in 2026</strong></p>
 <p>The market has stratified into three tiers:</p>
 <p><strong>Tier 1: Frontier Closed Models</strong></p>
-<p>These are the most capable models, built by large labs and proprietary:
-- <strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 1M token context, ~$15/1M input tokens
-- <strong>Claude Sonnet 4.6</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens
-- <strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$1.00/1M input tokens
-- <strong>GPT-4o / GPT-4.5</strong> (OpenAI, 2025): Multimodal (text, image, audio), strong reasoning, 128K context
-- <strong>GPT-5.x series / o3 / o4-mini</strong> (OpenAI, 2026): Latest generation; o-series models optimized for extended reasoning and complex tasks
-- <strong>Gemini 2.5</strong> (Google, 2026): Native multimodal, 1M+ context window, strong coding and reasoning</p>
-<p><strong>Advantages:</strong>
-- Highest quality output
-- Newest knowledge (training cutoff more recent)
-- Broad capabilities (reasoning, code, multimodal)
-- Extensive safety and alignment work</p>
-<p><strong>Disadvantages:</strong>
-- Higher cost
-- Less privacy control (data sent to vendor)
-- Vendor lock-in (if you build on GPT-4, switching is expensive)
-- Closed training data (unclear what was used to train)</p>
+<p>These are the most capable models, built by large labs and proprietary:</p>
+<ul>
+<li><strong>Claude Opus 4.6</strong> (Anthropic, 2026): Strongest reasoning, best for complex analysis, 1M token context, ~$15/1M input tokens</li>
+<li><strong>Claude Sonnet 4.6</strong> (Anthropic, 2026): Balanced, faster than Opus, good for real-time applications, 200K context, ~$3/1M input tokens</li>
+<li><strong>Claude Haiku 4.5</strong> (Anthropic, 2026): Lightweight, 200K context, fastest inference, cheapest, ~$1.00/1M input tokens</li>
+</ul>
+<div class="callout callout-tip"><p><strong>Note on model versions and pricing:</strong> Model names and pricing change frequently. The versions and figures above reflect early 2026. Check <a href="https://www.anthropic.com/pricing" target="_blank">anthropic.com/pricing</a> and <a href="https://openai.com/pricing" target="_blank">openai.com/pricing</a> for current rates. The relative tiers (Opus > Sonnet > Haiku in capability and cost) remain stable.</p></div>
+<ul>
+<li><strong>GPT-4o / GPT-4.5</strong> (OpenAI, 2025): Multimodal (text, image, audio), strong reasoning, 128K context</li>
+<li><strong>GPT-5.x series / o3 / o4-mini</strong> (OpenAI, 2026): Latest generation; o-series models optimized for extended reasoning and complex tasks</li>
+<li><strong>Gemini 2.5</strong> (Google, 2026): Native multimodal, 1M+ context window, strong coding and reasoning</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Highest quality output</li>
+<li>Newest knowledge (training cutoff more recent)</li>
+<li>Broad capabilities (reasoning, code, multimodal)</li>
+<li>Extensive safety and alignment work</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Higher cost</li>
+<li>Less privacy control (data sent to vendor)</li>
+<li>Vendor lock-in (if you build on GPT-4, switching is expensive)</li>
+<li>Closed training data (unclear what was used to train)</li>
+</ul>
 <p><strong>Tier 2: Open-Source Models</strong></p>
-<p>These are freely available, trainable/fine-tunable:
-- <strong>Llama 3.1</strong> (Meta, 2025): Strong reasoning, efficient, 128K context
-- <strong>Mistral 7B/8x7B</strong> (Mistral AI, 2025): Lightweight, modular (mixture of experts), 32K context
-- <strong>Phi-3.5</strong> (Microsoft, 2025): Smaller, very efficient, good for edge deployments, 128K context
-- <strong>Deepseek-R1</strong> (Deepseek, 2026): Strong reasoning, competitive with Opus on benchmarks, open weights</p>
-<p><strong>Advantages:</strong>
-- No vendor lock-in
-- Can run on-premises (full privacy control)
-- Lower cost (commodity hardware, no API fees)
-- Transparent training (mostly; varies by model)
-- Fine-tune for domain-specific tasks</p>
-<p><strong>Disadvantages:</strong>
-- Slightly lower quality on complex tasks
-- Requires infrastructure (GPU, inference server)
-- Maintenance overhead (library dependencies, model serving)
-- Smaller developer community than frontier models</p>
+<p>These are freely available, trainable/fine-tunable:</p>
+<ul>
+<li><strong>Llama 3.1</strong> (Meta, 2025): Strong reasoning, efficient, 128K context</li>
+<li><strong>Mistral 7B/8x7B</strong> (Mistral AI, 2025): Lightweight, modular (mixture of experts), 32K context</li>
+<li><strong>Phi-3.5</strong> (Microsoft, 2025): Smaller, very efficient, good for edge deployments, 128K context</li>
+<li><strong>Deepseek-R1</strong> (Deepseek, 2026): Strong reasoning, competitive with Opus on benchmarks, open weights</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>No vendor lock-in</li>
+<li>Can run on-premises (full privacy control)</li>
+<li>Lower cost (commodity hardware, no API fees)</li>
+<li>Transparent training (mostly; varies by model)</li>
+<li>Fine-tune for domain-specific tasks</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Slightly lower quality on complex tasks</li>
+<li>Requires infrastructure (GPU, inference server)</li>
+<li>Maintenance overhead (library dependencies, model serving)</li>
+<li>Smaller developer community than frontier models</li>
+</ul>
 <p><strong>Tier 3: Specialized Models</strong></p>
-<p>Smaller models trained on specific domains:
-- <strong>Security-specific models:</strong> Some labs are training models specifically on threat intelligence, incident response, and forensics (not widely available yet)
-- <strong>Code-focused models:</strong> Codestral, Code-Llama (good for generating security scripts, IaC, detection rules)
-- <strong>Vision-focused models:</strong> LLaVA, GPT-4o (for analyzing screenshots, network diagrams, charts)</p>
-<p><strong>Advantages:</strong>
-- Optimized for specific tasks
-- Smaller (faster inference, lower latency)
-- Domain-specific training</p>
-<p><strong>Disadvantages:</strong>
-- Limited to their domain
-- Often less capable than frontier models on general tasks</p>
+<p>Smaller models trained on specific domains:</p>
+<ul>
+<li><strong>Security-specific models:</strong> Some labs are training models specifically on threat intelligence, incident response, and forensics (not widely available yet)</li>
+<li><strong>Code-focused models:</strong> Codestral, Code-Llama (good for generating security scripts, IaC, detection rules)</li>
+<li><strong>Vision-focused models:</strong> LLaVA, GPT-4o (for analyzing screenshots, network diagrams, charts)</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Optimized for specific tasks</li>
+<li>Smaller (faster inference, lower latency)</li>
+<li>Domain-specific training</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Limited to their domain</li>
+<li>Often less capable than frontier models on general tasks</li>
+</ul>
 <hr />
 <p><strong>Choosing a Model for Security Work</strong></p>
 <p>There's no universal "best" model. It depends on your constraints:</p>
@@ -1465,12 +1109,11 @@ Did automation do the right thing? What would you do differently next time?
 <li>Your question (0.5K tokens)</li>
 </ul>
 <p><strong>Total input: 27.5K tokens</strong></p>
-<p>Opus costs $5 per 1M input tokens, or $0.000005 per token.</p>
-<p>Cost for input: 27.5K × $0.000005 = <strong>$0.14</strong></p>
-<p>The response is 2K tokens. Output costs $0.025 per 1M tokens, or $0.000025 per token.</p>
-<p>Cost for output: 2K × $0.000025 = <strong>$0.05</strong></p>
-<p><strong>Total: ~$0.19 per incident analysis.</strong></p>
-<p>If your SOC processes 100 incidents/day, that's $19/day, or ~$7K/year.</p>
+<p>At current Opus pricing (~$15/1M input tokens), that's 27.5K × $0.000015 = <strong>~$0.41 in input costs</strong>.</p>
+<p>The response is 2K tokens. Output tokens are priced higher (~$75/1M for Opus); cost for output: 2K × $0.000075 = <strong>~$0.15</strong></p>
+<p><strong>Total: ~$0.56 per incident analysis.</strong></p>
+<p>If your SOC processes 100 incidents/day, that's $56/day, or ~$20K/year.</p>
+<div class="callout callout-tip"><p><strong>Pricing changes frequently.</strong> The figures above are approximate as of early 2026. Always check <a href="https://www.anthropic.com/pricing" target="_blank">Anthropic's pricing page</a> for current rates. Use Sonnet for routine analysis (5× cheaper than Opus) and reserve Opus for high-complexity tasks.</p></div>
 <p>Is that worth it? Compare to a human analyst at $80K/year salary. If Claude accelerates analysis by just 5%, it's ROI-positive.</p>
 <p>But here's the hidden cost: If you include irrelevant context (a full log file that only 5% applies), you might waste half your tokens. Same analysis, now ~$0.27 instead of $0.19. Over a year, that's an extra ~$3K wasted.</p>
 <p>This is why "context engineering" (curating what to include, in what format) matters.</p>
@@ -1628,12 +1271,14 @@ For each, explain:
 Then compare: Which model gives the best analysis for an analyst who needs clear recommendations? Which is best for catching edge cases?
 </code></pre></div>
 
-<p><strong>Why Claude Code instead of multiple API integrations:</strong>
-- See reasoning tradeoffs immediately in one place
-- No need to set up OpenAI, Ollama, multiple API keys
-- Learn model differences through Claude's synthesis (not raw outputs)
-- Much faster iteration on evaluation criteria
-- No infrastructure to manage</p>
+<p><strong>Why Claude Code instead of multiple API integrations:</strong></p>
+<ul>
+<li>See reasoning tradeoffs immediately in one place</li>
+<li>No need to set up OpenAI, Ollama, multiple API keys</li>
+<li>Learn model differences through Claude's synthesis (not raw outputs)</li>
+<li>Much faster iteration on evaluation criteria</li>
+<li>No infrastructure to manage</li>
+</ul>
 <p><strong>Test 4: Mistral via Ollama (local, open-source)</strong></p>
 <p>First, ensure Ollama is running with Mistral:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># If you have Ollama installed:</span>
@@ -1665,12 +1310,14 @@ Provide your analysis in a way that&#39;s practical and actionable, without exce
 4. Document the reasoning differences</p>
 <p>This saves infrastructure overhead while still showing you the quality tradeoffs.</p>
 <h4 id="part-1-collect-outputs-30-minutes">Part 1: Collect Outputs (30 minutes)</h4>
-<p>Run all four model tests and save outputs to text files. For each, record:
-- Model name and version
-- Prompt length (tokens, if available)
-- Response length (tokens, if available)
-- Inference time (seconds)
-- Cost (estimated or actual API cost)</p>
+<p>Run all four model tests and save outputs to text files. For each, record:</p>
+<ul>
+<li>Model name and version</li>
+<li>Prompt length (tokens, if available)</li>
+<li>Response length (tokens, if available)</li>
+<li>Inference time (seconds)</li>
+<li>Cost (estimated or actual API cost)</li>
+</ul>
 <p>Create a summary file: <code>model-comparison-summary.csv</code></p>
 <div class="codehilite"><pre><span></span><code>model,prompt_tokens,output_tokens,inference_time_seconds,estimated_cost_usd,threat_confidence,recommendation_clear
 Claude Opus 4.6,1250,650,5.3,0.32,98%,yes - block
@@ -1682,11 +1329,13 @@ Mistral 7B,1250,710,12.5,0.00 (local),88%,yes - block
 <h4 id="part-2-evaluate-using-cct-pillars-40-minutes">Part 2: Evaluate Using CCT Pillars (40 minutes)</h4>
 <p>Create a file: <code>model-evaluation.md</code></p>
 <p><strong>Pillar 1: Evidence-Based Analysis</strong></p>
-<p>For each model, list:
-- Which specific email indicators did the model cite?
-- Did it correctly identify SPF/DKIM/DMARC failures?
-- Did it mention the domain age (1 day old)?
-- Did it connect the IP to the previous incident (Week 1)?</p>
+<p>For each model, list:</p>
+<ul>
+<li>Which specific email indicators did the model cite?</li>
+<li>Did it correctly identify SPF/DKIM/DMARC failures?</li>
+<li>Did it mention the domain age (1 day old)?</li>
+<li>Did it connect the IP to the previous incident (Week 1)?</li>
+</ul>
 <p><strong>Pillar 2: Inclusive Perspective</strong></p>
 <ul>
 <li>Did any model recommend involving the email security team?</li>
@@ -1734,30 +1383,38 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <h4 id="part-4-cost-benefit-analysis-15-minutes">Part 4: Cost-Benefit Analysis (15 minutes)</h4>
 <p>Create a file: <code>cost-benefit.md</code></p>
 <p><strong>Scenario:</strong> Your SOC analyzes 100 phishing emails per day, 250 days/year (working days).</p>
-<p><strong>Option A: Use Claude Sonnet for all phishing</strong>
-- Cost per email: $0.08
-- Annual cost: 100 × 250 × $0.08 = <strong>$2,000</strong>
-- False negative rate (missed phishing): 2–3%
-- Expected phishing that reaches users: ~3–4 per year (2–3% × 100–150)</p>
-<p><strong>Option B: Use Haiku for initial screening, Sonnet for escalation</strong>
-- Haiku flags anything below 80% confidence threshold
-- Sonnet gets the uncertain cases
-- Cost per email: $0.02 (Haiku avg) + $0.08 (Sonnet ~30% of cases) = $0.044 avg
-- Annual cost: 100 × 250 × $0.044 = <strong>$1,100</strong>
-- False negative rate: 3–4% (Haiku misses some; Sonnet catches escalated cases)
-- Expected phishing: ~4–5 per year</p>
-<p><strong>Option C: Deploy Mistral on-premises</strong>
-- Infrastructure cost: $5K (GPU, server, setup)
-- Annual maintenance: $2K
-- Cost per email: $0.0001 (negligible)
-- Annual cost (first year): <strong>$7,000</strong> (setup) + (minimal); Year 2+: <strong>$2,000</strong>
-- False negative rate: 5–6% (Mistral is less accurate than Sonnet)
-- Expected phishing: ~6–8 per year</p>
-<p><strong>Analysis:</strong> Which option is best depends on:
-- How much you value accuracy vs. cost?
-- Can you afford upfront infrastructure investment?
-- Is privacy (on-premises) a hard requirement?
-- What's the cost of a phishing email reaching a user? (If it's $100K in potential breach, then $2K/year for accuracy is cheap)</p>
+<p><strong>Option A: Use Claude Sonnet for all phishing</strong></p>
+<ul>
+<li>Cost per email: $0.08</li>
+<li>Annual cost: 100 × 250 × $0.08 = <strong>$2,000</strong></li>
+<li>False negative rate (missed phishing): 2–3%</li>
+<li>Expected phishing that reaches users: ~3–4 per year (2–3% × 100–150)</li>
+</ul>
+<p><strong>Option B: Use Haiku for initial screening, Sonnet for escalation</strong></p>
+<ul>
+<li>Haiku flags anything below 80% confidence threshold</li>
+<li>Sonnet gets the uncertain cases</li>
+<li>Cost per email: $0.02 (Haiku avg) + $0.08 (Sonnet ~30% of cases) = $0.044 avg</li>
+<li>Annual cost: 100 × 250 × $0.044 = <strong>$1,100</strong></li>
+<li>False negative rate: 3–4% (Haiku misses some; Sonnet catches escalated cases)</li>
+<li>Expected phishing: ~4–5 per year</li>
+</ul>
+<p><strong>Option C: Deploy Mistral on-premises</strong></p>
+<ul>
+<li>Infrastructure cost: $5K (GPU, server, setup)</li>
+<li>Annual maintenance: $2K</li>
+<li>Cost per email: $0.0001 (negligible)</li>
+<li>Annual cost (first year): <strong>$7,000</strong> (setup) + (minimal); Year 2+: <strong>$2,000</strong></li>
+<li>False negative rate: 5–6% (Mistral is less accurate than Sonnet)</li>
+<li>Expected phishing: ~6–8 per year</li>
+</ul>
+<p><strong>Analysis:</strong> Which option is best depends on:</p>
+<ul>
+<li>How much you value accuracy vs. cost?</li>
+<li>Can you afford upfront infrastructure investment?</li>
+<li>Is privacy (on-premises) a hard requirement?</li>
+<li>What's the cost of a phishing email reaching a user? (If it's $100K in potential breach, then $2K/year for accuracy is cheap)</li>
+</ul>
 <hr />
 <h2 id="starting-your-context-library">Starting Your Context Library</h2>
 <p>Over the next four units, you'll build a personal <strong>context library</strong>—a curated collection of patterns, templates, prompts, and code snippets that you've refined with Claude Code. Think of it as a playbook of your best work.</p>
@@ -1779,11 +1436,13 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 <div class="prompt-block">Based on what you just produced, write a reusable context library entry—a template or prompt—that would reliably reproduce this quality of output for similar scenarios.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 <p>Claude has full visibility into its own reasoning and can articulate the pattern more precisely than you can by inspecting the output alone. The entry it writes becomes your starting point; you refine it over time as you learn what consistently works.</p>
 </div>
-<p><strong>Why This Matters:</strong>
-- <strong>Context Engineering at Meta-Level:</strong> You learn what makes good context by curating your own
-- <strong>Pattern Recognition:</strong> Identifying reusable patterns trains your eye for architecture
-- <strong>Self-Sufficiency:</strong> Building a library of YOUR patterns makes you more effective in every future project
-- <strong>Iterative Refinement:</strong> As you learn more, your patterns evolve—and Claude learns with you</p>
+<p><strong>Why This Matters:</strong></p>
+<ul>
+<li><strong>Context Engineering at Meta-Level:</strong> You learn what makes good context by curating your own</li>
+<li><strong>Pattern Recognition:</strong> Identifying reusable patterns trains your eye for architecture</li>
+<li><strong>Self-Sufficiency:</strong> Building a library of YOUR patterns makes you more effective in every future project</li>
+<li><strong>Iterative Refinement:</strong> As you learn more, your patterns evolve—and Claude learns with you</li>
+</ul>
 <p><strong>Getting Started: Create Your Context Library Structure</strong></p>
 <p>Create a <code>context-library/</code> directory in your project:</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/context-library/<span class="o">{</span>prompts,patterns,architectures<span class="o">}</span>
@@ -1890,7 +1549,7 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 <li><strong>Models tested:</strong> Claude Opus, Claude Sonnet, GPT-4o, Mistral 7B</li>
 <li><strong>Tools:</strong> Claude Code, OpenAI API, Ollama (local inference)</li>
 <li><strong>References:</strong></li>
-<li>Anthropic Model Card (Claude 4.5 family): <a href="reading.html">Link in Reading List</a></li>
+<li>Anthropic Model Card (current Claude models): <a href="reading.html">Link in Reading List</a></li>
 <li>OpenAI GPT-4o docs</li>
 <li>Mistral Model Card: https://docs.mistral.ai/</li>
 <li>"Attention Is All You Need" (Vaswani et al., 2017): High-level summary in <a href="reading.html">Reading List</a></li>
@@ -1913,10 +1572,12 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 <p>This is the shift from prompt engineering to context engineering.</p>
 <p><strong>What Changed</strong></p>
 <p>In 2023, prompt engineering meant: "How do I phrase my question so ChatGPT gives a good answer?"</p>
-<p>Examples of prompt engineering advice from that era:
-- "Add 'Let's think step by step' to the end of your prompt to improve reasoning"
-- "Use role-play: 'You are an expert security analyst...'"
-- "Include examples in your prompt (few-shot learning)"</p>
+<p>Examples of prompt engineering advice from that era:</p>
+<ul>
+<li>"Add 'Let's think step by step' to the end of your prompt to improve reasoning"</li>
+<li>"Use role-play: 'You are an expert security analyst...'"</li>
+<li>"Include examples in your prompt (few-shot learning)"</li>
+</ul>
 <p>These were helpful micro-optimizations. But they assumed a single turn: one prompt, one response.</p>
 <p>In 2025–2026, context engineering means: "How do I design the entire information environment in which the model operates to produce reliable, integrated, auditable outputs?"</p>
 <p>This includes:
@@ -2010,11 +1671,13 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 <li>Generate assessment (memory: "Confidence in APT-X attribution: 75%, based on..."</li>
 </ol>
 <p>Each step builds on the previous. The model doesn't forget. At the end, it can review its reasoning and cite its own earlier conclusions.</p>
-<p>Implementing this requires:
-- A vector database (Pinecone, Weaviate) or traditional database (PostgreSQL)
-- Structured logging of the agent's reasoning
-- A retrieval mechanism to fetch relevant past incidents
-- A summary mechanism to compress long conversation histories</p>
+<p>Implementing this requires:</p>
+<ul>
+<li>A vector database (Pinecone, Weaviate) or traditional database (PostgreSQL)</li>
+<li>Structured logging of the agent's reasoning</li>
+<li>A retrieval mechanism to fetch relevant past incidents</li>
+<li>A summary mechanism to compress long conversation histories</li>
+</ul>
 <hr />
 <p><strong>Component 4: Structured Outputs</strong></p>
 <p>In early AI use, "reliability" meant "the model usually gives reasonable answers." In 2026, it means "the model's output integrates seamlessly with systems downstream."</p>
@@ -2053,20 +1716,24 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
-<p>Now your response is:
-- <strong>Machine-readable:</strong> You can parse it in code
-- <strong>Deterministic:</strong> The schema enforces structure
-- <strong>Auditable:</strong> Every field is documented
-- <strong>Composable:</strong> You can feed this into downstream systems (ticketing, SOAR playbooks, etc.)</p>
+<p>Now your response is:</p>
+<ul>
+<li><strong>Machine-readable:</strong> You can parse it in code</li>
+<li><strong>Deterministic:</strong> The schema enforces structure</li>
+<li><strong>Auditable:</strong> Every field is documented</li>
+<li><strong>Composable:</strong> You can feed this into downstream systems (ticketing, SOAR playbooks, etc.)</li>
+</ul>
 <p>You enforce structured outputs by providing a JSON schema to the model and having it comply.</p>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?</p>
 </div>
 <hr />
 <p><strong>Component 5: Retrieval-Augmented Generation (RAG)</strong></p>
-<p>Training data has a cutoff date. Claude's knowledge was current as of early 2026. For security work, you often need:
-- Today's threat intelligence (APT-XYZ detected new malware 2 hours ago)
-- Your organization's policies (approval matrix for emergency access)
-- Industry-specific knowledge (financial sector regulations, healthcare incident response standards)</p>
+<p>Training data has a cutoff date. Claude's knowledge was current as of early 2026. For security work, you often need:</p>
+<ul>
+<li>Today's threat intelligence (APT-XYZ detected new malware 2 hours ago)</li>
+<li>Your organization's policies (approval matrix for emergency access)</li>
+<li>Industry-specific knowledge (financial sector regulations, healthcare incident response standards)</li>
+</ul>
 <p>RAG is the solution. You retrieve relevant documents from your knowledge base, inject them into the prompt, and let the model incorporate them.</p>
 <p>RAG workflow:</p>
 <ol>
@@ -2168,24 +1835,30 @@ This strongly suggests the IP is malicious, confidence 92%.&quot;
 <h4 id="part-1-naive-prompting-baseline">Part 1: Naive Prompting (Baseline)</h4>
 <p>First, let's see what happens with simple prompting. <strong>Architecture Decision: Naive vs. Engineered Prompting</strong></p>
 <p>There are two ways to use Claude for incident analysis:</p>
-<p><strong>Naive Approach (Risky):</strong>
-- Send incident data + question directly to Claude
-- No system prompt defining constraints
-- No structured output schema
-- Model makes its own assumptions about what matters
-- Confidence and reasoning may not be trustworthy</p>
-<p><strong>Consequences:</strong>
-- Claude might give confident-sounding answers without hedging
-- You can't distinguish "I'm very sure" from "I'm guessing"
-- Output is prose, hard to parse into decisions
-- No audit trail of Claude's reasoning
-- Difficult to reproduce the analysis</p>
-<p><strong>Context-Engineered Approach (Recommended):</strong>
-- Define system prompt with role, constraints, output format
-- Specify structured JSON output
-- Include tool definitions (what can the model query?)
-- Provide organizational context (policies, previous incidents)
-- Request reasoning at each step</p>
+<p><strong>Naive Approach (Risky):</strong></p>
+<ul>
+<li>Send incident data + question directly to Claude</li>
+<li>No system prompt defining constraints</li>
+<li>No structured output schema</li>
+<li>Model makes its own assumptions about what matters</li>
+<li>Confidence and reasoning may not be trustworthy</li>
+</ul>
+<p><strong>Consequences:</strong></p>
+<ul>
+<li>Claude might give confident-sounding answers without hedging</li>
+<li>You can't distinguish "I'm very sure" from "I'm guessing"</li>
+<li>Output is prose, hard to parse into decisions</li>
+<li>No audit trail of Claude's reasoning</li>
+<li>Difficult to reproduce the analysis</li>
+</ul>
+<p><strong>Context-Engineered Approach (Recommended):</strong></p>
+<ul>
+<li>Define system prompt with role, constraints, output format</li>
+<li>Specify structured JSON output</li>
+<li>Include tool definitions (what can the model query?)</li>
+<li>Provide organizational context (policies, previous incidents)</li>
+<li>Request reasoning at each step</li>
+</ul>
 <p><strong>Why This Matters for Security:</strong>
 In incident response, confidence levels are critical. A "90% confident it's a breach" is very different from "15% confident it's a breach." Naive prompting conflates these. A good system prompt ensures Claude flags assumptions and hedges appropriately.</p>
 <p><strong>Claude Code Workflow: Naive vs. Engineered</strong></p>
@@ -2206,12 +1879,14 @@ Is this a breach? What should we do?
 </code></pre></div>
 
 <p>Then ask Claude directly: "Now redo that analysis with these constraints: (1) Always state confidence levels (0-100%), (2) List 2 alternative hypotheses, (3) Flag assumptions, (4) Recommend investigation, not escalation, when uncertain. How does the analysis change?"</p>
-<p><strong>Why Claude Code instead of Python API calls:</strong>
-- See the difference immediately in the same conversation
-- Ask follow-up questions interactively
-- No infrastructure setup (no Anthropic SDK installation)
-- Learn context engineering principles by seeing Claude apply them
-- Much faster iteration</p>
+<p><strong>Why Claude Code instead of Python API calls:</strong></p>
+<ul>
+<li>See the difference immediately in the same conversation</li>
+<li>Ask follow-up questions interactively</li>
+<li>No infrastructure setup (no Anthropic SDK installation)</li>
+<li>Learn context engineering principles by seeing Claude apply them</li>
+<li>Much faster iteration</li>
+</ul>
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Teams often write Python scripts to wrap Claude calls, thinking they're adding structure. But if the system prompt is weak, the Python doesn't help. The structure comes from the prompt, not the code. Claude Code lets you experiment with prompts directly before building Python infrastructure.</p>
 </div>
 <hr />
@@ -2229,11 +1904,13 @@ Is this a breach? What should we do?
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> A system prompt is like hiring instructions for an employee. Without it, Claude is generic. With it, Claude is aligned to your specific requirements.</p>
 </div>
 <p><strong>Why Not Just Run a Python Script?</strong></p>
-<p>The script approach requires:
-- Installing Python, dependencies, API credentials
-- Bundling all context (incident data, threat intel, policies) into code
-- Updating code every time your threat model changes
-- Parsing Claude's JSON output and feeding it to downstream systems</p>
+<p>The script approach requires:</p>
+<ul>
+<li>Installing Python, dependencies, API credentials</li>
+<li>Bundling all context (incident data, threat intel, policies) into code</li>
+<li>Updating code every time your threat model changes</li>
+<li>Parsing Claude's JSON output and feeding it to downstream systems</li>
+</ul>
 <p>For learning purposes, you don't need all this. Instead:</p>
 <p><strong>Claude Code Workflow: System Prompts in Action</strong></p>
 <p>Claude Code Prompt:</p>
@@ -2292,16 +1969,20 @@ Provide your analysis as JSON.
 </code></pre></div>
 
 <p><strong>After Claude generates the analysis:</strong></p>
-<p>Ask follow-up questions:
-- "You said confidence is 20%. What single piece of evidence would make it 70%?"
-- "For the insider threat hypothesis, what would you observe that's incompatible with it?"
-- "Walk me through how you'd investigate the failed login attempts next"</p>
-<p><strong>Why this beats running a Python script:</strong>
-- You see Claude's reasoning in real-time
-- You can challenge each assumption interactively
-- No infrastructure setup required
-- Much faster to iterate on the system prompt
-- You learn context engineering by doing it, not reading about it</p>
+<p>Ask follow-up questions:</p>
+<ul>
+<li>"You said confidence is 20%. What single piece of evidence would make it 70%?"</li>
+<li>"For the insider threat hypothesis, what would you observe that's incompatible with it?"</li>
+<li>"Walk me through how you'd investigate the failed login attempts next"</li>
+</ul>
+<p><strong>Why this beats running a Python script:</strong></p>
+<ul>
+<li>You see Claude's reasoning in real-time</li>
+<li>You can challenge each assumption interactively</li>
+<li>No infrastructure setup required</li>
+<li>Much faster to iterate on the system prompt</li>
+<li>You learn context engineering by doing it, not reading about it</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Save your final system prompt (the one that works well) to a file. Reuse it for similar incidents. Over time, you build a library of proven prompts for different incident types. That's how ops teams scale.</p>
 </div>
 <p>To practice this with Claude Code:</p>
@@ -2476,56 +2157,6 @@ if __name__ == &quot;__main__&quot;:
 </main>
 
 <script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-function copyCode(btn) {
-  const block = btn.closest('.code-block, .prompt-block');
-  if (!block) return;
-  const code = block.querySelector('code');
-  const text = code ? code.textContent.trim() :
-    Array.from(block.childNodes).filter(n => n !== btn).map(n => n.textContent).join('').trim();
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = orig; }, 2000);
-  });
-}
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
-<script>
 (function() {
   var IDX = [
     // Units
@@ -2616,6 +2247,7 @@ function copyCode(btn) {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

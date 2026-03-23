@@ -121,7 +121,7 @@ Here are concrete, achievable project ideas suitable for a 4-week capstone:
 - AIUC-1 integration: Map your governance extension to all six AIUC-1 domains; score agent risks at each promotion gate using AIVSS
 - **Open Source:** PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.
 
-> **💡 Discussion Prompt:** In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?
+> **💬 Discussion Prompt:** In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?
 
 > **📖 Further Reading:** Review [Framework documentation](resources/FRAMEWORKS.md) to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.
 

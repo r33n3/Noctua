@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lab Setup Guide — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -457,7 +41,7 @@ body {
   <a href="lab-s2-unit8.html" class="sub">Lab: Unit 8</a>
   <div class="nav-section">Resources</div>
   <a href="frameworks.html">Frameworks &amp; Protocols</a>
-  <a href="lab-setup.html" class="active">Lab Setup Guide</a>
+  <a href="lab-setup.html">Lab Setup Guide</a>
   <a href="assessment.html">Design Rationale</a>
   <a href="reading.html">Reading List</a>
   <a href="skills/index.html">Claude Code Skills</a>
@@ -493,8 +77,10 @@ body {
 <p>Choose one of the following setup paths based on your preference and device.</p>
 <h3 id="option-a-github-codespaces-recommended">Option A: GitHub Codespaces (Recommended)</h3>
 <p>GitHub Codespaces provides a fully configured cloud development environment without local installation complexity.</p>
-<p><strong>Prerequisites:</strong>
-- GitHub account with Codespaces access (free tier includes monthly minutes)</p>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li>GitHub account with Codespaces access (free tier includes monthly minutes)</li>
+</ul>
 <p><strong>Setup Steps:</strong></p>
 <ol>
 <li>Fork the Noctua course repository to your GitHub account</li>
@@ -504,13 +90,15 @@ body {
 <li>Wait for the environment to initialize (2-3 minutes)</li>
 <li>A VS Code environment opens in your browser with all tools pre-installed</li>
 </ol>
-<p>The Codespace includes a <code>devcontainer.json</code> that automatically installs:
-- Python 3.11+
-- Node.js 20+
-- Git
-- Claude Code CLI
-- Docker
-- Essential development tools</p>
+<p>The Codespace includes a <code>devcontainer.json</code> that automatically installs:</p>
+<ul>
+<li>Python 3.11+</li>
+<li>Node.js 20+</li>
+<li>Git</li>
+<li>Claude Code CLI</li>
+<li>Docker</li>
+<li>Essential development tools</li>
+</ul>
 <p><strong>Sample devcontainer.json</strong> (reference—included in course repo):</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Noctua Development&quot;</span><span class="p">,</span><span class="w"></span>
@@ -542,11 +130,13 @@ body {
 <p><strong>Cost:</strong> GitHub Codespaces free tier provides 60 core-hours per month, sufficient for course labs. Paid tiers are available if needed.</p>
 <h3 id="option-b-local-machine-setup">Option B: Local Machine Setup</h3>
 <p>If you prefer a local development environment, follow these steps.</p>
-<p><strong>System Requirements:</strong>
-- macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+)
-- 16GB RAM recommended
-- 20GB free disk space
-- Administrator access for Docker</p>
+<p><strong>System Requirements:</strong></p>
+<ul>
+<li>macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+)</li>
+<li>16GB RAM recommended</li>
+<li>20GB free disk space</li>
+<li>Administrator access for Docker</li>
+</ul>
 <p><strong>Step 1: Install Python 3.11+</strong></p>
 <ul>
 <li>
@@ -788,10 +378,12 @@ claude config list
 <div class="codehilite"><pre><span></span><code>ollama pull llama2
 </code></pre></div>
 
-<p>This downloads a 4GB model. Alternative models:
-- <code>ollama pull mistral</code> (faster, lighter)
-- <code>ollama pull neural-chat</code> (optimized for conversation)
-- <code>ollama pull openchat</code> (low-latency)</p>
+<p>This downloads a 4GB model. Alternative models:</p>
+<ul>
+<li><code>ollama pull mistral</code> (faster, lighter)</li>
+<li><code>ollama pull neural-chat</code> (optimized for conversation)</li>
+<li><code>ollama pull openchat</code> (low-latency)</li>
+</ul>
 <p><strong>Verify:</strong></p>
 <div class="codehilite"><pre><span></span><code>ollama list
 </code></pre></div>
@@ -920,26 +512,30 @@ Production infrastructure is defined in code (CloudFormation or Terraform), not 
 <p>MASS is an AI security tool that demonstrates real approaches to solving security assessment and compliance challenges in production AI deployments. It covers vulnerability scanning, compliance mapping, and attack surface analysis across models, prompts, tools, and agent workflows. You will study how MASS approaches these problems — its analyzer architecture, compliance mapping methodology, and MCP-based integration patterns — then use Claude Code to implement your own security assessment capabilities.</p>
 <p><strong>What MASS Teaches (Source Code to Study):</strong></p>
 <p>Study the MASS repository at https://github.com/r33n3/MASS to understand:</p>
-<p><strong>12 Analyzer Architectural Patterns:</strong>
-- Input validation analyzer
-- Prompt injection analyzer
-- Output poisoning analyzer
-- Model behavior analyzer
-- Data leakage analyzer
-- Dependency analyzer
-- Configuration analyzer
-- Compliance analyzer
-- Governance analyzer
-- Threat modeling analyzer
-- Risk assessment analyzer
-- Remediation recommendation analyzer</p>
+<p><strong>12 Analyzer Architectural Patterns:</strong></p>
+<ul>
+<li>Input validation analyzer</li>
+<li>Prompt injection analyzer</li>
+<li>Output poisoning analyzer</li>
+<li>Model behavior analyzer</li>
+<li>Data leakage analyzer</li>
+<li>Dependency analyzer</li>
+<li>Configuration analyzer</li>
+<li>Compliance analyzer</li>
+<li>Governance analyzer</li>
+<li>Threat modeling analyzer</li>
+<li>Risk assessment analyzer</li>
+<li>Remediation recommendation analyzer</li>
+</ul>
 <p>Each analyzer demonstrates modular security assessment design patterns you will implement in your own tools.</p>
 <p><strong>Compliance Framework Mapping Methodology:</strong>
-MASS maps findings to compliance frameworks as a case study:
-- <strong>OWASP LLM Top 10</strong> — Architectural pattern for vulnerability classification
-- <strong>MITRE ATLAS</strong> — Technique mapping patterns for AI threat modeling
-- <strong>NIST AI RMF</strong> — Risk management framework integration patterns
-- <strong>EU AI Act</strong> — Regulatory mapping patterns</p>
+MASS maps findings to compliance frameworks as a case study:</p>
+<ul>
+<li><strong>OWASP LLM Top 10</strong> — Architectural pattern for vulnerability classification</li>
+<li><strong>MITRE ATLAS</strong> — Technique mapping patterns for AI threat modeling</li>
+<li><strong>NIST AI RMF</strong> — Risk management framework integration patterns</li>
+<li><strong>EU AI Act</strong> — Regulatory mapping patterns</li>
+</ul>
 <p>Study how MASS structures its compliance mappings—you will build similar patterns in your own governance tools.</p>
 <p><strong>MCP Server Design as Tool Exposure Patterns:</strong>
 MASS exposes security tools via an MCP server architecture, demonstrating how to bridge autonomous agents with security capabilities. This is a case study in MCP design patterns; you will design your own MCP servers for security functions throughout the course.</p>
@@ -964,21 +560,25 @@ MASS exposes security tools via an MCP server architecture, demonstrating how to
 <li><strong>Behavioral Anomaly Detection</strong>: Pattern analysis for detecting unexpected or dangerous agent behavior</li>
 </ul>
 <p><strong>Anomaly Detection Patterns (AGP-01 through AGP-05):</strong></p>
-<p>These anomaly governance patterns (AGP) demonstrate automated detection of problematic agent behavior:
-- <strong>AGP-01</strong>: Excessive tool usage pattern
-- <strong>AGP-02</strong>: Out-of-scope action pattern
-- <strong>AGP-03</strong>: Fairness violation pattern
-- <strong>AGP-04</strong>: Data leakage pattern
-- <strong>AGP-05</strong>: Behavior drift pattern</p>
+<p>These anomaly governance patterns (AGP) demonstrate automated detection of problematic agent behavior:</p>
+<ul>
+<li><strong>AGP-01</strong>: Excessive tool usage pattern</li>
+<li><strong>AGP-02</strong>: Out-of-scope action pattern</li>
+<li><strong>AGP-03</strong>: Fairness violation pattern</li>
+<li><strong>AGP-04</strong>: Data leakage pattern</li>
+<li><strong>AGP-05</strong>: Behavior drift pattern</li>
+</ul>
 <p>Study how PeaRL implements these detection patterns—you will design similar anomaly detection in your own governance systems.</p>
 <p><strong>39 MCP Tools as Governance Tooling Example:</strong></p>
-<p>PeaRL exposes 39 tools via MCP, demonstrating comprehensive governance tooling design:
-- Context compilation tools
-- Findings submission tools
-- Environment promotion tools
-- Fairness evaluation tools
-- Compliance assessment tools
-- Behavioral monitoring tools</p>
+<p>PeaRL exposes 39 tools via MCP, demonstrating comprehensive governance tooling design:</p>
+<ul>
+<li>Context compilation tools</li>
+<li>Findings submission tools</li>
+<li>Environment promotion tools</li>
+<li>Fairness evaluation tools</li>
+<li>Compliance assessment tools</li>
+<li>Behavioral monitoring tools</li>
+</ul>
 <p>These tools are an example of comprehensive governance interface design. Study the MCP architecture, but you will design your own governance interfaces for your agents.</p>
 <p><strong>How Students Use PeaRL:</strong></p>
 <ol>
@@ -1072,37 +672,43 @@ curl http://localhost:8080
 <p>All lab environments are containerized and isolated—they can be safely started and stopped without affecting your system or other labs.</p>
 <h2 id="verification-checklist">Verification Checklist</h2>
 <p>Before beginning coursework, verify your complete setup:</p>
-<p><strong>Core Development Tools:</strong>
-- [ ] Claude Max subscription active and verified
-- [ ] Claude Code CLI installed (<code>claude --version</code>)
-- [ ] Claude Code CLI authenticated (<code>claude login</code>)
-- [ ] Python 3.11+ installed and accessible (<code>python3 --version</code>)
-- [ ] pip package manager working (<code>pip --version</code>)
-- [ ] Node.js 20+ installed (<code>node --version</code>)
-- [ ] npm package manager working (<code>npm --version</code>)
-- [ ] Git installed and configured (<code>git config --list</code>)
-- [ ] SSH keys generated and added to GitHub
-- [ ] GitHub account created and accessible
-- [ ] Course repository forked and cloned locally
-- [ ] Git branches (main, dev) verified
-- [ ] Docker Desktop installed and running (<code>docker --version</code>)
-- [ ] GitHub CLI installed and authenticated (<code>gh auth status</code>)
-- [ ] AWS CLI v2 installed and configured (<code>aws sts get-caller-identity</code>)</p>
-<p><strong>Agentic Frameworks and MCP:</strong>
-- [ ] MCP SDK installed (Python: <code>pip list | grep mcp</code>)
-- [ ] First MCP server runs successfully (hello_mcp_server.py)
-- [ ] CrewAI installed (Semester 2)
-- [ ] LangGraph installed (Semester 2)
-- [ ] AutoGen installed (Semester 2)
-- [ ] Ollama installed and has at least one model (<code>ollama list</code>)
-- [ ] OpenAI API account created (Semester 2)</p>
-<p><strong>Course AI Security Tools (Production Approaches Study):</strong>
-- [ ] Reviewed MASS source code architecture (12 analyzers, compliance mapping patterns) at https://github.com/r33n3/MASS
-- [ ] Understood MASS compliance framework mappings (OWASP LLM, MITRE ATLAS, NIST AI RMF, EU AI Act)
-- [ ] Reviewed MASS MCP server design pattern for tool exposure
-- [ ] Reviewed PeaRL source code architecture (environment hierarchy, approval workflows, fairness patterns) at https://github.com/r33n3/PeaRL
-- [ ] Understood PeaRL governance model and anomaly detection patterns (AGP-01 through AGP-05)
-- [ ] Reviewed PeaRL MCP tools design (39 governance tools as comprehensive tooling example)</p>
+<p><strong>Core Development Tools:</strong></p>
+<ul>
+<li>[ ] Claude Max subscription active and verified</li>
+<li>[ ] Claude Code CLI installed (<code>claude --version</code>)</li>
+<li>[ ] Claude Code CLI authenticated (<code>claude login</code>)</li>
+<li>[ ] Python 3.11+ installed and accessible (<code>python3 --version</code>)</li>
+<li>[ ] pip package manager working (<code>pip --version</code>)</li>
+<li>[ ] Node.js 20+ installed (<code>node --version</code>)</li>
+<li>[ ] npm package manager working (<code>npm --version</code>)</li>
+<li>[ ] Git installed and configured (<code>git config --list</code>)</li>
+<li>[ ] SSH keys generated and added to GitHub</li>
+<li>[ ] GitHub account created and accessible</li>
+<li>[ ] Course repository forked and cloned locally</li>
+<li>[ ] Git branches (main, dev) verified</li>
+<li>[ ] Docker Desktop installed and running (<code>docker --version</code>)</li>
+<li>[ ] GitHub CLI installed and authenticated (<code>gh auth status</code>)</li>
+<li>[ ] AWS CLI v2 installed and configured (<code>aws sts get-caller-identity</code>)</li>
+</ul>
+<p><strong>Agentic Frameworks and MCP:</strong></p>
+<ul>
+<li>[ ] MCP SDK installed (Python: <code>pip list | grep mcp</code>)</li>
+<li>[ ] First MCP server runs successfully (hello_mcp_server.py)</li>
+<li>[ ] CrewAI installed (Semester 2)</li>
+<li>[ ] LangGraph installed (Semester 2)</li>
+<li>[ ] AutoGen installed (Semester 2)</li>
+<li>[ ] Ollama installed and has at least one model (<code>ollama list</code>)</li>
+<li>[ ] OpenAI API account created (Semester 2)</li>
+</ul>
+<p><strong>Course AI Security Tools (Production Approaches Study):</strong></p>
+<ul>
+<li>[ ] Reviewed MASS source code architecture (12 analyzers, compliance mapping patterns) at https://github.com/r33n3/MASS</li>
+<li>[ ] Understood MASS compliance framework mappings (OWASP LLM, MITRE ATLAS, NIST AI RMF, EU AI Act)</li>
+<li>[ ] Reviewed MASS MCP server design pattern for tool exposure</li>
+<li>[ ] Reviewed PeaRL source code architecture (environment hierarchy, approval workflows, fairness patterns) at https://github.com/r33n3/PeaRL</li>
+<li>[ ] Understood PeaRL governance model and anomaly detection patterns (AGP-01 through AGP-05)</li>
+<li>[ ] Reviewed PeaRL MCP tools design (39 governance tools as comprehensive tooling example)</li>
+</ul>
 <p>For each item, run the provided command. If any fail, consult the Troubleshooting section or post in the course discussion forum.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="claude-code-cli-issues">Claude Code CLI Issues</h3>
@@ -1193,32 +799,42 @@ ollama pull llama2
 </code></pre></div>
 
 <h2 id="cost-considerations">Cost Considerations</h2>
-<p><strong>Claude Max Subscription:</strong>
-- Current pricing: $20/month (subject to change—verify in your account)
-- Institutional pricing may be available through your program
-- Cost includes all Claude Code, Agent SDK, and MCP capabilities
-- Estimate for course: Will vary based on lab complexity; typical programs allocate 1 subscription per student</p>
-<p><strong>OpenAI API Usage (Semester 2):</strong>
-- Pricing: ~$0.01-0.10 per 1K tokens depending on model
-- Free tier includes $5 credit per month
-- Typical course usage: $10-20 per student for entire semester
-- Budget-conscious: Use local models (Ollama) for cost-sensitive labs</p>
-<p><strong>GitHub Codespaces:</strong>
-- Free tier: 60 core-hours per month (equivalent to ~15 hours of 4-core development)
-- Paid: $0.36 per core-hour for usage beyond free tier
-- Recommendation: Use free tier during course; upgrade if needed for extended sessions</p>
-<p><strong>All Other Tools:</strong>
-- Python, Node.js, Git: Free and open-source
-- Docker Desktop: Free
-- MCP SDK: Free (open-source)
-- CrewAI, LangGraph, AutoGen: Free (open-source)
-- Ollama: Free (open-source)
-- Burp Suite Community: Free (limited features; Pro available for $399/year)
-- Wireshark, nmap: Free and open-source</p>
-<p><strong>Total Estimated Cost Per Student (Full Year):</strong>
-- Minimum: $240 (Claude Max, $20/month × 12)
-- Typical: $240 + $15 (Claude Max + OpenAI API usage)
-- Maximum: $240 + $50 + $399 (if using Burp Suite Pro)</p>
+<p><strong>Claude Max Subscription:</strong></p>
+<ul>
+<li>Current pricing: $20/month (subject to change—verify in your account)</li>
+<li>Institutional pricing may be available through your program</li>
+<li>Cost includes all Claude Code, Agent SDK, and MCP capabilities</li>
+<li>Estimate for course: Will vary based on lab complexity; typical programs allocate 1 subscription per student</li>
+</ul>
+<p><strong>OpenAI API Usage (Semester 2):</strong></p>
+<ul>
+<li>Pricing: ~$0.01-0.10 per 1K tokens depending on model</li>
+<li>Free tier includes $5 credit per month</li>
+<li>Typical course usage: $10-20 per student for entire semester</li>
+<li>Budget-conscious: Use local models (Ollama) for cost-sensitive labs</li>
+</ul>
+<p><strong>GitHub Codespaces:</strong></p>
+<ul>
+<li>Free tier: 60 core-hours per month (equivalent to ~15 hours of 4-core development)</li>
+<li>Paid: $0.36 per core-hour for usage beyond free tier</li>
+<li>Recommendation: Use free tier during course; upgrade if needed for extended sessions</li>
+</ul>
+<p><strong>All Other Tools:</strong></p>
+<ul>
+<li>Python, Node.js, Git: Free and open-source</li>
+<li>Docker Desktop: Free</li>
+<li>MCP SDK: Free (open-source)</li>
+<li>CrewAI, LangGraph, AutoGen: Free (open-source)</li>
+<li>Ollama: Free (open-source)</li>
+<li>Burp Suite Community: Free (limited features; Pro available for $399/year)</li>
+<li>Wireshark, nmap: Free and open-source</li>
+</ul>
+<p><strong>Total Estimated Cost Per Student (Full Year):</strong></p>
+<ul>
+<li>Minimum: $240 (Claude Max, $20/month × 12)</li>
+<li>Typical: $240 + $15 (Claude Max + OpenAI API usage)</li>
+<li>Maximum: $240 + $50 + $399 (if using Burp Suite Pro)</li>
+</ul>
 <p>Most students will fall in the typical range. Financial hardship policies should be coordinated with your program.</p>
 <h2 id="next-steps">Next Steps</h2>
 <ol>
@@ -1232,43 +848,6 @@ ollama pull llama2
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -1360,6 +939,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

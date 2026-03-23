@@ -179,7 +179,7 @@ flowchart TD
 - Arbitration adds latency
 - Requires explicit disagreement protocol
 
-> **💡 Discussion Prompt:** Should a SOC prefer Supervisor or Debate patterns when assessing a zero-day threat? What are the trade-offs in decision time vs. decision quality?
+> **💬 Discussion Prompt:** Should a SOC prefer Supervisor or Debate patterns when assessing a zero-day threat? What are the trade-offs in decision time vs. decision quality?
 
 ---
 
@@ -1112,7 +1112,7 @@ In CrewAI, an agent's **role**, **goals**, and **backstory** define its identity
 
 **Why Personas Matter:** A well-crafted persona reduces hallucination. Agents with clear identity ("You are a forensic analyst") make better decisions than generic instructions ("Analyze this data"). This is empirically validated in recent LLM research—specificity beats generality.
 
-> **💡 Discussion Prompt:** Should SOC agents have personas that reflect real humans (to encourage specialization) or abstract roles (to avoid anthropomorphization)? What are the implications for accountability?
+> **💬 Discussion Prompt:** Should SOC agents have personas that reflect real humans (to encourage specialization) or abstract roles (to avoid anthropomorphization)? What are the implications for accountability?
 
 ---
 
@@ -1824,7 +1824,7 @@ If Containment fails, rewind to Investigation. Try a different approach.
 | **Compliance** | Less transparent | Audit trail of state transitions |
 | **Use Case** | Linear workflows (A → B → C) | Complex workflows with branching |
 
-> **💡 Discussion Prompt:** Should incident response systems favor stateful (LangGraph) for compliance auditability, or stateless (CrewAI) for simplicity? What's the compliance cost of simplicity?
+> **💬 Discussion Prompt:** Should incident response systems favor stateful (LangGraph) for compliance auditability, or stateless (CrewAI) for simplicity? What's the compliance cost of simplicity?
 
 ---
 

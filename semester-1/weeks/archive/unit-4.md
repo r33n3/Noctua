@@ -63,7 +63,7 @@ A critical insight: using multiple agents isn't necessarily more expensive. Why?
 
 Conversely, *poor orchestration costs more:* replicating context across agents, making unnecessary API calls, or routing requests to the wrong agent wastes tokens.
 
-> **💡 Discussion Prompt:** If a single 200k-context model costs $20 per invocation and a 50k-context specialized agent costs $2 per invocation, but you need to invoke the large model 5 times versus 20 invocations of specialized agents, which is cheaper? What other dimensions matter (speed, auditing, error recovery)?
+> **💬 Discussion Prompt:** If a single 200k-context model costs $20 per invocation and a 50k-context specialized agent costs $2 per invocation, but you need to invoke the large model 5 times versus 20 invocations of specialized agents, which is cheaper? What other dimensions matter (speed, auditing, error recovery)?
 
 **Failure Modes & Resilience**
 
@@ -546,7 +546,7 @@ When you build a security tool, measure yourself against these:
    - Realistic: MTTS + time for analyst review + MTTP
    - Target for sprint: Under 15 minutes for a basic alert
 
-> **💡 Discussion Prompt:** If your tool has MTTS = 2 sec but an analyst takes 5 minutes to review the output, what's the effective aMTTR? What if you reduce MTTS to 0.5 sec? When does speed matter most?
+> **💬 Discussion Prompt:** If your tool has MTTS = 2 sec but an analyst takes 5 minutes to review the output, what's the effective aMTTR? What if you reduce MTTS to 0.5 sec? When does speed matter most?
 
 **Time-Waster Antipatterns**
 

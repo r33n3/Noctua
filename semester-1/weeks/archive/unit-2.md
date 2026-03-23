@@ -41,7 +41,7 @@ MCP defines three architectural components:
 
 This three-layer model provides crucial security advantages. A client (agent) never directly executes code on the server; it sends structured requests and receives structured responses. The server can enforce rate limits, validate inputs, and log every interaction. The transport layer can be encrypted and authenticated independently.
 
-> **💡 Discussion Prompt:** If you were designing a tool that gives an AI agent access to your organization's vulnerability database, what security policies would you enforce at each layer (client restrictions, server validation, transport security)?
+> **💬 Discussion Prompt:** If you were designing a tool that gives an AI agent access to your organization's vulnerability database, what security policies would you enforce at each layer (client restrictions, server validation, transport security)?
 
 #### Tool Discovery and Metadata
 
@@ -91,7 +91,7 @@ In 2025, the Linux Foundation took governance of MCP, establishing it as a commu
 3. **Long-term stability** — LF governance ensures MCP won't be abandoned or pivoted by a commercial entity
 4. **Extensibility process** — New security features can be proposed and standardized across the ecosystem
 
-> **💡 Discussion Prompt:** How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?
+> **💬 Discussion Prompt:** How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?
 
 #### Day 1 Deliverable
 
@@ -554,7 +554,7 @@ This approach:
 - Uses parameterized queries (never string interpolation)
 - Provides clear error messages
 
-> **💡 Discussion Prompt:** Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?
+> **💬 Discussion Prompt:** Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?
 
 #### Least Privilege for Agent Tool Access
 
@@ -720,7 +720,7 @@ An important finding from the report: Claude frequently overstated findings and 
 
 This is a powerful validation of CCT Pillar 1 (Evidence-Based Analysis) and Pillar 4 (Adaptive Innovation). Even the attacker had to deal with the fact that autonomous agents generate plausible-sounding results that require human verification. The attacker's 10-20% human involvement wasn't optional—it was *necessary* because the AI couldn't be trusted to validate its own outputs.
 
-> **💡 Discussion Prompt:** GTG-1002 used persona-based prompting to bypass safety guardrails ("I'm a security researcher at a legitimate firm conducting authorized testing"). How would you design a tool-level defense that can distinguish between legitimate security testing and malicious use of the same tools? Is this even possible at the tool level, or does it require platform-level monitoring?
+> **💬 Discussion Prompt:** GTG-1002 used persona-based prompting to bypass safety guardrails ("I'm a security researcher at a legitimate firm conducting authorized testing"). How would you design a tool-level defense that can distinguish between legitimate security testing and malicious use of the same tools? Is this even possible at the tool level, or does it require platform-level monitoring?
 
 **The Human-AI Split:**
 
@@ -1002,7 +1002,7 @@ Before building offensive tools, you must properly frame your security testing c
 Create a file `security-testing-policy.md`:
 
 ```markdown
-# Responsible AI Security Testing Policy — AgentForge Lab Exercise
+# Responsible AI Security Testing Policy — Noctua Lab Exercise
 
 ## Authorization Scope
 - **Target systems:** Local Docker containers ONLY (127.0.0.1, localhost)
@@ -1999,7 +1999,7 @@ USER QUESTION: What's our password policy for admin accounts?
 INSTRUCTIONS: If the answer is in the documents, cite the source. If not, say "This is not covered in our policy documents."
 ```
 
-> **💡 Discussion Prompt:** Your organization uses RAG to answer questions about security policies. A user asks, "Is it OK to share passwords with contractors?" RAG retrieves a document saying "Passwords may never be shared" but that document is from 2020 and your company updated this policy in 2024. How would you prevent this stale information from being used?
+> **💬 Discussion Prompt:** Your organization uses RAG to answer questions about security policies. A user asks, "Is it OK to share passwords with contractors?" RAG retrieves a document saying "Passwords may never be shared" but that document is from 2020 and your company updated this policy in 2024. How would you prevent this stale information from being used?
 
 #### Chunking Strategies for Security Documents
 

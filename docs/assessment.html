@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Course Assessment — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -466,8 +50,8 @@ body {
 
 <main class="main">
   <div class="content">
-    <h1 id="cyberminds-2026-design-rationale-from-2023-to-2026">Noctua: Design Rationale — From 2023 to 2026</h1>
-<p><strong>Original Course:</strong> Noctua: The Fusion of Artificial and Human Intelligence (2023)
+    <h1 id="noctua-2026-design-rationale-from-2023-to-2026">Noctua: Design Rationale — From 2023 to 2026</h1>
+<p><strong>Original Course:</strong> The Fusion of Artificial and Human Intelligence (2023)
 <strong>Assessment Date:</strong> March 2026
 <strong>Status:</strong> Complete — All design decisions implemented in course materials</p>
 <hr />
@@ -482,17 +66,19 @@ body {
 <p>Every rubric item in this course maps to one of these competencies. If you are unsure why a given assessment component exists, trace it back to the competency it develops.</p>
 <hr />
 <h2 id="executive-summary">Executive Summary</h2>
-<p>The original Noctua course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—<strong>Collaborative Critical Thinking (CCT)</strong>, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.</p>
+<p>The original course, delivered in 2023 as an 8-module, 40-hour program, demonstrated remarkable prescience regarding the convergence of AI and cybersecurity. Its three foundational pillars—<strong>Collaborative Critical Thinking (CCT)</strong>, Ethical GenAI, and Rapid Prototyping (RapidP)—remain philosophically sound and arguably more critical in 2026 than when originally conceived. However, the practical execution layer requires comprehensive reconstruction to reflect the maturation of agentic AI systems, the evolution of security frameworks, and the changing threat landscape.</p>
 <p>This assessment identified what remains timeless, what requires updating, and what must be newly incorporated. The 2026 course addresses all of these dimensions in its design and materials.</p>
 <hr />
 <h2 id="whats-still-true-and-stronger-than-ever-2026">What's Still True and Stronger Than Ever (2026)</h2>
 <h3 id="1-collaborative-critical-thinking-cct-framework">1. Collaborative Critical Thinking (CCT) Framework</h3>
-<p><strong>Original Framework:</strong> Five pillars underpinning CCT:
-- Evidence-Based Analysis
-- Inclusive Perspective
-- Strategic Connections
-- Adaptive Innovation
-- Ethical Governance</p>
+<p><strong>Original Framework:</strong> Five pillars underpinning CCT:</p>
+<ul>
+<li>Evidence-Based Analysis</li>
+<li>Inclusive Perspective</li>
+<li>Strategic Connections</li>
+<li>Adaptive Innovation</li>
+<li>Ethical Governance</li>
+</ul>
 <p><strong>2026 Validation:</strong></p>
 <p>The CCT framework has proven prescient, not because prompts have become more sophisticated, but because agentic AI systems demand structured human oversight that these pillars inherently provide. In 2026, agentic systems operate autonomously across multiple tools, data sources, and decision points. Without deliberate critical thinking—demanding evidence, challenging assumptions, integrating diverse perspectives, and maintaining ethical boundaries—these systems can perpetuate harm at scale.</p>
 <p><strong>Key Evolution:</strong> CCT now maps directly to "human-in-the-loop" (HITL) architecture, recognized across industry and NIST frameworks as a non-negotiable security principle. When an agentic system can execute 10,000 actions per minute, human judgment cannot intervene in real-time. Instead, HITL must operate at the design level: How do we structure the agent's prompts, tools, and evaluation criteria so that human values are embedded from inception?</p>
@@ -503,11 +89,13 @@ body {
 <p><strong>Original Content:</strong> Socratic method, Six Thinking Hats, RCA (Root Cause Analysis), SWOT analysis, cognitive bias frameworks.</p>
 <p><strong>2026 Validation:</strong></p>
 <p>The original course correctly identified that prompt engineering was never purely technical—it was fundamentally about structured thinking. This intuition has been vindicated. In 2026, the evolution from "prompt engineering" to "context engineering" makes this even clearer.</p>
-<p>Context engineering requires:
-- <strong>Epistemological rigor:</strong> How do we know what we claim to know? (Socratic method)
-- <strong>Perspective integration:</strong> Who is missing from this analysis? (Six Thinking Hats: emotional, logical, optimistic, critical, creative, systems views)
-- <strong>Root cause thinking:</strong> Why does this failure pattern recur? (RCA)
-- <strong>Bias awareness:</strong> What assumptions are we making invisibly? (Cognitive bias frameworks)</p>
+<p>Context engineering requires:</p>
+<ul>
+<li><strong>Epistemological rigor:</strong> How do we know what we claim to know? (Socratic method)</li>
+<li><strong>Perspective integration:</strong> Who is missing from this analysis? (Six Thinking Hats: emotional, logical, optimistic, critical, creative, systems views)</li>
+<li><strong>Root cause thinking:</strong> Why does this failure pattern recur? (RCA)</li>
+<li><strong>Bias awareness:</strong> What assumptions are we making invisibly? (Cognitive bias frameworks)</li>
+</ul>
 <p>These frameworks are not nice-to-have soft skills. They are prerequisites for designing agents that don't systematically deceive, exploit, or hallucinate. The 2023 course recognized this; the 2026 course must amplify it.</p>
 <p><strong>Design Decision:</strong> This section has been deepened with explicit connection to adversarial thinking. Critical thinking frameworks help students identify and patch vulnerabilities in agent reasoning, forming the intellectual foundation for red-teaming throughout the curriculum.</p>
 <hr />
@@ -515,11 +103,13 @@ body {
 <p><strong>Original Vision:</strong> Building functional AI applications in minimal time through incremental iteration.</p>
 <p><strong>2026 Validation:</strong></p>
 <p>RapidP was prescient bordering on prophetic. In 2023, it was an aspiration; in 2026, it is the dominant development paradigm. Tools like Claude Code, CrewAI, LangGraph, and the Claude Agent SDK have compressed the timeline for building complex agentic systems from weeks to hours.</p>
-<p>A developer can now:
-- Define agent roles and responsibilities (hours)
-- Design tool interfaces and MCP server specifications (hours)
-- Prototype multi-agent orchestration (hours)
-- Deploy and iterate (hours)</p>
+<p>A developer can now:</p>
+<ul>
+<li>Define agent roles and responsibilities (hours)</li>
+<li>Design tool interfaces and MCP server specifications (hours)</li>
+<li>Prototype multi-agent orchestration (hours)</li>
+<li>Deploy and iterate (hours)</li>
+</ul>
 <p>This is not incremental improvement—it is categorical change. RapidP is no longer a competitive advantage; it is the baseline operational mode for AI development teams. Organizations that do not operate at this speed are uncompetitive.</p>
 <p><strong>Implication:</strong> The original 40-hour course underestimated the pace at which students must internalize this skill set. A year-long graduate program should dedicate 150+ hours specifically to hands-on rapid prototyping with modern frameworks, with students building increasingly complex multi-agent systems across the curriculum.</p>
 <p><strong>Design Decision:</strong> RapidP is the methodology underlying all practical labs. Each module culminates in a working prototype deployed in a production-adjacent environment, with students building increasingly complex multi-agent systems across the 2026 program.</p>
@@ -527,34 +117,42 @@ body {
 <h3 id="4-ai-attacker-vs-ai-defender-scenarios">4. AI Attacker vs. AI Defender Scenarios</h3>
 <p><strong>Original Approach:</strong> Hypothetical scenarios exploring how AI systems could be weaponized or misused; how defenders should respond.</p>
 <p><strong>2026 Validation: URGENT</strong></p>
-<p>The original course framed this as exploratory thinking. It is now operational reality. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) used Claude Code to autonomously conduct:
-- Reconnaissance and network mapping
-- Vulnerability discovery
-- Credential harvesting
-- Lateral movement across systems
-- Data exfiltration against approximately 30 targets</p>
+<p>The original course framed this as exploratory thinking. It is now operational reality. In November 2025 (detection: September 2025), Anthropic disclosed what it called "the first reported AI-orchestrated cyber espionage campaign." A Chinese state-sponsored group (GTG-1002) used Claude Code to autonomously conduct:</p>
+<ul>
+<li>Reconnaissance and network mapping</li>
+<li>Vulnerability discovery</li>
+<li>Credential harvesting</li>
+<li>Lateral movement across systems</li>
+<li>Data exfiltration against approximately 30 targets</li>
+</ul>
 <p>The campaign operated at 80–90% autonomy without human intervention, with human operators intervening only at critical junctures.</p>
 <p>This is not hypothetical. It is the new threat model.</p>
-<p><strong>Implication:</strong> AI defender scenarios are no longer thought exercises. They are essential operational security knowledge. Students must understand:
-- How to design agents that resist prompt injection and goal hijacking
-- How to detect AI-orchestrated attacks in real-time
-- How to respond to failures in agentic systems
-- How to establish governance and audit trails for AI agent behavior</p>
+<p><strong>Implication:</strong> AI defender scenarios are no longer thought exercises. They are essential operational security knowledge. Students must understand:</p>
+<ul>
+<li>How to design agents that resist prompt injection and goal hijacking</li>
+<li>How to detect AI-orchestrated attacks in real-time</li>
+<li>How to respond to failures in agentic systems</li>
+<li>How to establish governance and audit trails for AI agent behavior</li>
+</ul>
 <p><strong>Design Decision:</strong> This section has been restructured as "Adversarial Agentic Scenarios" and is grounded in the Anthropic case study and similar incidents. Red-team exercises are used extensively throughout the course.</p>
 <hr />
 <h3 id="5-performance-metrics-mtts-mttp-mttsol-mtti-amttr">5. Performance Metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)</h3>
-<p><strong>Original Metrics:</strong>
-- <strong>MTTS (Mean Time To Symptom):</strong> How long until an issue is visible?
-- <strong>MTTP (Mean Time To Patch):</strong> How long to develop a fix?
-- <strong>MTTSol (Mean Time To Solution):</strong> How long until the fix is deployed?
-- <strong>MTTI (Mean Time To Investigate):</strong> How long to understand root cause?
-- <strong>aMTTR (Assisted Mean Time To Recovery):</strong> How long with human involvement?</p>
+<p><strong>Original Metrics:</strong></p>
+<ul>
+<li><strong>MTTS (Mean Time To Symptom):</strong> How long until an issue is visible?</li>
+<li><strong>MTTP (Mean Time To Patch):</strong> How long to develop a fix?</li>
+<li><strong>MTTSol (Mean Time To Solution):</strong> How long until the fix is deployed?</li>
+<li><strong>MTTI (Mean Time To Investigate):</strong> How long to understand root cause?</li>
+<li><strong>aMTTR (Assisted Mean Time To Recovery):</strong> How long with human involvement?</li>
+</ul>
 <p><strong>2026 Validation:</strong></p>
-<p>These metrics remain conceptually valid and have become more operationally critical. However, they now apply in an agentic context where:
-- Symptoms may manifest at machine speed (milliseconds)
-- Patch deployment happens automatically (continuous)
-- Root cause investigation requires AI-assisted analysis
-- Human-in-the-loop recovery is essential</p>
+<p>These metrics remain conceptually valid and have become more operationally critical. However, they now apply in an agentic context where:</p>
+<ul>
+<li>Symptoms may manifest at machine speed (milliseconds)</li>
+<li>Patch deployment happens automatically (continuous)</li>
+<li>Root cause investigation requires AI-assisted analysis</li>
+<li>Human-in-the-loop recovery is essential</li>
+</ul>
 <p>The metrics have evolved from static SLA measurements into real-time observability requirements.</p>
 <p><strong>New Context:</strong> With agentic systems operating autonomously, these metrics must be instrumented at runtime. An agent's MTTS might be 50 milliseconds (when logging first detects anomaly); MTTI might be 200 milliseconds (when root cause is identified by analysis agent); MTTSol might be automatic (guardrails prevent further damage).</p>
 <p><strong>Design Decision:</strong> These metrics have been integrated into the observability and monitoring section. Students learn how to instrument agentic systems to measure and optimize these metrics in production, with connections to OpenTelemetry standards throughout the labs.</p>
@@ -576,17 +174,21 @@ body {
 <h3 id="7-bias-fairness-and-explainability">7. Bias, Fairness, and Explainability</h3>
 <p><strong>Original Emphasis:</strong> Understanding how AI systems encode human biases and strategies for mitigation.</p>
 <p><strong>2026 Validation:</strong></p>
-<p>This remains crucial and has become more urgent. In 2026:
-- Agentic systems make autonomous decisions affecting humans (hiring, credit, healthcare, criminal justice)
-- Biased decisions compound at machine scale
-- Explainability is a prerequisite for debugging agent behavior
-- Fairness audits are regulatory requirements</p>
+<p>This remains crucial and has become more urgent. In 2026:</p>
+<ul>
+<li>Agentic systems make autonomous decisions affecting humans (hiring, credit, healthcare, criminal justice)</li>
+<li>Biased decisions compound at machine scale</li>
+<li>Explainability is a prerequisite for debugging agent behavior</li>
+<li>Fairness audits are regulatory requirements</li>
+</ul>
 <p>The original course was correct that these are non-technical issues requiring human judgment and continuous vigilance.</p>
-<p><strong>New Context:</strong> Agentic systems add layers of complexity:
-- Bias may emerge from tool choices (which APIs to call?)
-- Bias may emerge from context window management (which past decisions to include?)
-- Bias may emerge from goal specification (how is success defined?)
-- Compounding: one biased agent decision influences the next</p>
+<p><strong>New Context:</strong> Agentic systems add layers of complexity:</p>
+<ul>
+<li>Bias may emerge from tool choices (which APIs to call?)</li>
+<li>Bias may emerge from context window management (which past decisions to include?)</li>
+<li>Bias may emerge from goal specification (how is success defined?)</li>
+<li>Compounding: one biased agent decision influences the next</li>
+</ul>
 <p><strong>Design Decision:</strong> This section has been expanded to cover bias, fairness, and explainability in multi-agent contexts. Students learn to audit agent behavior, identify bias sources, and design guardrails through both theory and hands-on exercises.</p>
 <hr />
 <h2 id="what-needs-updating">What Needs Updating</h2>
@@ -594,23 +196,31 @@ body {
 <p><strong>Original References:</strong> GPT-2, GPT-3, BERT, RoBERTa, with emphasis on ChatGPT and OpenAI Playground.</p>
 <p><strong>2026 Reality:</strong></p>
 <p>The model landscape has evolved dramatically. GPT-2 and GPT-3 are now historical references (interesting for understanding progression but not relevant for current development). The current landscape includes:</p>
-<p><strong>Frontier Models:</strong>
-- Claude Opus 4.6, Claude Sonnet 4.6, Claude Haiku 4.5 (Anthropic)
-- GPT-4o, GPT-4.5, GPT-5.x series, o3, o4-mini (OpenAI)
-- Gemini 2.5 (Google)</p>
-<p><strong>Strong Open-Weight Models:</strong>
-- Llama 3.1 and 3.2 (Meta)
-- Mistral 7B, Mistral Large (Mistral AI)
-- Qwen (Alibaba)</p>
-<p><strong>Specialized Models:</strong>
-- Domain-specific fine-tuned models (increasingly the norm)
-- Multimodal models (vision + text standard)
-- Long-context models (200K+ tokens now commonplace)</p>
-<p><strong>Key Shift:</strong> The original course had to teach students about LLM architecture and capabilities. In 2026, students will assume familiarity with LLMs and must understand:
-- Architectural differences and implications (why context window size matters for security)
-- Cost-performance tradeoffs
-- When to use open-weight vs. proprietary models
-- How to evaluate model trustworthiness and provenance</p>
+<p><strong>Frontier Models:</strong></p>
+<ul>
+<li>Claude Opus 4.6, Claude Sonnet 4.6, Claude Haiku 4.5 (Anthropic)</li>
+<li>GPT-4o, GPT-4.5, GPT-5.x series, o3, o4-mini (OpenAI)</li>
+<li>Gemini 2.5 (Google)</li>
+</ul>
+<p><strong>Strong Open-Weight Models:</strong></p>
+<ul>
+<li>Llama 3.1 and 3.2 (Meta)</li>
+<li>Mistral 7B, Mistral Large (Mistral AI)</li>
+<li>Qwen (Alibaba)</li>
+</ul>
+<p><strong>Specialized Models:</strong></p>
+<ul>
+<li>Domain-specific fine-tuned models (increasingly the norm)</li>
+<li>Multimodal models (vision + text standard)</li>
+<li>Long-context models (200K+ tokens now commonplace)</li>
+</ul>
+<p><strong>Key Shift:</strong> The original course had to teach students about LLM architecture and capabilities. In 2026, students will assume familiarity with LLMs and must understand:</p>
+<ul>
+<li>Architectural differences and implications (why context window size matters for security)</li>
+<li>Cost-performance tradeoffs</li>
+<li>When to use open-weight vs. proprietary models</li>
+<li>How to evaluate model trustworthiness and provenance</li>
+</ul>
 <p><strong>Design Decision:</strong> All model references have been updated. Claude Opus 4.6 is used as the primary example throughout the course given its current state-of-the-art reasoning capabilities and safety focus. Sections on model evaluation criteria relevant to security-critical applications are integrated throughout.</p>
 <hr />
 <h3 id="2-prompt-engineering-context-engineering">2. Prompt Engineering → Context Engineering</h3>
@@ -630,36 +240,46 @@ body {
 <p><strong>Original Lab Stack:</strong> MetaGPT (multi-agent framework) and AgileCoder (code generation), running on Debian with ELK stack.</p>
 <p><strong>2026 Reality:</strong></p>
 <p>MetaGPT and AgileCoder are no longer the reference implementations for agentic systems. The ecosystem has matured dramatically:</p>
-<p><strong>Mature Production Frameworks:</strong>
-- <strong>Claude Agent SDK:</strong> Open-source framework from Anthropic, built for rapid agent development with tools, memory, and built-in safety features
-- <strong>CrewAI:</strong> High-level orchestration framework for multi-agent collaboration
-- <strong>LangGraph:</strong> Graph-based agent orchestration from LangChain, excellent for complex workflows
-- <strong>AutoGen/AG2:</strong> Microsoft's multi-agent framework with speaker selection and conversation management
-- <strong>OpenAI Agents SDK:</strong> Native agent framework integrated with GPT models</p>
-<p><strong>Supporting Infrastructure:</strong>
-- Model Context Protocol (MCP) servers for standardized tool communication
-- OpenTelemetry for observability
-- LangSmith for debugging and evaluation
-- Pydantic for data validation and schema management</p>
-<p><strong>Deployment:</strong>
-- Cloud-native (AWS Lambda, Google Cloud Run, Azure Functions)
-- Container-based (Docker, Kubernetes)
-- GitHub Codespaces for consistent development environments</p>
+<p><strong>Mature Production Frameworks:</strong></p>
+<ul>
+<li><strong>Claude Agent SDK:</strong> Open-source framework from Anthropic, built for rapid agent development with tools, memory, and built-in safety features</li>
+<li><strong>CrewAI:</strong> High-level orchestration framework for multi-agent collaboration</li>
+<li><strong>LangGraph:</strong> Graph-based agent orchestration from LangChain, excellent for complex workflows</li>
+<li><strong>AutoGen/AG2:</strong> Microsoft's multi-agent framework with speaker selection and conversation management</li>
+<li><strong>OpenAI Agents SDK:</strong> Native agent framework integrated with GPT models</li>
+</ul>
+<p><strong>Supporting Infrastructure:</strong></p>
+<ul>
+<li>Model Context Protocol (MCP) servers for standardized tool communication</li>
+<li>OpenTelemetry for observability</li>
+<li>LangSmith for debugging and evaluation</li>
+<li>Pydantic for data validation and schema management</li>
+</ul>
+<p><strong>Deployment:</strong></p>
+<ul>
+<li>Cloud-native (AWS Lambda, Google Cloud Run, Azure Functions)</li>
+<li>Container-based (Docker, Kubernetes)</li>
+<li>GitHub Codespaces for consistent development environments</li>
+</ul>
 <p><strong>Design Decision:</strong> Labs have been redesigned around Claude Agent SDK and CrewAI as the primary frameworks, with LangGraph for complex workflows. Infrastructure has been upgraded to cloud-native deployment. GitHub Codespaces is used for consistent student environments. Labs include MCP server design and integration as core competencies.</p>
 <hr />
 <h3 id="4-nlp-foundations-context-matters-more-than-mechanics">4. NLP Foundations: Context Matters More Than Mechanics</h3>
 <p><strong>Original NLP Content:</strong> Tokenization, stemming, lemmatization, Named Entity Recognition (NER), sentiment analysis. Traditional approaches using NLTK or scikit-learn.</p>
 <p><strong>2026 Reality:</strong></p>
-<p>These foundational concepts remain important for understanding why LLMs work, but their practical relevance has shifted. In modern development:
-- Tokenizers are abstracted (handled by the model API)
-- Stemming is rarely used (LLMs understand word meaning without stemming)
-- NER is a trivial task for LLMs (extract "PERSON: John Smith" in one prompt)
-- Sentiment analysis is a basic classification task</p>
-<p>However, understanding the conceptual foundation is critical for security and debugging:
-- <strong>Tokenization:</strong> Why do context windows have limits? How can token-level attacks (prompt injection) work? Why do models sometimes struggle with specific words or symbols?
-- <strong>Transformers and Attention:</strong> How do LLMs actually work? What is the attention mechanism? Why does word order matter? This is essential for understanding model behavior and vulnerabilities.
-- <strong>Embeddings and Semantic Similarity:</strong> How do models understand meaning? This is critical for RAG systems and semantic-based attacks.
-- <strong>Context Window Limitations:</strong> Why can LLMs "forget" information? What are the security implications of sliding window memory?</p>
+<p>These foundational concepts remain important for understanding why LLMs work, but their practical relevance has shifted. In modern development:</p>
+<ul>
+<li>Tokenizers are abstracted (handled by the model API)</li>
+<li>Stemming is rarely used (LLMs understand word meaning without stemming)</li>
+<li>NER is a trivial task for LLMs (extract "PERSON: John Smith" in one prompt)</li>
+<li>Sentiment analysis is a basic classification task</li>
+</ul>
+<p>However, understanding the conceptual foundation is critical for security and debugging:</p>
+<ul>
+<li><strong>Tokenization:</strong> Why do context windows have limits? How can token-level attacks (prompt injection) work? Why do models sometimes struggle with specific words or symbols?</li>
+<li><strong>Transformers and Attention:</strong> How do LLMs actually work? What is the attention mechanism? Why does word order matter? This is essential for understanding model behavior and vulnerabilities.</li>
+<li><strong>Embeddings and Semantic Similarity:</strong> How do models understand meaning? This is critical for RAG systems and semantic-based attacks.</li>
+<li><strong>Context Window Limitations:</strong> Why can LLMs "forget" information? What are the security implications of sliding window memory?</li>
+</ul>
 <p><strong>Design Decision:</strong> The NLP section has been restructured as "Language Model Foundations for Security." The course focuses on transformer architecture, attention mechanisms, embeddings, and context window implications, with security-relevant examples such as prompt injection, hallucination, and context overflow attacks.</p>
 <hr />
 <h3 id="5-fine-tuning-approach-from-gpt-fine-tuning-to-rag-and-mcp">5. Fine-Tuning Approach: From GPT Fine-Tuning to RAG and MCP</h3>
@@ -694,23 +314,29 @@ body {
 <h3 id="6-course-duration-and-structure-40-hours-year-long-program">6. Course Duration and Structure: 40 Hours → Year-Long Program</h3>
 <p><strong>Original Format:</strong> 8 modules, 40 contact hours (20 lecture, 20 lab), compressed into a short course or semester option.</p>
 <p><strong>2026 Graduate Curriculum:</strong></p>
-<p>For a year-long graduate program, 40 hours is insufficient to develop mastery in:
-- Agentic system design and architecture
-- Multi-agent orchestration and communication
-- Red-teaming and adversarial testing
-- Production deployment and observability
-- Governance and compliance frameworks</p>
-<p><strong>Recommended Structure:</strong> 32-week program with approximately 150 contact hours distributed as:
-- ~40 hours lecture and discussion (fundamentals, frameworks, case studies)
-- ~80 hours hands-on labs and projects (rapid prototyping, increasingly complex agentic systems)
-- ~20 hours capstone project and presentation
-- ~10 hours assessment, reflection, and synthesis</p>
-<p>This allows for:
-- Deep exploration of each topic
-- Iterative skill development through multiple projects
-- Real-world case study analysis
-- Student-led research and presentations
-- Robust capstone that demonstrates mastery</p>
+<p>For a year-long graduate program, 40 hours is insufficient to develop mastery in:</p>
+<ul>
+<li>Agentic system design and architecture</li>
+<li>Multi-agent orchestration and communication</li>
+<li>Red-teaming and adversarial testing</li>
+<li>Production deployment and observability</li>
+<li>Governance and compliance frameworks</li>
+</ul>
+<p><strong>Recommended Structure:</strong> 32-week program with approximately 150 contact hours distributed as:</p>
+<ul>
+<li>~40 hours lecture and discussion (fundamentals, frameworks, case studies)</li>
+<li>~80 hours hands-on labs and projects (rapid prototyping, increasingly complex agentic systems)</li>
+<li>~20 hours capstone project and presentation</li>
+<li>~10 hours assessment, reflection, and synthesis</li>
+</ul>
+<p>This allows for:</p>
+<ul>
+<li>Deep exploration of each topic</li>
+<li>Iterative skill development through multiple projects</li>
+<li>Real-world case study analysis</li>
+<li>Student-led research and presentations</li>
+<li>Robust capstone that demonstrates mastery</li>
+</ul>
 <p><strong>Design Decision:</strong> The course has been restructured as a full year-long graduate program. Each module allows for deep exploration and iterative skill development.</p>
 <hr />
 <h3 id="7-security-frameworks-from-isolated-principles-to-integrated-standards">7. Security Frameworks: From Isolated Principles to Integrated Standards</h3>
@@ -738,66 +364,84 @@ body {
 <li><strong>Observability:</strong> OpenTelemetry-compatible instrumentation</li>
 <li><strong>Cost Management:</strong> Because cloud resources cost money, students learn cost-conscious design</li>
 </ul>
-<p><strong>Tools and Platforms:</strong>
-- GitHub Codespaces for consistent development environments
-- Docker and Docker Compose for local development
-- Cloud platforms for production-adjacent deployment
-- Cloud logging and monitoring (CloudWatch, Cloud Logging, Application Insights)
-- Vector databases (Pinecone, Weaviate, Milvus) for RAG
-- Prompt evaluation frameworks (LangSmith, DeepEval, Ragas)</p>
+<p><strong>Tools and Platforms:</strong></p>
+<ul>
+<li>GitHub Codespaces for consistent development environments</li>
+<li>Docker and Docker Compose for local development</li>
+<li>Cloud platforms for production-adjacent deployment</li>
+<li>Cloud logging and monitoring (CloudWatch, Cloud Logging, Application Insights)</li>
+<li>Vector databases (Pinecone, Weaviate, Milvus) for RAG</li>
+<li>Prompt evaluation frameworks (LangSmith, DeepEval, Ragas)</li>
+</ul>
 <p><strong>Design Decision:</strong> Labs have been redesigned as cloud-native deployments. GitHub Codespaces templates provide consistent student setup. Cost management and observability are integrated as first-class concerns in every lab.</p>
 <hr />
 <h2 id="whats-new-and-must-be-added">What's New and Must Be Added</h2>
 <h3 id="1-agentic-engineering-as-a-discipline">1. Agentic Engineering as a Discipline</h3>
 <p><strong>Status:</strong> In 2026, agentic engineering is recognized as a distinct discipline separate from traditional software engineering or data science.</p>
 <p><strong>Core Competencies:</strong></p>
-<p><strong>Agent Architecture and Design:</strong>
-- Role definition and persona
-- Goal specification and evaluation criteria
-- Tool selection and interface design
-- Memory patterns (short-term, long-term, episodic)
-- Planning and reasoning strategies</p>
-<p><strong>Multi-Agent Orchestration:</strong>
-- Communication protocols and conventions
-- Coordination mechanisms (who decides what?)
-- Conflict resolution
-- Emergent behavior and side effects
-- Load balancing and scalability</p>
-<p><strong>Tool Ecosystem:</strong>
-- Tool abstraction and standardization (MCP)
-- Tool composition and chaining
-- Error handling and fallbacks
-- Security and permission models</p>
-<p><strong>Evaluation and Testing:</strong>
-- Agent behavior evaluation (does it do what we want?)
-- Safety testing (does it avoid harm?)
-- Adversarial testing (how does it respond to attacks?)
-- Scalability and performance testing</p>
+<p><strong>Agent Architecture and Design:</strong></p>
+<ul>
+<li>Role definition and persona</li>
+<li>Goal specification and evaluation criteria</li>
+<li>Tool selection and interface design</li>
+<li>Memory patterns (short-term, long-term, episodic)</li>
+<li>Planning and reasoning strategies</li>
+</ul>
+<p><strong>Multi-Agent Orchestration:</strong></p>
+<ul>
+<li>Communication protocols and conventions</li>
+<li>Coordination mechanisms (who decides what?)</li>
+<li>Conflict resolution</li>
+<li>Emergent behavior and side effects</li>
+<li>Load balancing and scalability</li>
+</ul>
+<p><strong>Tool Ecosystem:</strong></p>
+<ul>
+<li>Tool abstraction and standardization (MCP)</li>
+<li>Tool composition and chaining</li>
+<li>Error handling and fallbacks</li>
+<li>Security and permission models</li>
+</ul>
+<p><strong>Evaluation and Testing:</strong></p>
+<ul>
+<li>Agent behavior evaluation (does it do what we want?)</li>
+<li>Safety testing (does it avoid harm?)</li>
+<li>Adversarial testing (how does it respond to attacks?)</li>
+<li>Scalability and performance testing</li>
+</ul>
 <p><strong>Design Decision:</strong> The curriculum includes dedicated "Agentic Engineering" modules that cover this discipline comprehensively. The course materials reference foundational work on agentic systems and the emerging body of knowledge in this field.</p>
 <hr />
 <h3 id="2-model-context-protocol-mcp">2. Model Context Protocol (MCP)</h3>
 <p><strong>Background:</strong> The Model Context Protocol is an open standard for connecting AI models to external tools and data sources. Developed by Anthropic and released under open governance (Linux Foundation stewardship in development).</p>
 <p><strong>Importance in 2026:</strong></p>
-<p>MCP has become the standard interface for agent-tool communication, analogous to how REST/HTTP became the standard for web services. Organizations are adopting MCP for:
-- Standardizing how agents access databases
-- Integrating legacy systems with AI agents
-- Creating composable tool ecosystems
-- Ensuring security and auditability of agent actions</p>
+<p>MCP has become the standard interface for agent-tool communication, analogous to how REST/HTTP became the standard for web services. Organizations are adopting MCP for:</p>
+<ul>
+<li>Standardizing how agents access databases</li>
+<li>Integrating legacy systems with AI agents</li>
+<li>Creating composable tool ecosystems</li>
+<li>Ensuring security and auditability of agent actions</li>
+</ul>
 <p><strong>Key Concepts:</strong></p>
-<p><strong>MCP Servers:</strong> Provide tools, data sources, and resources. Examples:
-- Database MCP server (agents query data)
-- File system MCP server (agents read/write files)
-- API MCP server (agents call external APIs)
-- Custom business logic MCP server</p>
-<p><strong>Tool Definitions:</strong> Each MCP server exposes tools with:
-- Clear descriptions of what the tool does
-- Input schemas (what parameters are required?)
-- Output schemas (what does the tool return?)
-- Security and permission constraints</p>
-<p><strong>Protocols:</strong> MCP defines how clients (agents) and servers communicate, with emphasis on:
-- Safety (what can the agent actually do?)
-- Auditability (what did the agent do?)
-- Reliability (error handling and recovery)</p>
+<p><strong>MCP Servers:</strong> Provide tools, data sources, and resources. Examples:</p>
+<ul>
+<li>Database MCP server (agents query data)</li>
+<li>File system MCP server (agents read/write files)</li>
+<li>API MCP server (agents call external APIs)</li>
+<li>Custom business logic MCP server</li>
+</ul>
+<p><strong>Tool Definitions:</strong> Each MCP server exposes tools with:</p>
+<ul>
+<li>Clear descriptions of what the tool does</li>
+<li>Input schemas (what parameters are required?)</li>
+<li>Output schemas (what does the tool return?)</li>
+<li>Security and permission constraints</li>
+</ul>
+<p><strong>Protocols:</strong> MCP defines how clients (agents) and servers communicate, with emphasis on:</p>
+<ul>
+<li>Safety (what can the agent actually do?)</li>
+<li>Auditability (what did the agent do?)</li>
+<li>Reliability (error handling and recovery)</li>
+</ul>
 <p><strong>Curriculum Integration:</strong></p>
 <ul>
 <li>Introduction to MCP concepts and architecture</li>
@@ -895,27 +539,35 @@ body {
 <h3 id="6-real-world-case-studies-and-current-threat-landscape">6. Real-World Case Studies and Current Threat Landscape</h3>
 <p><strong>Critical Addition:</strong> Ground the curriculum in real-world incidents.</p>
 <p><strong>Case Studies:</strong></p>
-<p><strong>Anthropic's GTG-1002 Espionage Campaign Disclosure (November 2025, detection: September 2025):</strong>
-- Describe the campaign: first reported AI-orchestrated cyber espionage, operating at 80–90% autonomy
-- Techniques used: autonomous reconnaissance, vulnerability discovery, credential harvesting, data exfiltration (~30 targets)
-- Detection and response
-- Implications for security posture
-- Lessons learned</p>
-<p><strong>State-Sponsored AI Attacks:</strong>
-- Evolution from script-kiddie tools to state-sponsored AI agents
-- APT groups deploying agentic systems
-- New capabilities enabled by AI orchestration
-- Defensive responses</p>
-<p><strong>Enterprise Incidents:</strong>
-- Data exfiltration via prompt injection
-- Autonomous agent causing operational disruption
-- Cost overruns from uncontrolled agent resource usage
-- Fairness incidents in autonomous decision-making</p>
-<p><strong>Curriculum Integration:</strong>
-- Open each major security topic with a relevant case study
-- Analyze attacks to understand attack vectors and defenses
-- Discuss detection methods and response strategies
-- Extract lessons and design principles</p>
+<p><strong>Anthropic's GTG-1002 Espionage Campaign Disclosure (November 2025, detection: September 2025):</strong></p>
+<ul>
+<li>Describe the campaign: first reported AI-orchestrated cyber espionage, operating at 80–90% autonomy</li>
+<li>Techniques used: autonomous reconnaissance, vulnerability discovery, credential harvesting, data exfiltration (~30 targets)</li>
+<li>Detection and response</li>
+<li>Implications for security posture</li>
+<li>Lessons learned</li>
+</ul>
+<p><strong>State-Sponsored AI Attacks:</strong></p>
+<ul>
+<li>Evolution from script-kiddie tools to state-sponsored AI agents</li>
+<li>APT groups deploying agentic systems</li>
+<li>New capabilities enabled by AI orchestration</li>
+<li>Defensive responses</li>
+</ul>
+<p><strong>Enterprise Incidents:</strong></p>
+<ul>
+<li>Data exfiltration via prompt injection</li>
+<li>Autonomous agent causing operational disruption</li>
+<li>Cost overruns from uncontrolled agent resource usage</li>
+<li>Fairness incidents in autonomous decision-making</li>
+</ul>
+<p><strong>Curriculum Integration:</strong></p>
+<ul>
+<li>Open each major security topic with a relevant case study</li>
+<li>Analyze attacks to understand attack vectors and defenses</li>
+<li>Discuss detection methods and response strategies</li>
+<li>Extract lessons and design principles</li>
+</ul>
 <p><strong>Design Decision:</strong> Lecture time is dedicated to case study analysis. Security practitioners are invited to discuss real incidents. Incident analysis serves as a motivating example for each major topic in the 2026 curriculum.</p>
 <hr />
 <h3 id="7-the-agentic-engineering-body-of-knowledge">7. The Agentic Engineering Body of Knowledge</h3>
@@ -948,11 +600,13 @@ body {
 <li>Multi-agent systems compound costs (multiple models calling each other)</li>
 <li>Students must develop cost-conscious design habits early</li>
 </ul>
-<p><strong>Techniques:</strong>
-- Prompt optimization (achieving results with fewer tokens)
-- Caching strategies
-- Model selection (using smaller models when appropriate)
-- Cost monitoring and alerting</p>
+<p><strong>Techniques:</strong></p>
+<ul>
+<li>Prompt optimization (achieving results with fewer tokens)</li>
+<li>Caching strategies</li>
+<li>Model selection (using smaller models when appropriate)</li>
+<li>Cost monitoring and alerting</li>
+</ul>
 <p><strong>Observability:</strong></p>
 <ul>
 <li>Understanding agent behavior in production requires comprehensive logging and monitoring</li>
@@ -961,11 +615,13 @@ body {
 <li>Metrics, traces, and logs (observability pillars)</li>
 <li>Debugging distributed multi-agent systems</li>
 </ul>
-<p><strong>Techniques:</strong>
-- Instrumenting agents and tools
-- Collecting and analyzing traces
-- Identifying performance bottlenecks
-- Debugging agent reasoning</p>
+<p><strong>Techniques:</strong></p>
+<ul>
+<li>Instrumenting agents and tools</li>
+<li>Collecting and analyzing traces</li>
+<li>Identifying performance bottlenecks</li>
+<li>Debugging agent reasoning</li>
+</ul>
 <p><strong>Error Compounding:</strong></p>
 <ul>
 <li>In multi-agent systems, one agent's error can propagate to other agents</li>
@@ -973,11 +629,13 @@ body {
 <li>Errors compound through multiple steps, becoming unrecognizable</li>
 <li>Recovery from cascading failures is difficult</li>
 </ul>
-<p><strong>Techniques:</strong>
-- Error isolation (preventing errors from propagating)
-- Graceful degradation (agent can operate with reduced capability)
-- Circuit breakers (stopping cascading failures)
-- Recovery strategies</p>
+<p><strong>Techniques:</strong></p>
+<ul>
+<li>Error isolation (preventing errors from propagating)</li>
+<li>Graceful degradation (agent can operate with reduced capability)</li>
+<li>Circuit breakers (stopping cascading failures)</li>
+<li>Recovery strategies</li>
+</ul>
 <p><strong>Curriculum Coverage:</strong></p>
 <ul>
 <li>Cost estimation and management</li>
@@ -1056,43 +714,6 @@ body {
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -1184,6 +805,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

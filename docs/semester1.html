@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semester 1 Syllabus — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -436,7 +20,7 @@ body {
   <div class="nav-section">Overview</div>
   <a href="index.html">Course Overview</a>
   <div class="nav-section">Semester 1: Foundations</div>
-  <a href="semester1.html" class="active">Semester 1 Overview</a>
+  <a href="semester1.html">Semester 1 Overview</a>
   <a href="s1-unit1.html" class="sub">Unit 1: CCT Foundations</a>
   <a href="lab-s1-unit1.html" class="sub">Lab: Unit 1</a>
   <a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
@@ -475,11 +59,13 @@ body {
 <p><strong>Semester:</strong> Spring 2026</p>
 <p><strong>Credit Hours:</strong> 3</p>
 <p><strong>Class Schedule:</strong> [16 weeks, includes 50-minute lectures and 110-minute labs]</p>
-<p><strong>Prerequisites:</strong>
-- Bachelor's degree in Computer Science, Information Security, or related field, OR
-- Equivalent professional cybersecurity experience
-- Working knowledge of command-line environments
-- Familiarity with basic cybersecurity concepts (recommended)</p>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li>Bachelor's degree in Computer Science, Information Security, or related field, OR</li>
+<li>Equivalent professional cybersecurity experience</li>
+<li>Working knowledge of command-line environments</li>
+<li>Familiarity with basic cybersecurity concepts (recommended)</li>
+</ul>
 <p><strong>Instructor:</strong> [Instructor Name and Contact Information]</p>
 <p><strong>Office Hours:</strong> [Days/Times and Location/Virtual Details]</p>
 <p><strong>Communication:</strong> [Email, Slack, or other platform]</p>
@@ -525,15 +111,19 @@ body {
 </ol>
 <hr />
 <h2 id="course-structure-delivery">Course Structure &amp; Delivery</h2>
-<p><strong>In-Class Format:</strong> Each week consists of two class sessions:
-- <strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development
-- <strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</p>
-<p><strong>Overall Course Philosophy:</strong>
-- <strong>Hands-On First:</strong> Students build working tools before deep-diving into theory
-- <strong>CCT Integration:</strong> All assignments require application of CCT principles
-- <strong>Rapid Iteration:</strong> Single-session prototyping is a core competency
-- <strong>Ethical Accountability:</strong> Every tool students build is audited for safety, fairness, and transparency
-- <strong>Real-World Scenarios:</strong> All labs use realistic cybersecurity problems and data</p>
+<p><strong>In-Class Format:</strong> Each week consists of two class sessions:</p>
+<ul>
+<li><strong>Day 1 — Theory &amp; Foundations:</strong> Conceptual foundations, historical context, case studies, guided discussions, and key concept development</li>
+<li><strong>Day 2 — Hands-On Lab:</strong> Practical building using Claude Code and the course toolstack, with immediate prototyping, iteration, and deliverable completion</li>
+</ul>
+<p><strong>Overall Course Philosophy:</strong></p>
+<ul>
+<li><strong>Hands-On First:</strong> Students build working tools before deep-diving into theory</li>
+<li><strong>CCT Integration:</strong> All assignments require application of CCT principles</li>
+<li><strong>Rapid Iteration:</strong> Single-session prototyping is a core competency</li>
+<li><strong>Ethical Accountability:</strong> Every tool students build is audited for safety, fairness, and transparency</li>
+<li><strong>Real-World Scenarios:</strong> All labs use realistic cybersecurity problems and data</li>
+</ul>
 <hr />
 <h2 id="weekly-schedule">Weekly Schedule</h2>
 <h3 id="unit-1-cct-foundations-ai-landscape-weeks-14">Unit 1: CCT Foundations &amp; AI Landscape (Weeks 1–4)</h3>
@@ -702,34 +292,42 @@ body {
 </tr>
 </tbody>
 </table>
-<p><strong>Grading Scale:</strong>
-- A: 90–100%
-- B: 80–89%
-- C: 70–79%
-- D: 60–69%
-- F: Below 60%</p>
+<p><strong>Grading Scale:</strong></p>
+<ul>
+<li>A: 90–100%</li>
+<li>B: 80–89%</li>
+<li>C: 70–79%</li>
+<li>D: 60–69%</li>
+<li>F: Below 60%</li>
+</ul>
 <hr />
 <h2 id="course-policies">Course Policies</h2>
 <h3 id="academic-integrity">Academic Integrity</h3>
 <p>This is an AI course. You are <strong>expected</strong> to use AI tools, including Claude, to accelerate your learning and development. The skill we are building is not "avoid AI" but "direct AI effectively using structured critical thinking."</p>
-<p><strong>AI Usage Requirements:</strong>
-- All AI-assisted work must include a brief <strong>methodology note</strong> (50–150 words) explaining:
-  - How you used AI (which tool, what prompts, how many iterations)
-  - Why you chose that approach
-  - How you verified the AI's output for correctness and relevance
-  - What you would do differently next time
-- Example: "I used Claude Opus to help design the architecture for my MCP server. I provided the tool specifications and asked Claude to propose a modular design. I validated the design against security best practices and made three iterations to improve error handling. Next time, I would provide more detailed constraints upfront."</p>
-<p><strong>Academic integrity violations:</strong>
-- Submitting work that is not your own (e.g., using a classmate's code without attribution)
-- Misrepresenting AI-assisted work as entirely your own (not including methodology note)
-- Plagiarizing readings or external sources
-- Cheating on assignments (e.g., submitting another's prototype)</p>
+<p><strong>AI Usage Requirements:</strong></p>
+<ul>
+<li>All AI-assisted work must include a brief <strong>methodology note</strong> (50–150 words) explaining:</li>
+<li>How you used AI (which tool, what prompts, how many iterations)</li>
+<li>Why you chose that approach</li>
+<li>How you verified the AI's output for correctness and relevance</li>
+<li>What you would do differently next time</li>
+<li>Example: "I used Claude Opus to help design the architecture for my MCP server. I provided the tool specifications and asked Claude to propose a modular design. I validated the design against security best practices and made three iterations to improve error handling. Next time, I would provide more detailed constraints upfront."</li>
+</ul>
+<p><strong>Academic integrity violations:</strong></p>
+<ul>
+<li>Submitting work that is not your own (e.g., using a classmate's code without attribution)</li>
+<li>Misrepresenting AI-assisted work as entirely your own (not including methodology note)</li>
+<li>Plagiarizing readings or external sources</li>
+<li>Cheating on assignments (e.g., submitting another's prototype)</li>
+</ul>
 <p>Violations will be reported to the Dean of Students per institutional policy.</p>
 <h3 id="attendance">Attendance</h3>
-<p>Attendance at lectures and labs is expected. If you need to miss class:
-- Notify the instructor as soon as possible
-- Arrange to review recorded content or notes from peers
-- Complete lab deliverables even if you miss the in-class session (though participating in lab is strongly recommended)</p>
+<p>Attendance at lectures and labs is expected. If you need to miss class:</p>
+<ul>
+<li>Notify the instructor as soon as possible</li>
+<li>Arrange to review recorded content or notes from peers</li>
+<li>Complete lab deliverables even if you miss the in-class session (though participating in lab is strongly recommended)</li>
+</ul>
 <p>Excessive absences may impact your participation grade.</p>
 <h3 id="late-work">Late Work</h3>
 <ul>
@@ -740,38 +338,50 @@ body {
 <p>For lab-heavy courses, timely completion is critical for peer collaboration and feedback. Contact the instructor if you're falling behind.</p>
 <h3 id="ai-usage-policy-detailed">AI Usage Policy (Detailed)</h3>
 <p><strong>Philosophy:</strong> AI tools are force multipliers for security professionals. The goal is not to replace human thinking but to augment it with AI capabilities while maintaining rigor, fairness, and accountability.</p>
-<p><strong>Expected Usage:</strong>
-- Use Claude or other AI tools for brainstorming, drafting, ideation, and rapid prototyping
-- Use AI to accelerate coding, documentation, and report writing
-- Use AI as a thinking partner to stress-test your ideas (apply CCT via Claude)
-- Use AI to learn new concepts and explore alternatives</p>
-<p><strong>Prohibited Usage:</strong>
-- Submitting AI-generated work without verification or significant modification
-- Using AI to help peers cheat (sharing answers instead of helping them think)
-- Over-relying on AI to the point of losing understanding (if you can't explain the output, you haven't learned it)</p>
-<p><strong>Documentation:</strong>
-- Include the methodology note with all major deliverables (labs, reports, projects)
-- Indicate in code comments where AI assisted (e.g., <code># Claude-assisted error handling</code>)
-- If you copy code from AI, cite it (e.g., <code>// Generated with Claude, adapted for our use case</code>)</p>
+<p><strong>Expected Usage:</strong></p>
+<ul>
+<li>Use Claude or other AI tools for brainstorming, drafting, ideation, and rapid prototyping</li>
+<li>Use AI to accelerate coding, documentation, and report writing</li>
+<li>Use AI as a thinking partner to stress-test your ideas (apply CCT via Claude)</li>
+<li>Use AI to learn new concepts and explore alternatives</li>
+</ul>
+<p><strong>Prohibited Usage:</strong></p>
+<ul>
+<li>Submitting AI-generated work without verification or significant modification</li>
+<li>Using AI to help peers cheat (sharing answers instead of helping them think)</li>
+<li>Over-relying on AI to the point of losing understanding (if you can't explain the output, you haven't learned it)</li>
+</ul>
+<p><strong>Documentation:</strong></p>
+<ul>
+<li>Include the methodology note with all major deliverables (labs, reports, projects)</li>
+<li>Indicate in code comments where AI assisted (e.g., <code># Claude-assisted error handling</code>)</li>
+<li>If you copy code from AI, cite it (e.g., <code>// Generated with Claude, adapted for our use case</code>)</li>
+</ul>
 <hr />
 <h2 id="course-expectations">Course Expectations</h2>
 <h3 id="workload">Workload</h3>
-<p>This course is intensive and hands-on. Expect:
-- <strong>In-class:</strong> 3 hours per week (lecture + lab)
-- <strong>Outside class:</strong> 6–9 hours per week (reading, reflection, lab continuation, project work)
-- <strong>Total:</strong> ~10–12 hours per week (typical for a 3-credit graduate course)</p>
+<p>This course is intensive and hands-on. Expect:</p>
+<ul>
+<li><strong>In-class:</strong> 3 hours per week (lecture + lab)</li>
+<li><strong>Outside class:</strong> 6–9 hours per week (reading, reflection, lab continuation, project work)</li>
+<li><strong>Total:</strong> ~10–12 hours per week (typical for a 3-credit graduate course)</li>
+</ul>
 <p>Weeks 14–16 (sprint weeks) may require additional time as you iterate on prototypes.</p>
 <h3 id="technology-requirements">Technology Requirements</h3>
-<p><strong>Required:</strong>
-- Laptop with Claude Code installed (Mac, Windows, or Linux)
-- Access to Claude (Claude Opus or Sonnet; Anthropic API credentials or Claude Max subscription)
-- Git for version control
-- A text editor or IDE (VSCode, PyCharm, or similar)
-- Command-line familiarity (bash/zsh)</p>
-<p><strong>Recommended:</strong>
-- Docker for containerizing tools and MCP servers
-- Python 3.9+ for building tools and MCP servers
-- Access to public vulnerability databases (NVD API, Shodan, GreyNoise) — free tiers available</p>
+<p><strong>Required:</strong></p>
+<ul>
+<li>Laptop with Claude Code installed (Mac, Windows, or Linux)</li>
+<li>Access to Claude (Claude Opus or Sonnet; Anthropic API credentials or Claude Max subscription)</li>
+<li>Git for version control</li>
+<li>A text editor or IDE (VSCode, PyCharm, or similar)</li>
+<li>Command-line familiarity (bash/zsh)</li>
+</ul>
+<p><strong>Recommended:</strong></p>
+<ul>
+<li>Docker for containerizing tools and MCP servers</li>
+<li>Python 3.9+ for building tools and MCP servers</li>
+<li>Access to public vulnerability databases (NVD API, Shodan, GreyNoise) — free tiers available</li>
+</ul>
 <h3 id="classroom-conduct">Classroom Conduct</h3>
 <ul>
 <li>Arrive on time and be ready to engage</li>
@@ -799,15 +409,19 @@ body {
 <li>Security frameworks and standards (ATT&amp;CK, CIS Controls, SANS guidelines)</li>
 </ul>
 <h3 id="getting-help">Getting Help</h3>
-<p><strong>For course content questions:</strong>
-- Office hours (as scheduled)
-- Email the instructor
-- Slack channel (if applicable)
-- Peer discussion and collaboration</p>
-<p><strong>For mental health or personal support:</strong>
-- Campus counseling services (if applicable)
-- Your support network
-- Dean of Students office</p>
+<p><strong>For course content questions:</strong></p>
+<ul>
+<li>Office hours (as scheduled)</li>
+<li>Email the instructor</li>
+<li>Slack channel (if applicable)</li>
+<li>Peer discussion and collaboration</li>
+</ul>
+<p><strong>For mental health or personal support:</strong></p>
+<ul>
+<li>Campus counseling services (if applicable)</li>
+<li>Your support network</li>
+<li>Dean of Students office</li>
+</ul>
 <hr />
 <h2 id="course-schedule-summary">Course Schedule Summary</h2>
 <table>
@@ -913,20 +527,24 @@ body {
 <li><strong>Deploying confidently</strong> with security hardening and ethical safeguards</li>
 </ul>
 <h3 id="instructor-commitment">Instructor Commitment</h3>
-<p>I am committed to:
-- Providing clear, actionable feedback on your work
-- Creating a collaborative, safe learning environment
-- Staying current with rapidly evolving AI and security landscapes
-- Helping you connect course learning to your career goals
-- Responding to questions and concerns promptly</p>
+<p>I am committed to:</p>
+<ul>
+<li>Providing clear, actionable feedback on your work</li>
+<li>Creating a collaborative, safe learning environment</li>
+<li>Staying current with rapidly evolving AI and security landscapes</li>
+<li>Helping you connect course learning to your career goals</li>
+<li>Responding to questions and concerns promptly</li>
+</ul>
 <h3 id="your-commitment">Your Commitment</h3>
-<p>You are expected to:
-- Engage actively in lectures and labs
-- Complete assignments thoroughly and on time
-- Participate constructively with peers
-- Ask questions when concepts are unclear
-- Apply critical thinking and ethical reasoning to all work
-- Respect the diverse perspectives and backgrounds of your classmates</p>
+<p>You are expected to:</p>
+<ul>
+<li>Engage actively in lectures and labs</li>
+<li>Complete assignments thoroughly and on time</li>
+<li>Participate constructively with peers</li>
+<li>Ask questions when concepts are unclear</li>
+<li>Apply critical thinking and ethical reasoning to all work</li>
+<li>Respect the diverse perspectives and backgrounds of your classmates</li>
+</ul>
 <hr />
 <h2 id="appendix-performance-metrics-definitions">Appendix: Performance Metrics Definitions</h2>
 <p><strong>MTTS (Mean Time to Triage):</strong> Time from alert generation to initial assessment of the alert's nature and severity. Measures how quickly the system (human + AI) understands the problem.</p>
@@ -941,43 +559,6 @@ body {
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -1069,6 +650,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

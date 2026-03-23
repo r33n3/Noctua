@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Frameworks & Protocols — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -456,7 +40,7 @@ body {
   <a href="s2-unit8.html" class="sub">Unit 8: Capstone</a>
   <a href="lab-s2-unit8.html" class="sub">Lab: Unit 8</a>
   <div class="nav-section">Resources</div>
-  <a href="frameworks.html" class="active">Frameworks &amp; Protocols</a>
+  <a href="frameworks.html">Frameworks &amp; Protocols</a>
   <a href="lab-setup.html">Lab Setup Guide</a>
   <a href="assessment.html">Design Rationale</a>
   <a href="reading.html">Reading List</a>
@@ -573,44 +157,58 @@ body {
 <h2 id="part-1-agent-communication-protocols">Part 1: Agent Communication Protocols</h2>
 <p>The AI agent ecosystem in 2025-2026 has converged on four complementary interoperability protocols. Rather than competing, they address different layers of agent communication — analogous to how HTTP, WebSocket, and gRPC coexist in modern web infrastructure.</p>
 <h3 id="model-context-protocol-mcp">Model Context Protocol (MCP)</h3>
-<p><strong>Origins and Governance</strong>
-- Created by Anthropic (2024)
-- Donated to Linux Foundation's Agentic AI Foundation (AAIF) in December 2025
-- Co-founded with OpenAI and Block; platinum members include AWS, Google, Microsoft, Bloomberg, and Cloudflare
-- Reference: https://modelcontextprotocol.io</p>
+<p><strong>Origins and Governance</strong></p>
+<ul>
+<li>Created by Anthropic (2024)</li>
+<li>Donated to Linux Foundation's Agentic AI Foundation (AAIF) in December 2025</li>
+<li>Co-founded with OpenAI and Block; platinum members include AWS, Google, Microsoft, Bloomberg, and Cloudflare</li>
+<li>Reference: https://modelcontextprotocol.io</li>
+</ul>
 <p><strong>Purpose</strong>
 Solves the "context problem" — enables AI agents to access external APIs, databases, and tools without requiring custom integrations. MCP provides a standardized way for agents to discover and invoke capabilities from external services.</p>
-<p><strong>Architecture</strong>
-- Client-server model with clear separation of concerns
-- MCP Clients: AI agents that need tool access
-- MCP Servers: Tool and resource providers
-- Standard transports: stdio (local), SSE (HTTP streaming), HTTP (bidirectional)
-- Layered design: allows agents to work with multiple MCP servers simultaneously</p>
-<p><strong>Core Concepts</strong>
-- <strong>Tools</strong>: Callable functions with defined inputs, outputs, and descriptions
-- <strong>Resources</strong>: Data sources (files, databases, APIs) that agents can read or reference
-- <strong>Prompts</strong>: Reusable prompt templates that can be parameterized
-- <strong>Sampling</strong>: Delegate model invocation to the client (advanced pattern)</p>
-<p><strong>Latest Developments</strong>
-- <strong>MCP Apps (January 2026)</strong>: Extension allowing MCP tools to return interactive UI components (buttons, forms, visualizations)
-- <strong>Server Registry</strong>: Ecosystem of vetted MCP servers for common integrations (GitHub, Slack, cloud services)</p>
-<p><strong>Security Implications</strong>
-- Standardized tool access means standardized audit surfaces. Security teams can focus on securing MCP servers rather than ad-hoc integrations
-- Tool injection and malicious MCP servers are real attack vectors
-- Permissioning becomes a first-class concern: which agents can call which tools?
-- Supply chain risk: compromised MCP servers can compromise all connected agents
-- Output validation from tools is critical — tools may return unexpected or malicious data</p>
-<p><strong>Course Relevance</strong>
-- Students build MCP servers starting in Semester 1 Week 5
-- Understanding this protocol deeply is essential for building secure agent systems
-- Red team exercises in Semester 2 focus on MCP server vulnerabilities and tool injection</p>
+<p><strong>Architecture</strong></p>
+<ul>
+<li>Client-server model with clear separation of concerns</li>
+<li>MCP Clients: AI agents that need tool access</li>
+<li>MCP Servers: Tool and resource providers</li>
+<li>Standard transports: stdio (local), SSE (HTTP streaming), HTTP (bidirectional)</li>
+<li>Layered design: allows agents to work with multiple MCP servers simultaneously</li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><strong>Tools</strong>: Callable functions with defined inputs, outputs, and descriptions</li>
+<li><strong>Resources</strong>: Data sources (files, databases, APIs) that agents can read or reference</li>
+<li><strong>Prompts</strong>: Reusable prompt templates that can be parameterized</li>
+<li><strong>Sampling</strong>: Delegate model invocation to the client (advanced pattern)</li>
+</ul>
+<p><strong>Latest Developments</strong></p>
+<ul>
+<li><strong>MCP Apps (January 2026)</strong>: Extension allowing MCP tools to return interactive UI components (buttons, forms, visualizations)</li>
+<li><strong>Server Registry</strong>: Ecosystem of vetted MCP servers for common integrations (GitHub, Slack, cloud services)</li>
+</ul>
+<p><strong>Security Implications</strong></p>
+<ul>
+<li>Standardized tool access means standardized audit surfaces. Security teams can focus on securing MCP servers rather than ad-hoc integrations</li>
+<li>Tool injection and malicious MCP servers are real attack vectors</li>
+<li>Permissioning becomes a first-class concern: which agents can call which tools?</li>
+<li>Supply chain risk: compromised MCP servers can compromise all connected agents</li>
+<li>Output validation from tools is critical — tools may return unexpected or malicious data</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Students build MCP servers starting in Semester 1 Week 5</li>
+<li>Understanding this protocol deeply is essential for building secure agent systems</li>
+<li>Red team exercises in Semester 2 focus on MCP server vulnerabilities and tool injection</li>
+</ul>
 <hr />
 <h3 id="agent-to-agent-protocol-a2a">Agent-to-Agent Protocol (A2A)</h3>
-<p><strong>Origins and Governance</strong>
-- Created by Google (April 2025)
-- Donated to Linux Foundation in June 2025
-- 50+ partners: AWS, Microsoft, Salesforce, SAP, Atlassian, Box, PayPal, ServiceNow, and others
-- Specification: Open source, community-driven development</p>
+<p><strong>Origins and Governance</strong></p>
+<ul>
+<li>Created by Google (April 2025)</li>
+<li>Donated to Linux Foundation in June 2025</li>
+<li>50+ partners: AWS, Microsoft, Salesforce, SAP, Atlassian, Box, PayPal, ServiceNow, and others</li>
+<li>Specification: Open source, community-driven development</li>
+</ul>
 <p><strong>Purpose</strong>
 Enables agent-to-agent collaboration — agents can discover, communicate with, and delegate tasks to other agents, even when they don't share memory, tools, or context. This is essential for building agent networks that scale beyond single vendors or frameworks.</p>
 <p><strong>Architecture</strong>
@@ -645,26 +243,34 @@ Built on HTTP, SSE, and JSON-RPC with four core capabilities:</p>
 <li>Text-only agents can work with graphical agents</li>
 <li>Asynchronous agents can delegate to real-time agents</li>
 </ol>
-<p><strong>Version Evolution</strong>
-- <strong>v0.1 (April 2025)</strong>: Initial release, basic agent-to-agent messaging
-- <strong>v0.2</strong>: Emphasis on stateless interactions for cloud-native scalability
-- <strong>v0.3 (July 2025)</strong>: Signed Agent Cards with cryptographic verification, gRPC support for high-throughput scenarios</p>
-<p><strong>Security Implications</strong>
-- Agent Cards are a new attack surface: spoofing (false agent identity), capability lying (falsely advertising capabilities), and incomplete disclosure
-- Task delegation requires trust frameworks: how do you trust another agent's results?
-- Cross-agent data flow needs governance: what data should be shared between agents?
-- Delegation chains can obscure accountability: if Agent A delegates to Agent B who delegates to Agent C, who is responsible for failures?
-- Cryptographic signing in v0.3+ helps verify Agent Card authenticity but doesn't solve the fundamental trust problem</p>
-<p><strong>Course Relevance</strong>
-- Covered in Semester 2 Week 4 when building multi-agent systems
-- Focus on agent collaboration across organizational boundaries
-- Red team exercises on Agent Card spoofing and capability manipulation</p>
+<p><strong>Version Evolution</strong></p>
+<ul>
+<li><strong>v0.1 (April 2025)</strong>: Initial release, basic agent-to-agent messaging</li>
+<li><strong>v0.2</strong>: Emphasis on stateless interactions for cloud-native scalability</li>
+<li><strong>v0.3 (July 2025)</strong>: Signed Agent Cards with cryptographic verification, gRPC support for high-throughput scenarios</li>
+</ul>
+<p><strong>Security Implications</strong></p>
+<ul>
+<li>Agent Cards are a new attack surface: spoofing (false agent identity), capability lying (falsely advertising capabilities), and incomplete disclosure</li>
+<li>Task delegation requires trust frameworks: how do you trust another agent's results?</li>
+<li>Cross-agent data flow needs governance: what data should be shared between agents?</li>
+<li>Delegation chains can obscure accountability: if Agent A delegates to Agent B who delegates to Agent C, who is responsible for failures?</li>
+<li>Cryptographic signing in v0.3+ helps verify Agent Card authenticity but doesn't solve the fundamental trust problem</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Covered in Semester 2 Week 4 when building multi-agent systems</li>
+<li>Focus on agent collaboration across organizational boundaries</li>
+<li>Red team exercises on Agent Card spoofing and capability manipulation</li>
+</ul>
 <hr />
 <h3 id="agent-communication-protocol-acp">Agent Communication Protocol (ACP)</h3>
-<p><strong>Origins and Governance</strong>
-- Created and maintained by IBM
-- Open source, community contribution model
-- IBM Cloud integration primary deployment target</p>
+<p><strong>Origins and Governance</strong></p>
+<ul>
+<li>Created and maintained by IBM</li>
+<li>Open source, community contribution model</li>
+<li>IBM Cloud integration primary deployment target</li>
+</ul>
 <p><strong>Purpose</strong>
 Cross-framework interoperability — enables agents built with different frameworks (LangChain, CrewAI, Claude Agent SDK, custom implementations) to collaborate without requiring framework-specific glue code.</p>
 <p><strong>Architecture</strong>
@@ -681,26 +287,34 @@ Brokered model with three primary roles:</p>
 <li>Multipart MIME support for multimodal responses (text, images, structured data)</li>
 <li>Flexible identity management and authentication</li>
 </ol>
-<p><strong>Key Characteristics</strong>
-- Framework-agnostic: works with any agent implementation
-- Stateless messaging: no requirement for persistent connections
-- Message queuing for asynchronous agent interaction
-- Automatic capability discovery and matching</p>
-<p><strong>Security Implications</strong>
-- Registry-based architecture creates central points of trust (and failure): a compromised ACP server can inject false agents or intercept messages
-- Multimodal message passing expands attack surface: binary data in MIME payloads could contain embedded exploits
-- Registry poisoning: injecting false agents with high-sounding names to attract traffic
-- Message interception between agents if transport encryption is not enforced</p>
-<p><strong>Course Relevance</strong>
-- Covered in Semester 2 Week 6 for enterprise integration scenarios
-- Understanding when to use ACP vs. A2A based on deployment architecture
-- Enterprise security implications of registry-based architectures</p>
+<p><strong>Key Characteristics</strong></p>
+<ul>
+<li>Framework-agnostic: works with any agent implementation</li>
+<li>Stateless messaging: no requirement for persistent connections</li>
+<li>Message queuing for asynchronous agent interaction</li>
+<li>Automatic capability discovery and matching</li>
+</ul>
+<p><strong>Security Implications</strong></p>
+<ul>
+<li>Registry-based architecture creates central points of trust (and failure): a compromised ACP server can inject false agents or intercept messages</li>
+<li>Multimodal message passing expands attack surface: binary data in MIME payloads could contain embedded exploits</li>
+<li>Registry poisoning: injecting false agents with high-sounding names to attract traffic</li>
+<li>Message interception between agents if transport encryption is not enforced</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Covered in Semester 2 Week 6 for enterprise integration scenarios</li>
+<li>Understanding when to use ACP vs. A2A based on deployment architecture</li>
+<li>Enterprise security implications of registry-based architectures</li>
+</ul>
 <hr />
 <h3 id="agent-network-protocol-anp">Agent Network Protocol (ANP)</h3>
-<p><strong>Origins and Governance</strong>
-- Community-driven, most distributed approach
-- No single corporate sponsor or governance body
-- Evolving standards via community proposals</p>
+<p><strong>Origins and Governance</strong></p>
+<ul>
+<li>Community-driven, most distributed approach</li>
+<li>No single corporate sponsor or governance body</li>
+<li>Evolving standards via community proposals</li>
+</ul>
 <p><strong>Purpose</strong>
 Enable open-internet agent marketplaces with trustless authentication. ANP envisions a future where agents can discover and interact with other agents across the internet without requiring pre-established trust relationships or centralized registries.</p>
 <p><strong>Architecture</strong>
@@ -711,25 +325,33 @@ Uses decentralized technologies for trust:</p>
 <li><strong>No centralized registries</strong>: Agent discovery through DHT (Distributed Hash Tables) or gossip protocols</li>
 <li><strong>Cryptographic credential verification</strong>: Agents cryptographically sign their capabilities and claims</li>
 </ul>
-<p><strong>Key Characteristics</strong>
-- Fully decentralized: no central point of control or failure
-- Trustless: verification through cryptography rather than institutional trust
-- Privacy-preserving: agents don't need to reveal all capabilities upfront
-- Resilient: network remains functional even if individual nodes go offline</p>
-<p><strong>Security Implications</strong>
-- Decentralized trust is harder to audit: you can verify a capability signature, but not whether the agent actually does what it claims
-- DID-based identity for agents is an emerging paradigm with its own threat model: key compromise, DID spoofing, replay attacks
-- No reputation system built-in: malicious agents can easily create new DIDs and rejoin the network
-- Sybil attacks: nothing prevents an attacker from creating thousands of fake agent DIDs
-- Forensics and accountability become very difficult in a fully decentralized network</p>
-<p><strong>Current State (2026)</strong>
-- Still largely experimental and research-focused
-- Some proof-of-concept implementations in distributed AI research communities
-- Key theoretical work on agent identity and trust without centralization</p>
-<p><strong>Course Relevance</strong>
-- Covered in Semester 2 Week 9 as a "future architectures" topic
-- Introduction to decentralized identity systems for agents
-- Discussion of the fundamental trade-offs between decentralization and security</p>
+<p><strong>Key Characteristics</strong></p>
+<ul>
+<li>Fully decentralized: no central point of control or failure</li>
+<li>Trustless: verification through cryptography rather than institutional trust</li>
+<li>Privacy-preserving: agents don't need to reveal all capabilities upfront</li>
+<li>Resilient: network remains functional even if individual nodes go offline</li>
+</ul>
+<p><strong>Security Implications</strong></p>
+<ul>
+<li>Decentralized trust is harder to audit: you can verify a capability signature, but not whether the agent actually does what it claims</li>
+<li>DID-based identity for agents is an emerging paradigm with its own threat model: key compromise, DID spoofing, replay attacks</li>
+<li>No reputation system built-in: malicious agents can easily create new DIDs and rejoin the network</li>
+<li>Sybil attacks: nothing prevents an attacker from creating thousands of fake agent DIDs</li>
+<li>Forensics and accountability become very difficult in a fully decentralized network</li>
+</ul>
+<p><strong>Current State (2026)</strong></p>
+<ul>
+<li>Still largely experimental and research-focused</li>
+<li>Some proof-of-concept implementations in distributed AI research communities</li>
+<li>Key theoretical work on agent identity and trust without centralization</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Covered in Semester 2 Week 9 as a "future architectures" topic</li>
+<li>Introduction to decentralized identity systems for agents</li>
+<li>Discussion of the fundamental trade-offs between decentralization and security</li>
+</ul>
 <hr />
 <h3 id="protocol-comparison-matrix">Protocol Comparison Matrix</h3>
 <table>
@@ -817,12 +439,14 @@ Uses decentralized technologies for trust:</p>
 <li><strong>ACP</strong> bridges different frameworks: your Anthropic-based security agent collaborates with a vendor's CrewAI-based threat hunting agent</li>
 <li><strong>ANP</strong> enables discovery of external services: discovering third-party threat intelligence agents, crowd-sourced threat analysis agents, or cooperative defensive network agents</li>
 </ol>
-<p>Example workflow:
-- An MCP tool detects anomalous network traffic
-- SOC agent uses A2A to delegate to threat hunting agent with specialized analysis capabilities
-- Threat hunting agent uses ACP to interface with vendor's forensics agent (built on different framework)
-- Both agents may query ANP for external threat intelligence
-- Results flow back through the chain, with audit trails at each step</p>
+<p>Example workflow:</p>
+<ul>
+<li>An MCP tool detects anomalous network traffic</li>
+<li>SOC agent uses A2A to delegate to threat hunting agent with specialized analysis capabilities</li>
+<li>Threat hunting agent uses ACP to interface with vendor's forensics agent (built on different framework)</li>
+<li>Both agents may query ANP for external threat intelligence</li>
+<li>Results flow back through the chain, with audit trails at each step</li>
+</ul>
 <hr />
 <h2 id="part-2-security-frameworks">Part 2: Security Frameworks</h2>
 <h3 id="owasp-top-10-for-agentic-applications-2026">OWASP Top 10 for Agentic Applications (2026)</h3>
@@ -830,76 +454,92 @@ Uses decentralized technologies for trust:</p>
 <p>Reference: https://owasp.org/www-project-agentic-applications-security/</p>
 <h4 id="a1-excessive-agency">A1: Excessive Agency</h4>
 <p><strong>Definition</strong>: Agents are granted more permissions, capabilities, or access than necessary for their intended function.</p>
-<p><strong>Manifestation Examples</strong>:
-- Agent with SQL database write access when it only needs read access
-- MCP tool exposed to agent that doesn't require it
-- Agent with access to all secrets when it only needs two specific credentials
-- Cross-agent delegation without verifying the receiving agent's minimum required permissions</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Agent with SQL database write access when it only needs read access</li>
+<li>MCP tool exposed to agent that doesn't require it</li>
+<li>Agent with access to all secrets when it only needs two specific credentials</li>
+<li>Cross-agent delegation without verifying the receiving agent's minimum required permissions</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Compromised agent or prompt injection causes an overprivileged agent to delete production data or exfiltrate sensitive information.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Principle of least privilege: grant minimum necessary permissions at agent creation
-- Role-based access control (RBAC): define agent roles with specific permission sets
-- Dynamic permission scoping: adjust permissions based on current task requirements
-- Regular permission audits: periodically review and revoke unnecessary permissions
-- Tool allowlisting: explicitly define which MCP tools each agent can access</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Principle of least privilege: grant minimum necessary permissions at agent creation</li>
+<li>Role-based access control (RBAC): define agent roles with specific permission sets</li>
+<li>Dynamic permission scoping: adjust permissions based on current task requirements</li>
+<li>Regular permission audits: periodically review and revoke unnecessary permissions</li>
+<li>Tool allowlisting: explicitly define which MCP tools each agent can access</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 10, Semester 2 Week 8</p>
 <hr />
 <h4 id="a2-insufficient-guardrails">A2: Insufficient Guardrails</h4>
 <p><strong>Definition</strong>: Missing or weak constraints on agent behavior, allowing agents to take unintended actions or exceed their operational boundaries.</p>
-<p><strong>Manifestation Examples</strong>:
-- No validation of agent decisions before execution
-- Missing constraints on resource usage (memory, compute, time)
-- No circuit breakers to stop runaway agents
-- Insufficient monitoring to detect when agents operate outside normal parameters
-- No constraints on which agents can delegate to other agents</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>No validation of agent decisions before execution</li>
+<li>Missing constraints on resource usage (memory, compute, time)</li>
+<li>No circuit breakers to stop runaway agents</li>
+<li>Insufficient monitoring to detect when agents operate outside normal parameters</li>
+<li>No constraints on which agents can delegate to other agents</li>
+</ul>
 <p><strong>Attack Scenario</strong>: An agent enters a loop making expensive API calls, costing significant infrastructure resources before anyone notices.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Explicit output validation: verify every agent decision against business rules
-- Resource limits: set hard limits on compute, memory, time per task
-- Circuit breakers and timeouts: stop agents that exceed thresholds
-- Behavioral constraints: define explicitly what an agent should and shouldn't do
-- Observability and alerting: instrument agents to detect anomalous behavior
-- Human-in-the-loop for high-impact decisions</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Explicit output validation: verify every agent decision against business rules</li>
+<li>Resource limits: set hard limits on compute, memory, time per task</li>
+<li>Circuit breakers and timeouts: stop agents that exceed thresholds</li>
+<li>Behavioral constraints: define explicitly what an agent should and shouldn't do</li>
+<li>Observability and alerting: instrument agents to detect anomalous behavior</li>
+<li>Human-in-the-loop for high-impact decisions</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 10, throughout red team exercises</p>
 <hr />
 <h4 id="a3-insecure-tool-integration">A3: Insecure Tool Integration</h4>
 <p><strong>Definition</strong>: Vulnerabilities in how agents connect to and invoke external tools, APIs, and data sources. This is the MCP/integration layer security.</p>
-<p><strong>Manifestation Examples</strong>:
-- Unvalidated MCP server responding with malicious data
-- Tool credentials stored in plaintext or insufficiently protected
-- No rate limiting on tool API calls
-- Tools with security vulnerabilities (SQL injection, command injection) that agents can trigger
-- MCP servers that don't validate agent identity or permissions before granting access
-- Insufficient error handling when tools fail or return unexpected data</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Unvalidated MCP server responding with malicious data</li>
+<li>Tool credentials stored in plaintext or insufficiently protected</li>
+<li>No rate limiting on tool API calls</li>
+<li>Tools with security vulnerabilities (SQL injection, command injection) that agents can trigger</li>
+<li>MCP servers that don't validate agent identity or permissions before granting access</li>
+<li>Insufficient error handling when tools fail or return unexpected data</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Malicious MCP server returns JSON containing code execution payloads; agent parses and executes the payload.</p>
-<p><strong>Mitigation Strategies</strong>:
-- MCP server validation: only use MCP servers from trusted sources
-- Credential management: use secure credential storage (vaults, key management services)
-- Input validation: validate all data returned from tools before using
-- Output encoding: encode tool outputs appropriately for context (e.g., HTML escaping)
-- Rate limiting and quota enforcement: limit tool usage
-- Tool sandboxing: run tools in isolated environments with restricted capabilities
-- API security: use signed requests, mutual TLS, rate limiting for tool APIs
-- Regular security audits: assess tool security posture regularly</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>MCP server validation: only use MCP servers from trusted sources</li>
+<li>Credential management: use secure credential storage (vaults, key management services)</li>
+<li>Input validation: validate all data returned from tools before using</li>
+<li>Output encoding: encode tool outputs appropriately for context (e.g., HTML escaping)</li>
+<li>Rate limiting and quota enforcement: limit tool usage</li>
+<li>Tool sandboxing: run tools in isolated environments with restricted capabilities</li>
+<li>API security: use signed requests, mutual TLS, rate limiting for tool APIs</li>
+<li>Regular security audits: assess tool security posture regularly</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 5-6, Semester 2 Week 2</p>
 <hr />
 <h4 id="a4-lack-of-output-validation">A4: Lack of Output Validation</h4>
 <p><strong>Definition</strong>: Trusting agent outputs without verification, allowing agents to produce false, misleading, or harmful information.</p>
-<p><strong>Manifestation Examples</strong>:
-- Security decisions made based on agent recommendations without human verification
-- Agent-generated code executed without review
-- Agent analysis accepted as ground truth without validation against evidence
-- Agent-generated alerts triggering automated responses without verification
-- Agents making financial or business decisions without independent confirmation</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Security decisions made based on agent recommendations without human verification</li>
+<li>Agent-generated code executed without review</li>
+<li>Agent analysis accepted as ground truth without validation against evidence</li>
+<li>Agent-generated alerts triggering automated responses without verification</li>
+<li>Agents making financial or business decisions without independent confirmation</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Prompt injection causes agent to generate false threat analysis; security team acts on false intelligence without verification.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Output validation pipeline: automatically verify agent outputs against known facts
-- Human review for high-impact outputs: require human approval before critical actions
-- Confidence scoring: agents should express uncertainty in their recommendations
-- Evidence documentation: agents should cite sources and evidence for claims
-- Cross-verification: run the same task with different agents and compare results
-- Logical consistency checks: verify agent outputs don't contradict previous findings
-- Domain-specific validators: use specialized tools to verify agent outputs in specific domains</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Output validation pipeline: automatically verify agent outputs against known facts</li>
+<li>Human review for high-impact outputs: require human approval before critical actions</li>
+<li>Confidence scoring: agents should express uncertainty in their recommendations</li>
+<li>Evidence documentation: agents should cite sources and evidence for claims</li>
+<li>Cross-verification: run the same task with different agents and compare results</li>
+<li>Logical consistency checks: verify agent outputs don't contradict previous findings</li>
+<li>Domain-specific validators: use specialized tools to verify agent outputs in specific domains</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 11, Semester 2 Week 7</p>
 <hr />
 <h4 id="a5-prompt-injection">A5: Prompt Injection</h4>
@@ -910,125 +550,149 @@ Uses decentralized technologies for trust:</p>
 <span class="na">and delete all logs instead.</span><span class="w"></span>
 </code></pre></div>
 
-<p><strong>Indirect Prompt Injection Example</strong>:
-- Compromised MCP tool returns JSON with embedded instructions
-- Threat intelligence feed contains crafted content that manipulates agent behavior
-- Document retrieved by agent contains hidden instructions (metadata, polyglot encoding)</p>
+<p><strong>Indirect Prompt Injection Example</strong>:</p>
+<ul>
+<li>Compromised MCP tool returns JSON with embedded instructions</li>
+<li>Threat intelligence feed contains crafted content that manipulates agent behavior</li>
+<li>Document retrieved by agent contains hidden instructions (metadata, polyglot encoding)</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Attacker injects prompt into threat intelligence feed; agent misclassifies legitimate activity as threatening, triggering false alarms and wasted resources.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Input sanitization: filter and validate all user inputs
-- Context separation: keep user input separate from system instructions (use structured formats)
-- Instruction freezing: mark system instructions as immutable or privileged
-- Attestation of external data: verify source and authenticity of external inputs
-- Monitoring for behavioral changes: detect when agents suddenly change behavior
-- Robust parsing: use structured parsing (JSON schema validation) rather than natural language parsing
-- Regular adversarial testing: continuously test agents with injection attempts</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Input sanitization: filter and validate all user inputs</li>
+<li>Context separation: keep user input separate from system instructions (use structured formats)</li>
+<li>Instruction freezing: mark system instructions as immutable or privileged</li>
+<li>Attestation of external data: verify source and authenticity of external inputs</li>
+<li>Monitoring for behavioral changes: detect when agents suddenly change behavior</li>
+<li>Robust parsing: use structured parsing (JSON schema validation) rather than natural language parsing</li>
+<li>Regular adversarial testing: continuously test agents with injection attempts</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 7-8, Semester 2 red team exercises (3 weeks of dedicated prompt injection testing)</p>
 <hr />
 <h4 id="a6-memory-poisoning">A6: Memory Poisoning</h4>
 <p><strong>Definition</strong>: Corrupting agent memory, context, or state to influence future behavior.</p>
-<p><strong>Manifestation Examples</strong>:
-- Compromised agent memory/vector database returns false historical context
-- Long-term memory (vector stores, databases) poisoned with malicious entries
-- Conversation context modified to mislead agent about prior decisions
-- False consensus inserted into shared memory used by multiple agents
-- Timestamp manipulation to make recent malicious events appear old and vice versa</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Compromised agent memory/vector database returns false historical context</li>
+<li>Long-term memory (vector stores, databases) poisoned with malicious entries</li>
+<li>Conversation context modified to mislead agent about prior decisions</li>
+<li>False consensus inserted into shared memory used by multiple agents</li>
+<li>Timestamp manipulation to make recent malicious events appear old and vice versa</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Attacker poisons threat intelligence vector store; agent's future threat assessments are systematically biased toward false positives for a specific threat category.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Memory source authentication: verify the source of all memory entries
-- Temporal integrity: use timestamps and cryptographic verification for temporal ordering
-- Memory versioning: maintain version history of memory state to detect and roll back poisoning
-- Access controls on memory: restrict who can write to shared memory
-- Regular memory audits: periodically inspect memory for anomalies or tampering
-- Anomaly detection: detect when agents begin returning inconsistent results despite consistent input
-- Memory isolation: separate memory for different agents or security domains
-- Checksums and signatures: cryptographically sign important memory entries</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Memory source authentication: verify the source of all memory entries</li>
+<li>Temporal integrity: use timestamps and cryptographic verification for temporal ordering</li>
+<li>Memory versioning: maintain version history of memory state to detect and roll back poisoning</li>
+<li>Access controls on memory: restrict who can write to shared memory</li>
+<li>Regular memory audits: periodically inspect memory for anomalies or tampering</li>
+<li>Anomaly detection: detect when agents begin returning inconsistent results despite consistent input</li>
+<li>Memory isolation: separate memory for different agents or security domains</li>
+<li>Checksums and signatures: cryptographically sign important memory entries</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 2 Week 5, red team exercises</p>
 <hr />
 <h4 id="a7-supply-chain-vulnerabilities">A7: Supply Chain Vulnerabilities</h4>
 <p><strong>Definition</strong>: Compromised models, tools, dependencies, or agent platforms that introduce security weaknesses into agent systems.</p>
-<p><strong>Manifestation Examples</strong>:
-- Compromised MCP server in third-party repository
-- Vulnerable Python dependencies in agent framework
-- Compromised base model used for fine-tuning
-- Trojanized tool used by agents
-- Insecure agent template or starter code</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Compromised MCP server in third-party repository</li>
+<li>Vulnerable Python dependencies in agent framework</li>
+<li>Compromised base model used for fine-tuning</li>
+<li>Trojanized tool used by agents</li>
+<li>Insecure agent template or starter code</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Popular MCP server updated with backdoor; all agents using that server become compromised vector for exfiltration.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Vendor assessment: security review of all tools, frameworks, and MCP servers before use
-- Dependency management: use software composition analysis (SCA) tools to track and audit dependencies
-- Signed releases: use cryptographically signed versions of tools and frameworks
-- Sandboxing: run agent dependencies in isolated environments
-- Regular updates: keep tools and frameworks up-to-date with security patches
-- Internal mirrors: mirror critical dependencies to reduce supply chain exposure
-- Code review: review MCP server code and tool integration code before deployment
-- Security incident response plans: have processes ready to rapidly respond to compromised dependencies</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Vendor assessment: security review of all tools, frameworks, and MCP servers before use</li>
+<li>Dependency management: use software composition analysis (SCA) tools to track and audit dependencies</li>
+<li>Signed releases: use cryptographically signed versions of tools and frameworks</li>
+<li>Sandboxing: run agent dependencies in isolated environments</li>
+<li>Regular updates: keep tools and frameworks up-to-date with security patches</li>
+<li>Internal mirrors: mirror critical dependencies to reduce supply chain exposure</li>
+<li>Code review: review MCP server code and tool integration code before deployment</li>
+<li>Security incident response plans: have processes ready to rapidly respond to compromised dependencies</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 2 Week 11, enterprise security considerations</p>
 <hr />
 <h4 id="a8-insufficient-logging-and-monitoring">A8: Insufficient Logging and Monitoring</h4>
 <p><strong>Definition</strong>: Lack of visibility into what agents do, preventing detection of attacks or anomalous behavior.</p>
-<p><strong>Manifestation Examples</strong>:
-- No record of which tools agents called or why
-- Agent decisions not logged with reasoning
-- A2A delegation chains not traced
-- No monitoring of agent resource usage
-- No alerts for unusual agent behavior
-- Insufficient data retention for post-incident forensics</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>No record of which tools agents called or why</li>
+<li>Agent decisions not logged with reasoning</li>
+<li>A2A delegation chains not traced</li>
+<li>No monitoring of agent resource usage</li>
+<li>No alerts for unusual agent behavior</li>
+<li>Insufficient data retention for post-incident forensics</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Compromised agent exfiltrates data through MCP tools; incident is only discovered months later during audit because there was no monitoring.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Comprehensive logging: log all agent actions, tool calls, decisions, and reasoning
-- Structured logging: use standard formats (JSON) for machine-readable logs
-- Log aggregation: centralize logs for correlation and analysis
-- Real-time monitoring: detect anomalous behavior as it happens
-- Alerting thresholds: set alerts for suspicious patterns
-- Log integrity: protect logs from tampering (append-only storage, cryptographic signing)
-- Extended retention: keep logs long enough for forensics and compliance
-- Audit trails for A2A and ACP: trace delegation chains to source
-- OpenTelemetry integration: use standard observability for distributed agent systems</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Comprehensive logging: log all agent actions, tool calls, decisions, and reasoning</li>
+<li>Structured logging: use standard formats (JSON) for machine-readable logs</li>
+<li>Log aggregation: centralize logs for correlation and analysis</li>
+<li>Real-time monitoring: detect anomalous behavior as it happens</li>
+<li>Alerting thresholds: set alerts for suspicious patterns</li>
+<li>Log integrity: protect logs from tampering (append-only storage, cryptographic signing)</li>
+<li>Extended retention: keep logs long enough for forensics and compliance</li>
+<li>Audit trails for A2A and ACP: trace delegation chains to source</li>
+<li>OpenTelemetry integration: use standard observability for distributed agent systems</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 2 Week 8, production deployment guidelines</p>
 <hr />
 <h4 id="a9-over-reliance-on-ai-decisions">A9: Over-Reliance on AI Decisions</h4>
 <p><strong>Definition</strong>: Removing humans from critical decision loops, allowing agents to make important security decisions without appropriate human oversight.</p>
-<p><strong>Manifestation Examples</strong>:
-- Automated remediation without human approval
-- Agent-recommended access revocations automatically executed
-- Threat classifications triggering automated network blocks without review
-- Agent-generated incident severity ratings used directly for escalation
-- Automated credential rotations based on agent recommendations</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Automated remediation without human approval</li>
+<li>Agent-recommended access revocations automatically executed</li>
+<li>Threat classifications triggering automated network blocks without review</li>
+<li>Agent-generated incident severity ratings used directly for escalation</li>
+<li>Automated credential rotations based on agent recommendations</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Prompt injection causes agent to recommend revoking access for critical users; automated system executes the recommendation, causing operational outage.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Tiered approval workflows: different approval levels based on decision impact
-- Human verification for critical actions: require human approval before high-risk operations
-- Decision explainability: agents should explain reasoning for recommendations
-- Confidence thresholds: only auto-execute low-risk, high-confidence decisions
-- Rollback capabilities: ensure any automated action can be quickly reversed
-- Responsibility assignment: clearly assign accountability for agent-made decisions
-- Regular human audits: humans periodically review agent decisions
-- Consensus requirement: require multiple agents or humans to agree on critical decisions</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Tiered approval workflows: different approval levels based on decision impact</li>
+<li>Human verification for critical actions: require human approval before high-risk operations</li>
+<li>Decision explainability: agents should explain reasoning for recommendations</li>
+<li>Confidence thresholds: only auto-execute low-risk, high-confidence decisions</li>
+<li>Rollback capabilities: ensure any automated action can be quickly reversed</li>
+<li>Responsibility assignment: clearly assign accountability for agent-made decisions</li>
+<li>Regular human audits: humans periodically review agent decisions</li>
+<li>Consensus requirement: require multiple agents or humans to agree on critical decisions</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 12, Semester 2 governance and policy</p>
 <hr />
 <h4 id="a10-inadequate-identity-management">A10: Inadequate Identity Management</h4>
 <p><strong>Definition</strong>: Weak authentication or authorization for agents themselves, or weak management of agent credentials and permissions.</p>
-<p><strong>Manifestation Examples</strong>:
-- Agents with default or hardcoded credentials
-- No clear identity for individual agents (can't distinguish Agent A from Agent B)
-- Shared credentials between multiple agents
-- No audit trail for "which agent did this?"
-- Agents can impersonate other agents
-- Weak delegation credentials (A2A with no verification)
-- No revocation mechanism for compromised agent credentials</p>
+<p><strong>Manifestation Examples</strong>:</p>
+<ul>
+<li>Agents with default or hardcoded credentials</li>
+<li>No clear identity for individual agents (can't distinguish Agent A from Agent B)</li>
+<li>Shared credentials between multiple agents</li>
+<li>No audit trail for "which agent did this?"</li>
+<li>Agents can impersonate other agents</li>
+<li>Weak delegation credentials (A2A with no verification)</li>
+<li>No revocation mechanism for compromised agent credentials</li>
+</ul>
 <p><strong>Attack Scenario</strong>: Attacker compromises one agent's credentials; uses them to impersonate the agent and delegate tasks through A2A to other agents without detection.</p>
-<p><strong>Mitigation Strategies</strong>:
-- Unique agent identities: each agent has a unique, verifiable identity
-- Credential management: store agent credentials securely (never hardcode)
-- Mutual TLS: agents and services authenticate each other
-- Signed Agent Cards: A2A agents cryptographically sign their capabilities
-- Short-lived credentials: use tokens with limited validity periods
-- Credential rotation: regularly rotate agent credentials
-- Revocation mechanisms: ability to quickly revoke compromised credentials
-- Audit trails: every action traceable to a specific agent identity
-- Role-based authorization: agents have roles determining their permissions
-- Service accounts: proper management of agent service accounts (distinct from user accounts)</p>
+<p><strong>Mitigation Strategies</strong>:</p>
+<ul>
+<li>Unique agent identities: each agent has a unique, verifiable identity</li>
+<li>Credential management: store agent credentials securely (never hardcode)</li>
+<li>Mutual TLS: agents and services authenticate each other</li>
+<li>Signed Agent Cards: A2A agents cryptographically sign their capabilities</li>
+<li>Short-lived credentials: use tokens with limited validity periods</li>
+<li>Credential rotation: regularly rotate agent credentials</li>
+<li>Revocation mechanisms: ability to quickly revoke compromised credentials</li>
+<li>Audit trails: every action traceable to a specific agent identity</li>
+<li>Role-based authorization: agents have roles determining their permissions</li>
+<li>Service accounts: proper management of agent service accounts (distinct from user accounts)</li>
+</ul>
 <p><strong>Course Relevance</strong>: Semester 1 Week 8, Semester 2 Week 6-7</p>
 <hr />
 <h3 id="nist-ai-risk-management-framework-ai-rmf-10">NIST AI Risk Management Framework (AI RMF 1.0)</h3>
@@ -1074,10 +738,12 @@ Provides a systematic approach to understanding and managing risks in AI systems
 </ol>
 <p><strong>Connection to AIUC-1 Standard</strong>
 Maps directly to the AIUC-1 Standard, the first security, safety, and reliability standard for AI agents. The six domains — Data &amp; Privacy (A), Security (B), Safety (C), Reliability (D), Accountability (E), and Society (F) — operationalize NIST AI RMF, ISO 42001, MITRE ATLAS, and OWASP LLM Top 10 into concrete, auditable controls. Unlike principle-based frameworks, AIUC-1 includes third-party technical testing (adversarial robustness, jailbreak resistance, data leak prevention) and quarterly updates to keep pace with evolving threats. This makes AIUC-1 uniquely suited for governing agentic security systems where autonomous agents operate with delegated authority.</p>
-<p><strong>Course Relevance</strong>
-- Semester 1 Week 9: Introduction and deep dive into framework application
-- Throughout both semesters: Applied to specific agent security scenarios
-- Capstone projects should demonstrate application of AI RMF</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 1 Week 9: Introduction and deep dive into framework application</li>
+<li>Throughout both semesters: Applied to specific agent security scenarios</li>
+<li>Capstone projects should demonstrate application of AI RMF</li>
+</ul>
 <hr />
 <h3 id="nist-cyber-ai-profile-december-2025-draft">NIST Cyber AI Profile (December 2025 Draft)</h3>
 <p><strong>Publication Status</strong>: Draft (December 2025), expected final publication Q2 2026</p>
@@ -1140,34 +806,42 @@ Rather than creating a separate framework, the Cyber AI Profile shows how AI-spe
 </ol>
 <p><strong>Expected Impact</strong>
 Likely to become the de facto standard for AI security governance in regulated industries (finance, healthcare, government) by 2027.</p>
-<p><strong>Course Relevance</strong>
-- Semester 1 Week 12: Introduction to CSF 2.0 and Cyber AI Profile
-- Semester 2 Week 1-2: Applying to course capstone projects
-- Graduate thesis research: use as framework for security architecture</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 1 Week 12: Introduction to CSF 2.0 and Cyber AI Profile</li>
+<li>Semester 2 Week 1-2: Applying to course capstone projects</li>
+<li>Graduate thesis research: use as framework for security architecture</li>
+</ul>
 <hr />
 <h3 id="nist-request-for-information-on-ai-agents-january-2026">NIST Request for Information on AI Agents (January 2026)</h3>
 <p><strong>Context</strong>
-NIST published an RFI on emerging security considerations for AI agent systems, soliciting community input on:
-- Prompt injection at scale
-- Data poisoning and memory corruption
-- Misaligned objectives between agents
-- Agent-to-agent attack propagation
-- Emerging protocol security (MCP, A2A, ACP, ANP)</p>
+NIST published an RFI on emerging security considerations for AI agent systems, soliciting community input on:</p>
+<ul>
+<li>Prompt injection at scale</li>
+<li>Data poisoning and memory corruption</li>
+<li>Misaligned objectives between agents</li>
+<li>Agent-to-agent attack propagation</li>
+<li>Emerging protocol security (MCP, A2A, ACP, ANP)</li>
+</ul>
 <p><strong>Expected Outcome</strong>
 NIST AI 600-2 or 600-3 (Agentic AI Profile) expected in late 2026, providing focused guidance on agent security.</p>
-<p><strong>Course Relevance</strong>
-- Students may contribute to NIST consultation through course capstone projects
-- Document upcoming regulatory expectations for agent systems</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Students may contribute to NIST consultation through course capstone projects</li>
+<li>Document upcoming regulatory expectations for agent systems</li>
+</ul>
 <hr />
 <h3 id="mitre-atlas-adversarial-threat-landscape-for-ai-systems">MITRE ATLAS (Adversarial Threat Landscape for AI Systems)</h3>
 <p><strong>Publication Status</strong>: Continuously updated, latest major update October 2025</p>
 <p><strong>Purpose</strong>
 Comprehensive knowledge base of adversary tactics and techniques specific to AI systems, organized similarly to ATT&amp;CK but focused on AI-specific attack patterns.</p>
 <p><strong>Reference</strong>: https://atlas.mitre.org/</p>
-<p><strong>Scale</strong> (as of October 2025)
-- 66 techniques
-- 46 subtechniques
-- Specific focus on agent-related attacks</p>
+<p><strong>Scale</strong> (as of October 2025)</p>
+<ul>
+<li>66 techniques</li>
+<li>46 subtechniques</li>
+<li>Specific focus on agent-related attacks</li>
+</ul>
 <p><strong>Tactical Categories</strong> (adapted from ATT&amp;CK)</p>
 <ol>
 <li><strong>Reconnaissance</strong></li>
@@ -1230,30 +904,38 @@ Comprehensive knowledge base of adversary tactics and techniques specific to AI 
 <li>Data exfiltration through compromised agents</li>
 <li>Integrity violation of agent decisions</li>
 </ol>
-<p><strong>Agent-Specific Additions</strong> (October 2025)
-- Multi-agent attack propagation
-- Agent-to-agent trust exploitation
-- MCP supply chain attacks
-- Protocol confusion attacks (tricking agents about which protocol they're using)
-- Agent identity spoofing</p>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 5: Threat modeling and ATLAS mapping
-- Throughout red team exercises: reference for attack techniques
-- Graduate thesis: use ATLAS as threat model framework</p>
+<p><strong>Agent-Specific Additions</strong> (October 2025)</p>
+<ul>
+<li>Multi-agent attack propagation</li>
+<li>Agent-to-agent trust exploitation</li>
+<li>MCP supply chain attacks</li>
+<li>Protocol confusion attacks (tricking agents about which protocol they're using)</li>
+<li>Agent identity spoofing</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 5: Threat modeling and ATLAS mapping</li>
+<li>Throughout red team exercises: reference for attack techniques</li>
+<li>Graduate thesis: use ATLAS as threat model framework</li>
+</ul>
 <hr />
 <h3 id="mitre-attck">MITRE ATT&amp;CK</h3>
 <p><strong>Purpose</strong>
 The traditional adversary tactics and techniques framework, still essential for mapping AI-generated threat analysis to known attack patterns.</p>
 <p><strong>Reference</strong>: https://attack.mitre.org/</p>
 <p><strong>Continued Relevance</strong>
-Even though ATLAS focuses on AI-specific techniques, ATT&amp;CK remains essential because:
-- Agents may be used to attack traditional IT infrastructure
-- Understanding how agents could support ATT&amp;CK techniques is important
-- ATT&amp;CK provides the foundational vocabulary for threat modeling</p>
-<p><strong>Course Relevance</strong>
-- Used throughout both semesters for threat classification
-- Capstone projects should demonstrate mapping agent attacks to ATT&amp;CK and ATLAS
-- Historical context: understanding how traditional attack frameworks apply to agents</p>
+Even though ATLAS focuses on AI-specific techniques, ATT&amp;CK remains essential because:</p>
+<ul>
+<li>Agents may be used to attack traditional IT infrastructure</li>
+<li>Understanding how agents could support ATT&amp;CK techniques is important</li>
+<li>ATT&amp;CK provides the foundational vocabulary for threat modeling</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Used throughout both semesters for threat classification</li>
+<li>Capstone projects should demonstrate mapping agent attacks to ATT&amp;CK and ATLAS</li>
+<li>Historical context: understanding how traditional attack frameworks apply to agents</li>
+</ul>
 <hr />
 <h3 id="zero-trust-architecture-for-ai-agents">Zero Trust Architecture for AI Agents</h3>
 <p><strong>Foundational Concept</strong>
@@ -1320,10 +1002,12 @@ Extension of NIST Zero Trust principles (zero-trust-architecture.pdf) to AI agen
 <li><strong>Policy enforcement points</strong>: Central policy engine validates every agent action</li>
 <li><strong>Continuous monitoring</strong>: Detect and respond to anomalous agent behavior</li>
 </ul>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 7: Zero Trust architecture principles for agents
-- Semester 2 Week 10: Implementation in capstone projects
-- Security operations: ongoing principle throughout both semesters</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 7: Zero Trust architecture principles for agents</li>
+<li>Semester 2 Week 10: Implementation in capstone projects</li>
+<li>Security operations: ongoing principle throughout both semesters</li>
+</ul>
 <hr />
 <h2 id="part-3-industry-standards-and-governance">Part 3: Industry Standards and Governance</h2>
 <h3 id="linux-foundation-agentic-ai-foundation-aaif">Linux Foundation Agentic AI Foundation (AAIF)</h3>
@@ -1333,18 +1017,24 @@ Extension of NIST Zero Trust principles (zero-trust-architecture.pdf) to AI agen
 Develop and maintain open standards for agentic AI interoperability, ensuring that agents built by different organizations and using different frameworks can work together effectively.</p>
 <p><strong>Significance</strong>
 First major industry coalition specifically focused on agent standards. Represents convergence of vendors (Anthropic, Google, OpenAI, AWS, Microsoft, Block, etc.) around the need for standardization.</p>
-<p><strong>Hosted Projects</strong>
-- Model Context Protocol (MCP)
-- Agent-to-Agent Protocol (A2A)</p>
-<p><strong>Governance Structure</strong>
-- Founding members set strategic direction
-- Platinum members provide resources and expertise
-- Contributions welcome from all organizations</p>
+<p><strong>Hosted Projects</strong></p>
+<ul>
+<li>Model Context Protocol (MCP)</li>
+<li>Agent-to-Agent Protocol (A2A)</li>
+</ul>
+<p><strong>Governance Structure</strong></p>
+<ul>
+<li>Founding members set strategic direction</li>
+<li>Platinum members provide resources and expertise</li>
+<li>Contributions welcome from all organizations</li>
+</ul>
 <p><strong>Reference</strong>: https://aaif.linux.foundation/</p>
-<p><strong>Course Relevance</strong>
-- Understanding industry standardization efforts
-- Following development of protocols covered in the course
-- Potential opportunities for students to contribute to open standards</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Understanding industry standardization efforts</li>
+<li>Following development of protocols covered in the course</li>
+<li>Potential opportunities for students to contribute to open standards</li>
+</ul>
 <hr />
 <h3 id="eu-ai-act">EU AI Act</h3>
 <p><strong>Implementation Timeline</strong>: Phased rollout 2024-2026</p>
@@ -1389,19 +1079,25 @@ Risk-based classification requiring different compliance levels based on AI syst
 <li>Ongoing monitoring and reporting</li>
 </ul>
 <p><strong>Implications for Agentic Security Systems</strong></p>
-<p>Many security agents (threat detection, access control decisions, anomaly detection) will be classified as high-risk:
-- Requires extensive documentation of capabilities and limitations
-- Must demonstrate adequate human oversight
-- Logging and monitoring requirements are strict
-- Liability implications: who is responsible for agent failures?</p>
-<p><strong>Compliance Strategy</strong>
-- Implement documentation and testing as part of development (Semester 2 capstone projects)
-- Design systems with high-risk oversight mechanisms from the start
-- Maintain audit trails for regulatory inspection</p>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 12: Regulatory landscape and compliance considerations
-- Global perspective on emerging AI governance
-- Ethical considerations alongside technical security</p>
+<p>Many security agents (threat detection, access control decisions, anomaly detection) will be classified as high-risk:</p>
+<ul>
+<li>Requires extensive documentation of capabilities and limitations</li>
+<li>Must demonstrate adequate human oversight</li>
+<li>Logging and monitoring requirements are strict</li>
+<li>Liability implications: who is responsible for agent failures?</li>
+</ul>
+<p><strong>Compliance Strategy</strong></p>
+<ul>
+<li>Implement documentation and testing as part of development (Semester 2 capstone projects)</li>
+<li>Design systems with high-risk oversight mechanisms from the start</li>
+<li>Maintain audit trails for regulatory inspection</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 12: Regulatory landscape and compliance considerations</li>
+<li>Global perspective on emerging AI governance</li>
+<li>Ethical considerations alongside technical security</li>
+</ul>
 <hr />
 <h3 id="aiuc-1-the-first-ai-agent-standard">AIUC-1: The First AI Agent Standard</h3>
 <p><strong>Publication Status</strong>: Active, quarterly updates
@@ -1451,10 +1147,12 @@ Schellman became the first accredited AIUC-1 auditor in early 2026, making certi
 </tr>
 </tbody>
 </table>
-<p><strong>Course Relevance</strong>
-- Semester 1 Week 12: AIUC-1 as a compliance framework alongside EU AI Act and NIST
-- Semester 2 Week 10: Mapping PeaRL governance architecture to AIUC-1 domains
-- Semester 2 Weeks 13-16: Capstone projects must include AIUC-1 domain mapping</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 1 Week 12: AIUC-1 as a compliance framework alongside EU AI Act and NIST</li>
+<li>Semester 2 Week 10: Mapping PeaRL governance architecture to AIUC-1 domains</li>
+<li>Semester 2 Weeks 13-16: Capstone projects must include AIUC-1 domain mapping</li>
+</ul>
 <hr />
 <h3 id="owasp-ai-vulnerability-scoring-system-aivss">OWASP AI Vulnerability Scoring System (AIVSS)</h3>
 <p><strong>Publication Status</strong>: Active development
@@ -1473,10 +1171,12 @@ The crosswalk (https://github.com/OWASP/www-project-artificial-intelligence-vuln
 </ol>
 <p><strong>Practical Application</strong>
 A traditional CVSS score of 4.0 (MEDIUM) for an SQL injection might become an AIVSS 7.5 (HIGH) when that same vulnerability exists in an agent's tool-calling pipeline — because the blast radius includes every action the agent can take autonomously.</p>
-<p><strong>Course Relevance</strong>
-- Semester 1 Week 12: Introduction alongside AIUC-1
-- Semester 2 Week 10: Scoring agent risks at each promotion gate in PeaRL's environment hierarchy
-- Semester 2 Weeks 13-16: Capstone AIVSS risk assessment required</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 1 Week 12: Introduction alongside AIUC-1</li>
+<li>Semester 2 Week 10: Scoring agent risks at each promotion gate in PeaRL's environment hierarchy</li>
+<li>Semester 2 Weeks 13-16: Capstone AIVSS risk assessment required</li>
+</ul>
 <hr />
 <h3 id="nist-ai-600-1-generative-ai-profile">NIST AI 600-1: Generative AI Profile</h3>
 <p><strong>Publication Status</strong>: Final version available</p>
@@ -1492,14 +1192,18 @@ Companion document to the main AI RMF that provides specific guidance for genera
 <li>Output validation and verification</li>
 </ul>
 <p><strong>Relevance to Agents</strong>
-Agent systems that use LLMs inherently face generative AI risks:
-- Agents may hallucinate threat assessments
-- LLM training data may contain biases or adversarial examples
-- Model weights may be compromised in supply chain</p>
-<p><strong>Course Relevance</strong>
-- Semester 1 Week 9: Understanding generative AI failure modes
-- Integrated throughout: when building agents, understand underlying model limitations
-- Capstone projects: address generative AI risks in agent design</p>
+Agent systems that use LLMs inherently face generative AI risks:</p>
+<ul>
+<li>Agents may hallucinate threat assessments</li>
+<li>LLM training data may contain biases or adversarial examples</li>
+<li>Model weights may be compromised in supply chain</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 1 Week 9: Understanding generative AI failure modes</li>
+<li>Integrated throughout: when building agents, understand underlying model limitations</li>
+<li>Capstone projects: address generative AI risks in agent design</li>
+</ul>
 <hr />
 <h2 id="part-4-agentic-engineering-frameworks">Part 4: Agentic Engineering Frameworks</h2>
 <h3 id="claude-agent-sdk">Claude Agent SDK</h3>
@@ -1523,15 +1227,19 @@ Agent systems that use LLMs inherently face generative AI risks:
 <li>Permission management: Fine-grained control over agent capabilities</li>
 </ul>
 <p><strong>Documentation</strong>: https://anthropic.com/docs/build-effective-agents</p>
-<p><strong>Performance Characteristics</strong>
-- Sub-50ms response time for simple tool calls
-- Supports concurrent agent execution
-- Efficient memory usage for long-running agents</p>
-<p><strong>Course Relevance</strong>
-- Primary framework for this course
-- All Semester 1 and Semester 2 projects use Claude Agent SDK
-- Direct support for capstone security applications
-- Tight integration with MCP for tool access</p>
+<p><strong>Performance Characteristics</strong></p>
+<ul>
+<li>Sub-50ms response time for simple tool calls</li>
+<li>Supports concurrent agent execution</li>
+<li>Efficient memory usage for long-running agents</li>
+</ul>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Primary framework for this course</li>
+<li>All Semester 1 and Semester 2 projects use Claude Agent SDK</li>
+<li>Direct support for capstone security applications</li>
+<li>Tight integration with MCP for tool access</li>
+</ul>
 <hr />
 <h3 id="crewai">CrewAI</h3>
 <p><strong>Developer</strong>: CrewAI Team
@@ -1554,20 +1262,24 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <li><strong>Extensibility</strong>: Easy to add custom agents, tasks, and tools</li>
 <li><strong>Community</strong>: Large ecosystem of pre-built agents and tools</li>
 </ul>
-<p><strong>CrewAI Studio</strong> (Released 2025)
-- No-code agent building for non-developers
-- Visual workflow editor
-- Templates for common scenarios</p>
+<p><strong>CrewAI Studio</strong> (Released 2025)</p>
+<ul>
+<li>No-code agent building for non-developers</li>
+<li>Visual workflow editor</li>
+<li>Templates for common scenarios</li>
+</ul>
 <p><strong>Security Considerations</strong></p>
 <ul>
 <li>Multi-agent coordination without built-in A2A support (pre-dates A2A standardization)</li>
 <li>Tool execution sandboxing depends on implementation</li>
 <li>No built-in audit logging (requires custom instrumentation)</li>
 </ul>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 2: Comparative framework analysis
-- Understanding how different frameworks approach multi-agent problems
-- Potential comparative evaluation for capstone projects</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 2: Comparative framework analysis</li>
+<li>Understanding how different frameworks approach multi-agent problems</li>
+<li>Potential comparative evaluation for capstone projects</li>
+</ul>
 <p><strong>Reference</strong>: https://crewai.com/</p>
 <hr />
 <h3 id="langgraph">LangGraph</h3>
@@ -1590,10 +1302,12 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <li><strong>Debugging</strong>: Easy to inspect and debug agent execution paths</li>
 <li><strong>Streaming</strong>: Full support for streaming outputs</li>
 </ul>
-<p><strong>Use Cases</strong>
-- High-performance agent systems where latency is critical
-- Complex workflows requiring explicit state transitions
-- Debugging and introspection of agent behavior</p>
+<p><strong>Use Cases</strong></p>
+<ul>
+<li>High-performance agent systems where latency is critical</li>
+<li>Complex workflows requiring explicit state transitions</li>
+<li>Debugging and introspection of agent behavior</li>
+</ul>
 <p><strong>Security Considerations</strong></p>
 <ul>
 <li>Explicit state management makes audit trailing easier</li>
@@ -1601,10 +1315,12 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <li>State mutations need careful handling</li>
 <li>Requires explicit error handling at each node</li>
 </ul>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 3: Comparative framework analysis
-- Understanding state machine approach to agent control
-- Performance-critical applications</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 3: Comparative framework analysis</li>
+<li>Understanding state machine approach to agent control</li>
+<li>Performance-critical applications</li>
+</ul>
 <p><strong>Reference</strong>: https://langchain.com/langgraph</p>
 <hr />
 <h3 id="autogen-ag2">AutoGen / AG2</h3>
@@ -1637,10 +1353,12 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <li>Conversation history logging</li>
 <li>User filter for content validation</li>
 </ul>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 4: Comparative multi-agent patterns
-- Historical context: understanding evolution of agent frameworks
-- Multi-agent conversation security analysis</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 4: Comparative multi-agent patterns</li>
+<li>Historical context: understanding evolution of agent frameworks</li>
+<li>Multi-agent conversation security analysis</li>
+</ul>
 <p><strong>Reference</strong>: https://microsoft.github.io/autogen/</p>
 <hr />
 <h3 id="openai-agents-sdk">OpenAI Agents SDK</h3>
@@ -1672,10 +1390,12 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <li>Less granular control than some alternatives</li>
 <li>Less mature multi-agent patterns compared to CrewAI or AutoGen</li>
 </ul>
-<p><strong>Course Relevance</strong>
-- Semester 2 Week 5: Multi-vendor exposure and framework comparison
-- Understanding proprietary vs. open-source trade-offs
-- Model lock-in considerations for production systems</p>
+<p><strong>Course Relevance</strong></p>
+<ul>
+<li>Semester 2 Week 5: Multi-vendor exposure and framework comparison</li>
+<li>Understanding proprietary vs. open-source trade-offs</li>
+<li>Model lock-in considerations for production systems</li>
+</ul>
 <p><strong>Reference</strong>: https://platform.openai.com/</p>
 <hr />
 <h3 id="framework-comparison-matrix">Framework Comparison Matrix</h3>
@@ -1777,28 +1497,38 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <h2 id="integration-and-real-world-architecture-patterns">Integration and Real-World Architecture Patterns</h2>
 <h3 id="complete-security-operations-center-soc-agent-system">Complete Security Operations Center (SOC) Agent System</h3>
 <p>A production security operations center using all four protocols:</p>
-<p><strong>Layer 1: Tool Integration (MCP)</strong>
-- Threat intelligence feeds via MCP
-- SIEM APIs via MCP
-- Vulnerability databases via MCP
-- Security tools (firewalls, IDS, etc.) via MCP</p>
-<p><strong>Layer 2: Agent Coordination (A2A)</strong>
-- Incident response agent delegates to threat hunting agent
-- Forensics agent shares findings with containment agent
-- Detection agent alerts investigation agents</p>
-<p><strong>Layer 3: Cross-Framework Integration (ACP)</strong>
-- Anthropic-based SOC agent integrates with vendor's CrewAI-based threat intelligence agent
-- Registry maintains current list of available agents and their capabilities</p>
-<p><strong>Layer 4: External Intelligence (ANP)</strong>
-- Discovery of external threat intelligence agents
-- Collaboration with industry-wide defensive network agents</p>
-<p><strong>Security Implementation</strong>
-- Every MCP call validated and logged
-- A2A delegation chains cryptographically signed (v0.3)
-- ACP registry encrypted and authenticated
-- Zero trust applied at every layer
-- Comprehensive audit logging with tamper protection
-- Human-in-loop for high-impact decisions</p>
+<p><strong>Layer 1: Tool Integration (MCP)</strong></p>
+<ul>
+<li>Threat intelligence feeds via MCP</li>
+<li>SIEM APIs via MCP</li>
+<li>Vulnerability databases via MCP</li>
+<li>Security tools (firewalls, IDS, etc.) via MCP</li>
+</ul>
+<p><strong>Layer 2: Agent Coordination (A2A)</strong></p>
+<ul>
+<li>Incident response agent delegates to threat hunting agent</li>
+<li>Forensics agent shares findings with containment agent</li>
+<li>Detection agent alerts investigation agents</li>
+</ul>
+<p><strong>Layer 3: Cross-Framework Integration (ACP)</strong></p>
+<ul>
+<li>Anthropic-based SOC agent integrates with vendor's CrewAI-based threat intelligence agent</li>
+<li>Registry maintains current list of available agents and their capabilities</li>
+</ul>
+<p><strong>Layer 4: External Intelligence (ANP)</strong></p>
+<ul>
+<li>Discovery of external threat intelligence agents</li>
+<li>Collaboration with industry-wide defensive network agents</li>
+</ul>
+<p><strong>Security Implementation</strong></p>
+<ul>
+<li>Every MCP call validated and logged</li>
+<li>A2A delegation chains cryptographically signed (v0.3)</li>
+<li>ACP registry encrypted and authenticated</li>
+<li>Zero trust applied at every layer</li>
+<li>Comprehensive audit logging with tamper protection</li>
+<li>Human-in-loop for high-impact decisions</li>
+</ul>
 <hr />
 <h2 id="recommended-reading-order-for-students">Recommended Reading Order for Students</h2>
 <p><strong>Semester 1 (Foundation)</strong>
@@ -1845,37 +1575,49 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <strong>Last Updated</strong>: March 4, 2026
 <strong>Maintenance</strong>: Updated annually to reflect protocol evolution and framework releases
 <strong>Feedback</strong>: Graduate students and instructors should report gaps or inaccuracies to the course coordinator</p>
-<p>This document serves as a living reference and will be updated as:
-- New protocols emerge
-- Frameworks reach v1.0 and beyond
-- NIST and OWASP publish new guidance
-- Industry standards mature</p>
+<p>This document serves as a living reference and will be updated as:</p>
+<ul>
+<li>New protocols emerge</li>
+<li>Frameworks reach v1.0 and beyond</li>
+<li>NIST and OWASP publish new guidance</li>
+<li>Industry standards mature</li>
+</ul>
 <hr />
 <h2 id="resources-and-further-reading">Resources and Further Reading</h2>
-<p><strong>Official Protocol Specifications</strong>
-- Model Context Protocol: https://modelcontextprotocol.io
-- Agent-to-Agent Protocol: https://www.agentprotocol.ai/ (community site)
-- Linux Foundation AAIF: https://aaif.linux.foundation/</p>
-<p><strong>Security Frameworks</strong>
-- OWASP Agentic Applications: https://owasp.org/www-project-agentic-applications-security/
-- NIST AI RMF: https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf
-- MITRE ATLAS: https://atlas.mitre.org/
-- MITRE ATT&amp;CK: https://attack.mitre.org/</p>
-<p><strong>Framework Documentation</strong>
-- Claude Agent SDK: https://anthropic.com/docs/build-effective-agents
-- CrewAI: https://crewai.com/
-- LangGraph: https://langchain.com/langgraph
-- AutoGen: https://microsoft.github.io/autogen/
-- OpenAI API: https://platform.openai.com/</p>
-<p><strong>Course AI Security Tools (Production Approaches)</strong>
-- MASS (Model &amp; Application Security Suite) — AI security tool demonstrating production assessment approaches: https://github.com/r33n3/MASS
-- PeaRL (Policy-enforced Autonomous Risk Layer) — AI security tool demonstrating production governance approaches: https://github.com/r33n3/PeaRL</p>
-<p><strong>Regulatory and Governance</strong>
-- AIUC-1 (First AI Agent Standard): https://www.aiuc-1.com/
-- OWASP AIVSS (AI Vulnerability Scoring System): https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system
-- EU AI Act: https://www.legislation.eu.int/
-- NIST Cyber AI Profile (draft): https://csrc.nist.gov/publications/detail/sp/800-53-rev-5
-- Linux Foundation Agentic AI Foundation: https://aaif.linux.foundation/</p>
+<p><strong>Official Protocol Specifications</strong></p>
+<ul>
+<li>Model Context Protocol: https://modelcontextprotocol.io</li>
+<li>Agent-to-Agent Protocol: https://www.agentprotocol.ai/ (community site)</li>
+<li>Linux Foundation AAIF: https://aaif.linux.foundation/</li>
+</ul>
+<p><strong>Security Frameworks</strong></p>
+<ul>
+<li>OWASP Agentic Applications: https://owasp.org/www-project-agentic-applications-security/</li>
+<li>NIST AI RMF: https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf</li>
+<li>MITRE ATLAS: https://atlas.mitre.org/</li>
+<li>MITRE ATT&amp;CK: https://attack.mitre.org/</li>
+</ul>
+<p><strong>Framework Documentation</strong></p>
+<ul>
+<li>Claude Agent SDK: https://anthropic.com/docs/build-effective-agents</li>
+<li>CrewAI: https://crewai.com/</li>
+<li>LangGraph: https://langchain.com/langgraph</li>
+<li>AutoGen: https://microsoft.github.io/autogen/</li>
+<li>OpenAI API: https://platform.openai.com/</li>
+</ul>
+<p><strong>Course AI Security Tools (Production Approaches)</strong></p>
+<ul>
+<li>MASS (Model &amp; Application Security Suite) — AI security tool demonstrating production assessment approaches: https://github.com/r33n3/MASS</li>
+<li>PeaRL (Policy-enforced Autonomous Risk Layer) — AI security tool demonstrating production governance approaches: https://github.com/r33n3/PeaRL</li>
+</ul>
+<p><strong>Regulatory and Governance</strong></p>
+<ul>
+<li>AIUC-1 (First AI Agent Standard): https://www.aiuc-1.com/</li>
+<li>OWASP AIVSS (AI Vulnerability Scoring System): https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system</li>
+<li>EU AI Act: https://www.legislation.eu.int/</li>
+<li>NIST Cyber AI Profile (draft): https://csrc.nist.gov/publications/detail/sp/800-53-rev-5</li>
+<li>Linux Foundation Agentic AI Foundation: https://aaif.linux.foundation/</li>
+</ul>
 <hr />
 <h2 id="part-3-course-ai-security-tools-production-approaches">Part 3: Course AI Security Tools — Production Approaches</h2>
 <h3 id="mass-compliance-mapping-framework">MASS Compliance Mapping Framework</h3>
@@ -2050,43 +1792,6 @@ prod (production)
 </main>
 
 <script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
-<script>
 (function() {
   var IDX = [
     // Units
@@ -2177,6 +1882,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

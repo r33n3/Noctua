@@ -4,423 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 5: Multi-Agent Orchestration — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -447,7 +31,7 @@ body {
   <a href="lab-s1-unit4.html" class="sub">Lab: Unit 4</a>
   <div class="nav-section">Semester 2: Advanced</div>
   <a href="semester2.html">Semester 2 Overview</a>
-  <a href="s2-unit5.html" class="sub active">Unit 5: Multi-Agent</a>
+  <a href="s2-unit5.html" class="sub">Unit 5: Multi-Agent</a>
   <a href="lab-s2-unit5.html" class="sub">Lab: Unit 5</a>
   <a href="s2-unit6.html" class="sub">Unit 6: Attack vs Defend</a>
   <a href="lab-s2-unit6.html" class="sub">Lab: Unit 6</a>
@@ -489,11 +73,13 @@ body {
 <hr />
 <h3 id="lecture-the-evolution-of-multi-agent-thinking">Lecture: The Evolution of Multi-Agent Thinking</h3>
 <p>Multi-agent systems predate large language models by decades. In the 1990s, researchers like Michael Wooldridge built <strong>Belief-Desire-Intention (BDI)</strong> agents—autonomous actors with explicit knowledge, goals, and reasoning. Early work tackled distributed resource allocation, traffic coordination, and manufacturing. These systems taught us that specialization is powerful: a task-specific agent beats a generalist for narrow problems.</p>
-<p>Modern LLM-based agents inherit this insight. Unlike monolithic GPT-4 prompts that do everything, a team of smaller, focused Claude instances can:
-- Divide expertise (threat intel analyst, malware reverse engineer, incident commander)
-- Reduce hallucination (shallow specialization outperforms breadth)
-- Enable parallelism (multiple agents working on different aspects simultaneously)
-- Improve debuggability (smaller scopes = fewer failure modes)</p>
+<p>Modern LLM-based agents inherit this insight. Unlike monolithic GPT-4 prompts that do everything, a team of smaller, focused Claude instances can:</p>
+<ul>
+<li>Divide expertise (threat intel analyst, malware reverse engineer, incident commander)</li>
+<li>Reduce hallucination (shallow specialization outperforms breadth)</li>
+<li>Enable parallelism (multiple agents working on different aspects simultaneously)</li>
+<li>Improve debuggability (smaller scopes = fewer failure modes)</li>
+</ul>
 <p>But multi-agent systems introduce coordination overhead. Agents must communicate, negotiate, and handle disagreement. This is why we need architectural <em>patterns</em>.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Multi-agent systems are not always the answer. A well-tuned single agent with access to multiple tools often outperforms a poorly-orchestrated team. The rule of thumb: if you can solve the problem with one agent and clear tool boundaries, start there. Add agents when you encounter coordination bottlenecks or need true parallelism.</p>
 </div>
@@ -523,14 +109,18 @@ body {
 </div>
 
 <p><strong>Security Example:</strong> SOC supervisor ingests an alert, delegates to a Threat Analyst (queries threat intel), asks a Containment Agent for isolation options, then synthesizes a response.</p>
-<p><strong>Pros:</strong>
-- Simple to understand and debug
-- Clear decision-making authority
-- Easy to inject human oversight</p>
-<p><strong>Cons:</strong>
-- Supervisor becomes a bottleneck
-- Supervisor must know how to talk to every specialist
-- Supervisor errors cascade to all downstream tasks</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Simple to understand and debug</li>
+<li>Clear decision-making authority</li>
+<li>Easy to inject human oversight</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Supervisor becomes a bottleneck</li>
+<li>Supervisor must know how to talk to every specialist</li>
+<li>Supervisor errors cascade to all downstream tasks</li>
+</ul>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> "The Organization and Architecture of Government Information Systems" contains foundational work on centralized command structures that influenced modern supervisor patterns.</p>
 </div>
 <hr />
@@ -570,14 +160,18 @@ body {
 </div>
 
 <p><strong>Security Example:</strong> A Security Operations Center with an Incident Commander, two team leads (Detection &amp; Response), and workers under each handling specific alert types.</p>
-<p><strong>Pros:</strong>
-- Scales to large teams
-- Natural organizational fit
-- Information filtering (lower layers filter noise before escalating)</p>
-<p><strong>Cons:</strong>
-- More moving parts (more failure modes)
-- Information loss as data moves up levels
-- Coordination latency (request must traverse multiple hops)</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Scales to large teams</li>
+<li>Natural organizational fit</li>
+<li>Information filtering (lower layers filter noise before escalating)</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>More moving parts (more failure modes)</li>
+<li>Information loss as data moves up levels</li>
+<li>Coordination latency (request must traverse multiple hops)</li>
+</ul>
 <hr />
 <h4 id="3-debate-pattern-consensus-through-disagreement">3. <strong>Debate Pattern</strong> (Consensus Through Disagreement)</h4>
 <p>Multiple agents present different viewpoints; a moderator or arbitrator synthesizes conclusions. Useful when ground truth is unclear.</p>
@@ -604,14 +198,18 @@ body {
 </div>
 
 <p><strong>Security Example:</strong> Three threat analysts independently assess a suspicious network pattern. Agent 1 (aggressive) flags it as attack. Agent 2 (conservative) says it's likely benign. Agent 3 (innovative) proposes it's a new variant. A moderator synthesizes the evidence and decides on confidence threshold.</p>
-<p><strong>Pros:</strong>
-- Reduces groupthink
-- Captures uncertainty
-- Good for novel/ambiguous threats</p>
-<p><strong>Cons:</strong>
-- Computationally expensive (N agents instead of 1)
-- Arbitration adds latency
-- Requires explicit disagreement protocol</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Reduces groupthink</li>
+<li>Captures uncertainty</li>
+<li>Good for novel/ambiguous threats</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Computationally expensive (N agents instead of 1)</li>
+<li>Arbitration adds latency</li>
+<li>Requires explicit disagreement protocol</li>
+</ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Should a SOC prefer Supervisor or Debate patterns when assessing a zero-day threat? What are the trade-offs in decision time vs. decision quality?</p>
 </div>
 <hr />
@@ -625,20 +223,26 @@ No hierarchy.
 </code></pre></div>
 
 <p><strong>Security Example:</strong> Distributed threat hunting where agents autonomously scan subnets, report findings to a shared board, and other agents notice patterns without central coordination.</p>
-<p><strong>Pros:</strong>
-- Highly resilient (no single point of failure)
-- Natural parallelism
-- Adapts to emerging patterns</p>
-<p><strong>Cons:</strong>
-- Hardest to debug (emergent behavior is non-deterministic)
-- Coordination is implicit (harder to verify correctness)
-- Overkill for most security use cases</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Highly resilient (no single point of failure)</li>
+<li>Natural parallelism</li>
+<li>Adapts to emerging patterns</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Hardest to debug (emergent behavior is non-deterministic)</li>
+<li>Coordination is implicit (harder to verify correctness)</li>
+<li>Overkill for most security use cases</li>
+</ul>
 <hr />
 <h4 id="5-hybrid-patterns-common-in-practice">5. <strong>Hybrid Patterns</strong> (Common in Practice)</h4>
-<p>Real systems mix patterns:
-- <strong>Supervisor + Hierarchical:</strong> Supervisor at top, middle managers for each domain
-- <strong>Hierarchical + Debate:</strong> Teams at each level internally debate before escalating
-- <strong>Debate + Swarm:</strong> Agents debate using swarm consensus mechanisms</p>
+<p>Real systems mix patterns:</p>
+<ul>
+<li><strong>Supervisor + Hierarchical:</strong> Supervisor at top, middle managers for each domain</li>
+<li><strong>Hierarchical + Debate:</strong> Teams at each level internally debate before escalating</li>
+<li><strong>Debate + Swarm:</strong> Agents debate using swarm consensus mechanisms</li>
+</ul>
 <hr />
 <h3 id="agent-communication-patterns">Agent Communication Patterns</h3>
 <p><strong>Direct Messaging:</strong> Agent A calls Agent B's API directly. Simple, low-latency. Risk: tight coupling.</p>
@@ -668,10 +272,12 @@ when { principal.api_key_valid && principal.authorized_tools.contains(resource.i
 <li><strong>Good:</strong> Alert Analyst (only classifies incoming alerts), Threat Intel Agent (only enriches with reputation data)</li>
 <li><strong>Bad:</strong> General Security Agent (does everything—classification, enrichment, response)</li>
 </ul>
-<p><strong>Skill Distribution:</strong>
-- Map each tool to the agent that should use it
-- Avoid tool duplication (if two agents need threat intel, share a tool or have one agent call the other)
-- Think about data dependencies (if Agent B needs outputs from Agent A, make that explicit in orchestration)</p>
+<p><strong>Skill Distribution:</strong></p>
+<ul>
+<li>Map each tool to the agent that should use it</li>
+<li>Avoid tool duplication (if two agents need threat intel, share a tool or have one agent call the other)</li>
+<li>Think about data dependencies (if Agent B needs outputs from Agent A, make that explicit in orchestration)</li>
+</ul>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on orchestration patterns for coverage of the <strong>Orchestrator Pattern</strong> (one supervisor coordinates specialized agents) and the <strong>Expert Swarm Pattern</strong> (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See <a href="frameworks.html">Frameworks Documentation</a> for implementation examples.</p>
 <p><strong>🔑 Key Concept:</strong> <strong>Context Isolation and Sharing</strong> — Multi-agent systems require careful management of what context each agent can access. Agentic Engineering practice covers how to design context so agents have sufficient information to act without unnecessary exposure to sensitive data. Your SOC system uses this principle: the Analyst agent sees threat intel but not full customer PII; the Response Recommender sees severity but not raw logs.</p>
 </div>
@@ -733,16 +339,20 @@ when { principal.api_key_valid && principal.authorized_tools.contains(resource.i
 <li><strong>State Context:</strong> Information passed between agents as the alert flows through the workflow</li>
 <li><strong>Immutability:</strong> Data structures should prevent accidental modifications by downstream agents</li>
 </ol>
-<p><strong>Architecture Decision:</strong> Use TypedDict or Pydantic models (not just raw dictionaries). This ensures:
-- Type safety so agents don't accidentally modify the wrong fields
-- Clear contracts between agents about what data they'll receive
-- Validation at system boundaries</p>
+<p><strong>Architecture Decision:</strong> Use TypedDict or Pydantic models (not just raw dictionaries). This ensures:</p>
+<ul>
+<li>Type safety so agents don't accidentally modify the wrong fields</li>
+<li>Clear contracts between agents about what data they'll receive</li>
+<li>Validation at system boundaries</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When generating code for data models, Claude needs to know:
-- What fields are required vs. optional
-- How the data flows through agents
-- What constraints exist (e.g., "severity must be one of: low, medium, high, critical")
-- Whether data should be mutable or immutable between agents</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When generating code for data models, Claude needs to know:</p>
+<ul>
+<li>What fields are required vs. optional</li>
+<li>How the data flows through agents</li>
+<li>What constraints exist (e.g., "severity must be one of: low, medium, high, critical")</li>
+<li>Whether data should be mutable or immutable between agents</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Create a data model for a security alert that flows through multiple agents.
@@ -762,38 +372,46 @@ Use dataclasses or TypedDict (not plain dicts). Make these immutable to
 prevent bugs where one agent accidentally modifies shared state.
 </code></pre></div>
 
-<p>After Claude generates the code, verify it includes:
-- [ ] SecurityAlert with all necessary fields for various alert sources
-- [ ] Proper type hints (Optional fields explicitly marked)
-- [ ] AlertContext that accumulates results without allowing modification of previous fields
-- [ ] Clear documentation of what each field means
-- [ ] Validation logic if using Pydantic</p>
+<p>After Claude generates the code, verify it includes:</p>
+<ul>
+<li>[ ] SecurityAlert with all necessary fields for various alert sources</li>
+<li>[ ] Proper type hints (Optional fields explicitly marked)</li>
+<li>[ ] AlertContext that accumulates results without allowing modification of previous fields</li>
+<li>[ ] Clear documentation of what each field means</li>
+<li>[ ] Validation logic if using Pydantic</li>
+</ul>
 <p>If the output uses mutable lists where they should be tuples, ask Claude to fix that. If it's missing field validation, request Pydantic validators be added.</p>
 <hr />
 <h4 id="architecture-alert-ingestion-agent">Architecture: Alert Ingestion Agent</h4>
 <p><strong>Purpose:</strong> Transform raw, unstructured alerts from different sources (Zeek, Suricata, Windows Event Log, etc.) into a standardized format. This is a <strong>normalization</strong> task—the agent's job is format translation, not security analysis.</p>
-<p><strong>Why a Separate Agent?</strong>
-- Different tools output different formats
-- Normalization logic is independent of threat analysis
-- Can be reused for any downstream processing
-- Reduces complexity of other agents (they don't worry about format variations)</p>
+<p><strong>Why a Separate Agent?</strong></p>
+<ul>
+<li>Different tools output different formats</li>
+<li>Normalization logic is independent of threat analysis</li>
+<li>Can be reused for any downstream processing</li>
+<li>Reduces complexity of other agents (they don't worry about format variations)</li>
+</ul>
 <p><strong>Design Approach:</strong>
 The ingester agent needs:
 1. A tool that receives raw alert JSON and parses it
 2. Logic to map fields from various source formats to standard fields
 3. Validation to ensure required fields are present
 4. Fallback handling for missing or malformed data</p>
-<p><strong>Tool Design Decision:</strong> Should the "ingest_raw_alert" tool be:
-- A simple parser (agent does mapping logic)?
-- A full normalizer (tool does all format conversion)?
-- Answer: Keep tools simple; agents do reasoning. The tool parses JSON, the agent decides how to map fields.</p>
+<p><strong>Tool Design Decision:</strong> Should the "ingest_raw_alert" tool be:</p>
+<ul>
+<li>A simple parser (agent does mapping logic)?</li>
+<li>A full normalizer (tool does all format conversion)?</li>
+<li>Answer: Keep tools simple; agents do reasoning. The tool parses JSON, the agent decides how to map fields.</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When asking Claude to write an agent, be specific about:
-- What tool the agent has access to
-- What the tool returns (format, fields)
-- What the agent should output (normalized alert format)
-- How to handle missing fields, malformed input, or conflicting data
-- Error handling strategy</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When asking Claude to write an agent, be specific about:</p>
+<ul>
+<li>What tool the agent has access to</li>
+<li>What the tool returns (format, fields)</li>
+<li>What the agent should output (normalized alert format)</li>
+<li>How to handle missing fields, malformed input, or conflicting data</li>
+<li>Error handling strategy</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build an Alert Ingester agent using the Claude API. This agent receives
@@ -826,33 +444,41 @@ Output should be a normalized alert ready for threat enrichment.
 Include a message to the supervisor confirming the normalized alert.
 </code></pre></div>
 
-<p>After Claude generates the code, verify:
-- [ ] Agent correctly parses and maps all source formats
-- [ ] Missing fields get reasonable defaults
-- [ ] Error handling is explicit (not silent failures)
-- [ ] Agent outputs are clear and structured
-- [ ] Tool parameters match the tool definition</p>
+<p>After Claude generates the code, verify:</p>
+<ul>
+<li>[ ] Agent correctly parses and maps all source formats</li>
+<li>[ ] Missing fields get reasonable defaults</li>
+<li>[ ] Error handling is explicit (not silent failures)</li>
+<li>[ ] Agent outputs are clear and structured</li>
+<li>[ ] Tool parameters match the tool definition</li>
+</ul>
 <p>If the agent isn't handling a specific format, ask Claude to add support for it. If error handling is missing, request try/catch blocks and appropriate error messages.</p>
 <hr />
 <h4 id="architecture-threat-analyst-agent">Architecture: Threat Analyst Agent</h4>
 <p><strong>Purpose:</strong> Enrich normalized alerts with external context (threat intelligence, known attack patterns). This agent answers: "Is this threat actor known? Have we seen this attack pattern before? What's the likely intent?"</p>
-<p><strong>Key Decision:</strong> Separate from the Ingester because:
-- Ingestion is format transformation (deterministic)
-- Analysis is semantic interpretation (requires judgment and external data)
-- Can retry threat intel lookups independently of alert parsing</p>
+<p><strong>Key Decision:</strong> Separate from the Ingester because:</p>
+<ul>
+<li>Ingestion is format transformation (deterministic)</li>
+<li>Analysis is semantic interpretation (requires judgment and external data)</li>
+<li>Can retry threat intel lookups independently of alert parsing</li>
+</ul>
 <p><strong>Tool Responsibilities:</strong>
 1. <strong>query_threat_intel:</strong> Lookup external reputation data (IP/domain/hash reputation)
 2. <strong>correlate_with_known_attacks:</strong> Match event signature against known attack patterns</p>
-<p><strong>Design Pattern:</strong> Two separate tools allow the agent to:
-- Check both the source of the traffic AND the event type
-- Build a confidence score from multiple signals
-- Explain its reasoning (e.g., "High severity because APT28 known for this pattern + malicious IP")</p>
+<p><strong>Design Pattern:</strong> Two separate tools allow the agent to:</p>
+<ul>
+<li>Check both the source of the traffic AND the event type</li>
+<li>Build a confidence score from multiple signals</li>
+<li>Explain its reasoning (e.g., "High severity because APT28 known for this pattern + malicious IP")</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing an analyst agent, provide:
-- Clear tool definitions with expected output formats
-- Examples of what the agent should do when tools return ambiguous data
-- Explicit instructions on how to combine signals (e.g., "If IP is unknown but event type is suspicious_tls_handshake, escalate to medium")
-- Fallback behavior when threat intel lookups fail (degraded but not broken)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing an analyst agent, provide:</p>
+<ul>
+<li>Clear tool definitions with expected output formats</li>
+<li>Examples of what the agent should do when tools return ambiguous data</li>
+<li>Explicit instructions on how to combine signals (e.g., "If IP is unknown but event type is suspicious_tls_handshake, escalate to medium")</li>
+<li>Fallback behavior when threat intel lookups fail (degraded but not broken)</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build a Threat Analyst agent that enriches security alerts with threat
@@ -896,33 +522,41 @@ Handle:
 - Missing data (no threat intel available): Make best judgment from event type alone
 </code></pre></div>
 
-<p>Verification after generation:
-- [ ] Agent queries both IP and domain indicators
-- [ ] Threat intel unavailability doesn't crash the system
-- [ ] Severity is justified by specific findings
-- [ ] Confidence score reflects certainty (high confidence = multiple confirming signals)
-- [ ] Agent explains its reasoning in the output message</p>
+<p>Verification after generation:</p>
+<ul>
+<li>[ ] Agent queries both IP and domain indicators</li>
+<li>[ ] Threat intel unavailability doesn't crash the system</li>
+<li>[ ] Severity is justified by specific findings</li>
+<li>[ ] Confidence score reflects certainty (high confidence = multiple confirming signals)</li>
+<li>[ ] Agent explains its reasoning in the output message</li>
+</ul>
 <p>If threat intel integration is missing, ask Claude to add it. If confidence scoring lacks logic, request explicit scoring rules.</p>
 <hr />
 <h4 id="architecture-response-recommender-agent">Architecture: Response Recommender Agent</h4>
 <p><strong>Purpose:</strong> Given an enriched threat assessment, recommend specific containment and remediation actions. This agent bridges analysis and action—it's the decision engine.</p>
-<p><strong>Key Design:</strong> Separate from the Analyst because:
-- Analyst = "What is this threat?"
-- Recommender = "What should we do about it?"
-- These require different expertise and tools</p>
+<p><strong>Key Design:</strong> Separate from the Analyst because:</p>
+<ul>
+<li>Analyst = "What is this threat?"</li>
+<li>Recommender = "What should we do about it?"</li>
+<li>These require different expertise and tools</li>
+</ul>
 <p><strong>Tool Responsibilities:</strong>
 1. <strong>lookup_response_playbook:</strong> Retrieve pre-approved response procedures for known attack types
 2. <strong>check_policy_constraints:</strong> Verify recommended actions comply with organizational policy</p>
-<p><strong>Architectural Pattern:</strong> Playbooks + Policy Checks
-- Playbooks encode institutional knowledge ("Here's how we handle credential theft")
-- Policy checks prevent actions that violate compliance or operational constraints
-- Enables recommendations that are both effective AND compliant</p>
+<p><strong>Architectural Pattern:</strong> Playbooks + Policy Checks</p>
+<ul>
+<li>Playbooks encode institutional knowledge ("Here's how we handle credential theft")</li>
+<li>Policy checks prevent actions that violate compliance or operational constraints</li>
+<li>Enables recommendations that are both effective AND compliant</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Response recommendation requires:
-- Clear playbooks indexed by attack type (credential_theft, lateral_movement, etc.)
-- Policy engine to validate actions (avoid breaking production systems)
-- Distinction between immediate, short-term, and long-term actions
-- Understanding of risk tradeoffs (security vs. availability)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Response recommendation requires:</p>
+<ul>
+<li>Clear playbooks indexed by attack type (credential_theft, lateral_movement, etc.)</li>
+<li>Policy engine to validate actions (avoid breaking production systems)</li>
+<li>Distinction between immediate, short-term, and long-term actions</li>
+<li>Understanding of risk tradeoffs (security vs. availability)</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build a Response Recommender agent that suggests containment and
@@ -984,20 +618,24 @@ Edge cases to handle:
 - Low-confidence threat → Recommend investigation before containment
 </code></pre></div>
 
-<p>Verification after generation:
-- [ ] Agent correctly maps severity to action aggressiveness
-- [ ] Playbook lookup handles unknown attack types gracefully
-- [ ] Policy constraints are checked before recommending actions
-- [ ] Different actions recommended for different environments
-- [ ] Output explains trade-offs (e.g., "Isolation affects availability")</p>
+<p>Verification after generation:</p>
+<ul>
+<li>[ ] Agent correctly maps severity to action aggressiveness</li>
+<li>[ ] Playbook lookup handles unknown attack types gracefully</li>
+<li>[ ] Policy constraints are checked before recommending actions</li>
+<li>[ ] Different actions recommended for different environments</li>
+<li>[ ] Output explains trade-offs (e.g., "Isolation affects availability")</li>
+</ul>
 <p>If the agent doesn't explain trade-offs, ask Claude to add them. If it doesn't handle policy constraints, request integration with the policy tool.</p>
 <h4 id="architecture-report-writer-agent">Architecture: Report Writer Agent</h4>
 <p><strong>Purpose:</strong> Communicate findings to different audiences (executives, analysts, technical staff). This agent translates technical assessments into actionable summaries.</p>
-<p><strong>Why Separate?</strong> Because:
-- Technical depth (for analysts) ≠ Business impact (for executives)
-- Report writing is a distinct skill from analysis
-- Same technical findings may be reported differently based on audience
-- Can iterate on reporting without changing analysis logic</p>
+<p><strong>Why Separate?</strong> Because:</p>
+<ul>
+<li>Technical depth (for analysts) ≠ Business impact (for executives)</li>
+<li>Report writing is a distinct skill from analysis</li>
+<li>Same technical findings may be reported differently based on audience</li>
+<li>Can iterate on reporting without changing analysis logic</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Report writers need to know the audience and context. An executive summary omits technical details and emphasizes business impact. A forensic report includes timeline and technical evidence. Ask Claude to generate different report formats for different audiences.</p>
 </div>
@@ -1033,12 +671,14 @@ Report should include:
 - Escalation flag (to CISO? Board? Regulators?)
 </code></pre></div>
 
-<p>Verification:
-- [ ] Reports are clear and actionable for intended audience
-- [ ] Executive summary doesn't overwhelm with technical jargon
-- [ ] Technical report includes evidence and reasoning
-- [ ] Escalation decisions are explicit and justified
-- [ ] Reports reference the underlying data (alert ID, threat actors, etc.)</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Reports are clear and actionable for intended audience</li>
+<li>[ ] Executive summary doesn't overwhelm with technical jargon</li>
+<li>[ ] Technical report includes evidence and reasoning</li>
+<li>[ ] Escalation decisions are explicit and justified</li>
+<li>[ ] Reports reference the underlying data (alert ID, threat actors, etc.)</li>
+</ul>
 <hr />
 <h4 id="architecture-orchestration-and-workflow-coordination">Architecture: Orchestration and Workflow Coordination</h4>
 <p><strong>Problem:</strong> How do multiple agents work together? We have 4 specialized agents, but they need to:
@@ -1047,23 +687,29 @@ Report should include:
 3. Make go/no-go decisions (escalate or close?)
 4. Handle failures gracefully</p>
 <p><strong>Solution: Supervisor Pattern with State Management</strong></p>
-<p>The supervisor agent:
-- Owns the workflow state (the alert context)
-- Delegates to workers sequentially
-- Checks results and decides next steps
-- Handles exceptions and retries</p>
+<p>The supervisor agent:</p>
+<ul>
+<li>Owns the workflow state (the alert context)</li>
+<li>Delegates to workers sequentially</li>
+<li>Checks results and decides next steps</li>
+<li>Handles exceptions and retries</li>
+</ul>
 <p>This architecture implements the <strong>Orchestrator Pattern</strong> from Agentic Engineering practice, where a central coordinator supervises specialized sub-agents with clear responsibilities. The pattern ensures that complex workflows (like multi-stage threat analysis) don't bottleneck in a single agent but are distributed across experts.</p>
-<p><strong>Workflow Decision Points:</strong>
-- After ingestion: Proceed to analysis? (Usually yes, but validate normalization)
-- After analysis: Escalate based on severity? (Critical → escalate immediately)
-- After recommendation: Execute actions automatically or wait for approval?
-- After reporting: Store for audit or send to analysts immediately?</p>
+<p><strong>Workflow Decision Points:</strong></p>
+<ul>
+<li>After ingestion: Proceed to analysis? (Usually yes, but validate normalization)</li>
+<li>After analysis: Escalate based on severity? (Critical → escalate immediately)</li>
+<li>After recommendation: Execute actions automatically or wait for approval?</li>
+<li>After reporting: Store for audit or send to analysts immediately?</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Orchestration logic is not deterministic. The supervisor needs to make intelligent decisions about when to escalate, retry, or abort. This requires:
-- Clear criteria for escalation (e.g., "Critical severity → escalate always")
-- Retry logic for transient failures (threat intel timeout)
-- Approval gates for risky actions (password reset)
-- Audit trails showing why decisions were made</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Orchestration logic is not deterministic. The supervisor needs to make intelligent decisions about when to escalate, retry, or abort. This requires:</p>
+<ul>
+<li>Clear criteria for escalation (e.g., "Critical severity → escalate always")</li>
+<li>Retry logic for transient failures (threat intel timeout)</li>
+<li>Approval gates for risky actions (password reset)</li>
+<li>Audit trails showing why decisions were made</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Design a supervisor agent that orchestrates a 4-agent SOC triage workflow.
@@ -1100,23 +746,27 @@ The supervisor should explain its decisions in log messages, like:
 &quot;[SUPERVISOR] Proceeding to response without escalation. Risk acceptable.&quot;
 </code></pre></div>
 
-<p>Verification:
-- [ ] Workflow executes all 4 agents in correct order
-- [ ] State is properly threaded through (each agent receives previous outputs)
-- [ ] Escalation decisions are explicit and justified
-- [ ] Failures are caught and reported, not silent
-- [ ] Supervisor logs explain its reasoning
-- [ ] Final output contains all necessary information for human review</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Workflow executes all 4 agents in correct order</li>
+<li>[ ] State is properly threaded through (each agent receives previous outputs)</li>
+<li>[ ] Escalation decisions are explicit and justified</li>
+<li>[ ] Failures are caught and reported, not silent</li>
+<li>[ ] Supervisor logs explain its reasoning</li>
+<li>[ ] Final output contains all necessary information for human review</li>
+</ul>
 <p>If orchestration is missing, ask Claude to add it. If decision logic is not explained, request explicit logging of decision criteria.</p>
 <hr />
 <h3 id="testing-your-multi-agent-system">Testing Your Multi-Agent System</h3>
 <p><strong>Test Categories:</strong></p>
-<p>Create test cases covering realistic scenarios:
-- <strong>Benign alerts:</strong> Normal user activity falsely flagged (web browsing, Windows updates)
-- <strong>Known attacks:</strong> Clear signatures (port scans, SQL injection attempts)
-- <strong>Ambiguous cases:</strong> Could be benign or malicious (unusual but not necessarily hostile)
-- <strong>Edge cases:</strong> Malformed input, missing fields
-- <strong>Adversarial:</strong> Injected instructions trying to manipulate the system</p>
+<p>Create test cases covering realistic scenarios:</p>
+<ul>
+<li><strong>Benign alerts:</strong> Normal user activity falsely flagged (web browsing, Windows updates)</li>
+<li><strong>Known attacks:</strong> Clear signatures (port scans, SQL injection attempts)</li>
+<li><strong>Ambiguous cases:</strong> Could be benign or malicious (unusual but not necessarily hostile)</li>
+<li><strong>Edge cases:</strong> Malformed input, missing fields</li>
+<li><strong>Adversarial:</strong> Injected instructions trying to manipulate the system</li>
+</ul>
 <p><strong>Testing Approach:</strong></p>
 <p>Rather than copy-paste test scripts, design your own test harness:</p>
 <ol>
@@ -1176,11 +826,13 @@ Generate a report showing:
 - Scenarios where the system failed and why
 </code></pre></div>
 
-<p>After Claude generates the framework:
-- [ ] Create 5-10 realistic test cases with well-defined ground truth
-- [ ] Run the tests and measure accuracy
-- [ ] Document any failures and their root causes
-- [ ] Iterate on the workflow to improve results</p>
+<p>After Claude generates the framework:</p>
+<ul>
+<li>[ ] Create 5-10 realistic test cases with well-defined ground truth</li>
+<li>[ ] Run the tests and measure accuracy</li>
+<li>[ ] Document any failures and their root causes</li>
+<li>[ ] Iterate on the workflow to improve results</li>
+</ul>
 <p>Don't aim for 100% accuracy immediately. Use test results to identify where the system struggles and improve it.</p>
 <hr />
 <h3 id="deliverables">Deliverables</h3>
@@ -1274,15 +926,21 @@ Generate a report showing:
 <hr />
 <h3 id="designing-agent-personas-beyond-prompt-injection">Designing Agent Personas: Beyond Prompt Injection</h3>
 <p>In CrewAI, an agent's <strong>role</strong>, <strong>goals</strong>, and <strong>backstory</strong> define its identity:</p>
-<p><strong>Role:</strong> The job title. Specifies domain expertise.
-- Good: "Threat Intelligence Analyst"
-- Bad: "Agent" (too generic)</p>
-<p><strong>Goal:</strong> What success looks like. Mission-driven, not task-driven.
-- Good: "Identify and assess threats to organizational assets, prioritizing by impact"
-- Bad: "Process alerts" (too vague)</p>
-<p><strong>Backstory:</strong> Context. Grounds the agent in a persona.
-- Good: "You are a former NSA cyber threat analyst with 15 years of incident response and deep expertise in APT tradecraft and TTPs. You've investigated breaches affecting fortune 500 companies."
-- Bad: "You are helpful and harmless" (generic, doesn't differentiate)</p>
+<p><strong>Role:</strong> The job title. Specifies domain expertise.</p>
+<ul>
+<li>Good: "Threat Intelligence Analyst"</li>
+<li>Bad: "Agent" (too generic)</li>
+</ul>
+<p><strong>Goal:</strong> What success looks like. Mission-driven, not task-driven.</p>
+<ul>
+<li>Good: "Identify and assess threats to organizational assets, prioritizing by impact"</li>
+<li>Bad: "Process alerts" (too vague)</li>
+</ul>
+<p><strong>Backstory:</strong> Context. Grounds the agent in a persona.</p>
+<ul>
+<li>Good: "You are a former NSA cyber threat analyst with 15 years of incident response and deep expertise in APT tradecraft and TTPs. You've investigated breaches affecting fortune 500 companies."</li>
+<li>Bad: "You are helpful and harmless" (generic, doesn't differentiate)</li>
+</ul>
 <p><strong>Why Personas Matter:</strong> A well-crafted persona reduces hallucination. Agents with clear identity ("You are a forensic analyst") make better decisions than generic instructions ("Analyze this data"). This is empirically validated in recent LLM research—specificity beats generality.</p>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Should SOC agents have personas that reflect real humans (to encourage specialization) or abstract roles (to avoid anthropomorphization)? What are the implications for accountability?</p>
 </div>
@@ -1332,9 +990,11 @@ Generate a report showing:
 </div>
 
 <p>Manager agent delegates to workers in parallel or batches, then synthesizes results. More complex. Enables parallelism. Mirrors org structures.</p>
-<p><strong>When to use each:</strong>
-- <strong>Sequential:</strong> Linear incident response (detect → triage → contain → eradicate → recover). Each step depends on the previous.
-- <strong>Hierarchical:</strong> Multi-domain analysis (network team, endpoint team, threat intel team work independently, manager synthesizes). Agents don't depend on each other.</p>
+<p><strong>When to use each:</strong></p>
+<ul>
+<li><strong>Sequential:</strong> Linear incident response (detect → triage → contain → eradicate → recover). Each step depends on the previous.</li>
+<li><strong>Hierarchical:</strong> Multi-domain analysis (network team, endpoint team, threat intel team work independently, manager synthesizes). Agents don't depend on each other.</li>
+</ul>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> "Organizational Hierarchies in Information Processing" in the business operations literature explores when flat vs. hierarchical decision-making excels. Apply these insights to agent architecture.</p>
 </div>
 <hr />
@@ -1400,23 +1060,29 @@ Generate a report showing:
 <h3 id="architecture-persona-based-agent-design-patterns">Architecture: Persona-Based Agent Design Patterns</h3>
 <p><strong>Key Insight from CrewAI:</strong> Personas matter because they guide agent behavior. An agent told "Normalize alerts" might do anything. An agent told "You are an Alert Ingestion Specialist with 8+ years integrating Zeek, Suricata, and Windows Event Log" has a clear identity and makes better decisions.</p>
 <p><strong>Key Design Principle:</strong> Personas should reflect real human expertise.</p>
-<p>A good persona:
-- Has a specific job title ("Alert Ingestion Specialist", not "Agent 1")
-- Has a clear goal (a mission, not a task list)
-- Has a detailed backstory grounding expertise ("NSA analyst with 12 years experience")
-- Includes domain-specific knowledge ("Deep knowledge of MITRE ATT&amp;CK framework")</p>
-<p>A bad persona:
-- Generic ("Security Analyst")
-- Too broad ("Do everything related to security")
-- No personality ("Helpful assistant that processes alerts")</p>
+<p>A good persona:</p>
+<ul>
+<li>Has a specific job title ("Alert Ingestion Specialist", not "Agent 1")</li>
+<li>Has a clear goal (a mission, not a task list)</li>
+<li>Has a detailed backstory grounding expertise ("NSA analyst with 12 years experience")</li>
+<li>Includes domain-specific knowledge ("Deep knowledge of MITRE ATT&amp;CK framework")</li>
+</ul>
+<p>A bad persona:</p>
+<ul>
+<li>Generic ("Security Analyst")</li>
+<li>Too broad ("Do everything related to security")</li>
+<li>No personality ("Helpful assistant that processes alerts")</li>
+</ul>
 <p><strong>Why This Matters:</strong> Specific personas reduce hallucination. An agent told "You are helpful" might do anything. An agent told "You are an NSA threat analyst with 12 years of APT tracking expertise" has clear identity and makes better decisions.</p>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing persona-based agents using Claude Agent SDK, specify:
-- Clear role definitions (what's the job title?)
-- Specific goal statements (not tasks, but mission)
-- Detailed backstories with years of experience and specific expertise
-- The exact tools this agent has access to (via function calling)
-- System prompt hints about how this agent should approach problems</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing persona-based agents using Claude Agent SDK, specify:</p>
+<ul>
+<li>Clear role definitions (what's the job title?)</li>
+<li>Specific goal statements (not tasks, but mission)</li>
+<li>Detailed backstories with years of experience and specific expertise</li>
+<li>The exact tools this agent has access to (via function calling)</li>
+<li>System prompt hints about how this agent should approach problems</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build 4 persona-based agents using Claude Code and the Anthropic SDK that
@@ -1465,12 +1131,14 @@ pattern) can be implemented using Claude Agent SDK with explicit system
 prompts and tool assignments.
 </code></pre></div>
 
-<p>Verification:
-- [ ] Each backstory is detailed and specific (not generic)
-- [ ] Each goal is a mission statement, not a task list
-- [ ] Backstories include relevant frameworks/methodologies (MITRE ATT&amp;CK, IR procedures)
-- [ ] Tools match the agent's role (threat analyst doesn't have policy tools)
-- [ ] Personas are realistic (not exaggerated expertise)</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Each backstory is detailed and specific (not generic)</li>
+<li>[ ] Each goal is a mission statement, not a task list</li>
+<li>[ ] Backstories include relevant frameworks/methodologies (MITRE ATT&amp;CK, IR procedures)</li>
+<li>[ ] Tools match the agent's role (threat analyst doesn't have policy tools)</li>
+<li>[ ] Personas are realistic (not exaggerated expertise)</li>
+</ul>
 <p>If backstories are generic, ask Claude to make them more specific. If an agent has too many tools, ask for a narrower focus.</p>
 <hr />
 <h3 id="architecture-tool-design-for-multi-agent-systems">Architecture: Tool Design for Multi-Agent Systems</h3>
@@ -1486,11 +1154,13 @@ prompts and tool assignments.
 <p>In practice, production systems use both: structured outputs at system boundaries (data pipelines, APIs, audit logs), readable strings for intra-agent reasoning. The principle from Unit 2 (schema as a security boundary) applies wherever data crosses a system boundary.</p>
 </div>
 <p><strong>Key Principle from CrewAI:</strong> Tools should return human-readable text that agents can reason about, not structured data. This allows agents to process results as they would conversation text, extracting meaning and responding to explanations.</p>
-<p><strong>Design Principle:</strong> Each tool should be:
-- <strong>Focused:</strong> Does one thing well (not a Swiss Army knife)
-- <strong>Informative:</strong> Returns text that an agent can reason about
-- <strong>Verified:</strong> Returns strings agents can understand and act on
-- <strong>Explainable:</strong> Includes reasoning (why a lookup succeeded or failed)</p>
+<p><strong>Design Principle:</strong> Each tool should be:</p>
+<ul>
+<li><strong>Focused:</strong> Does one thing well (not a Swiss Army knife)</li>
+<li><strong>Informative:</strong> Returns text that an agent can reason about</li>
+<li><strong>Verified:</strong> Returns strings agents can understand and act on</li>
+<li><strong>Explainable:</strong> Includes reasoning (why a lookup succeeded or failed)</li>
+</ul>
 <p><strong>Tool Categories in Our System:</strong>
 1. <strong>Data transformation:</strong> normalize_alert (parses JSON)
 2. <strong>External lookup:</strong> query_threat_intel, correlate_patterns (call external APIs)
@@ -1498,12 +1168,14 @@ prompts and tool assignments.
 4. <strong>Validation:</strong> check_policy (verify action compliance)
 5. <strong>Formatting:</strong> format_summary (transform technical to executive language)</p>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing tools for Claude Agent SDK, ask Claude to:
-- Return human-readable strings (not JSON)
-- Include confidence/certainty in responses
-- Explain why a lookup succeeded or failed
-- Provide context agents need to reason about results
-- Make reasoning transparent so agents can learn from explanations</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing tools for Claude Agent SDK, ask Claude to:</p>
+<ul>
+<li>Return human-readable strings (not JSON)</li>
+<li>Include confidence/certainty in responses</li>
+<li>Explain why a lookup succeeded or failed</li>
+<li>Provide context agents need to reason about results</li>
+<li>Make reasoning transparent so agents can learn from explanations</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build 6 tools for a multi-agent SOC system using Claude Agent SDK. These
@@ -1558,30 +1230,38 @@ All tools should return natural language strings that agents can read and
 reason about, enabling multi-agent decision-making through conversation.
 </code></pre></div>
 
-<p>Verification:
-- [ ] All tools return readable strings (not JSON)
-- [ ] Tool outputs include confidence/certainty signals
-- [ ] Errors are explained (not silent failures)
-- [ ] Outputs give agents enough information to make decisions
-- [ ] Tool descriptions are clear about what they do</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] All tools return readable strings (not JSON)</li>
+<li>[ ] Tool outputs include confidence/certainty signals</li>
+<li>[ ] Errors are explained (not silent failures)</li>
+<li>[ ] Outputs give agents enough information to make decisions</li>
+<li>[ ] Tool descriptions are clear about what they do</li>
+</ul>
 <p>If tools return JSON instead of strings, ask Claude to convert to natural language. If confidence levels are missing, request they be added.</p>
 <hr />
 <h3 id="architecture-task-and-workflow-design">Architecture: Task and Workflow Design</h3>
-<p><strong>Key Concept:</strong> In multi-agent systems, work is broken into tasks—units of work assigned to specialized agents. Each task has:
-- <strong>Description:</strong> What the agent should do
-- <strong>Expected Output:</strong> What the agent should produce
-- <strong>Sequential Dependency:</strong> How outputs flow from one task to the next</p>
+<p><strong>Key Concept:</strong> In multi-agent systems, work is broken into tasks—units of work assigned to specialized agents. Each task has:</p>
+<ul>
+<li><strong>Description:</strong> What the agent should do</li>
+<li><strong>Expected Output:</strong> What the agent should produce</li>
+<li><strong>Sequential Dependency:</strong> How outputs flow from one task to the next</li>
+</ul>
 <p><strong>Pattern from CrewAI:</strong> CrewAI demonstrates task sequencing where the output from one task becomes input to the next. In Claude Agent SDK, you implement this manually: call agent 1, capture its output, pass to agent 2, and so on. This gives you explicit control over the workflow.</p>
-<p><strong>Task Design Principle:</strong> Each task should be:
-- <strong>Clear:</strong> Specific instructions about what to do
-- <strong>Verifiable:</strong> Clear expected output format
-- <strong>Sequential or Conditional:</strong> Some tasks depend on previous outputs</p>
+<p><strong>Task Design Principle:</strong> Each task should be:</p>
+<ul>
+<li><strong>Clear:</strong> Specific instructions about what to do</li>
+<li><strong>Verifiable:</strong> Clear expected output format</li>
+<li><strong>Sequential or Conditional:</strong> Some tasks depend on previous outputs</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Task descriptions should include:
-- What specific data the agent will receive (alert, assessment, etc.)
-- Step-by-step instructions (numbered list of substeps)
-- What success looks like (expected output)
-- Any constraints (must comply with policy, cannot break production)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Task descriptions should include:</p>
+<ul>
+<li>What specific data the agent will receive (alert, assessment, etc.)</li>
+<li>Step-by-step instructions (numbered list of substeps)</li>
+<li>What success looks like (expected output)</li>
+<li>Any constraints (must comply with policy, cannot break production)</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Design the task workflow for a 4-agent SOC triage system using Claude Agent SDK.
@@ -1654,12 +1334,14 @@ Implementation using Claude Agent SDK:
   full control over task dependencies and agent interaction patterns
 </code></pre></div>
 
-<p>Verification:
-- [ ] Each task has clear sequential dependency (output of one becomes input to next)
-- [ ] Expected outputs are specific about format and content
-- [ ] Instructions are detailed enough to guide an agent
-- [ ] Tasks don't overlap (each agent has distinct responsibility)
-- [ ] Variables like {normalized_alert} match upstream outputs</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Each task has clear sequential dependency (output of one becomes input to next)</li>
+<li>[ ] Expected outputs are specific about format and content</li>
+<li>[ ] Instructions are detailed enough to guide an agent</li>
+<li>[ ] Tasks don't overlap (each agent has distinct responsibility)</li>
+<li>[ ] Variables like {normalized_alert} match upstream outputs</li>
+</ul>
 <p>If task descriptions are vague, ask Claude to make them more specific. If expected outputs are undefined, request clear output format descriptions.</p>
 <div class="codehilite"><pre><span></span><code><span class="o">---</span><span class="w"></span>
 
@@ -1730,12 +1412,14 @@ Implementation using Claude Agent SDK:
 <span class="n">interaction</span><span class="w"> </span><span class="n">patterns</span><span class="o">.</span><span class="w"></span>
 </code></pre></div>
 
-<p>Verification:
-- [ ] Crew is created with all 4 agents and tasks in correct order
-- [ ] Sequential process ensures dependencies (task 2 waits for task 1)
-- [ ] Execution logging shows what's happening at each step
-- [ ] Final output is readable and actionable
-- [ ] Errors are caught and reported (not silent failures)</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Crew is created with all 4 agents and tasks in correct order</li>
+<li>[ ] Sequential process ensures dependencies (task 2 waits for task 1)</li>
+<li>[ ] Execution logging shows what's happening at each step</li>
+<li>[ ] Final output is readable and actionable</li>
+<li>[ ] Errors are caught and reported (not silent failures)</li>
+</ul>
 <p>If crew execution is missing, ask Claude to add it. If task outputs aren't being passed correctly between tasks, request debugging logging.</p>
 <hr />
 <h3 id="comparative-analysis-framework">Comparative Analysis Framework</h3>
@@ -2021,29 +1705,37 @@ If Containment fails, rewind to Investigation. Try a different approach.</p>
 <hr />
 <h3 id="architecture-state-machine-design-for-incident-response">Architecture: State Machine Design for Incident Response</h3>
 <p><strong>Key Concept from LangGraph:</strong> Incident response can be modeled as a <strong>state machine</strong>—a set of states and transitions. The incident progresses through phases (Detection → Triage → Investigation → ...), with specific conditions determining which phase comes next.</p>
-<p><strong>Why State Machines for Security?</strong>
-- <strong>Explicit transitions:</strong> "If severity=critical, go to Containment. If threat_confirmed=false, go to Archive."
-- <strong>Recovery:</strong> If Containment fails, you can rewind and try a different approach
-- <strong>Auditability:</strong> Every state change is recorded (compliance requirement)
-- <strong>Debugging:</strong> You can inspect state at any point in the workflow</p>
-<p><strong>State Design:</strong> Define a State class (using Pydantic or dataclass) that captures all data the incident carries as it progresses:
-- Alert details (source IP, event type)
-- Analysis results (severity, threat actors)
-- Action results (containment success, eradication status)
-- History (what phases did we go through)
-- Audit trail (why did we make each decision)</p>
-<p><strong>Node Functions:</strong> Each node represents a phase in the workflow and is responsible for:
-- Reading the current state
-- Doing its work (an agent analyzes, contains, reports)
-- Updating the state with results
-- Returning the updated state</p>
+<p><strong>Why State Machines for Security?</strong></p>
+<ul>
+<li><strong>Explicit transitions:</strong> "If severity=critical, go to Containment. If threat_confirmed=false, go to Archive."</li>
+<li><strong>Recovery:</strong> If Containment fails, you can rewind and try a different approach</li>
+<li><strong>Auditability:</strong> Every state change is recorded (compliance requirement)</li>
+<li><strong>Debugging:</strong> You can inspect state at any point in the workflow</li>
+</ul>
+<p><strong>State Design:</strong> Define a State class (using Pydantic or dataclass) that captures all data the incident carries as it progresses:</p>
+<ul>
+<li>Alert details (source IP, event type)</li>
+<li>Analysis results (severity, threat actors)</li>
+<li>Action results (containment success, eradication status)</li>
+<li>History (what phases did we go through)</li>
+<li>Audit trail (why did we make each decision)</li>
+</ul>
+<p><strong>Node Functions:</strong> Each node represents a phase in the workflow and is responsible for:</p>
+<ul>
+<li>Reading the current state</li>
+<li>Doing its work (an agent analyzes, contains, reports)</li>
+<li>Updating the state with results</li>
+<li>Returning the updated state</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing state machines for incident response:
-- Define state schema (all data the incident carries)
-- Design node functions as pure state transforms (no side effects)
-- Specify transition logic (based on what state values?)
-- Identify decision points (when to escalate, archive, retry)
-- Implement using Claude Agent SDK with explicit control flow</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing state machines for incident response:</p>
+<ul>
+<li>Define state schema (all data the incident carries)</li>
+<li>Design node functions as pure state transforms (no side effects)</li>
+<li>Specify transition logic (based on what state values?)</li>
+<li>Identify decision points (when to escalate, archive, retry)</li>
+<li>Implement using Claude Agent SDK with explicit control flow</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Design a state machine for incident response with 7+ states using Claude
@@ -2096,13 +1788,15 @@ All nodes must:
 5. Use Claude Agent SDK for agent work (not external frameworks)
 </code></pre></div>
 
-<p>Verification:
-- [ ] State includes all fields needed for analysis, action, and audit
-- [ ] Each node does one thing well (detection ≠ triage)
-- [ ] Nodes record their decisions (for audit trail)
-- [ ] Node functions return updated state
-- [ ] Phase history tracks path through state machine
-- [ ] Decisions log explains "why" for each action</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] State includes all fields needed for analysis, action, and audit</li>
+<li>[ ] Each node does one thing well (detection ≠ triage)</li>
+<li>[ ] Nodes record their decisions (for audit trail)</li>
+<li>[ ] Node functions return updated state</li>
+<li>[ ] Phase history tracks path through state machine</li>
+<li>[ ] Decisions log explains "why" for each action</li>
+</ul>
 <p>If nodes are missing decision recording, ask Claude to add it. If state doesn't include audit trail fields, request they be added.</p>
 <hr />
 <h3 id="architecture-conditional-routing-logic">Architecture: Conditional Routing Logic</h3>
@@ -2113,18 +1807,22 @@ All nodes must:
 <span class="nv">After</span> <span class="nv">Containment</span>: <span class="k">if</span> <span class="nv">containment_success</span><span class="o">=</span><span class="nv">true</span> → <span class="nv">Eradication</span> <span class="k">else</span> → <span class="nv">Retry</span> <span class="ss">(</span><span class="nv">or</span> <span class="nv">escalate</span><span class="ss">)</span>
 </code></pre></div>
 
-<p><strong>Routing Decisions Should Be:</strong>
-- <strong>Explicit:</strong> Clear condition in code (not magical, not learned)
-- <strong>Justified:</strong> Reason for condition documented (why escalate on high severity?)
-- <strong>Testable:</strong> Same state always produces same routing decision
-- <strong>Transparent:</strong> Easy to audit and explain to stakeholders</p>
+<p><strong>Routing Decisions Should Be:</strong></p>
+<ul>
+<li><strong>Explicit:</strong> Clear condition in code (not magical, not learned)</li>
+<li><strong>Justified:</strong> Reason for condition documented (why escalate on high severity?)</li>
+<li><strong>Testable:</strong> Same state always produces same routing decision</li>
+<li><strong>Transparent:</strong> Easy to audit and explain to stakeholders</li>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing routing for incident response:
-- Define clear conditions for each routing decision
-- Explain why each condition makes sense (security rationale)
-- Handle edge cases (what if severity is unknown? Fail safe to lower action)
-- Support retry/rollback logic (if containment fails, investigate again)
-- Implement as pure Python functions (no side effects)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When designing routing for incident response:</p>
+<ul>
+<li>Define clear conditions for each routing decision</li>
+<li>Explain why each condition makes sense (security rationale)</li>
+<li>Handle edge cases (what if severity is unknown? Fail safe to lower action)</li>
+<li>Support retry/rollback logic (if containment fails, investigate again)</li>
+<li>Implement as pure Python functions (no side effects)</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Design conditional routing functions for your incident response state
@@ -2184,24 +1882,30 @@ implement human judgment about incident response in explicit, auditable,
 testable code.
 </code></pre></div>
 
-<p>Verification:
-- [ ] Each routing function handles the conditions it's responsible for
-- [ ] Edge cases are handled (unknown severity defaults safely)
-- [ ] Rationale is documented (why this routing decision?)
-- [ ] Functions are pure (no mutations, no logging)
-- [ ] All possible state values lead to a valid next node
-- [ ] Retry logic exists for failure cases (containment_success=false)</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Each routing function handles the conditions it's responsible for</li>
+<li>[ ] Edge cases are handled (unknown severity defaults safely)</li>
+<li>[ ] Rationale is documented (why this routing decision?)</li>
+<li>[ ] Functions are pure (no mutations, no logging)</li>
+<li>[ ] All possible state values lead to a valid next node</li>
+<li>[ ] Retry logic exists for failure cases (containment_success=false)</li>
+</ul>
 <p>If routing logic is missing edge cases, ask Claude to add them. If rationale isn't documented, request security reasoning be added.</p>
 <hr />
 <h3 id="architecture-building-and-executing-the-state-machine">Architecture: Building and Executing the State Machine</h3>
-<p><strong>Key Concept:</strong> A state machine for incident response is a <strong>directed acyclic graph (DAG)</strong> where:
-- <strong>Nodes</strong> are functions that process state (using Claude agents)
-- <strong>Edges</strong> are transitions (static or conditional routing)
-- <strong>Execution</strong> processes an incident from initial alert to final resolution</p>
+<p><strong>Key Concept:</strong> A state machine for incident response is a <strong>directed acyclic graph (DAG)</strong> where:</p>
+<ul>
+<li><strong>Nodes</strong> are functions that process state (using Claude agents)</li>
+<li><strong>Edges</strong> are transitions (static or conditional routing)</li>
+<li><strong>Execution</strong> processes an incident from initial alert to final resolution</li>
+</ul>
 <p><strong>Two Types of Edges:</strong>
-1. <strong>Static Edges:</strong> "After node A, always go to node B"
-   - Detection → Triage (always)
-   - Eradication → Recovery (always)</p>
+1. <strong>Static Edges:</strong> "After node A, always go to node B"</p>
+<ul>
+<li>Detection → Triage (always)</li>
+<li>Eradication → Recovery (always)</li>
+</ul>
 <ol>
 <li><strong>Conditional Edges:</strong> "After node A, go to B or C based on state"</li>
 <li>After Triage: investigation (if high severity) or archive (if low)</li>
@@ -2214,12 +1918,14 @@ testable code.
 4. Call next node, repeat until terminal state
 5. Return final state with complete audit trail</p>
 <p><strong>Context Engineering Note:</strong></p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When implementing a state machine:
-- Design all nodes that participate in the workflow
-- Define all static edges (always-transitions)
-- Define all conditional edges (routing decisions)
-- Specify entry point (usually 'detection')
-- Implement as explicit Python control flow (if/elif/else routing)</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> When implementing a state machine:</p>
+<ul>
+<li>Design all nodes that participate in the workflow</li>
+<li>Define all static edges (always-transitions)</li>
+<li>Define all conditional edges (routing decisions)</li>
+<li>Specify entry point (usually 'detection')</li>
+<li>Implement as explicit Python control flow (if/elif/else routing)</li>
+</ul>
 </div>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build a state machine executor for incident response using Claude Agent SDK.
@@ -2398,14 +2104,16 @@ rollback.
 Log retry decisions in state.decisions for audit trail.
 </code></pre></div>
 
-<p>Verification:
-- [ ] State machine executes all alert test cases correctly
-- [ ] Audit trail shows complete decision history
-- [ ] Phase progression matches expected routing
-- [ ] Retry logic works (failed containment → investigation retry)
-- [ ] Final state includes all necessary information for forensics
-- [ ] Nodes properly call Claude agents via Agent SDK
-- [ ] All state updates are logged in decisions trail</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] State machine executes all alert test cases correctly</li>
+<li>[ ] Audit trail shows complete decision history</li>
+<li>[ ] Phase progression matches expected routing</li>
+<li>[ ] Retry logic works (failed containment → investigation retry)</li>
+<li>[ ] Final state includes all necessary information for forensics</li>
+<li>[ ] Nodes properly call Claude agents via Agent SDK</li>
+<li>[ ] All state updates are logged in decisions trail</li>
+</ul>
 <p>If execution is missing, ask Claude to add run_incident_response(). If retry logic isn't implemented, request it be added to the routing function.</p>
 <hr />
 <h3 id="deliverables_2">Deliverables</h3>
@@ -2453,24 +2161,32 @@ Log retry decisions in state.decisions for audit trail.
 </div>
 <hr />
 <h3 id="evaluation-metrics-for-security-agents">Evaluation Metrics for Security Agents</h3>
-<p><strong>Accuracy Metrics:</strong>
-- <strong>Severity Assignment Accuracy:</strong> Did the agent correctly classify as low/medium/high/critical?
-- <strong>Threat Confirmation Accuracy:</strong> Did the agent correctly identify whether a threat is real?
-- <strong>Precision:</strong> Of alerts flagged as critical, how many actually are? (False positive rate)
-- <strong>Recall:</strong> Of real critical threats, how many did we catch? (False negative rate)
-- <strong>F1 Score:</strong> Harmonic mean of precision and recall</p>
-<p><strong>Efficiency Metrics:</strong>
-- <strong>Token Efficiency:</strong> Average tokens per alert classification
-- <strong>Latency:</strong> Time from alert input to final decision (milliseconds)
-- <strong>Cost:</strong> Estimated API cost per alert (Claude pricing ~$3/million input, $15/million output tokens)
-- <strong>Throughput:</strong> Alerts processed per minute</p>
-<p><strong>Robustness Metrics:</strong>
-- <strong>Consistency:</strong> Std dev of severity assignments across 10 runs on same alert
-- <strong>Graceful Degradation:</strong> Performance on malformed input (missing fields, invalid JSON)
-- <strong>Adversarial Robustness:</strong> Success rate of prompt injection attacks</p>
-<p><strong>Debuggability:</strong>
-- <strong>Explainability Score:</strong> Does the agent explain its reasoning? (Measured by human review)
-- <strong>Tool Usage Transparency:</strong> Can you see which tools were called and why?</p>
+<p><strong>Accuracy Metrics:</strong></p>
+<ul>
+<li><strong>Severity Assignment Accuracy:</strong> Did the agent correctly classify as low/medium/high/critical?</li>
+<li><strong>Threat Confirmation Accuracy:</strong> Did the agent correctly identify whether a threat is real?</li>
+<li><strong>Precision:</strong> Of alerts flagged as critical, how many actually are? (False positive rate)</li>
+<li><strong>Recall:</strong> Of real critical threats, how many did we catch? (False negative rate)</li>
+<li><strong>F1 Score:</strong> Harmonic mean of precision and recall</li>
+</ul>
+<p><strong>Efficiency Metrics:</strong></p>
+<ul>
+<li><strong>Token Efficiency:</strong> Average tokens per alert classification</li>
+<li><strong>Latency:</strong> Time from alert input to final decision (milliseconds)</li>
+<li><strong>Cost:</strong> Estimated API cost per alert (Claude pricing ~$3/million input, $15/million output tokens)</li>
+<li><strong>Throughput:</strong> Alerts processed per minute</li>
+</ul>
+<p><strong>Robustness Metrics:</strong></p>
+<ul>
+<li><strong>Consistency:</strong> Std dev of severity assignments across 10 runs on same alert</li>
+<li><strong>Graceful Degradation:</strong> Performance on malformed input (missing fields, invalid JSON)</li>
+<li><strong>Adversarial Robustness:</strong> Success rate of prompt injection attacks</li>
+</ul>
+<p><strong>Debuggability:</strong></p>
+<ul>
+<li><strong>Explainability Score:</strong> Does the agent explain its reasoning? (Measured by human review)</li>
+<li><strong>Tool Usage Transparency:</strong> Can you see which tools were called and why?</li>
+</ul>
 <hr />
 <h3 id="building-rigorous-test-datasets">Building Rigorous Test Datasets</h3>
 <p><strong>Structure:</strong></p>
@@ -2586,11 +2302,13 @@ Log retry decisions in state.decisions for audit trail.
 </ul>
 <hr />
 <h3 id="designing-test-datasets-for-evaluation">Designing Test Datasets for Evaluation</h3>
-<p><strong>Test Dataset Structure:</strong> Each test case should include:
-- <strong>Name:</strong> Unique identifier
-- <strong>Alert Data:</strong> The raw input (IPs, event type, etc.)
-- <strong>Ground Truth:</strong> What the correct answer is (severity, threat confirmation)
-- <strong>Reasoning:</strong> Why this is the correct answer (for validation and learning)</p>
+<p><strong>Test Dataset Structure:</strong> Each test case should include:</p>
+<ul>
+<li><strong>Name:</strong> Unique identifier</li>
+<li><strong>Alert Data:</strong> The raw input (IPs, event type, etc.)</li>
+<li><strong>Ground Truth:</strong> What the correct answer is (severity, threat confirmation)</li>
+<li><strong>Reasoning:</strong> Why this is the correct answer (for validation and learning)</li>
+</ul>
 <p><strong>Test Categories (ensure diverse coverage):</strong></p>
 <ol>
 <li><strong>Benign Alerts (20%):</strong> Normal activity falsely flagged</li>
@@ -2667,13 +2385,15 @@ Build a test runner that:
 - Generates metrics: accuracy, false positive rate, false negative rate
 </code></pre></div>
 
-<p>Verification:
-- [ ] Test dataset covers all alert types realistically
-- [ ] Ground truth is well-reasoned (defensible)
-- [ ] Test cases are framework-agnostic (test domain, not framework knowledge)
-- [ ] Dataset has appropriate distribution (40% real attacks, 20% benign, etc.)
-- [ ] Edge cases and adversarial cases are included
-- [ ] Framework comparison will be fair (not biased toward one framework)</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Test dataset covers all alert types realistically</li>
+<li>[ ] Ground truth is well-reasoned (defensible)</li>
+<li>[ ] Test cases are framework-agnostic (test domain, not framework knowledge)</li>
+<li>[ ] Dataset has appropriate distribution (40% real attacks, 20% benign, etc.)</li>
+<li>[ ] Edge cases and adversarial cases are included</li>
+<li>[ ] Framework comparison will be fair (not biased toward one framework)</li>
+</ul>
 <p>If test cases lack reasoning, ask Claude to add clear justification for each ground truth. If dataset is too small (&lt;20 cases), request more examples.</p>
 <hr />
 <h3 id="building-an-evaluation-harness">Building an Evaluation Harness</h3>
@@ -2789,12 +2509,14 @@ CrewAI         | 88%      | 1.5         | $0.005     | 0.92
 LangGraph      | 87%      | 1.1         | $0.006     | 0.93
 </code></pre></div>
 
-<p>Verification:
-- [ ] Evaluation harness runs all test cases
-- [ ] Metrics are collected for accuracy, consistency, latency, cost
-- [ ] Results are comparable across frameworks
-- [ ] Failures are handled gracefully
-- [ ] Results are presented in easy-to-compare table format</p>
+<p>Verification:</p>
+<ul>
+<li>[ ] Evaluation harness runs all test cases</li>
+<li>[ ] Metrics are collected for accuracy, consistency, latency, cost</li>
+<li>[ ] Results are comparable across frameworks</li>
+<li>[ ] Failures are handled gracefully</li>
+<li>[ ] Results are presented in easy-to-compare table format</li>
+</ul>
 <p>If metrics collection is missing, ask Claude to add it. If the comparison isn't clear, request a summary table.</p>
 <hr />
 <h3 id="step-4-red-teaming">Step 4: Red Teaming</h3>
@@ -2940,10 +2662,12 @@ Use my pattern as the template. Adapt agent roles and communication as needed.
 
 <p>Keep it organized. Future-you will want to find things quickly.</p>
 <h3 id="refinement-across-the-semester">Refinement Across the Semester</h3>
-<p><strong>As you progress through Units 6, 7, 8:</strong>
-- Refine these patterns based on lessons learned
-- Add new patterns as you discover better approaches
-- Version your library (v1.0 at semester start, v2.0 as you improve)</p>
+<p><strong>As you progress through Units 6, 7, 8:</strong></p>
+<ul>
+<li>Refine these patterns based on lessons learned</li>
+<li>Add new patterns as you discover better approaches</li>
+<li>Version your library (v1.0 at semester start, v2.0 as you improve)</li>
+</ul>
 <p>By end of Semester 2, your context library won't just be reference material—it will be YOUR production toolkit, hardened by real-world (and capstone) testing.</p>
 <hr />
 <h2 id="deep-agents-three-tier-context">Deep Agents: The Three-Tier Context Architecture</h2>
@@ -3027,17 +2751,19 @@ Use my pattern as the template. Adapt agent roles and communication as needed.
 <hr />
 <h2 id="final-integration-unit-5-capstone">Final Integration: Unit 5 Capstone</h2>
 <p><strong>Objective:</strong> Design and defend your own multi-agent security system.</p>
-<p><strong>Requirements:</strong>
-- Choose a security use case (SOC automation, threat hunting, incident response, vulnerability management)
-- Select an architecture pattern (supervisor, hierarchical, debate, or hybrid)
-- Choose a framework (Claude Agent SDK, CrewAI, or LangGraph)
-- Build a prototype with 3+ specialized agents
-- Evaluate using the framework from Week 4
-- Write a design justification (2000 words) explaining:
-  - Why this architecture for this use case?
-  - Why this framework vs. alternatives?
-  - What metrics matter most?
-  - How would you deploy and monitor this in production?</p>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Choose a security use case (SOC automation, threat hunting, incident response, vulnerability management)</li>
+<li>Select an architecture pattern (supervisor, hierarchical, debate, or hybrid)</li>
+<li>Choose a framework (Claude Agent SDK, CrewAI, or LangGraph)</li>
+<li>Build a prototype with 3+ specialized agents</li>
+<li>Evaluate using the framework from Week 4</li>
+<li>Write a design justification (2000 words) explaining:</li>
+<li>Why this architecture for this use case?</li>
+<li>Why this framework vs. alternatives?</li>
+<li>What metrics matter most?</li>
+<li>How would you deploy and monitor this in production?</li>
+</ul>
 <hr />
 <h2 id="resources">Resources</h2>
 <ul>
@@ -3051,43 +2777,6 @@ Use my pattern as the template. Adapt agent roles and communication as needed.
   </div>
 </main>
 
-<script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
 <script>
 (function() {
   var IDX = [
@@ -3179,6 +2868,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>

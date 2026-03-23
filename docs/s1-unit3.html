@@ -4,427 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unit 3: Ethical AI — Noctua</title>
-<style>
-/* === RESET === */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* === BASE === */
-:root {
-  --bg: #0b0f19;
-  --bg-card: #121929;
-  --bg-sidebar: #060a14;
-  --bg-code: #0f1525;
-  --border: #2a3045;
-  --text: #e8dcc8;
-  --text-muted: #9a8e7a;
-  --accent: #d4a017;
-  --accent-hover: #f0c040;
-  --accent-bg: rgba(212, 160, 23, 0.10);
-  --green: #50c878;
-  --orange: #e67e22;
-  --red: #e74c3c;
-  --purple: #a78bfa;
-  --teal: #2dd4bf;
-  --table-header: #151d30;
-  --table-row-alt: #121929;
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 16px;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid rgba(212, 160, 23, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-.sidebar-header h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.3px;
-  text-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
-}
-.sidebar-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.nav-section {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  padding: 16px 20px 6px;
-}
-.sidebar a {
-  display: block;
-  padding: 8px 20px 8px 28px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 14px;
-  border-left: 3px solid transparent;
-  transition: all 0.15s ease;
-}
-.sidebar a.sub {
-  padding-left: 42px;
-  font-size: 13px;
-  color: #9a8e7a;
-}
-.sidebar a:hover {
-  color: var(--text);
-  background: var(--accent-bg);
-}
-.sidebar a.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-bg);
-  font-weight: 600;
-}
-.sidebar a.active.sub {
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/* === MOBILE TOGGLE === */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 90;
-}
-
-/* === MAIN CONTENT === */
-.main {
-  margin-left: 280px;
-  flex: 1;
-  min-width: 0;
-}
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 48px 80px;
-}
-
-/* === TYPOGRAPHY === */
-.content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent);
-  letter-spacing: -0.5px;
-}
-.content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.3);
-}
-.content h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--accent);
-  margin: 32px 0 12px;
-}
-.content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2dd4bf;
-  margin: 24px 0 8px;
-}
-.content p {
-  margin: 0 0 16px;
-  color: var(--text);
-}
-.content strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.content em {
-  color: var(--text-muted);
-}
-.content a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.content a:hover {
-  border-bottom-color: var(--accent);
-}
-
-/* === LISTS === */
-.content ul, .content ol {
-  margin: 0 0 16px 24px;
-}
-.content li {
-  margin-bottom: 6px;
-}
-.content li > ul, .content li > ol {
-  margin-top: 6px;
-  margin-bottom: 0;
-}
-
-/* === CODE === */
-.content code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 13px;
-  background: var(--bg-code);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-}
-.content pre {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px 24px;
-  overflow-x: auto;
-  margin: 20px 0;
-  line-height: 1.5;
-}
-.content pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-/* === TABLES === */
-.content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 24px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.content thead {
-  background: var(--table-header);
-}
-.content th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 2px solid var(--border);
-  font-size: 13px;
-}
-.content td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.content tbody tr:nth-child(even) {
-  background: var(--table-row-alt);
-}
-.content tbody tr:hover {
-  background: var(--accent-bg);
-}
-
-/* === BLOCKQUOTE (default) === */
-.content blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 14px 24px;
-  margin: 20px 0;
-  background: var(--accent-bg);
-  border-radius: 0 6px 6px 0;
-  color: var(--text-muted);
-}
-.content blockquote p { color: var(--text-muted); }
-
-/* === CALLOUT CONTAINERS === */
-.callout {
-  padding: 16px 24px;
-  margin: 24px 0;
-  border-radius: 0 8px 8px 0;
-  border-left: 4px solid;
-  font-size: 14px;
-  line-height: 1.7;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.callout p { margin: 0; color: var(--text); }
-.callout p + p { margin-top: 10px; }
-.callout a { color: var(--accent); }
-.callout code { font-size: 12px; }
-.callout ul, .callout ol { margin: 8px 0 4px 20px; }
-.callout li { margin-bottom: 4px; }
-.callout-key {
-  border-color: var(--accent);
-  background: rgba(212, 160, 23, 0.08);
-}
-.callout-tip {
-  border-color: var(--green);
-  background: rgba(80, 200, 120, 0.08);
-}
-.callout-pitfall {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-.callout-remember {
-  border-color: var(--purple);
-  background: rgba(167, 139, 250, 0.08);
-}
-.callout-reading {
-  border-color: #2dd4bf;
-  background: rgba(45, 212, 191, 0.06);
-}
-.callout-discuss {
-  border-color: var(--text-muted);
-  background: rgba(154, 142, 122, 0.08);
-}
-.callout-warn {
-  border-color: var(--orange);
-  background: rgba(230, 126, 34, 0.08);
-}
-
-/* === HR === */
-.content hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 32px 0;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .overlay.show {
-    display: block;
-  }
-  .menu-toggle {
-    display: block;
-  }
-  .main {
-    margin-left: 0;
-  }
-  .content {
-    padding: 60px 20px 60px;
-  }
-  .content h1 { font-size: 26px; }
-  .content h2 { font-size: 20px; }
-}
-
-/* === MERMAID DIAGRAMS === */
-.mermaid {
-  background: #0f1525;
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  border-radius: 8px;
-  padding: 24px;
-  margin: 24px 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(212, 160, 23, 0.25); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 160, 23, 0.45); }
-
-    /* === SITE SEARCH === */
-    .search-wrap {
-      padding: 12px 16px 4px;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      background: #0b1020;
-      border: 1px solid rgba(212,160,23,0.3);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 13px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-    .search-wrap input:focus { border-color: var(--accent); }    #site-search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% - 4px);
-      left: 16px;
-      right: 16px;
-      background: #0d1525;
-      border: 1px solid rgba(212,160,23,0.35);
-      border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-      z-index: 9999;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    #site-search-results.open { display: block; }
-    .ssr-item {
-      display: block;
-      padding: 9px 14px;
-      border-bottom: 1px solid #1a2035;
-      text-decoration: none;
-      color: inherit;
-    }
-    .ssr-item:last-child { border-bottom: none; }
-    .ssr-item:hover { background: rgba(212,160,23,0.08); }
-    .ssr-title { font-size: 13px; font-weight: 600; color: var(--accent); }
-    .ssr-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
-    .ssr-tag {
-      display: inline-block; font-size: 10px;
-      background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25);
-      color: var(--accent); border-radius: 3px; padding: 1px 5px;
-      margin-top: 3px; margin-right: 3px;
-    }
-    .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
-
-  </style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -445,7 +25,7 @@ body {
   <a href="lab-s1-unit1.html" class="sub">Lab: Unit 1</a>
   <a href="s1-unit2.html" class="sub">Unit 2: Context Engineering</a>
   <a href="lab-s1-unit2.html" class="sub">Lab: Unit 2</a>
-  <a href="s1-unit3.html" class="sub active">Unit 3: Ethical AI</a>
+  <a href="s1-unit3.html" class="sub">Unit 3: Ethical AI</a>
   <a href="lab-s1-unit3.html" class="sub">Lab: Unit 3</a>
   <a href="s1-unit4.html" class="sub">Unit 4: Rapid Prototyping</a>
   <a href="lab-s1-unit4.html" class="sub">Lab: Unit 4</a>
@@ -698,36 +278,48 @@ body {
 <h4 id="lab-content">Lab Content</h4>
 <p><strong>Part 1: Audit Preparation (30 minutes)</strong></p>
 <p>You will audit a security tool or system you've built in previous weeks (or a provided example). For each of the six principles, you'll evaluate the system against the following audit questions:</p>
-<p><strong>Safe/Secure/Resilient Audit Questions:</strong>
-- What are the failure modes of this system? What happens if it makes a wrong recommendation?
-- Can an attacker manipulate the system into making harmful recommendations?
-- Are there safeguards preventing autonomous harmful actions? What requires human approval?
-- If the system degrades (e.g., loses network access), does it fail safely or cause cascading harm?</p>
-<p><strong>Explainable/Interpretable Audit Questions:</strong>
-- Can you explain why the system made a specific decision in plain English?
-- What evidence supports the decision? Can you trace the reasoning?
-- Can you explain the decision to three different audiences: a security analyst, a non-technical manager, and a regulator?
-- What are the limitations of the explanation? Is the explanation post-hoc rationalization or genuine reasoning?</p>
-<p><strong>Privacy-Enhanced Audit Questions:</strong>
-- What data does the system process? Is all of it necessary?
-- Are there PII or sensitive data that could be minimized or aggregated?
-- Can an attacker infer sensitive information from the system's outputs?
-- Are audit logs and training data retained longer than necessary?</p>
-<p><strong>Fair/Bias-Managed Audit Questions:</strong>
-- Has the system been tested on diverse datasets (different geographies, organizations, incident types)?
-- Are there subgroups where the system underperforms or makes systematically different decisions?
-- What proxy variables might the system use that correlate with protected characteristics?
-- Would the system treat a threat from a small company differently than from a large company? From a non-Western organization differently than a Western one?</p>
-<p><strong>Valid/Reliable Audit Questions:</strong>
-- How accurate is the system? On what datasets was it validated?
-- How does performance vary across subgroups?
-- Has the system been tested on out-of-distribution data (e.g., novel attack types)?
-- Is model drift monitored? Would you detect if performance degraded in production?</p>
-<p><strong>Accountable/Transparent Audit Questions:</strong>
-- Is there a complete audit log of all decisions and their reasoning?
-- Can you reconstruct the system's decision-making process for any output?
-- Who is responsible if the system makes a bad decision? Is that clear?
-- Are there mechanisms for users to appeal or challenge decisions?</p>
+<p><strong>Safe/Secure/Resilient Audit Questions:</strong></p>
+<ul>
+<li>What are the failure modes of this system? What happens if it makes a wrong recommendation?</li>
+<li>Can an attacker manipulate the system into making harmful recommendations?</li>
+<li>Are there safeguards preventing autonomous harmful actions? What requires human approval?</li>
+<li>If the system degrades (e.g., loses network access), does it fail safely or cause cascading harm?</li>
+</ul>
+<p><strong>Explainable/Interpretable Audit Questions:</strong></p>
+<ul>
+<li>Can you explain why the system made a specific decision in plain English?</li>
+<li>What evidence supports the decision? Can you trace the reasoning?</li>
+<li>Can you explain the decision to three different audiences: a security analyst, a non-technical manager, and a regulator?</li>
+<li>What are the limitations of the explanation? Is the explanation post-hoc rationalization or genuine reasoning?</li>
+</ul>
+<p><strong>Privacy-Enhanced Audit Questions:</strong></p>
+<ul>
+<li>What data does the system process? Is all of it necessary?</li>
+<li>Are there PII or sensitive data that could be minimized or aggregated?</li>
+<li>Can an attacker infer sensitive information from the system's outputs?</li>
+<li>Are audit logs and training data retained longer than necessary?</li>
+</ul>
+<p><strong>Fair/Bias-Managed Audit Questions:</strong></p>
+<ul>
+<li>Has the system been tested on diverse datasets (different geographies, organizations, incident types)?</li>
+<li>Are there subgroups where the system underperforms or makes systematically different decisions?</li>
+<li>What proxy variables might the system use that correlate with protected characteristics?</li>
+<li>Would the system treat a threat from a small company differently than from a large company? From a non-Western organization differently than a Western one?</li>
+</ul>
+<p><strong>Valid/Reliable Audit Questions:</strong></p>
+<ul>
+<li>How accurate is the system? On what datasets was it validated?</li>
+<li>How does performance vary across subgroups?</li>
+<li>Has the system been tested on out-of-distribution data (e.g., novel attack types)?</li>
+<li>Is model drift monitored? Would you detect if performance degraded in production?</li>
+</ul>
+<p><strong>Accountable/Transparent Audit Questions:</strong></p>
+<ul>
+<li>Is there a complete audit log of all decisions and their reasoning?</li>
+<li>Can you reconstruct the system's decision-making process for any output?</li>
+<li>Who is responsible if the system makes a bad decision? Is that clear?</li>
+<li>Are there mechanisms for users to appeal or challenge decisions?</li>
+</ul>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Create a spreadsheet with the six principles as rows and "Evaluation," "Evidence," "Gap," "Severity," and "Mitigation" as columns. This forces systematic evaluation and makes the findings easy to present.</p>
 </div>
 <p><strong>Part 2: Hands-On Evaluation (60 minutes)</strong></p>
@@ -754,27 +346,35 @@ body {
 <li><strong>Partially Compliant:</strong> System meets the principle partially. Gaps: [describe]</li>
 <li><strong>Non-Compliant:</strong> System does not meet the principle. Risk: [describe]</li>
 </ol>
-<p>For each non-compliance or partial compliance, identify:
-   - <strong>Severity:</strong> Critical (causes direct harm), High (regulatory risk), Medium (operational risk), Low (minor issue)
-   - <strong>Impact:</strong> Who is harmed? What is the business impact?
-   - <strong>Mitigation:</strong> What can be done to address the gap?</p>
+<p>For each non-compliance or partial compliance, identify:</p>
+<ul>
+<li><strong>Severity:</strong> Critical (causes direct harm), High (regulatory risk), Medium (operational risk), Low (minor issue)</li>
+<li><strong>Impact:</strong> Who is harmed? What is the business impact?</li>
+<li><strong>Mitigation:</strong> What can be done to address the gap?</li>
+</ul>
 <h4 id="example-threat-detection-system-audit">Example: Threat Detection System Audit</h4>
 <p>Imagine a system that analyzes network logs and recommends quarantining suspicious IPs.</p>
-<p><strong>Safe/Secure/Resilient Assessment:</strong>
-- Finding: The system autonomously blacklists IPs without human review
-- Gap: No safeguard preventing false positives from isolating legitimate traffic
-- Severity: <strong>Critical</strong> — a biased decision could cut off entire partner organizations
-- Mitigation: Require human approval before blacklisting critical systems; implement automatic rollback after 24 hours</p>
-<p><strong>Fair/Bias-Managed Assessment:</strong>
-- Finding: Training data consists mostly of attacks from Eastern Europe. The system flags Eastern European IPs at higher rates, even for benign traffic
-- Gap: No stratified evaluation by geography. No fairness constraints during training.
-- Severity: <strong>High</strong> — systematic geographic discrimination in threat flagging; potential regulatory exposure
-- Mitigation: Collect and test on geographically diverse data; measure disparate impact by region; apply fairness constraints</p>
-<p><strong>Explainable/Interpretable Assessment:</strong>
-- Finding: The system uses a deep neural network. No interpretability tools are available.
-- Gap: Security analysts cannot understand why an IP is flagged; cannot explain decisions to users or regulators
-- Severity: <strong>High</strong> — regulatory risk under EU AI Act; operational risk if analysts distrust the system
-- Mitigation: Implement SHAP or LIME explanations; document the top features influencing threat scores</p>
+<p><strong>Safe/Secure/Resilient Assessment:</strong></p>
+<ul>
+<li>Finding: The system autonomously blacklists IPs without human review</li>
+<li>Gap: No safeguard preventing false positives from isolating legitimate traffic</li>
+<li>Severity: <strong>Critical</strong> — a biased decision could cut off entire partner organizations</li>
+<li>Mitigation: Require human approval before blacklisting critical systems; implement automatic rollback after 24 hours</li>
+</ul>
+<p><strong>Fair/Bias-Managed Assessment:</strong></p>
+<ul>
+<li>Finding: Training data consists mostly of attacks from Eastern Europe. The system flags Eastern European IPs at higher rates, even for benign traffic</li>
+<li>Gap: No stratified evaluation by geography. No fairness constraints during training.</li>
+<li>Severity: <strong>High</strong> — systematic geographic discrimination in threat flagging; potential regulatory exposure</li>
+<li>Mitigation: Collect and test on geographically diverse data; measure disparate impact by region; apply fairness constraints</li>
+</ul>
+<p><strong>Explainable/Interpretable Assessment:</strong></p>
+<ul>
+<li>Finding: The system uses a deep neural network. No interpretability tools are available.</li>
+<li>Gap: Security analysts cannot understand why an IP is flagged; cannot explain decisions to users or regulators</li>
+<li>Severity: <strong>High</strong> — regulatory risk under EU AI Act; operational risk if analysts distrust the system</li>
+<li>Mitigation: Implement SHAP or LIME explanations; document the top features influencing threat scores</li>
+</ul>
 <div class="callout callout-remember"><p><strong>Remember:</strong> The goal of this audit is not to declare a system "safe" or "unsafe." Rather, it's to systematically identify gaps, understand their severity, and plan concrete improvements. Most real systems will have gaps; the question is whether they're acceptable given the risk and whether you have a plan to address them.</p>
 </div>
 <p><strong>Part 3: Peer Review and Presentation (20 minutes)</strong></p>
@@ -1222,10 +822,12 @@ body {
 1. <strong>No path validation:</strong> Attacker can use <code>../</code> to escape allowed directories
 2. <strong>No resource limits:</strong> Attacker can request huge files, exhausting memory
 3. <strong>No logging:</strong> No way to audit who accessed what</p>
-<p>The secure version implements three defensive layers:
-- <strong>Layer 1 (Input Validation):</strong> Resolve the path to its canonical form and check against a whitelist
-- <strong>Layer 2 (Resource Constraints):</strong> Enforce size limits before reading
-- <strong>Layer 3 (Logging &amp; Monitoring):</strong> Track file access for audit trails</p>
+<p>The secure version implements three defensive layers:</p>
+<ul>
+<li><strong>Layer 1 (Input Validation):</strong> Resolve the path to its canonical form and check against a whitelist</li>
+<li><strong>Layer 2 (Resource Constraints):</strong> Enforce size limits before reading</li>
+<li><strong>Layer 3 (Logging &amp; Monitoring):</strong> Track file access for audit trails</li>
+</ul>
 <p><strong>Claude Code Prompt for Remediation:</strong></p>
 <div class="codehilite"><pre><span></span><code>You are helping me secure a file-reading function used by a security agent.
 The function is vulnerable to path traversal attacks.
@@ -1306,19 +908,23 @@ Explain the security reasoning for each layer. Show working Python code.
 <div class="callout callout-warn"><p><strong>⚠ The system in this lab should not have deployed without a fairness review.</strong> The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This system was built in the lab and deployed before this analysis was run. In production, the review comes first. Use this week as a rehearsal for what pre-deployment governance looks like — not as retrospective damage assessment.</p>
 </div>
 <p>Bias in AI systems is not an abstract ethical concern—it is a concrete security risk. When a threat detection system is biased against a certain geographic region, organization type, or user demographic, it creates unfair risk exposure. When an access control system discriminates, it violates regulatory requirements (EU AI Act, GDPR) and creates liability.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Bias in AI is not just about training data. Even well-intentioned systems can discriminate through:
-- <strong>Historical bias:</strong> Training data reflects past discrimination
-- <strong>Representation bias:</strong> Certain groups are underrepresented in training data
-- <strong>Measurement bias:</strong> The metric we optimize for doesn't capture the full problem
-- <strong>Aggregation bias:</strong> One-size-fits-all models perform poorly on subgroups
-- <strong>Evaluation bias:</strong> Testing on non-diverse data hides performance gaps</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Bias in AI is not just about training data. Even well-intentioned systems can discriminate through:</p>
+<ul>
+<li><strong>Historical bias:</strong> Training data reflects past discrimination</li>
+<li><strong>Representation bias:</strong> Certain groups are underrepresented in training data</li>
+<li><strong>Measurement bias:</strong> The metric we optimize for doesn't capture the full problem</li>
+<li><strong>Aggregation bias:</strong> One-size-fits-all models perform poorly on subgroups</li>
+<li><strong>Evaluation bias:</strong> Testing on non-diverse data hides performance gaps</li>
+</ul>
 </div>
 <h4 id="how-bias-manifests-in-security-ai">How Bias Manifests in Security AI</h4>
 <p><strong>Threat Detection Bias</strong></p>
-<p>A threat detection system is trained on security incidents from the past 5 years. Most incidents in the training data occurred at large Western companies; small companies in Asia-Pacific are underrepresented. The model learns to associate:
-- Large deal sizes → higher business impact → higher threat severity
-- Western organization names → more legitimate → lower threat likelihood
-- Non-Western language in logs → more suspicious (proxy for "unfamiliar")</p>
+<p>A threat detection system is trained on security incidents from the past 5 years. Most incidents in the training data occurred at large Western companies; small companies in Asia-Pacific are underrepresented. The model learns to associate:</p>
+<ul>
+<li>Large deal sizes → higher business impact → higher threat severity</li>
+<li>Western organization names → more legitimate → lower threat likelihood</li>
+<li>Non-Western language in logs → more suspicious (proxy for "unfamiliar")</li>
+</ul>
 <p>Result: The same incident at a small Asian company is flagged as higher threat severity than at a large Western company. This is unfair and creates operational friction (SecOps team questions recommendations for small companies).</p>
 <p><strong>Access Control Bias</strong></p>
 <p>An AI system recommends whether to grant a user access to a critical system. The system is trained on historical access decisions. In the past, managers from certain demographics were more likely to request access to certain systems. The model learns these patterns and recommends granting access to managers of similar demographics, even if policy should be uniform.</p>
@@ -1339,9 +945,11 @@ Explain the security reasoning for each layer. Show working Python code.
 <span class="nv">Rule</span> <span class="nv">of</span> <span class="nv">Thumb</span>: <span class="nv">A</span> <span class="nv">ratio</span> <span class="nv">below</span> <span class="mi">0</span>.<span class="mi">8</span> <span class="nv">is</span> <span class="nv">considered</span> <span class="nv">evidence</span> <span class="nv">of</span> <span class="nv">disparate</span> <span class="nv">impact</span>
 </code></pre></div>
 
-<p><strong>Example:</strong> A threat detection system flags 10% of traffic from Group A as suspicious, and 50% of traffic from Group B as suspicious.
-- Disparate Impact Ratio = 10% / 50% = 0.2
-- This is well below 0.8, indicating severe disparate impact</p>
+<p><strong>Example:</strong> A threat detection system flags 10% of traffic from Group A as suspicious, and 50% of traffic from Group B as suspicious.</p>
+<ul>
+<li>Disparate Impact Ratio = 10% / 50% = 0.2</li>
+<li>This is well below 0.8, indicating severe disparate impact</li>
+</ul>
 <p><strong>Equalized Odds</strong></p>
 <p>A more nuanced metric. It requires that the model has the <em>same true positive rate and false positive rate across groups</em>.</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">True</span> <span class="nv">Positive</span> <span class="nv">Rate</span> <span class="k">for</span> <span class="nv">Group</span> <span class="nv">A</span> <span class="o">=</span> # <span class="nv">true</span> <span class="nv">positives</span> <span class="o">/</span> # <span class="nv">actual</span> <span class="nv">positives</span> <span class="nv">in</span> <span class="nv">Group</span> <span class="nv">A</span>
@@ -1598,9 +1206,11 @@ I need to:
 Show me working Python code with explanation of LIME&#39;s process.
 </code></pre></div>
 
-<p><strong>When to Use LIME vs SHAP:</strong>
-- <strong>LIME:</strong> Faster, simpler, good for individual predictions. Use this for explaining alerts to analysts.
-- <strong>SHAP:</strong> More theoretically sound, supports global explanations. Use this for understanding model behavior across all predictions.</p>
+<p><strong>When to Use LIME vs SHAP:</strong></p>
+<ul>
+<li><strong>LIME:</strong> Faster, simpler, good for individual predictions. Use this for explaining alerts to analysts.</li>
+<li><strong>SHAP:</strong> More theoretically sound, supports global explanations. Use this for understanding model behavior across all predictions.</li>
+</ul>
 <p>For Week 11, start with LIME: it's easier to understand and explains the one prediction that matters most to the analyst reviewing the alert.</p>
 <h4 id="deliverables_2">Deliverables</h4>
 <ol>
@@ -1675,10 +1285,12 @@ Show me working Python code with explanation of LIME&#39;s process.
 </div>
 <h4 id="privacy-risks-specific-to-security-ai">Privacy Risks Specific to Security AI</h4>
 <p><strong>Scenario 1: Inference Attack on Threat Model</strong></p>
-<p>A threat detection model is trained on historical incidents from enterprise customers. An attacker queries the model with slightly different inputs and observes how predictions change. Through careful experimentation, the attacker infers that:
-- Customer X had an incident of type Y (confidential information)
-- Customer X was affected by vulnerability Z
-- This is valuable competitive intelligence</p>
+<p>A threat detection model is trained on historical incidents from enterprise customers. An attacker queries the model with slightly different inputs and observes how predictions change. Through careful experimentation, the attacker infers that:</p>
+<ul>
+<li>Customer X had an incident of type Y (confidential information)</li>
+<li>Customer X was affected by vulnerability Z</li>
+<li>This is valuable competitive intelligence</li>
+</ul>
 <p><strong>Scenario 2: Model Inversion</strong></p>
 <p>An attacker uses a behavioral profiling model to infer individual user behaviors. By querying the model with different inputs, the attacker reconstructs which users access which systems at what times. This reveals organizational structure and operation security measures.</p>
 <p><strong>Scenario 3: Data Retention</strong></p>
@@ -1753,25 +1365,33 @@ Limitation: Slower training, requires synchronization
 </ul>
 <h4 id="data-governance-framework">Data Governance Framework</h4>
 <p>A data governance framework defines how data is classified, accessed, and retained:</p>
-<p><strong>Data Classification:</strong>
-- <strong>Public:</strong> No sensitivity; can be shared freely (e.g., threat intelligence feeds)
-- <strong>Internal:</strong> Sensitive to organization; restricted to employees (e.g., security architecture docs)
-- <strong>Confidential:</strong> Highly sensitive; restricted to authorized personnel (e.g., incident logs)
-- <strong>Secret:</strong> Maximum sensitivity; restricted to leadership and compliance (e.g., custom signatures for 0-days)</p>
-<p><strong>Access Controls:</strong>
-- Public: Anyone
-- Internal: Employees
-- Confidential: Authorized security staff (need-to-know)
-- Secret: CTO, CISO, compliance officer</p>
-<p><strong>Retention:</strong>
-- Threat intelligence: Keep for 5+ years (train models)
-- Incident logs: Keep for 2 years (investigation, compliance)
-- User activity logs: Keep for 6 months (anomaly detection)
-- PII: Delete immediately after incident investigation (minimize exposure)</p>
-<p><strong>Audit:</strong>
-- All data access is logged
-- Unusual access patterns are flagged
-- Compliance audits check adherence to retention policy</p>
+<p><strong>Data Classification:</strong></p>
+<ul>
+<li><strong>Public:</strong> No sensitivity; can be shared freely (e.g., threat intelligence feeds)</li>
+<li><strong>Internal:</strong> Sensitive to organization; restricted to employees (e.g., security architecture docs)</li>
+<li><strong>Confidential:</strong> Highly sensitive; restricted to authorized personnel (e.g., incident logs)</li>
+<li><strong>Secret:</strong> Maximum sensitivity; restricted to leadership and compliance (e.g., custom signatures for 0-days)</li>
+</ul>
+<p><strong>Access Controls:</strong></p>
+<ul>
+<li>Public: Anyone</li>
+<li>Internal: Employees</li>
+<li>Confidential: Authorized security staff (need-to-know)</li>
+<li>Secret: CTO, CISO, compliance officer</li>
+</ul>
+<p><strong>Retention:</strong></p>
+<ul>
+<li>Threat intelligence: Keep for 5+ years (train models)</li>
+<li>Incident logs: Keep for 2 years (investigation, compliance)</li>
+<li>User activity logs: Keep for 6 months (anomaly detection)</li>
+<li>PII: Delete immediately after incident investigation (minimize exposure)</li>
+</ul>
+<p><strong>Audit:</strong></p>
+<ul>
+<li>All data access is logged</li>
+<li>Unusual access patterns are flagged</li>
+<li>Compliance audits check adherence to retention policy</li>
+</ul>
 <h4 id="regulatory-landscape">Regulatory Landscape</h4>
 <p><strong>EU AI Act (2024)</strong></p>
 <p>The first comprehensive AI regulation. It classifies AI systems by risk and applies proportional requirements:</p>
@@ -1792,11 +1412,13 @@ Limitation: Slower training, requires synchronization
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> The <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689">EU AI Act</a> is surprisingly readable for a regulation. Sections 4–6 detail requirements for high-risk AI.</p>
 </div>
 <p><strong>NIST Cyber AI Profile</strong></p>
-<p>NIST's guidance for responsible AI in cybersecurity (Dec 2025 draft). It maps to NIST AI RMF and provides concrete guidance for:
-- Governance: Establishing AI review boards and approval processes
-- Map: Documenting AI systems and their risks
-- Measure: Implementing continuous monitoring and performance tracking
-- Manage: Incident response and remediation procedures</p>
+<p>NIST's guidance for responsible AI in cybersecurity (Dec 2025 draft). It maps to NIST AI RMF and provides concrete guidance for:</p>
+<ul>
+<li>Governance: Establishing AI review boards and approval processes</li>
+<li>Map: Documenting AI systems and their risks</li>
+<li>Measure: Implementing continuous monitoring and performance tracking</li>
+<li>Manage: Incident response and remediation procedures</li>
+</ul>
 <p><strong>AIUC-1: The First AI Agent Standard</strong></p>
 <p>While the EU AI Act and NIST frameworks address AI systems broadly, <strong>AIUC-1</strong> (https://www.aiuc-1.com/) is the world's first standard specifically designed for <strong>AI agent systems</strong>. Developed by a consortium of 60+ CISOs with founding contributions from former Anthropic security experts, MITRE, and the Cloud Security Alliance, AIUC-1 provides the certification framework that bridges the gap between regulatory intent and agent-specific implementation.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> AIUC-1 closes a critical gap: NIST AI RMF tells you <em>what</em> to govern, EU AI Act tells you <em>why</em> you must govern, but neither tells you <em>how</em> to certify AI agents specifically. AIUC-1's six domains provide the <em>how</em> — concrete control objectives designed for autonomous agent behavior, not just static AI models.</p>
@@ -1855,15 +1477,19 @@ Limitation: Slower training, requires synchronization
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your organization deploys an autonomous threat detection agent. Using AIUC-1's six domains, what controls would you implement for each? Which domain requires the most attention for a security-focused agent, and why?</p>
 </div>
 <p><strong>GDPR (General Data Protection Regulation)</strong></p>
-<p>GDPR Article 22 prohibits fully automated decision-making affecting individuals without human review, with limited exceptions. Application to security:
-- If an AI access control system denies an employee access, the employee has a right to human review
-- If a behavioral analytics system flags a user as suspicious, the user should be notified and have opportunity to respond
-- Penalties: Up to €20 million or 4% of global revenue, whichever is higher</p>
+<p>GDPR Article 22 prohibits fully automated decision-making affecting individuals without human review, with limited exceptions. Application to security:</p>
+<ul>
+<li>If an AI access control system denies an employee access, the employee has a right to human review</li>
+<li>If a behavioral analytics system flags a user as suspicious, the user should be notified and have opportunity to respond</li>
+<li>Penalties: Up to €20 million or 4% of global revenue, whichever is higher</li>
+</ul>
 <p><strong>PCI-DSS, HIPAA, SOX</strong></p>
-<p>Industry-specific regulations with AI implications:
-- <strong>PCI-DSS (Payment Card Industry):</strong> Requires transparency in fraud detection systems; merchants have right to appeal
-- <strong>HIPAA (Healthcare):</strong> Prohibits using AI in high-stakes decisions without explainability; requires impact assessments
-- <strong>SOX (Sarbanes-Oxley):</strong> Requires CEOs to certify financial controls; AI affecting financial reporting must be auditable</p>
+<p>Industry-specific regulations with AI implications:</p>
+<ul>
+<li><strong>PCI-DSS (Payment Card Industry):</strong> Requires transparency in fraud detection systems; merchants have right to appeal</li>
+<li><strong>HIPAA (Healthcare):</strong> Prohibits using AI in high-stakes decisions without explainability; requires impact assessments</li>
+<li><strong>SOX (Sarbanes-Oxley):</strong> Requires CEOs to certify financial controls; AI affecting financial reporting must be auditable</li>
+</ul>
 <h4 id="policy-writing-framework">Policy Writing Framework</h4>
 <p>An AI Security Policy should address:</p>
 <ol>
@@ -1898,12 +1524,14 @@ Limitation: Slower training, requires synchronization
 <h4 id="lab-content_3">Lab Content</h4>
 <p><strong>Part 1: Policy Writing (90 minutes)</strong></p>
 <p>You will write a comprehensive AI Security Policy for a fictional organization:</p>
-<p><strong>Organization Context (Provided):</strong>
-- Mid-sized financial services firm (500 employees)
-- Deploying agentic security tools for threat detection, incident response, and access control
-- Processes sensitive customer data (accounts, transactions, addresses)
-- Must comply with GDPR (EU customers), PCI-DSS (payment card data), and local regulations
-- Security incidents in the past year: 2 breaches affecting 500+ customers, 15+ attempted breaches</p>
+<p><strong>Organization Context (Provided):</strong></p>
+<ul>
+<li>Mid-sized financial services firm (500 employees)</li>
+<li>Deploying agentic security tools for threat detection, incident response, and access control</li>
+<li>Processes sensitive customer data (accounts, transactions, addresses)</li>
+<li>Must comply with GDPR (EU customers), PCI-DSS (payment card data), and local regulations</li>
+<li>Security incidents in the past year: 2 breaches affecting 500+ customers, 15+ attempted breaches</li>
+</ul>
 <p><strong>Policy Template:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="gh"># AI Security Policy</span>
 <span class="gu">## Organization: [Name]</span>
@@ -2084,10 +1712,12 @@ and the key risks/mitigations.
 <span class="o">|</span><span class="w"> </span><span class="n">Customer</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Secret</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Per</span><span class="w"> </span><span class="n">GDPR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">[</span><span class="n">minimal</span><span class="o">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nc">Real</span><span class="o">-</span><span class="nc">time</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
 </code></pre></div>
 
-<p>For <strong>Confidential</strong> data processed by agents:
-- Data minimization: What is the minimum data required? Can you aggregate, anonymize, or sample?
-- Privacy preservation: Can you apply differential privacy? Federated learning?
-- Retention: How long do you need to keep raw data? (Aggregate stats longer than raw data)</p>
+<p>For <strong>Confidential</strong> data processed by agents:</p>
+<ul>
+<li>Data minimization: What is the minimum data required? Can you aggregate, anonymize, or sample?</li>
+<li>Privacy preservation: Can you apply differential privacy? Federated learning?</li>
+<li>Retention: How long do you need to keep raw data? (Aggregate stats longer than raw data)</li>
+</ul>
 <p><strong>Part 3: Compliance Checklist (20 minutes)</strong></p>
 <p>Create a checklist confirming your policy addresses all requirements:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">EU</span><span class="w"> </span><span class="n">AI</span><span class="w"> </span><span class="n">Act</span><span class="w"> </span><span class="n">compliance</span><span class="w"></span>
@@ -2150,10 +1780,12 @@ and the key risks/mitigations.
 <p>In Unit 3, you've explored ethical AI, responsible principles, governance frameworks, and data handling. Now it's time to capture the governance patterns and decision frameworks that emerge—not just code patterns, but <strong>organizational decision templates, audit checklists, bias testing configurations, regulatory mapping matrices</strong>. These are reusable across organizations and projects.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Your context library isn't just code. It's your personal reference for governance too. When you design an audit checklist that works, save it. When you build a privacy impact assessment template, capture it. When you map AIUC-1 domains to technical controls, extract that mapping. Next project, you don't start from scratch—you adapt your proven templates.</p>
 </div>
-<p><strong>Why This Matters for Unit 3 Specifically:</strong>
-- <strong>Governance is Reusable:</strong> Unlike project-specific code, governance frameworks apply across organizations. Your Unit 3 work—policy templates, audit checklists, compliance matrices—is gold.
-- <strong>Different Audiences:</strong> Your context library now has technical patterns (from Units 1–2) AND governance patterns (from Unit 3). You're building a resource for different stakeholders.
-- <strong>Regulatory Guidance:</strong> Privacy regulations, responsible AI principles, and ethical frameworks don't change per project. Capture the mappings. Reuse them.</p>
+<p><strong>Why This Matters for Unit 3 Specifically:</strong></p>
+<ul>
+<li><strong>Governance is Reusable:</strong> Unlike project-specific code, governance frameworks apply across organizations. Your Unit 3 work—policy templates, audit checklists, compliance matrices—is gold.</li>
+<li><strong>Different Audiences:</strong> Your context library now has technical patterns (from Units 1–2) AND governance patterns (from Unit 3). You're building a resource for different stakeholders.</li>
+<li><strong>Regulatory Guidance:</strong> Privacy regulations, responsible AI principles, and ethical frameworks don't change per project. Capture the mappings. Reuse them.</li>
+</ul>
 <p><strong>Expand Your Context Library</strong></p>
 <p>Add new directories to your existing <code>context-library/</code>:</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/context-library/governance/<span class="o">{</span>policy-templates,audit-checklists,compliance-mappings<span class="o">}</span>
@@ -2330,43 +1962,6 @@ Use these as the foundation for documenting this tool.
 </main>
 
 <script>
-function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
-  document.querySelector('.overlay').classList.toggle('show');
-}
-// Close sidebar on link click (mobile)
-document.querySelectorAll('.sidebar a').forEach(a => {
-  a.addEventListener('click', () => {
-    if (window.innerWidth <= 900) toggleSidebar();
-  });
-});
-</script>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#6b4c1e',
-      primaryTextColor: '#e8dcc8',
-      primaryBorderColor: '#d4a017',
-      lineColor: '#9a8e7a',
-      secondaryColor: '#1a1f30',
-      tertiaryColor: '#0f1525',
-      background: '#0f1525',
-      mainBkg: '#6b4c1e',
-      nodeBorder: '#d4a017',
-      clusterBkg: '#0b0f19',
-      clusterBorder: '#2a3045',
-      titleColor: '#d4a017',
-      edgeLabelBackground: '#0f1525',
-      fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif'
-    },
-    flowchart: { curve: 'basis', padding: 15 },
-    securityLevel: 'loose'
-  });
-</script>
-<script>
 (function() {
   var IDX = [
     // Units
@@ -2457,6 +2052,7 @@ document.querySelectorAll('.sidebar a').forEach(a => {
   document.head.appendChild(s);
 })();
 </script>
-<script>(function(){var KEY="noctua-sidebar-scroll";var s=document.querySelector(".sidebar");if(!s)return;var sv=sessionStorage.getItem(KEY);if(sv)s.scrollTop=+sv;s.addEventListener("scroll",function(){sessionStorage.setItem(KEY,s.scrollTop);});})()</script>
+<script src="main.js"></script>
+<script type="module" src="mermaid-init.js"></script>
 </body>
 </html>
