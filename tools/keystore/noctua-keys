@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AgentForge Keystore — Encrypted local secret management for AI development.
+Noctua Keystore — Encrypted local secret management for AI development.
 
 Secrets are encrypted with AES-256-GCM using a master password derived through
 PBKDF2 (100K iterations). The encrypted vault lives at ~/.noctua/vault.enc.
@@ -293,7 +293,7 @@ def cmd_check(args):
 def main():
     parser = argparse.ArgumentParser(
         prog="noctua-keys",
-        description="AgentForge Keystore — Encrypted local secret management"
+        description="Noctua Keystore — Encrypted local secret management"
     )
     sub = parser.add_subparsers(dest="command", help="Command")
     

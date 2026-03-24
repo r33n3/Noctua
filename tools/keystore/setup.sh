@@ -1,11 +1,11 @@
 #!/bin/bash
-# AgentForge Keystore — Quick Setup
+# Noctua Keystore — Quick Setup
 # Run this once during Week 1 lab setup
 
 set -e
 
 echo "═══════════════════════════════════════════════════"
-echo " AgentForge Keystore Setup"
+echo " Noctua Keystore Setup"
 echo " Encrypted local secret management"
 echo "═══════════════════════════════════════════════════"
 echo ""

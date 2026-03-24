@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Command Reference — Noctua</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0b0f19;
+    --surface: #121929;
+    --surface2: #151d30;
+    --border: #2a3045;
+    --border-light: #3a4060;
+    --text: #e8dcc8;
+    --text-dim: #9a8e7a;
+    --text-muted: #6a6050;
+    --gold: #d4a017;
+    --gold-dim: #b8880e;
+    --blue: #6b9fd4;
+    --green: #50c878;
+    --red: #e74c3c;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+    --orange: #e67e22;
+    --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.4; }
+
+  .poster { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 16px 0; margin-bottom: 16px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header h1 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; font-family: var(--sans); }
+  .header h1 span { color: var(--gold); }
+  .header-right { text-align: right; }
+  .header-badge { font-size: 10px; background: var(--gold); color: var(--bg); padding: 3px 10px; border-radius: 3px; font-weight: 700; letter-spacing: 1px; }
+  .header-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .span-2 { grid-column: span 2; }
+
+  /* Sections */
+  .section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; overflow: hidden;
+  }
+  .section-head {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sh-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Command rows */
+  .cmd {
+    display: grid; grid-template-columns: 130px 1fr; gap: 6px;
+    padding: 5px 0; border-bottom: 1px solid rgba(42, 48, 69, 0.7);
+    font-size: 11.5px; align-items: baseline;
+  }
+  .cmd:last-child { border-bottom: none; }
+  .cmd-name { font-family: var(--mono); font-weight: 600; color: var(--gold); font-size: 11px; }
+  .cmd-desc { color: var(--text-dim); }
+  .cmd-desc .tip { color: var(--text-muted); font-style: italic; font-size: 10.5px; }
+  .cmd-desc .warn { color: var(--red); font-size: 10.5px; }
+  .cmd-desc .sec { color: var(--teal); font-size: 10.5px; }
+  code { font-family: var(--mono); font-size: 10.5px; background: rgba(15,21,37,0.8); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(212,160,23,0.15); color: #f0c040; }
+
+  /* Key combos */
+  .key {
+    display: inline-block; background: var(--surface2); border: 1px solid var(--border-light);
+    border-radius: 3px; padding: 1px 5px; font-family: var(--mono);
+    font-size: 10px; color: var(--text); font-weight: 500;
+  }
+
+  /* Inline badges */
+  .b { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 2px; letter-spacing: 0.5px; vertical-align: middle; }
+  .b-new     { background: rgba(212,160,23,0.12); color: var(--gold); }
+  .b-skill   { background: rgba(80,200,120,0.12); color: var(--green); }
+  .b-enforce { background: rgba(107,159,212,0.12); color: var(--blue); }
+  .b-cost    { background: rgba(167,139,250,0.12); color: var(--purple); }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; font-size: 10px; color: var(--text-dim); }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+
+  /* Pre/monospace blocks */
+  .mono-block {
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-dim);
+    line-height: 1.6; white-space: pre; overflow-x: auto;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border);
+    font-size: 9px; color: var(--text-muted); text-align: center;
+  }
+  .footer code { font-size: 9px; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+<div class="header">
+  <div>
+    <h1><span>Claude Code</span> Complete Command Reference</h1>
+    <div class="header-sub">Noctua AI Security Engineering · Quick Reference</div>
+  </div>
+  <div class="header-right">
+    <div class="header-badge">MARCH 2026 · v2.1.66+</div>
+    <div class="header-sub">~55 built-in commands · 5 bundled skills · unlimited custom</div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="b b-new">NEW</span> Recent addition</div>
+  <div class="legend-item"><span class="b b-skill">SKILL</span> Built-in skill (AI-driven)</div>
+  <div class="legend-item"><span class="b b-enforce">ENFORCE</span> Outside reasoning loop</div>
+  <div class="legend-item"><span class="b b-cost">COST</span> Token/cost impact</div>
+</div>
+
+<div class="grid">
+
+<!-- ESSENTIAL -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> ESSENTIAL — Learn First</div>
+  <div class="cmd"><div class="cmd-name">/compact</div><div class="cmd-desc">Compress conversation history. Add arg to specify what to keep: <code>/compact keep the error patterns</code> <span class="b b-cost">COST</span><br><span class="tip">Run at 80% context, not 95%. Auto-compact loses more detail.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/clear</div><div class="cmd-desc">Wipe conversation. File edits persist. Use between unrelated tasks.</div></div>
+  <div class="cmd"><div class="cmd-name">/plan</div><div class="cmd-desc">Enter plan mode — read-only analysis, no file changes. <span class="key">Shift+Tab</span> ×2 to toggle. <span class="b b-enforce">ENFORCE</span><br><span class="tip">Claude can't edit files in plan mode. True enforcement.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/model</div><div class="cmd-desc">Switch model mid-session: opus, sonnet, haiku. Option 4 = Opus plan + Sonnet execute. <span class="b b-cost">COST</span></div></div>
+  <div class="cmd"><div class="cmd-name">/cost</div><div class="cmd-desc">Show session token usage and cost breakdown. <span class="b b-cost">COST</span><br><span class="tip">Run after every lab exercise for cost awareness.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/help</div><div class="cmd-desc">List all available commands and skills. Start here when lost.</div></div>
+</div>
+
+<!-- CONTEXT MANAGEMENT -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> CONTEXT MANAGEMENT</div>
+  <div class="cmd"><div class="cmd-name">/context</div><div class="cmd-desc">Show token usage breakdown — tools, MCP, skills, conversation. Color-coded grid. <span class="b b-cost">COST</span></div></div>
+  <div class="cmd"><div class="cmd-name">/effort</div><div class="cmd-desc">Set reasoning depth: <code>low</code> ○ / <code>medium</code> ◐ / <code>high</code> ● / <code>auto</code>. <span class="b b-new">NEW</span> <span class="b b-cost">COST</span><br><span class="tip">Low for iteration, high for analysis. /effort auto resets.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/btw</div><div class="cmd-desc">Ask side question without touching context. Ephemeral, no tools, cache-only. <span class="b b-new">NEW</span> <span class="b b-cost">COST</span><br><span class="tip">Use mid-task: "/btw what file was that error in?"</span></div></div>
+  <div class="cmd"><div class="cmd-name">/memory</div><div class="cmd-desc">View/edit persistent MEMORY.md. Claude auto-saves project conventions here.</div></div>
+  <div class="cmd"><div class="cmd-name">/think</div><div class="cmd-desc">Inline extended thinking. Also: "think hard", "ultrathink" in prompt text. <span class="b b-cost">COST</span></div></div>
+  <div class="cmd"><div class="cmd-name">@file</div><div class="cmd-desc">Add file to context: <code>@src/auth.ts fix this</code>. Not a slash command — type @ directly.</div></div>
+</div>
+
+<!-- SESSION CONTROL -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--blue)"></div> SESSION CONTROL</div>
+  <div class="cmd"><div class="cmd-name">/fork</div><div class="cmd-desc">Branch conversation for experimentation. Original untouched. Name forks: <code>/fork refactor-attempt</code></div></div>
+  <div class="cmd"><div class="cmd-name">/rewind</div><div class="cmd-desc">Roll back to earlier point. 2026: choose conversation-only or code-only rollback.</div></div>
+  <div class="cmd"><div class="cmd-name">/rename</div><div class="cmd-desc">Rename current session. <span class="b b-new">NEW</span> Useful for finding sessions later.</div></div>
+  <div class="cmd"><div class="cmd-name">/resume</div><div class="cmd-desc">CLI flag: <code>claude --resume</code>. Pick up a previous session from days ago.</div></div>
+  <div class="cmd"><div class="cmd-name">/continue</div><div class="cmd-desc">CLI flag: <code>claude --continue</code>. Restart the most recent session.</div></div>
+  <div class="cmd"><div class="cmd-name">/color</div><div class="cmd-desc">Change prompt bar color. <span class="b b-new">NEW</span> Handy when running multiple sessions in tmux.</div></div>
+  <div class="cmd"><div class="cmd-name">/copy</div><div class="cmd-desc">Copy Claude's last output to clipboard. <span class="b b-new">NEW</span></div></div>
+</div>
+
+<!-- PERMISSIONS & GOVERNANCE -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--red)"></div> PERMISSIONS &amp; GOVERNANCE <span class="b b-enforce">ENFORCE</span></div>
+  <div class="cmd"><div class="cmd-name">/config</div><div class="cmd-desc">Edit settings interactively. <span class="key">Esc</span> cancels, <span class="key">Enter</span> saves, <span class="key">Space</span> toggles.</div></div>
+  <div class="cmd"><div class="cmd-name">/hooks</div><div class="cmd-desc">Interactive hook editor. PreToolUse, PostToolUse, SessionStart, etc. <span class="b b-enforce">ENFORCE</span><br><span class="sec">Hooks are ENFORCEMENT — outside the reasoning loop.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/permissions</div><div class="cmd-desc">View current permission state (allow/deny/ask rules). <span class="b b-enforce">ENFORCE</span></div></div>
+  <div class="cmd"><div class="cmd-name">/mcp</div><div class="cmd-desc">Manage MCP server connections. Enable/disable servers mid-session.</div></div>
+  <div class="cmd"><div class="cmd-name">/agents</div><div class="cmd-desc">Create/manage subagents interactively. Define name, tools, model, system prompt.</div></div>
+  <div class="cmd"><div class="cmd-name">/doctor</div><div class="cmd-desc">Run diagnostics. Check auth, model access, settings, hooks, MCP status.</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Shift+Tab</span></div><div class="cmd-desc">Cycle permission modes: Normal → Auto-accept ⏵⏵ → Plan ⏸ → Normal</div></div>
+</div>
+
+<!-- BUILT-IN SKILLS -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--green)"></div> BUILT-IN SKILLS <span class="b b-skill">SKILL</span></div>
+  <div class="cmd"><div class="cmd-name">/simplify</div><div class="cmd-desc">3-agent parallel code review. Catches redundancies, unused imports, complexity. <span class="b b-skill">SKILL</span> <span class="b b-new">NEW</span><br><span class="tip">Run after every major code generation. Replaces /review.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/batch</div><div class="cmd-desc">Parallel batch changes across worktrees. Auto-creates PRs. <span class="b b-skill">SKILL</span> <span class="b b-new">NEW</span><br><span class="tip">For migrations, not redesigns. "Add error handling to all 47 endpoints."</span></div></div>
+  <div class="cmd"><div class="cmd-name">/loop</div><div class="cmd-desc">Recurring tasks at intervals: <code>/loop 5m check deploy status</code>. Up to 50 concurrent. 3-day expiry. <span class="b b-skill">SKILL</span><br><span class="sec">Governance guardrail: auto-expires. Session-scoped.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/debug</div><div class="cmd-desc">Structured debugging workflow. Analyzes errors, proposes fixes. <span class="b b-skill">SKILL</span></div></div>
+  <div class="cmd"><div class="cmd-name">/claude-api</div><div class="cmd-desc">Help with Anthropic API usage. Generates SDK code, explains parameters. <span class="b b-skill">SKILL</span></div></div>
+</div>
+
+<!-- NOCTUA COURSE SKILLS -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA COURSE SKILLS</div>
+  <div class="cmd"><div class="cmd-name">/think</div><div class="cmd-desc">CCT analysis workflow. Structured critical thinking before building.<br><span class="tip">Reads: CLAUDE.md (CCT framework). Writes: conversation only.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/spec</div><div class="cmd-desc">Generate spec package from idea or /think output. Component manifests, model selection, swarm configs.<br><span class="tip">Reads: references/approach-selection.md. Writes: plans/SPEC-{name}.md</span></div></div>
+  <div class="cmd"><div class="cmd-name">/tool-select</div><div class="cmd-desc">Engineering Assessment Stack decision. Chat/Cowork/Code recommendation.<br><span class="tip">Reads: Engineering Assessment Stack. Writes: conversation only.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/audit-aiuc1</div><div class="cmd-desc">AIUC-1 compliance audit against 6 domains (A–F).<br><span class="tip">Reads: working tool. Writes: reports/AUDIT-{name}.md</span></div></div>
+  <div class="cmd"><div class="cmd-name">/harness</div><div class="cmd-desc">Security Minion harness builder. Blueprint YAML + fixed/flexible steps.<br><span class="tip">Reads: plans/SPEC-*.md. Writes: harnesses/{type}/blueprint.yaml</span></div></div>
+  <div class="cmd"><div class="cmd-name">/worktree</div><div class="cmd-desc">Isolated git worktrees for parallel agents. Each gets own .claude/ copy.<br><span class="tip">Reads: .claude/agents/, settings.json. Writes: ../worktrees/{name}-{n}/</span></div></div>
+  <div class="cmd"><div class="cmd-name">/retro</div><div class="cmd-desc">Sprint retrospective. Lessons learned, what worked, what didn't.<br><span class="tip">Reads: sprint artifacts, git log. Writes: reports/RETRO-{sprint}.md</span></div></div>
+</div>
+
+<!-- KEYBOARD SHORTCUTS -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--purple)"></div> KEYBOARD SHORTCUTS</div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Shift+Tab</span></div><div class="cmd-desc">Cycle: Normal → Auto-accept → Plan mode</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Ctrl+C</span></div><div class="cmd-desc">Cancel current response. Claude stops mid-generation.</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Ctrl+F</span> ×2</div><div class="cmd-desc">Kill all background agents. Hit twice within 3 seconds to confirm.</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Ctrl+G</span></div><div class="cmd-desc">Open plan in default editor. Edit before Claude executes.</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">Esc</span> ×2</div><div class="cmd-desc">Open rewind menu. Choose conversation-only or code-only rollback.</div></div>
+  <div class="cmd"><div class="cmd-name"><span class="key">↑</span></div><div class="cmd-desc">Browse prompt history. Current session first, then older sessions.</div></div>
+  <div class="cmd"><div class="cmd-name">/vim</div><div class="cmd-desc">Enable vim keybindings in prompt input. Full modal editing.</div></div>
+</div>
+
+<!-- CLI FLAGS -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--text-dim)"></div> CLI FLAGS — Non-Interactive</div>
+  <div class="cmd"><div class="cmd-name">-p "query"</div><div class="cmd-desc">Print mode. Non-interactive, exits after response. For CI/CD pipelines.</div></div>
+  <div class="cmd"><div class="cmd-name">--model</div><div class="cmd-desc"><code>claude --model haiku</code> Start session with specific model.</div></div>
+  <div class="cmd"><div class="cmd-name">--effort</div><div class="cmd-desc"><code>claude --effort high</code> Set reasoning depth from CLI.</div></div>
+  <div class="cmd"><div class="cmd-name">--resume</div><div class="cmd-desc">Pick up a previous session by selection menu.</div></div>
+  <div class="cmd"><div class="cmd-name">--continue</div><div class="cmd-desc">Restart the most recent session automatically.</div></div>
+  <div class="cmd"><div class="cmd-name">--worktree</div><div class="cmd-desc"><code>claude --worktree feature-auth</code> Create isolated worktree + session.</div></div>
+  <div class="cmd"><div class="cmd-name">--max-budget-usd</div><div class="cmd-desc"><code>claude -p "fix tests" --max-budget-usd 2.00</code> Hard spending cap. <span class="b b-enforce">ENFORCE</span></div></div>
+  <div class="cmd"><div class="cmd-name">--max-turns</div><div class="cmd-desc"><code>claude -p "review" --max-turns 3</code> Limit agentic iterations. <span class="b b-enforce">ENFORCE</span><br><span class="sec">Failure cap — prevents runaway agent loops.</span></div></div>
+  <div class="cmd"><div class="cmd-name">--allowedTools</div><div class="cmd-desc"><code>claude --allowedTools "Read" "Grep"</code> Restrict to specific tools only. <span class="b b-enforce">ENFORCE</span></div></div>
+  <div class="cmd"><div class="cmd-name">--permission-mode</div><div class="cmd-desc"><code>claude --permission-mode plan</code> Start in plan mode (read-only). <span class="b b-enforce">ENFORCE</span></div></div>
+  <div class="cmd"><div class="cmd-name">--output-format</div><div class="cmd-desc"><code>--output-format json</code> Machine-parseable output for scripting.</div></div>
+  <div class="cmd"><div class="cmd-name">--add-dir</div><div class="cmd-desc">Add external directory to agent's context. Skills auto-discovered.</div></div>
+  <div class="cmd"><div class="cmd-name">--name</div><div class="cmd-desc"><code>claude --name "cve-scanner-sprint"</code> Name the session at start.</div></div>
+</div>
+
+<!-- DIRECTORY MAP -->
+<div class="section span-2">
+  <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> DIRECTORY QUICK REFERENCE</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--gold);margin-bottom:6px;letter-spacing:1px;">PROJECT (committed to git)</div>
+      <div class="cmd"><div class="cmd-name">CLAUDE.md</div><div class="cmd-desc">Always-on context. Layer 1 GUIDANCE. <span class="warn">Bypassable.</span></div></div>
+      <div class="cmd"><div class="cmd-name">.claude/settings.json</div><div class="cmd-desc">Permissions + hooks. Layer 2-3 ENFORCEMENT.</div></div>
+      <div class="cmd"><div class="cmd-name">.claude/rules/</div><div class="cmd-desc">Path-scoped instructions. Lazy-loaded.</div></div>
+      <div class="cmd"><div class="cmd-name">.claude/skills/</div><div class="cmd-desc">On-demand workflows. ~100 tok idle.</div></div>
+      <div class="cmd"><div class="cmd-name">.claude/agents/</div><div class="cmd-desc">Subagent YAML. System prompt + tools + model.</div></div>
+      <div class="cmd"><div class="cmd-name">.claude/hooks/</div><div class="cmd-desc">Enforcement scripts. chmod +x. Deterministic.</div></div>
+      <div class="cmd"><div class="cmd-name">.mcp.json</div><div class="cmd-desc">MCP servers. ${VAR} refs only, no secrets.</div></div>
+      <div class="cmd"><div class="cmd-name">plans/</div><div class="cmd-desc">Spec packages + plans. Set plansDirectory in settings.</div></div>
+      <div class="cmd"><div class="cmd-name">harnesses/</div><div class="cmd-desc">Security Minion blueprints + steps.</div></div>
+      <div class="cmd"><div class="cmd-name">AGENTS.md</div><div class="cmd-desc">AAIF standard. Agent-agnostic guidance.</div></div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--gold);margin-bottom:6px;letter-spacing:1px;">USER (~/.claude/ — never committed)</div>
+      <div class="cmd"><div class="cmd-name">~/.claude/settings.json</div><div class="cmd-desc">Personal prefs. Project settings override these.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/CLAUDE.md</div><div class="cmd-desc">Personal conventions. Active in all projects.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/skills/</div><div class="cmd-desc">Personal skills. Available everywhere.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/agents/</div><div class="cmd-desc">Personal subagents. Available everywhere.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/plans/</div><div class="cmd-desc">Default plan location. <span class="warn">Random names — set plansDirectory instead.</span></div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/plugins/</div><div class="cmd-desc">Installed plugins + cache.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude/MEMORY.md</div><div class="cmd-desc">Auto-generated persistent memory.</div></div>
+      <div class="cmd"><div class="cmd-name">~/.claude.json</div><div class="cmd-desc">Auth state, API keys. <span class="warn">NEVER commit.</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOCTUA SKILL FLOW -->
+<div class="section span-2">
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA SKILL FLOW — Think → Spec → Plan → Build → Audit → Harden → Sprint</div>
+  <div class="mono-block">/think ─→ structured analysis (conversation)
+  │
+  ▼
+/spec ──→ plans/SPEC-{name}.md (spec package artifact)
+  │       reads: references/approach-selection.md, swarm-patterns.md
+  │
+  ▼
+Plan Mode → verified plan (human reviews via Ctrl+G, approves)
+  │          reads: plans/SPEC-*.md, CLAUDE.md, codebase (read-only)
+  │
+  ▼
+Build ────→ working tool
+  │          uses: .claude/agents/ (delegates), .mcp.json (external tools)
+  │          constrained by: settings.json (deny rules), hooks/ (enforcement)
+  │
+  ▼
+/audit-aiuc1 → reports/AUDIT-{name}.md
+  │
+  ▼
+/harness ──→ harnesses/{type}/blueprint.yaml + fixed_steps/ + flexible_steps/
+  │
+  ▼
+/worktree ─→ ../worktrees/{name}-{n}/ (isolated parallel environments)
+  │
+  ▼
+Sprint execution → /retro → reports/RETRO-{sprint}.md</div>
+</div>
+
+<!-- DEFENSE LAYER MAP -->
+<div class="section span-2">
+  <div class="section-head"><div class="sh-dot" style="background:var(--red)"></div> DEFENSE LAYER CLASSIFICATION — Inside vs Outside the Reasoning Loop</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:11px;">
+    <div>
+      <div style="color:var(--orange);font-weight:700;font-size:10px;letter-spacing:1px;margin-bottom:6px;">⚠ INSIDE LOOP — GUIDANCE (probabilistic, bypassable)</div>
+      <div style="color:var(--text-dim);line-height:1.8;">
+        CLAUDE.md — agent CAN ignore under goal pressure<br>
+        AGENTS.md — guidance, not enforcement<br>
+        .claude/rules/*.md — scoped, still probabilistic<br>
+        .claude/skills/ — activation not guaranteed<br>
+        .claude/agents/*.md — system prompts, may deviate<br>
+        plans/*.md — intent docs, not constraints<br>
+        harnesses/*/flexible_steps/ — the "AI part"
+      </div>
+    </div>
+    <div>
+      <div style="color:var(--green);font-weight:700;font-size:10px;letter-spacing:1px;margin-bottom:6px;">✓ OUTSIDE LOOP — ENFORCEMENT (deterministic, always fires)</div>
+      <div style="color:var(--text-dim);line-height:1.8;">
+        settings.json → permissions.deny — CANNOT bypass<br>
+        settings.json → hooks.PreToolUse — runs BEFORE tool<br>
+        settings.json → hooks.PostToolUse — runs AFTER tool<br>
+        settings.json → sandboxing — OS-level isolation<br>
+        .claude/hooks/*.sh — the actual enforcement code<br>
+        --max-turns, --max-budget-usd — hard caps<br>
+        --allowedTools — explicit tool restriction<br>
+        harnesses/*/fixed_steps/ — deterministic pipeline<br>
+        harnesses/*/blueprint.yaml — defines the boundary
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COST CHEAT SHEET -->
+<div class="section span-2">
+  <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> COST &amp; TOKEN QUICK REFERENCE <span class="b b-cost">COST</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px;">
+    <div>
+      <div style="color:var(--gold);font-weight:700;font-size:10px;margin-bottom:4px;">MODEL PRICING (per MTok — approximate)</div>
+      <div style="color:var(--text-dim);line-height:1.8;">
+        Opus 4.6: ~$15 in / ~$75 out<br>
+        Sonnet 4.6: ~$3 in / ~$15 out<br>
+        Haiku 4.5: ~$1 in / ~$5 out<br>
+        Cache read: ~10% of input price<br>
+        <span style="color:var(--text-muted);font-size:10px;">Verify current rates: anthropic.com/pricing</span>
+      </div>
+    </div>
+    <div>
+      <div style="color:var(--gold);font-weight:700;font-size:10px;margin-bottom:4px;">CONTEXT COSTS</div>
+      <div style="color:var(--text-dim);line-height:1.8;">
+        CLAUDE.md: loaded every turn<br>
+        Skills idle: ~100 tok each<br>
+        Skill active: full SKILL.md loaded<br>
+        Hooks: zero context cost<br>
+        Rules: loaded only on path match
+      </div>
+    </div>
+    <div>
+      <div style="color:var(--gold);font-weight:700;font-size:10px;margin-bottom:4px;">EFFORT LEVELS</div>
+      <div style="color:var(--text-dim);line-height:1.8;">
+        /effort low ○ — fast, cheap, iteration<br>
+        /effort medium ◐ — default balance<br>
+        /effort high ● — deep reasoning<br>
+        /effort auto — reset to default<br>
+        "ultrathink" — max for one turn
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- grid -->
+
+<div class="footer">
+  Noctua · AI Security Engineering · Claude Code Complete Command Reference · Verified against official changelog v2.1.66+ · March 2026<br>
+  Commands change frequently — run <code>/help</code> for the latest. Pricing approximate — always verify at <code>anthropic.com/pricing</code>.
+</div>
+
+</div><!-- poster -->
+</body>
+</html>
