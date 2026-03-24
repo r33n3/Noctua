@@ -276,7 +276,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-title">Step 6: Translate agent-identities.yaml → IAM policies (Strands)</div>
         <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is <em>allowed</em> to do in your local system. In production (Strands + AWS), this translates directly to IAM policies. Each agent gets its own IAM role with only the permissions it needs. Install Strands and write an IAM policy document for your triage agent that mirrors its allowed_tools list from Step 1.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-label="Strands Agent IAM Policy Setup"><pre><code>pip install strands-agents strands-agents-tools
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Strands Agent IAM Policy Setup"><pre><code>pip install strands-agents strands-agents-tools
 
 # Each agent in Strands gets its own IAM role — not shared credentials
 # IAM policy for soc-recon-001 (threat intelligence analyst):
@@ -611,7 +611,7 @@ EOF</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><
         <div class="step-title">Step 7: Deploy your Strands agent to AWS AgentCore</div>
         <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 to AgentCore. AgentCore handles the managed runtime — you configure IAM role, Bedrock Guardrails, and Secrets Manager. This is the production version of your Claude Code prototype.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-label="AgentCore Deployment — Secrets Manager + IAM + Bedrock Guardrails"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="AgentCore Deployment — Secrets Manager + IAM + Bedrock Guardrails"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
 aws secretsmanager create-secret \
   --name "noctua/soc-agent/api-keys" \
   --secret-string '{"NVD_API_KEY": "your-key-here"}'

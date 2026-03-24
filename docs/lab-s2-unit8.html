@@ -823,7 +823,7 @@ class BaseAgent:
         <label for="step-u8-15-2"><strong>Step 2:</strong> Build the multi-stage Dockerfile and docker-compose.yml.</label>
       </div>
 
-      <div class="code-block" data-collapsible data-label="Dockerfile — Multi-Stage Capstone Build">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Dockerfile — Multi-Stage Capstone Build">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Dockerfile — Multi-stage build for capstone
 FROM python:3.12-slim AS builder
@@ -850,7 +850,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENTRYPOINT ["python", "orchestrator.py"]</code></pre>
       </div>
 
-      <div class="code-block" data-collapsible data-label="docker-compose.yml — Local Development">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="docker-compose.yml — Local Development">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># docker-compose.yml — Local development and testing
 services:
