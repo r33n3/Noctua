@@ -114,6 +114,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(212,160,23,0.15); color: var(--accent); border: 1px solid rgba(212,160,23,0.3); padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s; }
 .copy-btn:hover { background: rgba(212,160,23,0.28); }
 
+/* === COLLAPSIBLE CODE BLOCKS === */
+.code-toggle { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px 6px 0 0; padding: 7px 12px; cursor: pointer; user-select: none; font-size: 13px; color: var(--text-muted); transition: background 0.15s; border-bottom: none; }
+.code-toggle:hover { background: var(--border-light, #3a4060); color: var(--text); }
+.toggle-arrow { font-size: 10px; color: var(--accent); min-width: 10px; }
+.toggle-label { flex: 1; font-family: var(--font-mono, monospace); }
+.toggle-lines { font-size: 11px; color: var(--text-muted); opacity: 0.7; }
+.code-block[data-collapsible][data-collapsed="true"] .code-toggle { border-radius: 6px; border-bottom: 1px solid var(--border); }
+.code-block[data-collapsible][data-collapsed="true"] pre { display: none; }
+.code-block[data-collapsible][data-collapsed="true"] .copy-btn { display: none; }
+
 /* === PROMPT BLOCKS (copyable callout prompts) === */
 .prompt-block { position: relative; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 10px 52px 10px 14px; margin: 10px 0; font-size: 13px; line-height: 1.6; font-style: italic; color: var(--text); }
 .prompt-block .copy-btn { top: 6px; right: 6px; }

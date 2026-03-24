@@ -201,7 +201,7 @@
         <label for="step-u8-13-6"><strong>Step 6:</strong> Initialize your capstone repository with this structure:</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Capstone Repository Initialization">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Initialize capstone repository structure
 mkdir -p capstone/{agents,tools,tests,docs,infra,observability}
@@ -371,7 +371,7 @@ echo "Repository initialized. Architecture locked — begin Sprint I on Monday."
         <label for="step-u8-14-1"><strong>Step 1:</strong> Create <code>PROMPT.md</code> — your Claude Code architecture prompt. Include agent roles, tools, orchestration pattern, data flow, and success criteria. This is what you hand to Claude Code to generate scaffolding.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="PROMPT.md — Capstone Architecture Template">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># PROMPT.md — Capstone Architecture Prompt for Claude Code
 # Edit this template for your specific project
@@ -455,7 +455,7 @@ git merge feature/agent1 --no-ff -m "feat: implement Agent 1 - [name]"</code></p
         <label for="step-u8-14-3"><strong>Step 3:</strong> Scaffold your agent system using Claude Code. Use your PROMPT.md as the context. Generate all agent files, tool definitions, and orchestrator in one session.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="3-Agent Scaffold — Claude Agent SDK">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Example scaffold for a 3-agent system using Claude Agent SDK
 
@@ -567,7 +567,7 @@ if __name__ == "__main__":
         <label for="step-u8-14-4"><strong>Step 4:</strong> Write integration tests for the full agent pipeline. At minimum: one happy-path test with realistic input, one error-handling test with malformed input.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Integration Test Suite — tests/integration/test_pipeline.py">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># tests/integration/test_pipeline.py
 import pytest
@@ -761,7 +761,7 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
         <label for="step-u8-15-1"><strong>Step 1:</strong> Add full OpenTelemetry instrumentation to all agents. Traces must span across agents for end-to-end visibility.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Observability Tracing — observability/tracing.py">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># observability/tracing.py
 from opentelemetry import trace
@@ -823,7 +823,7 @@ class BaseAgent:
         <label for="step-u8-15-2"><strong>Step 2:</strong> Build the multi-stage Dockerfile and docker-compose.yml.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-label="Dockerfile — Multi-Stage Capstone Build">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Dockerfile — Multi-stage build for capstone
 FROM python:3.12-slim AS builder
@@ -850,7 +850,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENTRYPOINT ["python", "orchestrator.py"]</code></pre>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-label="docker-compose.yml — Local Development">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># docker-compose.yml — Local development and testing
 services:
@@ -885,7 +885,7 @@ services:
         <label for="step-u8-15-3"><strong>Step 3:</strong> Build and scan your container image with Trivy. Document all CVEs found and your mitigations.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Container Build and Trivy Scan">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Build and scan
 docker build -t capstone:latest .
@@ -932,7 +932,7 @@ EOF</code></pre>
         <label for="step-u8-15-4"><strong>Step 4:</strong> Create the GitHub Actions CI/CD pipeline with all required DevSecOps gates.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="DevSecOps Pipeline — .github/workflows/devsecops.yml">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># .github/workflows/devsecops.yml
 name: DevSecOps Promotion Pipeline
@@ -1025,7 +1025,7 @@ jobs:
         <label for="step-u8-15-5"><strong>Step 5 (Red Team):</strong> Access the peer team's live production deployment (not their repository) and test all 10 OWASP Agentic risks systematically. For each risk: attempt exploitation, document what was found, score with OWASP AIVSS, classify the defense layer exploited, and recommend a specific fix.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Red Team Report Template">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Red Team Report Template
 # docs/security/red-team-report.md
@@ -1095,7 +1095,7 @@ Testing performed against the deployed system — not the repository alone.
         <label for="step-u8-15-7"><strong>Step 7:</strong> Create your IaC template (CloudFormation or Terraform) and operational runbook.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="CloudFormation ECS Task Definition">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># infra/cloudformation.yaml — ECS Task Definition example
 AWSTemplateFormatVersion: '2010-09-09'
@@ -1266,7 +1266,7 @@ Resources:
         <label for="step-u8-16-1"><strong>Step 1:</strong> Write your operational runbook. Document: how to deploy, how to monitor, key metrics and their alert thresholds, and the incident response playbook.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Operations Runbook Template">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># docs/operations/runbook.md template
 
@@ -1376,7 +1376,7 @@ aws cloudformation deploy \
         <label for="step-u8-16-5"><strong>Step 5:</strong> Tag final deliverable as <code>capstone-final</code> and ensure repository is complete with all required artifacts.</label>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Final Repository Checklist and Tagging">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Final repository checklist and tagging
 

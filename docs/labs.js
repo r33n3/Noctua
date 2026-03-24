@@ -211,6 +211,33 @@ function buildSidebar(activeLink, pathPrefix) {
   return html;
 }
 
+// Collapsible code blocks — wire up any .code-block[data-collapsible] on load
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.code-block[data-collapsible]').forEach(function(block) {
+      var label = block.dataset.label || 'Code';
+      var codeEl = block.querySelector('code');
+      var lines = codeEl ? codeEl.textContent.trim().split('\n').length : 0;
+      var isCollapsed = block.getAttribute('data-collapsed') === 'true';
+
+      var toggle = document.createElement('div');
+      toggle.className = 'code-toggle';
+      toggle.innerHTML =
+        '<span class="toggle-arrow">' + (isCollapsed ? '▶' : '▼') + '</span>' +
+        '<span class="toggle-label">' + label + '</span>' +
+        '<span class="toggle-lines">' + lines + ' lines</span>';
+
+      toggle.addEventListener('click', function() {
+        var collapsed = block.getAttribute('data-collapsed') === 'true';
+        block.setAttribute('data-collapsed', collapsed ? 'false' : 'true');
+        toggle.querySelector('.toggle-arrow').textContent = collapsed ? '▼' : '▶';
+      });
+
+      block.insertBefore(toggle, block.firstChild);
+    });
+  });
+})();
+
 // Persist sidebar scroll position across page navigations
 (function() {
   var KEY = 'noctua-sidebar-scroll';

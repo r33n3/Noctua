@@ -276,7 +276,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-title">Step 6: Translate agent-identities.yaml → IAM policies (Strands)</div>
         <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is <em>allowed</em> to do in your local system. In production (Strands + AWS), this translates directly to IAM policies. Each agent gets its own IAM role with only the permissions it needs. Install Strands and write an IAM policy document for your triage agent that mirrors its allowed_tools list from Step 1.</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install strands-agents strands-agents-tools
+      <div class="code-block" data-collapsible data-label="Strands Agent IAM Policy Setup"><pre><code>pip install strands-agents strands-agents-tools
 
 # Each agent in Strands gets its own IAM role — not shared credentials
 # IAM policy for soc-recon-001 (threat intelligence analyst):
@@ -313,7 +313,7 @@ EOF
         <div class="step-title">Step 7: Build your first Strands agent with IAM role</div>
         <div class="step-desc">Migrate one tool from your NHI registry into a Strands agent. Connect your existing MCP server — no modification needed. Run it locally first, verify the output matches your Claude Code version, then verify the <code>@tool</code> decorator enforces the same input validation as your PreToolUse hook did.</div>
       </div></label>
-      <div class="code-block"><pre><code>from strands import Agent, tool
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Strands Triage Agent with MCP + Tool Validation"><pre><code>from strands import Agent, tool
 from strands.models import BedrockModel
 from strands.tools.mcp import MCPClient
 
@@ -529,7 +529,7 @@ cat trivy-report.json | python3 -m json.tool | grep '"Severity"' | sort | uniq -
         <div class="step-title">Step 3: Build the GitHub Actions CI/CD pipeline</div>
         <div class="step-desc">Create <code>.github/workflows/security-pipeline.yml</code> with stages: (1) pre-commit: secrets detection with detect-secrets, (2) PR review: SAST with Bandit, (3) Build: container image build + Trivy scan + SBOM generation, (4) Deploy-dev: auto-deploy on merge to main, (5) Deploy-prod: requires manual approval.</div>
       </div></label>
-      <div class="code-block"><pre><code># .github/workflows/security-pipeline.yml
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="CI/CD Pipeline — .github/workflows/security-pipeline.yml"><pre><code># .github/workflows/security-pipeline.yml
 name: SOC Agent Security Pipeline
 on: [push, pull_request]
 jobs:
@@ -611,7 +611,7 @@ EOF</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><
         <div class="step-title">Step 7: Deploy your Strands agent to AWS AgentCore</div>
         <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 to AgentCore. AgentCore handles the managed runtime — you configure IAM role, Bedrock Guardrails, and Secrets Manager. This is the production version of your Claude Code prototype.</div>
       </div></label>
-      <div class="code-block"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
+      <div class="code-block" data-collapsible data-label="AgentCore Deployment — Secrets Manager + IAM + Bedrock Guardrails"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
 aws secretsmanager create-secret \
   --name "noctua/soc-agent/api-keys" \
   --secret-string '{"NVD_API_KEY": "your-key-here"}'

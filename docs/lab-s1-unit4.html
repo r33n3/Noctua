@@ -486,7 +486,7 @@ class JSONFormatter(logging.Formatter):
         <div class="step-title">PR created with structured description</div>
         <div class="step-desc">Use <code>gh pr create</code> with a description covering: problem solved, architecture decisions, test coverage summary, known gaps, and what leadership needs to evaluate. A PR that just says "Sprint II prototype" is not reviewable.</div>
       </div></label>
-      <div class="code-block"><pre><code>gh pr create \
+      <div class="code-block" data-collapsible data-label="Sprint PR — gh pr create Template"><pre><code>gh pr create \
   --title "Sprint II: Threat Hunter v0.1.0 — Hardened" \
   --body "## Problem
 Analysts spend 45 min/day triaging phishing alerts manually.
