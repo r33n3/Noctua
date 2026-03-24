@@ -192,6 +192,10 @@
     <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Industry-standard agent guidance (AAIF). Agent-agnostic — works with Claude, GPT, Gemini. Documents agent roles, responsibilities, expected behaviors.</div>
   </div>
   <div class="dir">
+    <div class="dir-name">REVIEW.md</div>
+    <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Code review policy file. Read automatically by <code>/code-review</code> (local plugin), GitHub Action reviews, and Managed Code Review fleet. Defines: what to always flag, severity mapping (Critical/High/Medium/Low), and security focus areas specific to this project. Complements CLAUDE.md — CLAUDE.md sets project conventions, REVIEW.md sets review-specific rules. <span class="tip">Week 15 — created alongside GitHub Action CI/CD setup.</span></div>
+  </div>
+  <div class="dir">
     <div class="dir-name">.mcp.json</div>
     <div class="dir-desc"><span class="layer layer-2">LAYER 2</span> MCP server configuration. Use <code>${VAR}</code> refs only — no hardcoded secrets. Committed safely because credentials live in env vars.</div>
   </div>
@@ -317,6 +321,7 @@
         <li><strong>.claude/rules/*.md</strong> Path-scoped instructions — lazy-loaded, still probabilistic</li>
         <li><strong>.claude/skills/</strong> Activation depends on Claude choosing to invoke — not guaranteed</li>
         <li><strong>.claude/agents/*.md</strong> System prompts — agent may deviate under adversarial input</li>
+        <li><strong>REVIEW.md</strong> Review-specific policy (read by <code>/code-review</code> and CI/CD review agents)</li>
         <li><strong>plans/*.md</strong> Intent documentation — not a runtime constraint</li>
         <li><strong>harnesses/*/flexible_steps/</strong> The "AI part" — Claude generates these dynamically</li>
       </ul>
@@ -363,6 +368,7 @@
       <tr><td>Week 10</td><td>AGENTS.md</td><td>Add AAIF-standard agent documentation. Introduce agent-agnostic conventions.</td></tr>
       <tr><td>Week 11</td><td>.claude/skills/harness.md, worktree.md</td><td>Production skills. Worktree isolation for parallel agents.</td></tr>
       <tr><td>Week 12</td><td>CLAUDE.md @import refactor</td><td>Break monolithic CLAUDE.md into modules. Introduce @import syntax and lazy loading.</td></tr>
+      <tr><td>Week 15</td><td>REVIEW.md</td><td>Code review policy — defines what CI/CD review agents flag and at what severity.</td></tr>
       <tr><td>Week 13-15</td><td>Capstone: full structure</td><td>All directories populated. Complete project with governance, enforcement, and audit trail.</td></tr>
     </tbody>
   </table>

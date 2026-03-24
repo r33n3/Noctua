@@ -1,0 +1,60 @@
+# Noctua AI Security Engineering — Security Review Workflow Template
+# Copy this to your project's .github/workflows/ directory.
+# Requires: ANTHROPIC_API_KEY secret set in repository Settings → Secrets.
+# Install the Claude GitHub App first: /install-github-app in Claude Code terminal,
+# or manually at https://github.com/apps/claude
+
+name: Claude Security Review
+
+on:
+  # Trigger on @claude mention in PR comments (recommended — controlled cost)
+  issue_comment:
+    types: [created]
+
+  # Uncomment to trigger automatically on every PR (higher cost):
+  # pull_request:
+  #   types: [opened, synchronize]
+
+jobs:
+  security-review:
+    # Only run on PR comments containing @claude
+    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read        # Claude reads code — does not push
+      pull-requests: write  # Claude posts review comments
+      # Add 'contents: write' only if you want Claude to push fixes (Scope 3 → Scope 4 — use carefully)
+
+    steps:
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are a security reviewer for an AI agent system built in the Noctua AI Security Engineering course.
+            Review this PR for security issues. Reference CLAUDE.md and REVIEW.md for project-specific rules.
+
+            CRITICAL — flag and block merge:
+            - Credential exposure (hardcoded keys, tokens, secrets in any form)
+            - Command injection or path traversal
+            - Agent permission escalation beyond declared scope
+            - Missing enforcement (hook/Cedar policy) for security-critical operations
+
+            HIGH — flag for human review:
+            - Input validation gaps on external data paths
+            - Tool description quality issues (vague descriptions cause misuse)
+            - Missing is_error handling on security-relevant tool calls
+            - Least privilege violations (agent has more access than the task requires)
+
+            MEDIUM — note for awareness:
+            - Missing structured logging for agent decisions
+            - Inconsistent error handling patterns
+            - Missing retry limits on agent loops
+
+            For each finding:
+            1. Post an inline comment on the specific line affected
+            2. Include the severity (CRITICAL/HIGH/MEDIUM/LOW)
+            3. Explain why it matters in the context of an agent system
+            4. Suggest the specific fix
+
+            Score findings using CVSS base metrics where applicable.
+            This review is evidence for the Delegated Autonomous elevation gate.

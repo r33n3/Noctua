@@ -1122,6 +1122,19 @@ Show working Python code.
 <span class="n">log_analysis_step</span><span class="p">(</span><span class="s2">&quot;recon&quot;</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">892</span><span class="p">)</span>
 </code></pre></div>
 
+<h4 id="prototype-to-production-elevation-gates">Prototype to Production — The Elevation Gate Model</h4>
+<p>Moving a security agent from prototype to production is not a deployment decision — it is an elevation decision. Each stage requires specific evidence that the system is ready for greater autonomy. PeaRL's Cedar policies enforce these gates: the system cannot operate in a higher autonomy mode until the required evidence exists.</p>
+<table>
+<thead><tr><th>Stage</th><th>Autonomy mode</th><th>Required evidence</th><th>Course phase</th></tr></thead>
+<tbody>
+<tr><td><strong>Prototype</strong></td><td>ASSISTIVE</td><td><code>/code-review</code> passes (no Critical/High findings)</td><td>Week 6+</td></tr>
+<tr><td><strong>Supervised Autonomous</strong></td><td>SUPERVISED_AUTONOMOUS</td><td><code>/audit-aiuc1</code> Tier 2 baseline + human reviewer attested</td><td>Week 9</td></tr>
+<tr><td><strong>Delegated Autonomous</strong></td><td>DELEGATED_AUTONOMOUS</td><td>Human security review sign-off + GitHub Action active in CI/CD + no open Critical findings</td><td>Week 15</td></tr>
+<tr><td><strong>Production</strong></td><td>PRODUCTION</td><td>MASS scan current + Managed Code Review active + PeaRL AGP monitoring + Cedar policies deployed</td><td>Semester 2</td></tr>
+</tbody>
+</table>
+<p>Each gate is additive — passing Tier 3 does not replace Tier 2 evidence; it adds to it. By the time a system reaches Production, it has: passed code review, passed AIUC-1 audit, been signed off by a human reviewer, has automated CI/CD review, has been scanned by MASS, and is actively monitored by PeaRL. That is the evidence stack of a production-grade security agent.</p>
+<div class="callout callout-key"><p><strong>Code Review never reaches full autonomy.</strong> Even in Production mode with a multi-agent review fleet running on every push, a human reviews findings before merge. The review system is Scope 3 by design — automated analysis, human judgment at the gate. This is intentional architecture, not a limitation.</p></div>
 <hr />
 <h3 id="day-2-hands-on-lab-hardening-sprint">Day 2 — Hands-On Lab: Hardening Sprint</h3>
 <p><strong>Lab Objectives:</strong></p>
@@ -1292,6 +1305,35 @@ Show working Python code.
 <li>Highlight logging output</li>
 <li>Time your demo to 3–5 minutes</li>
 </ul>
+<hr />
+<h4 id="week-15-github-action-automated-review">Week 15 — GitHub Action: Automated Security Review</h4>
+<p>At Week 15 you set up automated PR review as part of your CI/CD pipeline. This is the Delegated Autonomous gate prerequisite — once the GitHub Action is active, every PR gets reviewed before merge without requiring a human to remember to run <code>/code-review</code> manually.</p>
+<p><strong>Setup: two paths</strong></p>
+<p><strong>Path A — /install-github-app (recommended):</strong> In Claude Code terminal, run <code>/install-github-app</code>. This walks you through: installing the Claude GitHub App to your org/repo, setting <code>ANTHROPIC_API_KEY</code> as a repository secret, and creating the workflow YAML.</p>
+<p><strong>Path B — Manual:</strong></p>
+<ol>
+<li>Install Claude GitHub App at <code>https://github.com/apps/claude</code></li>
+<li>Add secret: Settings → Secrets → ANTHROPIC_API_KEY</li>
+<li>Create <code>.github/workflows/security-review.yml</code> (template in <code>templates/</code> directory)</li>
+</ol>
+<p><strong>Trigger options:</strong></p>
+<table>
+<thead><tr><th>Trigger</th><th>When it runs</th><th>Cost profile</th><th>Recommended for</th></tr></thead>
+<tbody>
+<tr><td>Comment-triggered (<code>@claude review</code>)</td><td>Only when you ask</td><td>Lowest — on demand</td><td>Starting out, high-traffic repos</td></tr>
+<tr><td>PR open/push</td><td>Every PR, every push</td><td>Higher — scales with PR volume</td><td>Critical repos, production systems</td></tr>
+<tr><td><code>@claude</code> in PR body</td><td>When PR includes @claude</td><td>Medium — per-PR</td><td>Default for course projects</td></tr>
+</tbody>
+</table>
+<p><strong>REVIEW.md as CI/CD policy:</strong> The GitHub Action reads your <code>REVIEW.md</code> to understand what to flag. The security governance file you create at Week 15 directly shapes what the automated review catches on every future PR. The governance layer you built all semester becomes CI/CD enforcement.</p>
+<p><strong>Permission model (least privilege):</strong></p>
+<div class="codehilite"><pre><span></span><code>permissions:
+  contents: read        # Claude reads code — does NOT push
+  pull-requests: write  # Claude posts review comments only
+  # Add contents: write ONLY if you need Claude to push fixes
+  # This moves from Agentic Scope 2 (review) to Scope 3 (act) — use carefully
+</code></pre></div>
+<div class="callout callout-tip"><p><strong>Test your setup:</strong> Open a PR with one intentional vulnerability (e.g., a hardcoded API key in a test file). Trigger the review. Verify Claude catches it and posts an inline comment on the correct line. Fix the vulnerability and verify the comment resolves. This test confirms the full pipeline works before you depend on it.</p></div>
 <hr />
 <p><strong>Hardening Sprint Deliverables:</strong></p>
 <ol>

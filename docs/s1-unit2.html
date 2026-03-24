@@ -782,6 +782,18 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </ol>
 <p>The spec is not bureaucracy — it's the record of your security design choices. When you audit your own system in Unit 3, your spec is Exhibit A.</p>
 </div>
+<div class="callout callout-tip"><p><strong>/code-review — The Post-Build Step Before You Commit</strong></p>
+<p>After building to your spec, run <code>/code-review</code> before committing. This is the ASSISTIVE gate — it's what separates "I built something" from "I built something ready to be audited."</p>
+<p>Under the hood, /code-review dispatches 4 parallel review agents. Each examines your changes independently. Only findings with ≥80 confidence are reported — the threshold filters noise so you actually read the output. Findings are tagged: <code>bug</code>, <code>security</code>, <code>performance</code>, <code>style</code>, <code>compliance</code>.</p>
+<div class="codehilite"><pre><span></span><code>/code-review                 # Review to terminal
+/code-review --comment       # Post as PR comment (if on a branch)
+</code></pre></div>
+<p><strong>Security framing:</strong> You are building security tools — tools that find vulnerabilities in other systems. <code>/code-review</code> checks for vulnerabilities <em>you introduced</em> while building the vulnerability-finder. The meta-security step that most developers skip.</p>
+<p><strong>Updated workflow for Week 6+:</strong></p>
+<div class="codehilite"><pre><span></span><code>/think → /spec → Build → /code-review → [ASSISTIVE gate ✓] → commit → /audit-aiuc1 (Week 9)
+</code></pre></div>
+<p>The confidence threshold (80) is configurable in the plugin's command file. Lower = more findings and more noise. Higher = fewer findings and potential misses. 80 is the course default — adjust after you understand your system's noise profile.</p>
+</div>
 <h4 id="day-1-deliverable_1">Day 1 Deliverable</h4>
 <p>Design a security tool (your choice of domain: log querying, IP reputation, alert enrichment, credential rotation, etc.) and document:</p>
 <ol>

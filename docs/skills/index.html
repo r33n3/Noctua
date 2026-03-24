@@ -12,7 +12,7 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>Five Claude Code skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
+<p>Six Claude Code skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
 
 <div class="callout callout-key">
   <strong>Why This Cycle Exists</strong>
@@ -24,8 +24,9 @@
     <li><strong>/worktree-setup</strong> — Isolates parallel work into separate branches. Configures pre-commit hooks and output suppression (silence passing tests, surface only failures) so the agent hits constraints during execution, not after you review.</li>
     <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
     <li><strong>/harness</strong> — The meta-skill. Orients you when sessions lose direction, audits whether your workflow is self-correcting, and checks whether /retro output is actually changing your /spec and /think.</li>
+    <li><strong>/audit-aiuc1</strong> — Audit your tool or agent system against the six AIUC-1 domains before elevation to a higher autonomy mode. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates.</li>
   </ul>
-  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /spec, /spec constrains /worktree, /worktree produces the evidence for /retro. Run all five and your system gets better every cycle.</p>
+  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /spec, /spec constrains /worktree, /worktree produces the evidence for /retro. Run all six and your system gets better every cycle.</p>
 </div>
 
 <div class="callout callout-key">
@@ -38,7 +39,7 @@
 <div class="callout callout-key">
   <strong>What is a Claude Code Skill?</strong>
   <p>A skill is a markdown file you place in <code>~/.claude/commands/</code> (global, available in all projects) or <code>.claude/commands/</code> (project-local). The filename becomes a slash command. When you type <code>/think</code> in a Claude Code session, Claude reads <code>think.md</code> and follows its instructions in the context of your current work.</p>
-  <p>Skills are plain text files — read them, edit them, fork them, share them. The five below are starting points, not finished products. The best version of each skill is the one you've shaped for your specific work.</p>
+  <p>Skills are plain text files — read them, edit them, fork them, share them. The six below are starting points, not finished products. The best version of each skill is the one you've shaped for your specific work.</p>
 </div>
 
 <div class="callout callout-tip">
@@ -52,12 +53,13 @@
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   <pre><code>mkdir -p ~/.claude/commands
 
-# Download all five skills at once (run from your terminal)
+# Download all six skills at once (run from your terminal)
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
 curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
 curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+curl -o ~/.claude/commands/audit-aiuc1.md   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md
 
 # Verify
 ls ~/.claude/commands/</code></pre>
@@ -234,6 +236,42 @@ ls ~/.claude/commands/</code></pre>
     <li>Build a running gap log file that accumulates gap type counts across retros — this becomes your Three Strikes tracker</li>
     <li>Add the Phase Navigation tree to your AGENTS.md so agents can orient themselves without invoking the skill</li>
     <li>Add a three-tier context audit: "Is Tier 1 (AGENTS.md) human-written and surgical? Is Tier 2 (database handoffs) configured for multi-session tasks? Is Tier 3 (session context) scoped to only what this task needs?"</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="audit-aiuc1">/audit-aiuc1 — AIUC-1 Compliance Audit</h2>
+<p>Audit a tool or agent system against all six AIUC-1 domains. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates. The audit scopes itself to your system's deployment tier (1–4) so you only audit what's required.</p>
+<p><strong>Best used in:</strong> Unit 3 Week 9 (first formal audit), before any production deployment of an agent system, before requesting autonomy mode elevation in PeaRL, and as a required deliverable for the capstone project.</p>
+
+<div class="callout callout-reading">
+  <strong>Why /audit-aiuc1 exists</strong>
+  <p>Building a capable agent system and building a <em>compliant</em> agent system are different problems. Most practitioners discover the gap at deployment — when a stakeholder asks "is this AIUC-1 compliant?" and the answer is "I don't know." <code>/audit-aiuc1</code> makes the answer knowable before that conversation happens.</p>
+  <p>The skill walks through all six AIUC-1 domains: Data &amp; Privacy, Security, Safety, Reliability, Accountability, and Society. For each domain it asks structured audit questions, collects evidence, identifies gaps, and scores each finding using OWASP AIVSS severity levels (Critical, High, Medium, Low). Critical and High findings in the Security and Safety domains are blocking — they must be resolved before PeaRL will approve elevation to a higher autonomy mode.</p>
+  <p>The audit is tier-scoped. A Tier 1 embedded AI feature (Copilot-style, no autonomous actions) only requires domains A and F. A Tier 2 supervised agent requires A, B, C, and E. A Tier 3 delegated agent or Tier 4 multi-agent pipeline requires all six. You answer two questions — what is the system, and what is its tier — and the skill audits exactly what's in scope.</p>
+  <p>The output report ends with a machine-readable Elevation Gate Status block. This is the artifact that Cedar's elevation policies parse when evaluating a request to move from ASSISTIVE to SUPERVISED_AUTONOMOUS mode, or from SUPERVISED_AUTONOMOUS to DELEGATED_AUTONOMOUS. The report is saved to <code>reports/AUDIT-{system-name}.md</code> in the project. Without it, elevation is blocked. With it, the gate has a dated, domain-scoped, reviewer-attested baseline to evaluate against.</p>
+  <p>As a learning tool, running the audit once against a system you built is one of the best ways to internalize what AIUC-1 actually requires. The questions surface assumptions you made during the build — about data handling, access control, output safety — and make them explicit so they can be evaluated rather than assumed.</p>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="audit-aiuc1.md" download="audit-aiuc1.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download audit-aiuc1.md</a>
+  <a href="audit-aiuc1.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/commands/audit-aiuc1.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add your organization's internal controls beyond the AIUC-1 baseline to the relevant domain sections</li>
+    <li>Fork into <code>/audit-aiuc1-quick</code> — a Tier 1-only version for lightweight assessments of embedded AI features</li>
+    <li>Add a MASS scan integration: run MASS against the tool before scoring Domain B and import findings directly into the B-control table</li>
+    <li>Add a re-audit mode that diffs against a previous report and surfaces only what changed — useful for quarterly reviews and post-remediation confirmation</li>
+    <li>Extend the Elevation Gate Status footer with your organization's Cedar policy IDs for each gate</li>
   </ul>
 </div>
 

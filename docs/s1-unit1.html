@@ -137,14 +137,30 @@
 <li>Access to an API key for Claude (Opus recommended for this unit)</li>
 </ul>
 <p>See <a href="lab-setup.html">Lab Setup Guide</a> for detailed environment configuration.</p>
-<div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the five slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, and <code>/harness</code> to audit whether your workflows are improving.</p>
+<div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the six slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, <code>/harness</code> to audit whether your workflows are improving, and <code>/audit-aiuc1</code> starting in Unit 3 (Week 9) for the first formal AIUC-1 audit — install it now.</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
 curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
-curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md</code></pre></div>
+curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+curl -o ~/.claude/commands/audit-aiuc1.md   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md</code></pre></div>
 <p>Full documentation for each skill: <a href="skills/index.html">Course Skills →</a></p>
+</div>
+<div class="callout"><p><strong>Review Types in This Course — Why Each One Exists</strong></p>
+<p>This course has multiple review activities. They are not redundant — each catches a different class of problem and serves as evidence for a different elevation gate in the PeaRL governance model. An agent system is not promoted to a higher autonomy level until the appropriate evidence is in place.</p>
+<table>
+<thead><tr><th>Review type</th><th>What it catches</th><th>Elevation gate it unlocks</th><th>When</th></tr></thead>
+<tbody>
+<tr><td><code>/code-review</code></td><td>Code bugs, security issues in implementation</td><td>ASSISTIVE → prototype ready for audit</td><td>Week 6+ after every build</td></tr>
+<tr><td><code>/audit-aiuc1</code></td><td>AIUC-1 domain compliance across all 6 domains</td><td>Prototype → SUPERVISED_AUTONOMOUS (Tier 2)</td><td>Week 9 — first formal audit</td></tr>
+<tr><td>Security review (human)</td><td>Design decisions, threat model gaps, reasoning quality</td><td>SUPERVISED → DELEGATED_AUTONOMOUS (Tier 3)</td><td>Week 12 — pre-deployment</td></tr>
+<tr><td>GitHub Action (CI/CD)</td><td>Consistent enforcement on every commit — nothing slips through</td><td>Delegated → Production pipeline</td><td>Week 15 — CI/CD setup</td></tr>
+<tr><td>Managed Code Review</td><td>Enterprise-grade multi-agent fleet, false-positive filtered</td><td>Production operations (Tier 4)</td><td>Semester 2</td></tr>
+<tr><td>Peer review</td><td>Human reasoning, design trade-offs, blind spots</td><td>Not an elevation gate — learning and accountability</td><td>Every sprint</td></tr>
+</tbody>
+</table>
+<p>The key distinction: <strong><code>/code-review</code> and <code>/audit-aiuc1</code> are complementary, not redundant.</strong> /code-review checks the code. /audit-aiuc1 checks the governance. Both must pass before an agent system moves out of prototype mode. You will run both on every system you build in this course.</p>
 </div>
 <h4 id="hands-on-exercise-incident-analysis-with-claude-agents">Hands-On Exercise: Incident Analysis with Claude Agents</h4>
 <p><strong>Scenario:</strong> You're a junior SOC analyst at Meridian Financial, a mid-sized investment bank. On March 3rd, 2026, your SIEM triggered an alert: a single user account (John Chen, VP of Operations) accessed the data warehouse from an unusual IP address (203.45.12.89) at 2:34 AM EST, downloaded 47 CSV files, and disconnected. The account is still active. The IP resolves to a proxy service in Singapore. You have 30 minutes before leadership requires a preliminary assessment.</p>
