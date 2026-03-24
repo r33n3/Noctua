@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Directory Structure — Noctua</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0b0f19;
+    --surface: #121929;
+    --surface2: #151d30;
+    --border: #2a3045;
+    --border-light: #3a4060;
+    --text: #e8dcc8;
+    --text-dim: #9a8e7a;
+    --text-muted: #6a6050;
+    --gold: #d4a017;
+    --gold-dim: #b8880e;
+    --blue: #6b9fd4;
+    --green: #50c878;
+    --red: #e74c3c;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+    --orange: #e67e22;
+    --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.5; }
+
+  .poster { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 16px 0; margin-bottom: 16px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header h1 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .header h1 span { color: var(--gold); }
+  .header-right { text-align: right; }
+  .header-badge { font-size: 10px; background: var(--gold); color: var(--bg); padding: 3px 10px; border-radius: 3px; font-weight: 700; letter-spacing: 1px; }
+  .header-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 1000px) { .grid, .grid-2 { grid-template-columns: 1fr; } }
+  .span-2 { grid-column: span 2; }
+  .span-3 { grid-column: span 3; }
+
+  /* Sections */
+  .section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; overflow: hidden;
+  }
+  .section-head {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; color: var(--text);
+  }
+  .sh-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Directory rows */
+  .dir {
+    display: grid; grid-template-columns: 220px 1fr; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid rgba(42,48,69,0.6);
+    font-size: 11.5px; align-items: start;
+  }
+  .dir:last-child { border-bottom: none; }
+  .dir-name {
+    font-family: var(--mono); font-weight: 500; color: var(--gold); font-size: 11px;
+    word-break: break-all;
+  }
+  .dir-name.dir-path { color: var(--teal); }
+  .dir-name.dir-file { color: var(--text-dim); }
+  .dir-desc { color: var(--text-dim); line-height: 1.5; }
+  .dir-desc .layer { font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 2px; }
+  .layer-1 { background: rgba(212,160,23,0.12); color: var(--gold); }
+  .layer-2 { background: rgba(107,159,212,0.12); color: var(--blue); }
+  .layer-3 { background: rgba(80,200,120,0.12); color: var(--green); }
+  .layer-4 { background: rgba(231,76,60,0.12); color: var(--red); }
+  .warn { color: var(--red); font-size: 10.5px; }
+  .tip  { color: var(--text-muted); font-style: italic; font-size: 10.5px; }
+  .sec  { color: var(--teal); font-size: 10.5px; }
+  code  {
+    font-family: var(--mono); font-size: 10.5px;
+    background: rgba(15,21,37,0.8); padding: 1px 5px;
+    border-radius: 3px; border: 1px solid rgba(212,160,23,0.15); color: #f0c040;
+  }
+
+  /* Week timeline table */
+  .timeline { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .timeline th {
+    text-align: left; padding: 6px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .timeline td { padding: 6px 10px; border-bottom: 1px solid rgba(42,48,69,0.5); vertical-align: top; }
+  .timeline tr:last-child td { border-bottom: none; }
+  .timeline td:first-child { font-family: var(--mono); font-size: 10.5px; color: var(--gold); white-space: nowrap; }
+  .timeline td:nth-child(2) { font-family: var(--mono); font-size: 10.5px; color: var(--teal); }
+  .timeline td:nth-child(3) { color: var(--text-dim); }
+
+  /* Defense map */
+  .defense-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11.5px; }
+  .defense-col h4 { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .defense-col li { list-style: none; padding: 4px 0; border-bottom: 1px solid rgba(42,48,69,0.4); color: var(--text-dim); line-height: 1.4; }
+  .defense-col li:last-child { border-bottom: none; }
+  .defense-col li strong { font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--gold); display: block; }
+
+  /* Mono block */
+  .mono-block {
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-dim);
+    line-height: 1.6; background: rgba(15,21,37,0.6); border: 1px solid rgba(212,160,23,0.12);
+    border-radius: 6px; padding: 12px 14px; white-space: pre; overflow-x: auto;
+    margin-top: 8px;
+  }
+
+  /* Context mode table */
+  .context-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 8px; }
+  .context-table th {
+    text-align: left; padding: 5px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .context-table td { padding: 6px 10px; border-bottom: 1px solid rgba(42,48,69,0.5); color: var(--text-dim); vertical-align: top; }
+  .context-table td:first-child { font-family: var(--mono); font-size: 10.5px; color: var(--teal); white-space: nowrap; }
+  .context-table tr:last-child td { border-bottom: none; }
+
+  /* Footer */
+  .footer {
+    margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border);
+    font-size: 9px; color: var(--text-muted); text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+<div class="header">
+  <div>
+    <h1><span>Claude Code</span> Directory Structure Reference</h1>
+    <div class="header-sub">Noctua AI Security Engineering · Update 41</div>
+  </div>
+  <div class="header-right">
+    <div class="header-badge">MARCH 2026 · v2.1.66+</div>
+    <div class="header-sub">Project (.claude/) vs User (~/.claude/) — what lives where and why</div>
+  </div>
+</div>
+
+<!-- TOP: Two root directories side by side -->
+<div class="grid-2">
+
+<!-- PROJECT STRUCTURE -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> PROJECT STRUCTURE — .claude/ (committed to git)</div>
+
+  <div class="dir">
+    <div class="dir-name">CLAUDE.md</div>
+    <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Always-on project context. Loaded every turn. Describes project conventions, workflow rules, agent roles. <span class="warn">Bypassable under goal pressure — not enforcement.</span></div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">AGENTS.md</div>
+    <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Industry-standard agent guidance (AAIF). Agent-agnostic — works with Claude, GPT, Gemini. Documents agent roles, responsibilities, expected behaviors.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.mcp.json</div>
+    <div class="dir-desc"><span class="layer layer-2">LAYER 2</span> MCP server configuration. Use <code>${VAR}</code> refs only — no hardcoded secrets. Committed safely because credentials live in env vars.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/settings.json</div>
+    <div class="dir-desc"><span class="layer layer-3">LAYER 2-3 ENFORCEMENT</span> Permissions (allow/deny/ask rules) + hooks (PreToolUse, PostToolUse, SessionStart). The deterministic enforcement boundary. <span class="sec">Cannot be bypassed by the reasoning loop.</span></div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/rules/</div>
+    <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Path-scoped instruction files (e.g. <code>frontend.md</code>, <code>api.md</code>). Lazy-loaded only when Claude enters matching path. Reduces token cost of CLAUDE.md.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/skills/</div>
+    <div class="dir-desc">On-demand workflow definitions. <span class="tip">~100 tok idle, full SKILL.md loaded on activation.</span> Course skills: <code>/think</code>, <code>/spec</code>, <code>/audit-aiuc1</code>, <code>/tool-select</code>, <code>/retro</code>, <code>/harness</code>, <code>/worktree</code>.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/agents/</div>
+    <div class="dir-desc">Subagent definitions (YAML or MD). Each specifies: system prompt, allowed tools, model. Course agents: <code>recon</code>, <code>analyzer</code>, <code>reporter</code>, <code>red-team</code>.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/hooks/</div>
+    <div class="dir-desc"><span class="layer layer-3">LAYER 3 ENFORCEMENT</span> Shell scripts called by settings.json hooks. Must be <code>chmod +x</code>. Exit code 0 = allow, non-zero = block. Deterministic — always fires, no reasoning involved.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">plans/</div>
+    <div class="dir-desc">Spec packages and approved plans. Set <code>plansDirectory</code> in settings.json so plans land here instead of <code>~/.claude/plans/</code> (which uses random names).</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">harnesses/</div>
+    <div class="dir-desc">Security Minion blueprints. Each harness has: <code>blueprint.yaml</code> (structure), <code>fixed_steps/</code> (deterministic), <code>flexible_steps/</code> (AI-driven). Produced by <code>/harness</code>.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name dir-file">reports/</div>
+    <div class="dir-desc">Audit outputs (<code>AUDIT-*.md</code>), sprint retrospectives (<code>RETRO-*.md</code>). Produced by <code>/audit-aiuc1</code> and <code>/retro</code>.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name dir-file">resources/</div>
+    <div class="dir-desc">Reference materials: approach-selection.md, swarm-patterns.md. Read by <code>/spec</code> during planning.</div>
+  </div>
+</div>
+
+<!-- USER STRUCTURE -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--blue)"></div> USER STRUCTURE — ~/.claude/ (never committed)</div>
+
+  <div class="dir">
+    <div class="dir-name">~/.claude/CLAUDE.md</div>
+    <div class="dir-desc">Personal conventions active in all projects. Your preferred communication style, personal shortcuts, cross-project preferences. Lower priority than project CLAUDE.md.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/settings.json</div>
+    <div class="dir-desc">Personal permission preferences. Project settings.json takes precedence for project-specific rules. Use for global deny rules you always want (e.g., never delete git history).</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/skills/</div>
+    <div class="dir-desc">Personal skills available in every project. Good for general-purpose workflows not project-specific. Project skills take precedence on name collision.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/agents/</div>
+    <div class="dir-desc">Personal subagents available everywhere. Same precedence rules as skills.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/plans/</div>
+    <div class="dir-desc"><span class="warn">Default plan location uses random names (piped-humming-wand.md style).</span> Override with <code>plansDirectory</code> in project settings.json to save plans in your repo instead.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/plugins/</div>
+    <div class="dir-desc">Installed plugins and their cache. Managed via <code>/config</code>. Plugin state persists here between sessions.</div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude/MEMORY.md</div>
+    <div class="dir-desc">Auto-generated persistent memory. Claude writes project conventions, user preferences, and feedback here during sessions. Loaded at conversation start. <span class="tip">Index file — individual memories are separate .md files.</span></div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">~/.claude.json</div>
+    <div class="dir-desc"><span class="layer layer-4">LAYER 4</span> Authentication state, API keys, session tokens. <span class="warn">NEVER commit this file.</span> Add to .gitignore. Lives at home root, not inside ~/.claude/.</div>
+  </div>
+
+  <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">CLAUDE.md @import — Modular Context</div>
+    <div style="color:var(--text-dim);font-size:11.5px;margin-bottom:6px;">Break large CLAUDE.md files into modules using @import. Claude loads imported files on demand.</div>
+    <div class="mono-block"># CLAUDE.md (root)
+@import ./context/style-guide.md
+@import ./context/agent-roles.md
+@import ./context/security-rules.md
+
+# Only the root CLAUDE.md is always loaded.
+# Imported files load when referenced or when
+# Claude determines they're relevant.</div>
+  </div>
+
+  <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Skills Frontmatter — context: fork | inherit</div>
+    <table class="context-table">
+      <thead><tr><th>Mode</th><th>What the subagent sees</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>context: fork</td>
+          <td style="color:var(--text-dim)">Copy of parent context at fork time. Parent changes after fork are invisible to subagent.</td>
+          <td style="color:var(--text-dim)">Parallel workers. Isolation needed. Default for most course agents.</td>
+        </tr>
+        <tr>
+          <td>context: inherit</td>
+          <td style="color:var(--text-dim)">Live shared context with parent. Both see the same conversation in real time.</td>
+          <td style="color:var(--text-dim)">Sequential handoffs where subagent must see parent's latest output.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- grid-2 -->
+
+<!-- DEFENSE LAYER CLASSIFICATION -->
+<div class="section" style="margin-bottom:12px;">
+  <div class="section-head"><div class="sh-dot" style="background:var(--red)"></div> DEFENSE LAYER CLASSIFICATION — Inside vs Outside the Reasoning Loop</div>
+  <div class="defense-grid">
+    <div class="defense-col">
+      <h4 style="color:var(--orange);">⚠ Inside Loop — Guidance (probabilistic, bypassable)</h4>
+      <ul>
+        <li><strong>CLAUDE.md</strong> Agent reads this — but CAN ignore under goal pressure or context overflow</li>
+        <li><strong>AGENTS.md</strong> Describes expected behavior — not enforced by runtime</li>
+        <li><strong>.claude/rules/*.md</strong> Path-scoped instructions — lazy-loaded, still probabilistic</li>
+        <li><strong>.claude/skills/</strong> Activation depends on Claude choosing to invoke — not guaranteed</li>
+        <li><strong>.claude/agents/*.md</strong> System prompts — agent may deviate under adversarial input</li>
+        <li><strong>plans/*.md</strong> Intent documentation — not a runtime constraint</li>
+        <li><strong>harnesses/*/flexible_steps/</strong> The "AI part" — Claude generates these dynamically</li>
+      </ul>
+    </div>
+    <div class="defense-col">
+      <h4 style="color:var(--green);">✓ Outside Loop — Enforcement (deterministic, always fires)</h4>
+      <ul>
+        <li><strong>settings.json → permissions.deny</strong> Tool calls blocked at OS level — CANNOT be bypassed by the model</li>
+        <li><strong>settings.json → hooks.PreToolUse</strong> Hook runs BEFORE every tool call — can block or modify</li>
+        <li><strong>settings.json → hooks.PostToolUse</strong> Hook runs AFTER every tool call — can audit or alert</li>
+        <li><strong>settings.json → sandboxing</strong> OS-level process isolation — filesystem and network restricted</li>
+        <li><strong>.claude/hooks/*.sh</strong> The actual enforcement code — deterministic shell scripts</li>
+        <li><strong>--max-turns, --max-budget-usd</strong> Hard caps enforced by the harness, not the model</li>
+        <li><strong>harnesses/*/fixed_steps/</strong> Deterministic pipeline — runs regardless of model output</li>
+        <li><strong>harnesses/*/blueprint.yaml</strong> Defines the enforcement boundary for the sprint</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- WEEK BY WEEK TIMELINE -->
+<div class="section" style="margin-bottom:12px;">
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> WEEK-BY-WEEK DIRECTORY POPULATION — What Gets Created When</div>
+  <table class="timeline">
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>File / Directory Created</th>
+        <th>Purpose &amp; Teaching Objective</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Week 1</td><td>CLAUDE.md</td><td>First project context file. Establish CCT framework, communication style, project conventions.</td></tr>
+      <tr><td>Week 1</td><td>.claude/settings.json</td><td>First permissions file. Add a simple deny rule (e.g., deny deleting .env). Introduce enforcement concept.</td></tr>
+      <tr><td>Week 2</td><td>.mcp.json</td><td>Register first MCP server. Introduce tool access scope, ${VAR} pattern for secrets.</td></tr>
+      <tr><td>Week 2</td><td>.claude/rules/security.md</td><td>Path-scoped security rules. Introduce lazy loading vs always-on context tradeoff.</td></tr>
+      <tr><td>Week 3</td><td>.claude/skills/think.md</td><td>First course skill. Introduce skills frontmatter: name, description, context mode.</td></tr>
+      <tr><td>Week 4</td><td>.claude/skills/spec.md</td><td>Second skill. Spec generation workflow. Introduce plans/ directory and plansDirectory setting.</td></tr>
+      <tr><td>Week 5</td><td>.claude/agents/analyzer.md</td><td>First subagent. Introduce agent YAML structure: system prompt, tools, model override.</td></tr>
+      <tr><td>Week 6</td><td>.claude/hooks/pre-tool.sh</td><td>First enforcement hook. PreToolUse pattern — block or log tool calls before execution.</td></tr>
+      <tr><td>Week 7</td><td>.claude/skills/audit-aiuc1.md</td><td>AIUC-1 audit skill. Introduce reports/ directory. First artifact-producing skill.</td></tr>
+      <tr><td>Week 8</td><td>.claude/agents/recon.md, red-team.md</td><td>Security-focused subagents. Orchestrator-worker pattern for multi-agent attack/defend lab.</td></tr>
+      <tr><td>Week 9</td><td>harnesses/scanner/blueprint.yaml</td><td>First harness. Introduce fixed_steps/ vs flexible_steps/ boundary.</td></tr>
+      <tr><td>Week 10</td><td>AGENTS.md</td><td>Add AAIF-standard agent documentation. Introduce agent-agnostic conventions.</td></tr>
+      <tr><td>Week 11</td><td>.claude/skills/harness.md, worktree.md</td><td>Production skills. Worktree isolation for parallel agents.</td></tr>
+      <tr><td>Week 12</td><td>CLAUDE.md @import refactor</td><td>Break monolithic CLAUDE.md into modules. Introduce @import syntax and lazy loading.</td></tr>
+      <tr><td>Week 13-15</td><td>Capstone: full structure</td><td>All directories populated. Complete project with governance, enforcement, and audit trail.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SETTINGS.JSON TEMPLATE -->
+<div class="section" style="margin-bottom:12px;">
+  <div class="section-head"><div class="sh-dot" style="background:var(--purple)"></div> .claude/settings.json — Configuration Template</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Minimal starter (Week 1)</div>
+      <div class="mono-block">{
+  "plansDirectory": "plans",
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force)"
+    ]
+  }
+}</div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Production (Week 9+)</div>
+      <div class="mono-block">{
+  "plansDirectory": "plans",
+  "permissions": {
+    "allow": ["Read", "Glob", "Grep"],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(curl * | sh)",
+      "WebFetch(*.malicious.*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{"type":"command",
+        "command":".claude/hooks/pre-tool.sh"}]
+    }]
+  }
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILL FLOW DIAGRAM -->
+<div class="section">
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> ARTIFACT FLOW — How Skills Read and Write the Directory Structure</div>
+  <div class="mono-block">/think ─────────────────────────────→ [conversation only — no artifact]
+  │  reads: CLAUDE.md (CCT framework)
+  │
+  ▼
+/spec ──────────────────────────────→ plans/SPEC-{name}.md
+  │  reads: resources/approach-selection.md, resources/swarm-patterns.md
+  │  reads: .claude/agents/ (available worker definitions)
+  │
+  ▼
+Plan Mode (human reviews + approves) → plans/{plan-name}.md
+  │  reads: plans/SPEC-*.md, CLAUDE.md, codebase [read-only]
+  │  human edits via Ctrl+G before approving
+  │
+  ▼
+Build ──────────────────────────────→ source files, working tool
+  │  uses: .claude/agents/ (delegates subtasks to workers)
+  │  uses: .mcp.json (MCP tool access)
+  │  constrained by: settings.json (deny rules block dangerous calls)
+  │  constrained by: .claude/hooks/ (enforcement scripts run around every tool)
+  │
+  ▼
+/audit-aiuc1 ───────────────────────→ reports/AUDIT-{name}.md
+  │  reads: working tool, AIUC-1 domains A-F
+  │
+  ▼
+/harness ───────────────────────────→ harnesses/{type}/blueprint.yaml
+  │                                    harnesses/{type}/fixed_steps/
+  │                                    harnesses/{type}/flexible_steps/
+  │  reads: plans/SPEC-*.md
+  │
+  ▼
+/worktree ──────────────────────────→ ../worktrees/{name}-{n}/ (isolated copy)
+  │  reads: .claude/agents/, settings.json
+  │  each worktree gets its own .claude/ copy for isolation
+  │
+  ▼
+Sprint execution → /retro ──────────→ reports/RETRO-{sprint}.md
+     reads: git log, sprint artifacts, harness outputs</div>
+</div>
+
+<div class="footer">
+  Noctua · AI Security Engineering · Claude Code Directory Structure Reference · Update 41 · March 2026<br>
+  Run <code>/doctor</code> to verify your current directory structure health. Run <code>/memory</code> to view auto-generated project conventions.
+</div>
+
+</div><!-- poster -->
+</body>
+</html>
