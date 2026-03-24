@@ -225,12 +225,14 @@ function buildSidebar(activeLink, pathPrefix) {
       toggle.innerHTML =
         '<span class="toggle-arrow">' + (isCollapsed ? '▶' : '▼') + '</span>' +
         '<span class="toggle-label">' + label + '</span>' +
-        '<span class="toggle-lines">' + lines + ' lines</span>';
+        '<span class="toggle-lines">' + lines + ' lines</span>' +
+        '<span class="toggle-pill">' + (isCollapsed ? 'show ↓' : 'hide ↑') + '</span>';
 
       toggle.addEventListener('click', function() {
         var collapsed = block.getAttribute('data-collapsed') === 'true';
         block.setAttribute('data-collapsed', collapsed ? 'false' : 'true');
         toggle.querySelector('.toggle-arrow').textContent = collapsed ? '▼' : '▶';
+        toggle.querySelector('.toggle-pill').textContent = collapsed ? 'hide ↑' : 'show ↓';
       });
 
       block.insertBefore(toggle, block.firstChild);
