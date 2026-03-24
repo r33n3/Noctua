@@ -191,6 +191,16 @@
 </ol>
 <p>PoLP isn't a checkbox — it's a design discipline you apply before writing a single line of code.</p>
 </div>
+<div class="callout callout-warn"><p><strong>The "Lost in the Middle" Effect — Why Tool Output Size Matters</strong></p>
+<p>Research on transformer attention patterns reveals a consistent finding: model performance on information retrieval degrades for content placed in the <em>middle</em> of a long context window. The model attends most strongly to content at the beginning (system prompt, early context) and the end (most recent user turn). Information buried in the middle of a large context is processed, but with reduced salience.</p>
+<p>For security agents, this has direct implications:</p>
+<ul>
+<li><strong>Large tool outputs get partially "lost"</strong> — If a SIEM tool returns 10,000 log lines, the relevant indicators in lines 4,000–6,000 may receive less attention than those at the start or end</li>
+<li><strong>Design tool outputs to be focused</strong> — Return the 10 most relevant events, not all 10,000. The tool's job is pre-filtering, not raw data dump</li>
+<li><strong>Place critical context strategically</strong> — High-priority information (threat indicators, confidence scores, required actions) should appear at the start or end of your prompt, not buried in the middle</li>
+</ul>
+<p><strong>The Scratchpad Pattern</strong> is a direct response to this problem. Rather than loading all context into one large prompt, you give the agent an explicit working space to accumulate findings incrementally — each tool call adds to a structured scratchpad rather than appending to a growing context block. This keeps relevant findings near the end of context (most recent) and prevents critical data from drifting into the low-attention middle. You'll implement this in Unit 5 when building multi-agent workflows.</p>
+</div>
 <h4 id="day-1-deliverable">Day 1 Deliverable</h4>
 <p>Write a <strong>2-page analysis</strong> (500–750 words) comparing how MCP would change your current tool integration workflow. If you're using REST APIs, Zapier, or custom connectors to link your security tools, describe:</p>
 <ol>
@@ -1588,6 +1598,51 @@ would you need? What would the attacker do next after this reconnaissance phase?
 </ul>
 <p>This is not logging overhead — it's the audit record. When a recommendation is wrong, you need to know whether the classification was wrong, the enrichment was wrong, or the output generation was wrong. Without attribution, you're debugging blind.</p>
 </div>
+<h4 id="bulk-analysis-message-batches-api">Bulk Analysis — The Message Batches API</h4>
+<p>When structured reporting is applied at scale — processing thousands of alerts, scanning a CVE backlog, or generating compliance reports for an entire infrastructure — sequential API calls are too slow and expensive. The <strong>Message Batches API</strong> lets you submit up to 10,000 requests in a single batch and process them asynchronously, with a 50% cost reduction compared to standard API calls.</p>
+<p><strong>Security use case: bulk alert triage</strong></p>
+<div class="codehilite"><pre><span></span><code>import anthropic
+
+client = anthropic.Anthropic()
+
+# Build one request per alert
+alert_requests = []
+for alert in alerts:  # alerts is a list of raw alert dicts
+    alert_requests.append({
+        "custom_id": alert["alert_id"],  # correlate results back to source
+        "params": {
+            "model": "claude-haiku-4-5-20251001",  # fast/cheap for bulk classification
+            "max_tokens": 256,
+            "system": "Classify this security alert as: false_positive | low | medium | high | critical. Return JSON with fields: classification, confidence (0.0-1.0), reason (one sentence).",
+            "messages": [{"role": "user", "content": str(alert)}]
+        }
+    })
+
+# Submit the batch
+batch = client.beta.messages.batches.create(requests=alert_requests)
+print(f"Batch ID: {batch.id} — {len(alert_requests)} alerts submitted")
+
+# Poll until complete (or use a webhook in production)
+import time
+while batch.processing_status == "in_progress":
+    time.sleep(60)
+    batch = client.beta.messages.batches.retrieve(batch.id)
+
+# Collect results
+for result in client.beta.messages.batches.results(batch.id):
+    if result.result.type == "succeeded":
+        alert_id = result.custom_id
+        classification = result.result.message.content[0].text
+        # Parse JSON and route to SOAR/SIEM
+</code></pre></div>
+<p><strong>Assistant prefill</strong> is a complementary technique for enforcing structured output. You can pre-populate the start of Claude's response with an opening brace, forcing it to complete a JSON object:</p>
+<div class="codehilite"><pre><span></span><code>messages = [
+    {"role": "user", "content": "Classify this alert: " + alert_text},
+    # Prefill the assistant turn to force JSON output — Claude must continue this
+    {"role": "assistant", "content": "{"}
+]
+</code></pre></div>
+<p>The model receives its own partial response as context and will complete the JSON structure. Combined with Batches API, this ensures every batch result starts valid JSON, reducing parse failures in automated pipelines. Use prefill when schema compliance is non-negotiable; use standard structured output prompting when you need Claude to reason before formatting.</p>
 <h4 id="day-1-deliverable_2">Day 1 Deliverable</h4>
 <p>Design a complete structured reporting system for a security domain of your choice (breach detection, vulnerability triage, incident response, threat hunting, etc.):</p>
 <ol>

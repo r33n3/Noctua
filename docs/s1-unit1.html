@@ -1432,6 +1432,27 @@ WEIGHTED_TOTAL,-,77.5,83.5,77.0,77.5
 </table>
 <p>Use CLAUDE.md to establish persistent context. Use your context library to bring in exactly what the current task needs.</p>
 </div>
+<div class="callout callout-tip"><p><strong>Modular CLAUDE.md — The <code>@import</code> Pattern:</strong> As your project grows, CLAUDE.md can import additional context files rather than becoming a monolith. Use <code>@import</code> to keep configuration modular:</p>
+<div class="codehilite"><pre><span></span><code># .claude/CLAUDE.md
+@import ./context/security-policies.md
+@import ./context/tool-definitions.md
+@import ./context/style-guide.md
+
+## Project Overview
+This is a security analysis pipeline for Meridian Financial SOC...
+</code></pre></div>
+<p>Each imported file is loaded at session start — the same as if its content were inline. This lets you maintain separate ownership of policy, style, and configuration without CLAUDE.md growing unwieldy. Files committed to <code>.claude/</code> are loaded automatically; files in subdirectories need explicit <code>@import</code>.</p>
+</div>
+<div class="callout"><p><strong>Subagent Context Isolation — <code>context: fork | inherit</code>:</strong> When Claude Code launches a subagent, you control whether it sees the parent's context via the skill's YAML frontmatter:</p>
+<table>
+<thead><tr><th>Mode</th><th>What the subagent receives</th><th>When to use</th></tr></thead>
+<tbody>
+<tr><td><code>context: inherit</code></td><td>Full parent context (conversation history, loaded files)</td><td>Dependent tasks that need the parent's findings</td></tr>
+<tr><td><code>context: fork</code></td><td>Isolated copy — no parent conversation or loaded files</td><td>Parallel tasks, security-sensitive isolation, clean-slate analysis</td></tr>
+</tbody>
+</table>
+<p><strong>Fork mode is the security default.</strong> It prevents context leakage between parallel agents operating on sensitive data — if one agent is compromised or hallucinates, it cannot poison the parent's reasoning chain. You'll configure this explicitly starting in Unit 3.</p>
+</div>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Every time Claude Code generates something you like—a system prompt that works, an analysis framework that's clear, a tool definition that's reusable—extract it. Store it in your context library. In future sessions, feed your library back to Claude as context. This teaches the model YOUR style, YOUR standards, and YOUR architectural preferences. You get increasingly consistent, personalized outputs.</p>
 </div>
 <div class="callout callout-tip"><p><strong>Technique — Let Claude Write the Entry:</strong> You don't have to reverse-engineer what made a good output work. Instead, ask Claude to do it for you. Right after it produces something you want to keep, use this prompt:</p>
@@ -1655,6 +1676,42 @@ Then suggest what other patterns from Unit 1 might be worth capturing.
 
 <p>When you provide tool definitions, the model knows it can query the SIEM. It understands the parameters. Crucially, it won't hallucinate data—it will actually call the SIEM and wait for results.</p>
 <p>This is the foundation of Claude Agent SDK, which we'll dive into on Day 2.</p>
+<p><strong>Tool Description Quality — Before and After</strong></p>
+<p>The model uses your description to decide <em>when</em> to call a tool and how to use it correctly. Vague descriptions produce unpredictable behavior:</p>
+<table>
+<thead><tr><th></th><th>Vague (problematic)</th><th>Precise (effective)</th></tr></thead>
+<tbody>
+<tr><td><code>description</code></td><td><code>"Gets log data"</code></td><td><code>"Query Splunk SIEM for events in the specified time window. Returns up to max_results JSON objects. Use for authentication events, network flows, and process execution logs. Do NOT use for threat intelligence lookups — use query_ti instead."</code></td></tr>
+<tr><td>Result</td><td>Model calls it for everything, or misses it when needed</td><td>Model calls it precisely when appropriate, avoids tool confusion</td></tr>
+</tbody>
+</table>
+<p>Descriptions are instructions to the model. Include: what it does, when to use it, when <em>not</em> to use it, and what it returns.</p>
+<p><strong>API Patterns: <code>tool_choice</code> and <code>isError</code></strong></p>
+<p>Two API-level controls that affect how agents behave at runtime:</p>
+<p><strong><code>tool_choice</code></strong> — override whether the model can skip tool calling:</p>
+<div class="codehilite"><pre><span></span><code>response = client.messages.create(
+    model="claude-opus-4-6",
+    tools=[log_tool, siem_tool],
+    # Options: {"type": "auto"} (default), {"type": "any"}, {"type": "tool", "name": "query_siem"}
+    tool_choice={"type": "tool", "name": "query_siem"},  # Force this tool
+    messages=[{"role": "user", "content": "Investigate this subnet."}]
+)
+</code></pre></div>
+<p>Use <code>{"type": "any"}</code> to require <em>some</em> tool call; <code>{"type": "tool", "name": "..."}}</code> to force a specific one. Useful in audit pipelines where every decision must be logged before responding.</p>
+<p><strong><code>is_error: true</code></strong> — signal failed tool calls without breaking the loop:</p>
+<div class="codehilite"><pre><span></span><code># In your tool execution handler:
+if query_failed:
+    # Signal the error — model stays in loop and can reason about it
+    tool_result = {
+        "type": "tool_result",
+        "tool_use_id": tool_use_id,
+        "is_error": True,
+        "content": "SIEM query failed: connection timeout after 30s on host prod-splunk-01"
+    }
+else:
+    tool_result = {"type": "tool_result", "tool_use_id": tool_use_id, "content": results}
+</code></pre></div>
+<p>If you raise a Python exception instead of returning <code>is_error: true</code>, the model exits the agentic loop and you lose the chance for graceful recovery. With <code>is_error</code>, the model can decide to retry, fall back to a different tool, or surface the error to the operator.</p>
 <hr />
 <p><strong>Component 3: Memory Architectures</strong></p>
 <p>An agent that operates for hours might need to remember earlier findings. Memory architectures are how you implement that.</p>
