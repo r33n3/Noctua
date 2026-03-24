@@ -62,8 +62,8 @@
 <p><strong>Methodology:</strong> This unit applies this course's agentic development methodology and the <strong>Core Four Pillars</strong> (Prompt, Model, Context, Tools) and <strong>Think → Spec → Build → Retro cycle</strong> to multi-agent security orchestration. You'll think critically about agent architectures, spec clear responsibilities, build rapidly using Claude Code, and review through comparative evaluation. The Orchestrator and Expert Swarm patterns form the backbone of multi-agent design in this course.</p>
 </blockquote>
 <hr />
-<h1 id="week-1-multi-agent-architecture-patterns">WEEK 1: Multi-Agent Architecture Patterns</h1>
-<h2 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h2>
+<h2 id="week-1-multi-agent-architecture-patterns">Week 1: Multi-Agent Architecture Patterns</h2>
+<h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
 <h3 id="learning-objectives">Learning Objectives</h3>
 <ul>
 <li>Understand the limitations of single-agent systems and why teams of agents emerge as a solution</li>
@@ -288,7 +288,7 @@ when { principal.api_key_valid && principal.authorized_tools.contains(resource.i
 <p>The three-tier context architecture (institutional knowledge → project state → session context) is the framework that makes multi-agent systems compound over time instead of starting from zero every session. The AGENTS.md, SQLite handoff databases, and scoped TASK.md files you'll build in Week 4 are the persistent layer that separates a "deep agent" from a stateless one. Keep that destination in mind as you build Weeks 1–3 — you're assembling the components that will plug into that architecture.</p>
 </div>
 <hr />
-<h2 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h2>
+<h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives">Lab Objectives</h3>
 <ul>
 <li>Build a four-agent SOC triage system using the Claude Agent SDK</li>
@@ -899,8 +899,8 @@ Generate a report showing:
 </ul>
 <hr />
 <hr />
-<h1 id="week-2-crewai-for-security-operations">WEEK 2: CrewAI for Security Operations</h1>
-<h2 id="day-1-theory-foundations_1">Day 1 — Theory &amp; Foundations</h2>
+<h2 id="week-2-crewai-for-security-operations">Week 2: CrewAI for Security Operations</h2>
+<h3 id="day-1-theory-foundations_1">Day 1 — Theory &amp; Foundations</h3>
 <h3 id="learning-objectives_1">Learning Objectives</h3>
 <ul>
 <li>Understand CrewAI's role-based agent abstraction and why it differs from lower-level APIs</li>
@@ -1088,7 +1088,7 @@ Generate a report showing:
 </tbody>
 </table>
 <hr />
-<h2 id="day-2-hands-on-lab_1">Day 2 — Hands-On Lab</h2>
+<h3 id="day-2-hands-on-lab_1">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives_1">Lab Objectives</h3>
 <ul>
 <li>Reimplement the Week 1 SOC system using Claude Agent SDK, applying the persona-based agent design patterns demonstrated by CrewAI</li>
@@ -1571,8 +1571,8 @@ claims.</p>
 </ul>
 <hr />
 <hr />
-<h1 id="week-3-langgraph-for-stateful-security-workflows">WEEK 3: LangGraph for Stateful Security Workflows</h1>
-<h2 id="day-1-theory-foundations_2">Day 1 — Theory &amp; Foundations</h2>
+<h2 id="week-3-langgraph-for-stateful-security-workflows">Week 3: LangGraph for Stateful Security Workflows</h2>
+<h3 id="day-1-theory-foundations_2">Day 1 — Theory &amp; Foundations</h3>
 <h3 id="learning-objectives_2">Learning Objectives</h3>
 <ul>
 <li>Understand state machines and why they matter for incident response</li>
@@ -1732,7 +1732,7 @@ If Containment fails, rewind to Investigation. Try a different approach.</p>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Should incident response systems favor stateful (LangGraph) for compliance auditability, or stateless (CrewAI) for simplicity? What's the compliance cost of simplicity?</p>
 </div>
 <hr />
-<h2 id="day-2-hands-on-lab_2">Day 2 — Hands-On Lab</h2>
+<h3 id="day-2-hands-on-lab_2">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives_2">Lab Objectives</h3>
 <ul>
 <li>Build a state machine orchestration system using Claude Agent SDK, applying the explicit state transitions and conditional routing patterns demonstrated by LangGraph</li>
@@ -2182,8 +2182,8 @@ Log retry decisions in state.decisions for audit trail.
 </ul>
 <hr />
 <hr />
-<h1 id="week-4-agent-evaluation-and-benchmarking">WEEK 4: Agent Evaluation and Benchmarking</h1>
-<h2 id="day-1-theory-foundations_3">Day 1 — Theory &amp; Foundations</h2>
+<h2 id="week-4-agent-evaluation-and-benchmarking">Week 4: Agent Evaluation and Benchmarking</h2>
+<h3 id="day-1-theory-foundations_3">Day 1 — Theory &amp; Foundations</h3>
 <h3 id="learning-objectives_3">Learning Objectives</h3>
 <ul>
 <li>Define evaluation metrics for security-specific multi-agent systems</li>
@@ -2336,7 +2336,7 @@ Log retry decisions in state.decisions for audit trail.
 </table>
 <p><strong>Output:</strong> Scorecard with scores (1-5) on each dimension.</p>
 <hr />
-<h2 id="day-2-hands-on-lab_3">Day 2 — Hands-On Lab</h2>
+<h3 id="day-2-hands-on-lab_3">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives_3">Lab Objectives</h3>
 <ul>
 <li>Build an evaluation harness for all three SOC systems (Week 1-3)</li>
