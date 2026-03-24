@@ -337,6 +337,28 @@ claude config list
 </code></pre></div>
 
 <p>If it starts without errors, your MCP development environment is ready.</p>
+<h2 id="dependency-security">Dependency Security: Before You pip install</h2>
+<div class="callout callout-warn"><p><strong>Supply Chain Reality Check:</strong> On March 24, 2026, LiteLLM — an LLM routing library with 97M monthly downloads — was compromised because its security scanner (Trivy) was compromised first. The attacker never broke into LiteLLM directly. They broke into a <em>tool LiteLLM trusted</em>. The malicious package was discovered by an MCP plugin in Cursor pulling it as a transitive dependency — a package the developer never explicitly installed. See: <a href="resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study: LiteLLM Supply Chain Attack</a></p></div>
+<p>For every project in this course:</p>
+<ol>
+<li>Use the Noctua Keystore, not <code>.env</code> files — credentials encrypted at rest</li>
+<li>Use virtual environments per project — blast radius containment</li>
+<li>Pin dependencies by hash, not just version number</li>
+<li>Run <code>pip-audit</code> before first use and in CI</li>
+</ol>
+<div class="codehilite"><pre><span></span><code># Install tooling
+pip install pip-tools pip-audit
+
+# Generate hash-pinned requirements (do this once per project)
+pip-compile --generate-hashes requirements.in -o requirements.txt
+
+# Install with hash verification
+pip install --require-hashes -r requirements.txt
+
+# Audit for known CVEs
+pip-audit</code></pre></div>
+<div class="callout callout-tip"><p><strong>Why hash pinning?</strong> Version pinning (<code>pip install litellm==1.82.7</code>) failed in the LiteLLM attack — the attacker published a malicious package under that exact version number. Hash pinning verifies the <em>content</em> of the package, not just the version label. If the content changes, the hash won't match and installation fails.</p></div>
+
 <h2 id="multi-vendor-framework-setup-semester-2">Multi-Vendor Framework Setup (Semester 2)</h2>
 <p>Semester 2 introduces frameworks for building multi-vendor security orchestration. These allow you to build agents that work with multiple LLMs and security platforms.</p>
 <h3 id="crewai">CrewAI</h3>

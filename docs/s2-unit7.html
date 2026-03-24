@@ -112,6 +112,10 @@
 <li>
 <p>Malicious package updates: Typosquatting (<code>numpyy</code> instead of <code>numpy</code>)</p>
 </li>
+</ol>
+<div class="callout callout-key"><p><strong>Real Case: LiteLLM Supply Chain Attack (March 24, 2026)</strong><br>
+LiteLLM — 97M monthly downloads, used in MCP servers and AI agent frameworks — was compromised via a cascading supply chain attack. Attackers first compromised Trivy (LiteLLM's security scanner), extracted CI/CD credentials, then published malicious packages directly to PyPI. Discovery was accidental: an MCP plugin in Cursor triggered a fork bomb bug in the malware. <strong>Key lesson:</strong> the attack was discovered through a Noctua-relevant entry point (MCP plugins) and version pinning failed completely — only hash pinning (<code>--require-hashes</code>) would have caught it. See: <a href="../resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Full case study</a></p></div>
+<ol>
 <li>
 <p><strong>Evaluation and Benchmark Manipulation</strong></p>
 </li>

@@ -23,18 +23,74 @@ If the system being audited is not clear from context, ask:
 1. What system or tool is being audited? (name, brief description, repo or file path)
 2. What is its deployment tier? (see Tier Classification below — ask if not provided)
 
-Then proceed through the applicable domains for that tier, ask structured audit
-questions for each domain, assess gaps, and produce the scored report.
+**Run System Characterization before Tier Classification.** The characterization
+profile determines which controls within each domain are HIGH PRIORITY for this
+specific system. Tier sets which domains to audit; characterization sets how hard
+to look within each domain.
+
+Then proceed through the applicable domains, apply profile-adjusted priority,
+assess gaps, and produce the scored report.
 
 **Do not skip the Elevation Gate Status footer.** It is machine-readable and
 required for Cedar policy evaluation. Every field must be present.
 
 ---
 
+## System Characterization
+
+Before tier classification, characterize the system being audited. This profile
+determines within-domain control weighting — which controls are HIGH PRIORITY vs
+informational for this specific system. Two Tier 2 agents can have completely
+different risk surfaces depending on what they do.
+
+Ask these questions (or infer from context if the system is well-described):
+
+**1. System type** — select all that apply:
+- `app` — AI application (user-facing with embedded AI: chatbot, classifier, content generator, recommendation engine)
+- `agent` — Agentic tool (takes autonomous actions: file writes, API calls, code execution, workflow automation)
+- `pipeline` — Multi-agent pipeline (orchestrates or is orchestrated by other agents)
+- `security` — Security tooling (scanner, analyzer, vulnerability detection, threat intelligence)
+- `dev` — Developer tooling (assists developers, processes code or configuration)
+
+**2. Data sensitivity** — does the system ingest, process, or store any of the following?
+- `pii` — PII (names, emails, addresses, national IDs, biometrics)
+- `credentials` — Credentials, API keys, secrets, tokens
+- `regulated` — Health (HIPAA), financial (PCI/SOX), legal, or GDPR-scoped data
+- `proprietary` — Internal code, documents, or IP that must not be exposed
+
+**3. Decision influence** — does the system's output influence or make consequential decisions?
+- Examples: access control, hiring decisions, triage, content moderation, security findings, loan approval
+- Note: "surfacing information that a human acts on" counts as consequential — the bar is influence, not automation
+
+**4. Exposure** — who can interact with the system?
+- `internal` — Developers or a specific named team only
+- `authenticated` — Employees or customers with verified accounts
+- `public` — Unauthenticated users or broadly accessible (internet-facing)
+
+**5. Content generation** — does the system generate content users will directly act on?
+- Examples: code that will be executed, reports that drive decisions, legal drafts, medical summaries, security advisories
+
+**6. State persistence** — does the system maintain state across sessions?
+- Examples: stored conversation history, accumulated user profiles, learned preferences, persistent context
+
+**7. External calls** — does the system call external tools, agents, or services?
+- Examples: external APIs, MCP servers, other agents, databases, file systems, cloud services
+
+**After answering, write the system profile in 2–3 sentences:**
+
+> "This is a [type] system. It [handles/does not handle] PII and [is/is not] regulated.
+> It [is/is not] public-facing and [does/does not] influence consequential decisions.
+> It [does/does not] call external services and [does/does not] persist state."
+
+Record the profile in the report header. Use it to apply the profile-adjusted
+priority guidance in each domain section below.
+
+---
+
 ## Tier Classification
 
-Classify the system before scoping the audit. Only audit the domains required
-for the tier — do not audit domains above scope unless requested.
+Classify the system after characterization. Tier sets the domain scope; profile
+adjusts depth within each domain.
 
 | Tier | System Type | Required Domains |
 |------|-------------|-----------------|
@@ -60,6 +116,12 @@ Audit questions:
 - Are differential privacy or anonymization techniques applied where appropriate?
 - Is model inversion or membership inference a realistic attack surface? If so, what prevents it?
 
+**Profile-adjusted priority:**
+- `pii` or `regulated` → Consent, data minimization, and retention policy are **HIGH PRIORITY**; model inversion risk moves from informational to active concern.
+- `credentials` → Data governance must explicitly cover secret storage; verify no secrets appear in logs or model inputs.
+- `app` + `public` → Consent capture is **HIGH PRIORITY**; assume broad user base with varying data expectations.
+- `agent` + `external calls` → Audit what data is transmitted to each external service, not just what the system stores.
+
 ### Domain B — Security (Controls B001–B009)
 Audit each control that applies to the system's tier:
 - **B001** Adversarial testing: Has third-party adversarial testing been conducted or scheduled?
@@ -72,6 +134,13 @@ Audit each control that applies to the system's tier:
 - **B008** Protect model deployment environment: Is the model hosting environment isolated, patched, and access-controlled?
 - **B009** Limit output over-exposure: Does output include only what the user is authorized to see?
 
+**Profile-adjusted priority:**
+- `public` → B001, B002, B004, B005 are **HIGH PRIORITY**; attack surface is broad and adversarial testing must be intentional.
+- `agent` + `external calls` → B006 is **HIGH PRIORITY**; audit each external call's permission scope individually.
+- `security` or `dev` → B003 is **HIGH PRIORITY**; security/dev tools often expose sensitive internal details in output (stack traces, configs, key material).
+- `credentials` → B006, B007, B009 are **HIGH PRIORITY**; credential exposure is a direct path to Critical findings.
+- `pipeline` → Also audit inter-agent trust: how does each agent verify the identity and authorization of messages from other agents in the pipeline?
+
 For Tier 4 systems, also audit inter-agent trust: how does each agent verify the
 identity and authorization of messages from other agents in the pipeline?
 
@@ -83,6 +152,13 @@ Audit questions:
 - Is there a circuit breaker or rate limiter that stops the system if anomalies are detected?
 - For autonomous agents: what is the blast radius of a worst-case failure? Is it bounded?
 
+**Profile-adjusted priority:**
+- `consequential decisions` → Risk taxonomy is **HIGH PRIORITY**; document every decision the system influences and the harm model for each.
+- `content generation` → Real-time output monitoring is **HIGH PRIORITY**; generated content reaching users without review multiplies blast radius.
+- `agent` → Blast radius question is mandatory; an agent with file/network/API access can cause irreversible harm. Bound it explicitly.
+- `public` + `app` → Pre-deployment safety testing must include adversarial and edge-case user inputs; lab testing on benign inputs is insufficient.
+- `security` → Audit whether the tool could be used to generate attack content or facilitate harm — security tools are dual-use by design.
+
 ### Domain D — Reliability
 Audit questions:
 - What is the documented uptime target? Is it measured?
@@ -90,6 +166,12 @@ Audit questions:
 - Is model drift monitored? How is drift detected and acted on?
 - Is there continuous validation — scheduled tests that confirm expected behavior over time?
 - Is there a documented incident response plan for system failure?
+
+**Profile-adjusted priority:**
+- `public` or `consequential decisions` → Uptime target and failure handling are **HIGH PRIORITY**; unavailability or degraded output causes downstream harm.
+- `pipeline` → Model drift is **HIGH PRIORITY**; behavioral drift in one agent propagates through the pipeline.
+- `agent` + `state persistence` → Continuous validation must cover stateful scenarios, not just stateless test inputs.
+- `app` + `authenticated` → Incident response plan must include user-facing communication path (not just internal ops).
 
 ### Domain E — Accountability
 Audit questions:
@@ -99,6 +181,13 @@ Audit questions:
 - Is there an appeal or override mechanism for affected users?
 - Is ownership clearly documented — who is accountable for this system's behavior?
 
+**Profile-adjusted priority:**
+- `consequential decisions` → Appeal mechanism is **HIGH PRIORITY**; if the system influences a decision affecting a person, that person must have recourse.
+- `agent` + `external calls` → Decision logging must capture each external call (what was sent, what was returned) — not just the final output.
+- `regulated` → Log retention period must match the applicable regulatory requirement (HIPAA, GDPR, PCI) — "reasonable period" is not sufficient.
+- `pipeline` → Ownership documentation must map each agent in the pipeline to a named accountable party; distributed accountability is no accountability.
+- `public` → Explainability requirement is elevated; users cannot be expected to accept opaque decisions affecting them.
+
 ### Domain F — Society
 Audit questions:
 - Has the system been tested for bias across demographic subgroups relevant to its use case?
@@ -106,6 +195,13 @@ Audit questions:
 - Are training and evaluation datasets stratified to ensure coverage parity?
 - Does the system include non-discrimination safeguards for protected characteristics?
 - If the system affects decisions (hiring, access, triage), is there a disparate impact assessment?
+
+**Profile-adjusted priority:**
+- `public` + `app` → Bias testing is **HIGH PRIORITY**; broad user base means demographic impact is broad.
+- `consequential decisions` → Disparate impact assessment is **HIGH PRIORITY** and should be conducted before deployment, not after complaints.
+- `content generation` + `public` → Non-discrimination safeguards must cover generated content; AI-generated content at scale can amplify or normalize bias.
+- `internal` + `dev` → Domain F scope is reduced but not eliminated; developer tools that surface code suggestions can embed bias in what patterns they promote.
+- `security` → Audit whether threat detection or triage logic has disparate sensitivity across user demographics (e.g., false positive rate by geography).
 
 ---
 
@@ -125,6 +221,14 @@ Use OWASP AIVSS severity levels for each finding:
 - Critical or High findings in Domain C (Safety) are blocking for all elevation requests.
 - Any Critical finding in any required domain is blocking.
 
+**Profile-adjusted severity escalation:**
+A finding that would be Medium in a generic system may escalate to High when the
+profile indicates elevated risk surface. Apply these escalations:
+- `public` + any Domain B gap → escalate one severity level
+- `consequential decisions` + any Domain C gap → escalate one severity level
+- `regulated` + any Domain A gap → escalate one severity level
+- `credentials` + B006 or B009 gap → escalate to High minimum
+
 ---
 
 ## Output Format
@@ -135,6 +239,8 @@ Use OWASP AIVSS severity levels for each finding:
 **Auditor:** [Claude Code /audit-aiuc1]
 **Deployment tier:** Tier N — [tier description]
 **Domains audited:** [list]
+**System profile:** [2–3 sentence profile from System Characterization]
+**Profile flags:** [list active flags: pii, credentials, regulated, public, consequential, content-gen, persistent-state, external-calls]
 
 ---
 
@@ -147,6 +253,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain A — Data & Privacy
 **Status:** Pass / Partial / Fail
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control Area | Finding | Severity | Evidence / Notes |
 |-------------|---------|----------|-----------------|
@@ -164,6 +271,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain B — Security
 **Status:** Pass / Partial / Fail
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control | Finding | Severity | Evidence / Notes |
 |---------|---------|----------|-----------------|
@@ -184,6 +292,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain C — Safety
 **Status:** Pass / Partial / Fail
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control Area | Finding | Severity | Evidence / Notes |
 |-------------|---------|----------|-----------------|
@@ -199,6 +308,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain D — Reliability
 **Status:** Pass / Partial / Fail  *(required for Tier 3+)*
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control Area | Finding | Severity | Evidence / Notes |
 |-------------|---------|----------|-----------------|
@@ -214,6 +324,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain E — Accountability
 **Status:** Pass / Partial / Fail
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control Area | Finding | Severity | Evidence / Notes |
 |-------------|---------|----------|-----------------|
@@ -230,6 +341,7 @@ Use OWASP AIVSS severity levels for each finding:
 
 ### Domain F — Society
 **Status:** Pass / Partial / Fail
+**Profile-elevated controls:** [list controls flagged HIGH PRIORITY by profile, or NONE]
 
 | Control Area | Finding | Severity | Evidence / Notes |
 |-------------|---------|----------|-----------------|
@@ -257,6 +369,7 @@ Use OWASP AIVSS severity levels for each finding:
 - AIUC-1 Baseline: PASS | FAIL
 - Domains: A✓/✗  B✓/✗  C✓/✗  D✓/✗  E✓/✗  F✓/✗
 - Tier compliance: Tier N
+- System profile flags: [active flags]
 - Audit date: [date]
 - Human reviewer: [name / role — required for Tier 2+, leave blank if not yet attested]
 - Blocking gaps: [list domain:control IDs] | NONE
@@ -291,6 +404,8 @@ Save the completed report to `reports/AUDIT-{system-name}.md` in the current pro
   organization uses named Cedar policies for each gate
 - Add a "peer review required" gate for Tier 3+ systems — the skill outputs a
   checklist that a second reviewer must sign off before the report is finalized
+- Extend the profile flags to match your system taxonomy (e.g., add `healthcare`,
+  `fintech`, `critical-infra` as flags with their own control escalation rules)
 
 ---
 

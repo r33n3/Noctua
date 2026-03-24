@@ -297,3 +297,53 @@ mkdir -p .claude/hooks
 | Stage 3 (Prod) | Vault/SSM with role-based access, rotation, audit logging |
 
 The keystore is the right tool for development. Production requires centralized secrets management with rotation, audit trails, and role-based access that a local vault can't provide.
+
+---
+
+## Supply Chain Attack Resistance
+
+The LiteLLM supply chain attack (March 24, 2026) included a credential harvester
+that scanned developer machines. Here is what the keystore does and does not protect
+against in that attack pattern.
+
+**What the harvester targeted:**
+
+| Target | Keystore status | Why |
+|--------|----------------|-----|
+| `.env` files | **PROTECTED** | No `.env` file exists — secrets are in the encrypted vault |
+| Credential files in home dir | **PROTECTED** | API keys are not written to disk in any plaintext file |
+| AWS/GCP/Azure credential files (`~/.aws/credentials`) | **NOT PROTECTED** | These are outside the keystore's scope — use IAM roles in production |
+| SSH keys | **NOT PROTECTED** | Separate concern — use hardware keys or SSH CA for high-value access |
+| `.git-credentials` | **NOT PROTECTED** | Store git tokens in keystore manually; remove `~/.git-credentials` |
+| Environment variables in a running shell | **NOT PROTECTED** | Once `eval $(noctua-keys export)` runs, keys are in the process environment |
+
+**The in-memory gap explained:**
+
+After running `eval $(noctua-keys export)`, API keys exist as environment variables
+in your shell session. Any process running in that session — including a malicious
+`.pth` file triggered by a compromised package — can read `os.environ` and find them.
+The keystore protects keys at rest; it cannot protect keys that are loaded into memory.
+
+**Mitigations for the gaps:**
+
+```bash
+# 1. Minimize session scope — load keys, run your tool, clear them
+eval $(noctua-keys export)
+python my_tool.py
+unset ANTHROPIC_API_KEY OPENAI_API_KEY  # Clear immediately after
+
+# 2. Use subprocess isolation — pass only the key(s) a specific tool needs
+ANTHROPIC_API_KEY=$(noctua-keys get ANTHROPIC_API_KEY) python specific_tool.py
+
+# 3. For production: use IAM roles and instance profiles
+#    No files or env vars to steal — credentials are issued per-request by the cloud provider
+```
+
+**Egress filtering as the last line of defense:**
+
+Even if credentials are stolen from memory, egress filtering blocks exfiltration.
+If outbound traffic is restricted to known API domains (`api.anthropic.com`,
+`api.openai.com`, etc.), the POST to a C2 server (`models.litellm.cloud` in the
+LiteLLM attack) is denied at the network level before any data leaves the machine.
+
+See: `docs/resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md` for full analysis.

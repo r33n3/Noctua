@@ -58,6 +58,17 @@
 <hr />
 <h2 id="week-5-the-adversarial-ai-threat-landscape">Week 5: The Adversarial AI Threat Landscape</h2>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
+<div class="callout callout-key"><p><strong>Three Attack Vectors — The Course Case Study Trio</strong></p>
+<p>This unit draws on three real-world case studies, each representing a fundamentally different attack vector:</p>
+<table>
+<thead><tr><th>Case Study</th><th>Vector</th><th>Lesson</th></tr></thead>
+<tbody>
+<tr><td><strong>PeaRL Governance Bypass</strong> (course-generated, 2025)</td><td>Agent attacks its own governance from inside</td><td>Governance must be enforced outside the reasoning loop</td></tr>
+<tr><td><strong>GTG-1002 AI Cyber Espionage</strong> (Anthropic, November 2025)</td><td>Adversary weaponizes the same architecture you build</td><td>Agent architecture is dual-use — intent validation is the difference</td></tr>
+<tr><td><strong>LiteLLM Supply Chain</strong> (TeamPCP, March 2026)</td><td>Adversary compromises the tools and dependencies agents run on</td><td>Your agent's security includes its entire dependency tree</td></tr>
+</tbody>
+</table>
+<p>Together: inside-out (PeaRL), outside-in (GTG-1002), underneath (LiteLLM). Students who understand all three can defend against the full threat landscape for AI agent systems.</p></div>
 <h4 id="learning-objectives">Learning Objectives</h4>
 <ul>
 <li>Understand the complete taxonomy of AI agent threats and attack vectors</li>
@@ -124,6 +135,10 @@
 <li>
 <p><strong>Supply Chain Poisoning:</strong> Compromising upstream data sources the agent depends on.</p>
 </li>
+</ol>
+<div class="callout callout-key"><p><strong>Case Study: LiteLLM Supply Chain Attack (March 24, 2026)</strong><br>
+TeamPCP compromised Trivy (a security scanner used in LiteLLM's CI/CD), extracted PyPI publishing credentials, and published malicious LiteLLM versions 1.82.7/1.82.8 containing a credential stealer. The attack was discovered when an MCP plugin in Cursor pulled the package as a <em>transitive dependency</em> — the developer never installed it directly. Three attack vectors for this course: PeaRL (agent attacks its governance from inside), GTG-1002 (adversary weaponizes agent architecture), LiteLLM (supply chain compromise of the foundation agents run on). Full analysis: <a href="../resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study document</a>.</p></div>
+<ol>
 <li>
 <p><strong>Model Extraction</strong> — Stealing the model itself or reverse-engineering its capabilities.</p>
 </li>

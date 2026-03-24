@@ -27,6 +27,7 @@
 <div class="week-header"><span class="week-badge">WEEK 9</span><span class="week-sub">Lab: SBOM Generation, Dependency Scanning &amp; Model Provenance</span></div>
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Generate a Software Bill of Materials for your SOC agent system, scan all dependencies for CVEs, verify model integrity, and implement supply chain security controls at each stage of your development pipeline.</p></div>
+<div class="callout callout-warn"><p><strong>Why this matters today:</strong> The LiteLLM supply chain attack (March 24, 2026) compromised a package with 97M monthly downloads. It was discovered by an MCP plugin in Cursor — the exact technology you've been building. Steps 2–3 in this lab (pip-audit, safety) are what would have caught the advisory <em>after</em> publication. Step 6 (hash pinning) is what would have blocked installation <em>before</em> — even during the zero-day window when no advisory existed yet. See: <a href="../resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study: LiteLLM Supply Chain Attack</a></p></div>
 
 <div class="quiz-block" id="quiz-u7w9">
   <h4> Knowledge Check — Week 9</h4>
@@ -140,6 +141,30 @@ models:
         <div class="step-title">Step 5: Write the Supply Chain Audit Report</div>
         <div class="step-desc">Document: SBOM summary (component count, license types), CVE findings (by severity), transitive risk analysis, model provenance controls, gap analysis against SLSA Level 1 requirements, and 3 prioritized remediation actions.</div>
       </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w9-6">
+      <label><input type="checkbox" onchange="toggleStep('u7w9-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Implement hash pinning — the LiteLLM lesson</div>
+        <div class="step-desc">Version pinning failed in the LiteLLM attack (the attacker published under the pinned version number). Hash pinning verifies package <em>content</em>. Generate a hash-pinned requirements file and test that a modified hash causes installation to fail — this is the control that would have blocked the attack even during the zero-day window.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Install pip-tools if not already installed
+pip install pip-tools
+
+# Generate hash-pinned requirements from your project's requirements.in
+pip-compile --generate-hashes requirements.in -o requirements-pinned.txt
+
+# Verify the output — each package should have sha256 hashes
+head -30 requirements-pinned.txt
+
+# Test the protection: corrupt one hash (change a single character)
+# Then try to install — it MUST fail
+pip install --require-hashes -r requirements-pinned.txt
+
+# Now restore the correct hash and verify clean install succeeds
+# Document: What hash mismatch error did you see?
+# This is exactly what would have caught LiteLLM 1.82.7 at install time</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
 </div>
