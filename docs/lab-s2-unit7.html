@@ -269,6 +269,82 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-desc">Create a daily NHI audit log that records: which agents were active, which tools each called, any permission violations (blocked calls), token issuance and expiry events. This log is your compliance evidence for AIUC-1 E. Accountability domain (audit trails and decision logging).</div>
       </div></label>
     </div>
+
+    <div class="lab-step" id="step-u7w10-6">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Translate agent-identities.yaml → IAM policies (Strands)</div>
+        <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is <em>allowed</em> to do in your local system. In production (Strands + AWS), this translates directly to IAM policies. Each agent gets its own IAM role with only the permissions it needs. Install Strands and write an IAM policy document for your triage agent that mirrors its allowed_tools list from Step 1.</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install strands-agents strands-agents-tools
+
+# Each agent in Strands gets its own IAM role — not shared credentials
+# IAM policy for soc-recon-001 (threat intelligence analyst):
+# Allow: bedrock:InvokeModel (for LLM calls)
+# Allow: execute-api:Invoke on threat-intel-api/* (NVD, IP reputation)
+# Allow: logs:PutLogEvents (for audit trail)
+# Deny: everything else (s3:*, iam:*, ec2:*, database writes)
+
+# Write the JSON IAM policy for your recon agent:
+cat > iam-policy-recon.json << 'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel"],
+      "Resource": "arn:aws:bedrock:*::foundation-model/anthropic.*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["logs:PutLogEvents", "logs:CreateLogGroup", "logs:CreateLogStream"],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+# Question: How does this IAM policy enforce the same constraints as
+# your JWT token's allowed_tools list from Step 3?</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w10-7">
+      <label><input type="checkbox" onchange="toggleStep('u7w10-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Build your first Strands agent with IAM role</div>
+        <div class="step-desc">Migrate one tool from your NHI registry into a Strands agent. Connect your existing MCP server — no modification needed. Run it locally first, verify the output matches your Claude Code version, then verify the <code>@tool</code> decorator enforces the same input validation as your PreToolUse hook did.</div>
+      </div></label>
+      <div class="code-block"><pre><code>from strands import Agent, tool
+from strands.models import BedrockModel
+from strands.tools.mcp import MCPClient
+
+# Connect your existing MCP server — same protocol, no changes needed
+mcp_client = MCPClient(
+    command="node",
+    args=["./servers/cve-lookup/index.js"]
+)
+
+# @tool decorator = PreToolUse hook equivalent
+@tool
+def validate_alert_input(alert_data: dict) -> dict:
+    """Validate incoming alert data before processing.
+    Required fields: source, timestamp, severity (LOW/MED/HIGH/CRITICAL).
+    Returns validated alert or raises ValueError."""
+    required = ["source", "timestamp", "severity"]
+    missing = [f for f in required if f not in alert_data]
+    if missing:
+        raise ValueError(f"Missing required alert fields: {missing}")
+    return alert_data
+
+agent = Agent(
+    model=BedrockModel(model_id="anthropic.claude-sonnet-4-6-20250514-v1:0"),
+    tools=[mcp_client, validate_alert_input],
+    system_prompt="""You are a security triage agent.
+    NEVER execute remediation — only report findings with evidence."""
+)
+
+result = agent("Analyze CVE-2024-1234 and assess impact on our environment")
+print(result)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
   </div>
 </div>
 <hr>
@@ -374,7 +450,8 @@ with tracer.start_as_current_span("recon_agent") as span:
 <h2 id="week-12">Week 12 — Deploying Agentic Security Systems</h2>
 <div class="week-header"><span class="week-badge">WEEK 12</span><span class="week-sub">Lab: Dockerfile, Container Scanning &amp; CI/CD Security Gates</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production via AWS AgentCore.</p></div>
+<div class="callout callout-warn"><p><strong>Pre-capstone checkpoint — do this now:</strong> Your Unit 8 capstone requires a live deployment on AWS AgentCore. Verify you have Bedrock model access before Week 13 starts. Run the test below. If it fails, contact your instructor immediately — Bedrock access approval can take 24–48 hours and cannot be expedited on Week 13 Day 1.</p></div>
 
 <div class="quiz-block" id="quiz-u7w12">
   <h4> Knowledge Check — Week 12</h4>
@@ -501,6 +578,81 @@ jobs:
         <div class="step-title">Step 5: Write the Deployment Runbook</div>
         <div class="step-desc">Document: How to deploy a new version, how to rollback, how to respond to a Trivy finding, how to handle a secrets detection failure, who has approval authority for production deployments. This runbook is required for your Unit 8 capstone.</div>
       </div></label>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-6">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-6',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 6: Verify Bedrock access — pre-capstone checkpoint</div>
+        <div class="step-desc">Confirm your AWS account can invoke Claude via Bedrock. This is required before Week 13. If this fails, open a support case now — do not wait.</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install strands-agents
+
+# Test Bedrock access — run this now
+python3 - << 'EOF'
+from strands import Agent
+from strands.models import BedrockModel
+
+try:
+    agent = Agent(
+        model=BedrockModel(model_id="anthropic.claude-sonnet-4-6-20250514-v1:0"),
+        system_prompt="You are a test agent. Respond with 'Bedrock access confirmed.'"
+    )
+    result = agent("Confirm access")
+    print("SUCCESS:", result)
+except Exception as e:
+    print("FAILED — open a support case immediately:", e)
+EOF</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-7">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 7: Deploy your Strands agent to AWS AgentCore</div>
+        <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 to AgentCore. AgentCore handles the managed runtime — you configure IAM role, Bedrock Guardrails, and Secrets Manager. This is the production version of your Claude Code prototype.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
+aws secretsmanager create-secret \
+  --name "noctua/soc-agent/api-keys" \
+  --secret-string '{"NVD_API_KEY": "your-key-here"}'
+
+# Create IAM role for the agent (use the policy from Week 10 Step 6)
+aws iam create-role \
+  --role-name NoctuaSOCReconRole \
+  --assume-role-policy-document file://trust-policy.json
+
+aws iam put-role-policy \
+  --role-name NoctuaSOCReconRole \
+  --policy-name ReconLeastPrivilege \
+  --policy-document file://iam-policy-recon.json
+
+# Configure Bedrock Guardrails (in AWS console — Bedrock → Guardrails → Create)
+# Block: PII in output, credential patterns, prompt injection, off-topic requests
+
+# Deploy via AgentCore (requires agentcore CLI or AWS console)
+# Your Strands agent code runs as-is — AgentCore is the runtime</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u7w12-8">
+      <label><input type="checkbox" onchange="toggleStep('u7w12-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Verify the production controls checklist</div>
+        <div class="step-desc">Complete the PeaRL Delegated Autonomous promotion gate checklist for your deployed agent. This is the governance evidence required for your Unit 8 capstone submission.</div>
+      </div></label>
+      <div class="code-block"><pre><code># PeaRL Delegated Autonomous promotion gate — verify each item:
+# [ ] Agent has its own IAM role (not shared with other agents)
+# [ ] No hardcoded credentials (all in Secrets Manager)
+# [ ] Egress filtered (security group allows only known API domains)
+# [ ] Bedrock Guardrails active on input AND output
+# [ ] CloudWatch dashboard shows agent operations (OTel → CloudWatch)
+# [ ] max_iterations configured on the agent (failure cap)
+# [ ] dependencies hash-pinned (requirements-pinned.txt present)
+# [ ] SBOM generated (from Week 9)
+# [ ] Tool calls logged with agent_id and timestamp
+# [ ] OWASP Agentic Top 10 risks assessed (or documented as accepted)
+
+# Document each item with evidence: screenshot, config file, or CLI output
+# This checklist + evidence = your capstone governance package</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
 </div>

@@ -53,7 +53,7 @@
 <main class="main">
   <div class="content">
     <h1 id="unit-7-production-security-engineering">Unit 7: Production Security Engineering</h1>
-<p><strong>CSEC 602 — Semester 2 | Weeks 13–16</strong></p>
+<p><strong>CSEC 602 — Semester 2 | Weeks 9–12</strong></p>
 <p><a href="semester2.html">← Back to Semester 2 Overview</a></p>
 <hr />
 <h2 id="unit-7-overview-taking-agentic-systems-to-production">Unit 7 Overview: Taking Agentic Systems to Production</h2>
@@ -620,6 +620,68 @@ Return format:
 <li>Apply Zero Trust principles to non-human identities</li>
 <li>Leverage PeaRL environment hierarchy as a reference for agent governance gates</li>
 </ul>
+<h3 id="from-claude-code-to-production">From Claude Code to Production</h3>
+<p>Everything you built in Semester 1 runs in Claude Code on your machine. In production, your agent runs on infrastructure you configure, with credentials you manage, on networks you control, serving requests you monitor. Every decision you deferred in development becomes a security decision in production.</p>
+<div class="callout callout-key"><p><strong>Control Translation Matrix</strong></p>
+<table>
+<thead><tr><th>Course Concept</th><th>Claude Code</th><th>Strands / AWS</th><th>Defense Layer</th></tr></thead>
+<tbody>
+<tr><td>Project context</td><td>CLAUDE.md</td><td>System prompt (agent constructor)</td><td>L1 GUIDANCE</td></tr>
+<tr><td>Security constraints</td><td>CLAUDE.md rules</td><td>System prompt + Bedrock Guardrails</td><td>L1→L2</td></tr>
+<tr><td>Tool access control</td><td>settings.json allow/deny</td><td>IAM policies + <code>@tool</code> decorator</td><td>L2-3 ENFORCEMENT</td></tr>
+<tr><td>Pre-execution hooks</td><td>PreToolUse hooks (bash)</td><td><code>@tool</code> decorator with validation</td><td>L3 ENFORCEMENT</td></tr>
+<tr><td>Credential management</td><td>noctua-keystore</td><td>AWS Secrets Manager / SSM</td><td>L4 INFRASTRUCTURE</td></tr>
+<tr><td>Network isolation</td><td>N/A (local machine)</td><td>Security groups + VPC + egress rules</td><td>L4 INFRASTRUCTURE</td></tr>
+<tr><td>Observability</td><td>/cost, /context</td><td>OpenTelemetry → CloudWatch/Grafana</td><td>L2-3</td></tr>
+<tr><td>Agent identity</td><td>Session-based</td><td>IAM role per agent</td><td>L2 ENFORCEMENT</td></tr>
+<tr><td>Failure caps</td><td><code>--max-turns</code> flag</td><td><code>max_iterations</code> parameter</td><td>L3 ENFORCEMENT</td></tr>
+<tr><td>Multi-agent</td><td>Subagents + Agent Teams</td><td>Graph / Swarm / Workflow patterns</td><td>Architecture</td></tr>
+<tr><td>Deployment isolation</td><td>Git worktrees</td><td>Separate Lambda / containers per agent</td><td>L4 INFRASTRUCTURE</td></tr>
+</tbody>
+</table>
+<p><strong>Key teaching point:</strong> Layer 1 controls (CLAUDE.md → system prompts) remain GUIDANCE in both environments. Layer 3-4 controls change implementation but stay ENFORCEMENT. The External Enforcement Principle is runtime-agnostic.</p></div>
+
+<h3 id="strands-sdk-introduction">Strands SDK: Same Concepts, Production Runtime</h3>
+<p>Students already understand agents, tools, prompts, and the agentic loop from Semester 1. Strands is the same concepts with a production runtime:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">tool</span>
+<span class="kn">from</span> <span class="nn">strands.models</span> <span class="kn">import</span> <span class="n">BedrockModel</span>
+
+<span class="c1"># A tool is a Python function with a docstring — same concept as an MCP tool definition</span>
+<span class="nd">@tool</span>
+<span class="k">def</span> <span class="nf">lookup_cve</span><span class="p">(</span><span class="n">cve_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="s2">"""Look up a CVE by ID from the National Vulnerability Database.
+    Use this when you need details about a specific vulnerability
+    including severity, affected products, and description.
+    Do NOT use this for general threat intelligence searches."""</span>
+    <span class="c1"># Implementation here — same logic as your MCP server</span>
+    <span class="o">...</span>
+
+<span class="c1"># An agent is a model + tools + system prompt — same as Claude Code</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">BedrockModel</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s2">"anthropic.claude-sonnet-4-6-20250514-v1:0"</span><span class="p">),</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">lookup_cve</span><span class="p">,</span> <span class="n">search_logs</span><span class="p">,</span> <span class="n">generate_finding</span><span class="p">],</span>
+    <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"""You are a security triage agent.
+    Analyze incoming alerts, look up relevant CVEs, correlate with log data,
+    and produce structured findings. NEVER execute remediation actions — only report.
+    All findings MUST include evidence and severity classification."""</span>
+<span class="p">)</span>
+
+<span class="c1"># Run — same agentic loop you learned in Semester 1</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="s2">"Analyze alert: suspicious outbound traffic to 185.x.x.x on port 4444"</span><span class="p">)</span></code></pre></div>
+<p>Your MCP servers from Weeks 3–4 work directly with Strands — no modification needed:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span> <span class="nn">strands.tools.mcp</span> <span class="kn">import</span> <span class="n">MCPClient</span>
+
+<span class="n">mcp_client</span> <span class="o">=</span> <span class="n">MCPClient</span><span class="p">(</span>
+    <span class="n">command</span><span class="o">=</span><span class="s2">"node"</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">"./servers/cve-lookup/index.js"</span><span class="p">],</span>
+    <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s2">"NVD_API_KEY"</span><span class="p">:</span> <span class="s2">"${NVD_KEY}"</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">mcp_client</span><span class="p">],</span> <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"..."</span><span class="p">)</span>
+<span class="c1"># MCP protocol is the same — tools are portable across runtimes</span></code></pre></div>
+<div class="callout callout-tip"><p><strong>Why Strands for this course:</strong> (1) MCP-native — your Week 3–4 servers plug in without modification. (2) Model-driven — the LLM handles orchestration like Claude Code, lower learning curve. (3) AWS-native — AgentCore, Secrets Manager, Bedrock Guardrails, CloudWatch all integrate natively. (4) OpenTelemetry built-in — production observability without extra work. (5) Apache 2.0 open source — inspect the source, understand the internals.</p></div>
+
 <h4 id="the-non-human-identity-crisis">The Non-Human Identity Crisis</h4>
 <p><strong>The Numbers:</strong></p>
 <ul>
@@ -1465,6 +1527,16 @@ Include example showing dashboard being generated and printed.
 </ul>
 <h4 id="observability-the-three-pillars">Observability: The Three Pillars</h4>
 <p>Traditional monitoring watches dashboards. <strong>Observability</strong> answers: "Why is the system behaving this way?"</p>
+<div class="callout callout-key"><p><strong>Strands + OpenTelemetry: Observability Built In</strong><br>
+Strands automatically instruments agent operations — no extra code needed:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands.telemetry</span> <span class="kn">import</span> <span class="n">configure_telemetry</span>
+
+<span class="n">configure_telemetry</span><span class="p">(</span>
+    <span class="n">service_name</span><span class="o">=</span><span class="s2">"security-triage-agent"</span><span class="p">,</span>
+    <span class="n">exporter</span><span class="o">=</span><span class="s2">"cloudwatch"</span><span class="p">,</span>  <span class="c1"># or "otlp" for Grafana/Datadog</span>
+<span class="p">)</span>
+<span class="c1"># Every tool call traced, every LLM invocation logged, agent loop iterations tracked</span></code></pre></div>
+<p>Every tool call is traced with timing and result. Every LLM invocation logs token counts. Agent loop iterations are tracked. Errors and retries are captured. Route to CloudWatch, Grafana, or Datadog. Guardrails block known bad patterns — observability catches unknown bad patterns. Both are required.</p></div>
 <p><strong>Pillar 1: Metrics</strong> (quantitative)</p>
 <ul>
 <li>Agent execution duration (histogram)</li>
@@ -2177,6 +2249,30 @@ SLO values: 95% success rate, 80% accuracy. Adjust if needed.
 <li>Build operational runbooks for production agentic systems</li>
 <li>Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance</li>
 </ul>
+<div class="callout callout-key"><p><strong>Primary Deployment Target: AWS AgentCore</strong><br>
+For the capstone, AWS AgentCore is the primary deployment path. It is the managed runtime that handles what you'd otherwise configure manually:</p>
+<ul>
+<li>IAM role per agent — enforced by the runtime, not your code</li>
+<li>Bedrock Guardrails — applied at the API layer, outside the reasoning loop</li>
+<li>Secrets Manager integration — no environment variables, no keystore in production</li>
+<li>OpenTelemetry → CloudWatch — automatic, no instrumentation code required</li>
+<li>MCP server connections — native Strands <code>MCPClient</code> support</li>
+</ul>
+<p><strong>Pre-capstone checkpoint (before Week 13):</strong> Verify your AWS account has Bedrock model access enabled and can run a basic <code>Agent(model=BedrockModel(...))</code> call. Bedrock access approval can take 24–48 hours — do not leave this for Week 13 lab time.</p>
+<p>Lambda is the fallback path if Bedrock/AgentCore access is delayed. The Strands code is identical — only the deployment target changes.</p></div>
+
+<h4 id="bedrock-guardrails">Bedrock Guardrails: Layer 2 Enforcement in Production</h4>
+<p>Guardrails check both input (what reaches the agent) and output (what the agent produces). They operate at the API layer — the agent cannot bypass them because they run outside the reasoning loop.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands.models</span> <span class="kn">import</span> <span class="n">BedrockModel</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">BedrockModel</span><span class="p">(</span>
+    <span class="n">model_id</span><span class="o">=</span><span class="s2">"anthropic.claude-sonnet-4-6-20250514-v1:0"</span><span class="p">,</span>
+    <span class="n">guardrail_id</span><span class="o">=</span><span class="s2">"your-guardrail-id"</span><span class="p">,</span>
+    <span class="n">guardrail_version</span><span class="o">=</span><span class="s2">"1"</span>
+<span class="p">)</span>
+<span class="c1"># Configure in Bedrock console: block PII in output, block credential patterns,</span>
+<span class="c1"># content filtering for prompt injection, topic restrictions (security domain only)</span></code></pre></div>
+
 <h4 id="deployment-architectures-for-agents">Deployment Architectures for Agents</h4>
 <p>Choose based on your operational requirements:</p>
 <table>

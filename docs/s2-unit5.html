@@ -2795,6 +2795,13 @@ Use my pattern as the template. Adapt agent roles and communication as needed.
 <hr />
 <hr />
 <h2 id="final-integration-unit-5-capstone">Final Integration: Unit 5 Capstone</h2>
+<div class="callout callout-tip"><p><strong>Looking ahead to Unit 7-8:</strong> The multi-agent systems you build this unit will be deployed to production infrastructure in Unit 7 (Week 10+). Design with that transition in mind:</p>
+<ul>
+<li>Keep MCP servers self-contained — they plug directly into Strands without modification (same MCP protocol)</li>
+<li>Document your security controls — you will translate each one to its AWS equivalent (CLAUDE.md → system prompt, hooks → IAM policies, keystore → Secrets Manager)</li>
+<li>Track which controls are GUIDANCE vs ENFORCEMENT — the distinction matters more in production where the runtime is different</li>
+<li>Choose agent role boundaries carefully — each agent gets its own IAM role in production, so clear role separation now prevents permission sprawl later</li>
+</ul></div>
 <p><strong>Objective:</strong> Design and defend your own multi-agent security system.</p>
 <p><strong>Requirements:</strong></p>
 <ul>

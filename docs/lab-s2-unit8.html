@@ -665,7 +665,8 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
         <h2>Sprint II — Production Hardening &amp; Peer Red Team</h2>
       </div>
 
-      <p>Sprint II transforms your working prototype into a production-ready system. You'll harden the system with full observability, containerization, CI/CD, and an IaC template. Simultaneously, peer teams will red team your system using the top 5 MITRE ATLAS techniques from your threat model.</p>
+      <p>Sprint II finalizes your production deployment and runs the peer red team. Your system must be deployed to AWS AgentCore (or Lambda fallback) before the deployment freeze on Day 1. Peer teams attack your live production deployment — not your repository — using the full OWASP Agentic Top 10 methodology. You attack another team's deployment in return.</p>
+      <div class="callout callout-warn"><p><strong>Deployment freeze — Day 1 of Week 15:</strong> Finalize your production deployment before the freeze. After freeze, no changes until you receive the red team report. Your deployment must include: working 3-agent system on AgentCore, IAM role per agent, Bedrock Guardrails, CloudWatch observability, SBOM, hash-pinned dependencies, and documentation package (architecture diagram, controls matrix, AIUC-1 mapping). Provide the red team an access package: read-only observer role + instructor-scoped attacker role (limited to your team's sandbox).</p></div>
 
       <!-- Knowledge Check -->
       <div class="quiz-block">
@@ -675,19 +676,19 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
           <p class="question-text">9. During peer red team review, which sources define the attack techniques you must test?</p>
           <div class="quiz-options">
             <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="a">
-              <input type="radio" name="q-u8-w15-1" value="a"> The top 5 MITRE ATLAS techniques identified in the target team's architecture document threat model
+              <input type="radio" name="q-u8-w15-1" value="a"> All 10 OWASP Agentic risks, tested systematically against the live production AgentCore deployment
             </label>
             <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="b">
-              <input type="radio" name="q-u8-w15-1" value="b"> Any 5 techniques from OWASP Top 10 for LLMs that seem applicable
+              <input type="radio" name="q-u8-w15-1" value="b"> Any 5 techniques from OWASP Top 10 for LLMs that seem most applicable to the target system
             </label>
             <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="c">
-              <input type="radio" name="q-u8-w15-1" value="c"> The 6 Unit 6 red team scenarios from the course wargame
+              <input type="radio" name="q-u8-w15-1" value="c"> The top 5 MITRE ATLAS techniques identified in the target team's architecture threat model
             </label>
             <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="d">
-              <input type="radio" name="q-u8-w15-1" value="d"> Whatever the red team considers most interesting or creative
+              <input type="radio" name="q-u8-w15-1" value="d"> Whatever the red team considers most creative or interesting about the target system
             </label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-1', 'a', 'The peer red team uses the top 5 MITRE ATLAS techniques that the target team identified in their own architecture document threat model. This ensures the red team focuses on known, documented risks rather than arbitrary attacks. The target team wrote the threat model as a self-assessment; the red team validates whether those threats were actually mitigated.')">Check Answer</button>
+          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-1', 'a', 'The capstone red team methodology uses the full OWASP Agentic Top 10 — all 10 risks tested against the live production deployment, not just the repository. Each finding gets an OWASP AIVSS severity score, OWASP Agentic risk number (#1–#10), defense layer classification (L1–L4), and a specific fix recommendation. Testing the live deployment (not just the code) is critical: a risk may be handled in code but misconfigured in the deployed infrastructure.')">Check Answer</button>
           <div class="quiz-feedback" id="feedback-q-u8-w15-1"></div>
         </div>
 
@@ -1021,50 +1022,67 @@ jobs:
 
       <div class="lab-step">
         <input type="checkbox" id="step-u8-15-5" onchange="toggleStep('step-u8-15-5', this.checked)">
-        <label for="step-u8-15-5"><strong>Step 5 (Red Team):</strong> As a red team, access the peer team's repository and execute attacks against their top 5 MITRE ATLAS techniques from their architecture document. Document each test.</label>
+        <label for="step-u8-15-5"><strong>Step 5 (Red Team):</strong> Access the peer team's live production deployment (not their repository) and test all 10 OWASP Agentic risks systematically. For each risk: attempt exploitation, document what was found, score with OWASP AIVSS, classify the defense layer exploited, and recommend a specific fix.</label>
       </div>
 
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code"># Red Team Report Template
+        <pre><code># Red Team Report Template
 # docs/security/red-team-report.md
 
 # Peer Red Team Report
 ## Target: [Team Name] — [Project Name]
 ## Red Team: [Your Team Name]
 ## Date: $(date +%Y-%m-%d)
+## Target deployment: AgentCore / Lambda (circle one)
+
+## Executive Summary
+- Critical findings: [count]
+- High findings: [count]
+- Most significant finding: [one sentence]
 
 ## Scope
-Testing the top 5 MITRE ATLAS techniques identified in target team's
-threat model (from their architecture document).
+Full OWASP Agentic Top 10 assessment against the live production deployment.
+Testing performed against the deployed system — not the repository alone.
+
+## OWASP Agentic Top 10 Coverage Table
+| # | Risk | Tested | Severity | Status |
+|---|------|--------|----------|--------|
+| A01 | Prompt Injection | Yes | Critical/High/Med/Low/N/A | Confirmed/Not Reproduced/N/A |
+| A02 | Insecure Output Handling | Yes | | |
+| A03 | Training Data Poisoning | Yes | | |
+| A04 | Model Denial of Service | Yes | | |
+| A05 | Supply Chain Vulnerabilities | Yes | | |
+| A06 | Sensitive Information Disclosure | Yes | | |
+| A07 | Insecure Plugin Design | Yes | | |
+| A08 | Excessive Agency | Yes | | |
+| A09 | Overreliance | Yes | | |
+| A10 | Model Theft | Yes | | |
 
 ## Findings
 
-### Finding 1: [Technique ID] — [Technique Name]
-- **MITRE ATLAS ID:** AML.TXXXX
-- **AIVSS Score:** [score]/10
-- **AIVSS Vector:** [vector string]
+### Finding 1: [Short Title]
+- **OWASP Agentic Risk:** #A0X — [Risk Name]
+- **OWASP AIVSS Severity:** Critical / High / Medium / Low
+- **Defense Layer Exploited:** L1 GUIDANCE / L2 ENFORCEMENT / L3 ENFORCEMENT / L4 INFRASTRUCTURE
+- **Inside reasoning loop?** Yes / No
 - **Description:** What was tested and what was found
 - **Evidence:** Reproduction steps
   ```
-  # Command or payload used
+  # Payload, request, or command used
+  # Observed response
   ```
-- **Impact:** What an attacker could accomplish
-- **Recommendation:** Specific mitigation steps
+- **Impact:** What an attacker could accomplish if exploited in production
+- **Recommendation:** Specific implementation fix (not just "add validation")
 
-### Finding 2: [Technique ID] — [Technique Name]
+### Finding 2: [Short Title]
 [repeat structure]
-
-## Summary Table
-| # | ATLAS ID | Technique | AIVSS Score | Status |
-|---|----------|-----------|-------------|--------|
-| 1 | AML.TXXXX | [name] | X.X | Confirmed / Not reproduced |
-| 2 | AML.TXXXX | [name] | X.X | Confirmed / Not reproduced |
 
 ## After-Action Assessment
 - Strongest security controls observed:
 - Most critical gaps found:
-- Recommended priority for remediation:</code></pre>
+- Recommended priority for remediation:
+- Supply chain assessment (A05): Are dependencies hash-pinned? (requirements.txt --require-hashes)</code></pre>
       </div>
 
       <div class="lab-step">
@@ -1137,7 +1155,7 @@ Resources:
           <li>SBOM in CycloneDX format (sbom.json)</li>
           <li>GitHub Actions CI/CD pipeline with 4 security gates</li>
           <li>IaC template (CloudFormation or Terraform)</li>
-          <li>Red team report with 5 MITRE ATLAS findings + AIVSS scores</li>
+          <li>Red team report: full OWASP Agentic Top 10 coverage table + all confirmed findings with OWASP AIVSS scores</li>
           <li>Remediation report with patch evidence and retest results</li>
           <li>Git tag <code>sprint2-complete</code> — <strong>20% of capstone grade</strong></li>
         </ul>

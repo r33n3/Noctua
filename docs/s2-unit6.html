@@ -3215,6 +3215,15 @@ Red Team Score: 100 (initial access) + 50 (5000 records × 1 point) + 50 (persis
 <li><strong><a href="resources/AGENT-DEV.md">Agent Development Guide</a></strong> — Claude Agent SDK patterns for red and blue team agents</li>
 </ul>
 <hr />
+<div class="callout callout-tip"><p><strong>Looking ahead to Unit 8:</strong> The red team skills you develop this unit — adversarial inputs, prompt injection, IAM probing, guardrail bypass attempts — will be applied to production Strands/AWS deployments in the Unit 8 capstone. You will attack another team's live AgentCore deployment, not a Claude Code prototype. Production red teaming tests different things:</p>
+<ul>
+<li>IAM misconfigurations — agent roles with excessive permissions (don't exist in Claude Code)</li>
+<li>Network egress — can the agent call a C2 domain if Guardrails don't block it?</li>
+<li>Bedrock Guardrails bypass — the same adversarial inputs you tested here, against a managed content filter</li>
+<li>Observability gaps — can the blue team see your attack in their CloudWatch dashboard?</li>
+<li>Supply chain surface — are the target team's dependencies hash-pinned?</li>
+</ul>
+<p>Keep your red team methodology notes — you will apply OWASP Agentic Top 10 systematically in Unit 8.</p></div>
 <p><strong>Course Completion:</strong> This unit represents the culmination of the semester's AI security education. You've progressed from understanding threats (Week 5) to executing attacks (Week 6) to building defenses (Week 7) to operating in a realistic competitive environment (Week 8). The skills developed here are directly applicable to securing AI systems in production environments and will form the foundation for advanced specializations in AI security.</p>
   </div>
 </main>
