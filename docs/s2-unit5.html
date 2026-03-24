@@ -815,29 +815,30 @@ The supervisor should explain its decisions in log messages, like:
 <p><strong>Testing Approach:</strong></p>
 <p>Rather than copy-paste test scripts, design your own test harness:</p>
 <ol>
-<li><strong>Define ground truth for each test case:</strong></li>
+<li><strong>Define ground truth for each test case:</strong>
+<ul>
 <li>Test name and description</li>
 <li>Expected severity (low/medium/high/critical)</li>
 <li>Expected escalation decision (yes/no)</li>
-<li>
-<p>Why this is the correct answer</p>
+<li>Why this is the correct answer</li>
+</ul>
 </li>
-<li>
-<p><strong>Build a test runner that:</strong></p>
-</li>
+<li><strong>Build a test runner that:</strong>
+<ul>
 <li>Executes the workflow for each test case</li>
 <li>Captures all outputs (normalized alert, analysis, recommendations, report)</li>
 <li>Compares predictions to ground truth</li>
-<li>
-<p>Records success/failure and reasoning</p>
+<li>Records success/failure and reasoning</li>
+</ul>
 </li>
-<li>
-<p><strong>Measure:</strong></p>
-</li>
+<li><strong>Measure:</strong>
+<ul>
 <li>Accuracy: % of correct severity assignments</li>
 <li>Consistency: Does the same alert always produce the same result?</li>
 <li>False positive rate: How many benign alerts escalated?</li>
 <li>False negative rate: How many real threats went undetected?</li>
+</ul>
+</li>
 </ol>
 <p><strong>Claude Code Prompt for Test Framework:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build a test framework for a multi-agent SOC triage system.
@@ -1471,42 +1472,41 @@ Implementation using Claude Agent SDK:
 <p>Rather than a pre-built comparison, design a methodology for comparing frameworks:</p>
 <p><strong>Dimensions to Measure:</strong></p>
 <ol>
-<li><strong>Code Complexity:</strong> Lines of code, files needed, setup time</li>
+<li><strong>Code Complexity:</strong> Lines of code, files needed, setup time
+<ul>
 <li>How long does it take to get from "pip install" to running?</li>
 <li>How many files do you need to write?</li>
-<li>
-<p>Is the code easy to understand for someone new to the framework?</p>
+<li>Is the code easy to understand for someone new to the framework?</li>
+</ul>
 </li>
-<li>
-<p><strong>Flexibility:</strong> Can you do non-standard things?</p>
-</li>
+<li><strong>Flexibility:</strong> Can you do non-standard things?
+<ul>
 <li>Can you implement custom orchestration patterns?</li>
 <li>Can agents communicate in arbitrary ways?</li>
-<li>
-<p>Can you add your own supervisory logic?</p>
+<li>Can you add your own supervisory logic?</li>
+</ul>
 </li>
-<li>
-<p><strong>Output Quality:</strong> Does the system make good decisions?</p>
-</li>
+<li><strong>Output Quality:</strong> Does the system make good decisions?
+<ul>
 <li>Accuracy on test cases (correct severity assignments)</li>
 <li>Consistency (same alert always produces same result)</li>
-<li>
-<p>Confidence calibration (high confidence = correct?)</p>
+<li>Confidence calibration (high confidence = correct?)</li>
+</ul>
 </li>
-<li>
-<p><strong>Performance:</strong> Speed and cost</p>
-</li>
+<li><strong>Performance:</strong> Speed and cost
+<ul>
 <li>Latency: How long does it take per alert?</li>
 <li>Token efficiency: How many tokens for each decision?</li>
-<li>
-<p>Cost: Estimated API cost per alert</p>
+<li>Cost: Estimated API cost per alert</li>
+</ul>
 </li>
-<li>
-<p><strong>Debuggability:</strong> Can you understand what went wrong?</p>
-</li>
+<li><strong>Debuggability:</strong> Can you understand what went wrong?
+<ul>
 <li>Can you trace why a decision was made?</li>
 <li>Can you see which tool was called and what it returned?</li>
 <li>Can you replay past decisions?</li>
+</ul>
+</li>
 </ol>
 <p><strong>Claude Code Prompt:</strong></p>
 <div class="codehilite"><pre><span></span><code>Build a comparative analysis framework for multi-agent SOC systems.

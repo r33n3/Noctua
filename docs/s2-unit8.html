@@ -89,17 +89,23 @@
 <li><strong>Ethical Impact Assessment</strong> — Stakeholder analysis, potential misuse scenarios, and responsible AI alignment.</li>
 <li><strong>AIUC-1 Domain Mapping</strong> — Map your capstone system against all six AIUC-1 domains (Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society). For each domain, document: which controls your system implements, which controls are not applicable (with justification), and what gaps remain. Reference: https://www.aiuc-1.com/</li>
 <li><strong>AIVSS Risk Assessment</strong> — Score the top 5 AI-specific vulnerabilities in your system using OWASP AIVSS methodology. For each vulnerability: describe the risk, assign an AIVSS score, map it to the relevant AIUC-1 domain, and document your mitigation. Demonstrate how AIVSS scoring informed your prioritization decisions.</li>
-<li><strong>Containerized Delivery</strong> — Your capstone must be deliverable as a containerized artifact, including:</li>
+<li><strong>Containerized Delivery</strong> — Your capstone must be deliverable as a containerized artifact, including:
+<ul>
 <li><code>Dockerfile</code> with multi-stage build, non-root user, health checks</li>
 <li><code>docker-compose.yml</code> for local testing and development</li>
 <li>Container image scanning (Trivy) results documenting any CVE findings and mitigations</li>
 <li>Supply chain security (SBOM) in CycloneDX or SPDX format</li>
+</ul>
+</li>
 <li><strong>Infrastructure as Code (IaC)</strong> — CloudFormation or Terraform template showing how your system deploys to production (ECS task definition, Kubernetes manifests, or equivalent). IaC enables repeatable, versioned deployments.</li>
-<li><strong>CI/CD Pipeline</strong> — GitHub Actions workflow demonstrating the DevSecOps promotion pipeline:</li>
+<li><strong>CI/CD Pipeline</strong> — GitHub Actions workflow demonstrating the DevSecOps promotion pipeline:
+<ul>
 <li>Pre-commit: secrets detection</li>
 <li>PR review: SAST scanning (Bandit/Semgrep)</li>
 <li>Build: container image scanning, SBOM generation</li>
 <li>Deploy: promotion gates (dev → pilot → preprod → prod) with approval workflows</li>
+</ul>
+</li>
 <li><strong>Deployment Plan</strong> — Documentation on how this system scales to production, including operational runbook, incident playbook, and observability setup.</li>
 </ol>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.</p>

@@ -349,12 +349,12 @@ safety check --json &gt; vulnerability-report.json
 <h4 id="step-1-dependency-scanning">Step 1: Dependency Scanning</h4>
 <p><strong>Architecture Decision:</strong></p>
 <p>Your lab needs a module that wraps existing security tools (Safety, pip-audit, Syft) to provide unified scanning. Design the abstraction layer so enterprise tools like Snyk can be plugged in without changing the interface. The key design choices:</p>
-<ol>
+<ul>
 <li><strong>Tool Abstraction Layer:</strong> Different tools have different output formats. Abstract them behind a consistent scanner interface.</li>
 <li><strong>Pluggable Reporting:</strong> Risk aggregation must work whether you use Safety alone or multiple tools.</li>
 <li><strong>Exit Code Logic:</strong> CI/CD pipelines fail builds based on exit codes. Your scanner must translate vulnerability counts into appropriate exit codes.</li>
 <li><strong>Performance:</strong> Scanning takes time (30+ seconds). Cache results where possible or run scans in parallel.</li>
-</ol>
+</ul>
 <p><strong>Context Engineering Note:</strong></p>
 <p>When you ask Claude Code to generate a dependency scanner, provide:</p>
 <ul>
