@@ -106,10 +106,35 @@
     font-size: 9px; color: var(--text-muted); text-align: center;
   }
   .footer code { font-size: 9px; }
+
+  /* Back nav */
+  .nav-back {
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+    padding: 8px 0 10px; border-bottom: 1px solid var(--border);
+    margin-bottom: 4px; font-size: 11px;
+  }
+  .nav-back a { color: var(--text-dim); text-decoration: none; }
+  .nav-back a:hover { color: var(--gold); }
+  .nav-back a.home { font-weight: 600; color: var(--gold); }
+  .nav-sep { color: var(--border-light); }
 </style>
 </head>
 <body>
 <div class="poster">
+
+<div class="nav-back">
+  <a href="../index.html" class="home">← Noctua</a>
+  <span class="nav-sep">·</span>
+  <a href="../s1-unit1.html">Unit 1</a>
+  <span class="nav-sep">·</span>
+  <a href="../lab-setup.html">Lab Setup</a>
+  <span class="nav-sep">·</span>
+  <a href="../frameworks.html">Frameworks</a>
+  <span class="nav-sep">·</span>
+  <a href="course-cheatsheet.html">Course Cheatsheet</a>
+  <span class="nav-sep">·</span>
+  <a href="claude-code-directory.html">Directory Reference</a>
+</div>
 
 <div class="header">
   <div>
