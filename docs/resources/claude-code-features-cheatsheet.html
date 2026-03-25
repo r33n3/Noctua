@@ -183,7 +183,7 @@ const features = [
   {
     name: "CLAUDE.md",
     cat: "core",
-    desc: "Persistent project context loaded every session. Define coding conventions, project architecture, team practices, and agent constraints. Hierarchy: project root > subdirectories > user-level (~/.claude/CLAUDE.md).",
+    desc: "Persistent project context loaded every session. Define coding conventions, project architecture, team practices, and agent constraints. Hierarchy: project root > subdirectories > user-level (~/.claude/CLAUDE.md). <strong>CLAUDE.local.md</strong> — auto-gitignored sibling for personal project overrides that stay off the team's commit history.",
     tags: ["always-on", "context", "Week 1"],
     course: true,
     courseNote: '<span class="week">W1</span> Foundation — first file students create. Project conventions, security policies, governance constraints. Referenced by PeaRL case study (L5 attack read CLAUDE.md).'
@@ -247,7 +247,7 @@ const features = [
   {
     name: "Permissions System",
     cat: "core",
-    desc: "Three modes: ask (default), auto-accept (acceptEdits), plan. Fine-grained tool allowlists and blocklists. disallowedBashCommands for restricting dangerous operations.",
+    desc: "Three modes: ask (default), auto-accept (acceptEdits), plan. Fine-grained tool allowlists and blocklists. disallowedBashCommands for restricting dangerous operations. <strong>.claude/settings.local.json</strong> — auto-gitignored personal override; same structure as settings.json for permissions you don't want committed.",
     tags: ["security", "permissions", "governance"],
     course: true,
     courseNote: '<span class="week">W1</span> Security from day one. disallowedBashCommands is the first hard control students implement. PeaRL case study connection to L7.'

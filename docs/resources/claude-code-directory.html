@@ -188,6 +188,10 @@
     <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Always-on project context. Loaded every turn. Describes project conventions, workflow rules, agent roles. <span class="warn">Bypassable under goal pressure — not enforcement.</span></div>
   </div>
   <div class="dir">
+    <div class="dir-name">CLAUDE.local.md</div>
+    <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Personal project overrides — <strong>auto-gitignored</strong>. Same format and load order as CLAUDE.md but never committed. Use for personal style preferences, local shortcuts, or dev notes you don't want the team to see. Team sees CLAUDE.md; you also get CLAUDE.local.md layered on top.</div>
+  </div>
+  <div class="dir">
     <div class="dir-name">AGENTS.md</div>
     <div class="dir-desc"><span class="layer layer-1">LAYER 1 GUIDANCE</span> Industry-standard agent guidance (AAIF). Agent-agnostic — works with Claude, GPT, Gemini. Documents agent roles, responsibilities, expected behaviors.</div>
   </div>
@@ -202,6 +206,10 @@
   <div class="dir">
     <div class="dir-name">.claude/settings.json</div>
     <div class="dir-desc"><span class="layer layer-3">LAYER 2-3 ENFORCEMENT</span> Permissions (allow/deny/ask rules) + hooks (PreToolUse, PostToolUse, SessionStart). The deterministic enforcement boundary. <span class="sec">Cannot be bypassed by the reasoning loop.</span></div>
+  </div>
+  <div class="dir">
+    <div class="dir-name">.claude/settings.local.json</div>
+    <div class="dir-desc"><span class="layer layer-3">LAYER 2-3 ENFORCEMENT</span> Personal permission overrides — <strong>auto-gitignored</strong>. Same structure as settings.json. Use for permissions you need locally but don't want committed (e.g., allow a tool your team restricts, or add a personal deny rule). Merged with settings.json at runtime; local wins on conflicts.</div>
   </div>
   <div class="dir">
     <div class="dir-name">.claude/rules/</div>
