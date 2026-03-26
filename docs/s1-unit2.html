@@ -201,6 +201,17 @@
 </ul>
 <p><strong>The Scratchpad Pattern</strong> is a direct response to this problem. Rather than loading all context into one large prompt, you give the agent an explicit working space to accumulate findings incrementally — each tool call adds to a structured scratchpad rather than appending to a growing context block. This keeps relevant findings near the end of context (most recent) and prevents critical data from drifting into the low-attention middle. You'll implement this in Unit 5 when building multi-agent workflows.</p>
 </div>
+<div class="callout callout-warn"><p><strong>Context Anxiety — The Late-Session Failure Mode</strong></p>
+<p>Anthropic's engineering team identified a companion failure mode called <strong>"context anxiety"</strong>: models begin wrapping up work prematurely as they approach what they believe is their context limit — not because they've actually run out of context, but because they start behaving as if they need to finish quickly.</p>
+<p><strong>Symptoms to watch for:</strong></p>
+<ul>
+<li>Agent starts summarizing instead of continuing work</li>
+<li>Agent declares tasks "complete" that aren't actually done</li>
+<li>Agent stops exploring alternatives and commits to the first approach</li>
+<li>Output quality degrades noticeably in the last 20% of a long session</li>
+</ul>
+<p><strong>Compaction vs. Context Reset:</strong> <code>/compact</code> helps but doesn't fully resolve context anxiety — the agent knows it was compacted and may still feel "late in session." A context <em>reset</em> (start a fresh agent with a structured handoff artifact) provides a clean slate. This is why <code>/spec</code> writes output to <code>plans/</code> — the spec package survives context resets. A new agent reads <code>plans/SPEC-*.md</code> and picks up where the previous agent left off, without inheriting any context fatigue.</p>
+<p>For long sessions: write important state to files (scratchpad pattern), then <code>/clear</code> and start fresh with the files as input. The new session has full context budget and no anxiety. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <h4 id="day-1-deliverable">Day 1 Deliverable</h4>
 <p>Write a <strong>2-page analysis</strong> (500–750 words) comparing how MCP would change your current tool integration workflow. If you're using REST APIs, Zapier, or custom connectors to link your security tools, describe:</p>
 <ol>

@@ -101,6 +101,19 @@
 <li><strong>Parallel execution saves wallclock time:</strong> If you run three subagents in parallel (possible with concurrent API calls), you finish in 1/3 the time versus sequential invocation.</li>
 </ul>
 <p>Conversely, <em>poor orchestration costs more:</em> replicating context across agents, making unnecessary API calls, or routing requests to the wrong agent wastes tokens.</p>
+<div class="callout callout-key"><p><strong>Cost Reference: What Real Multi-Agent Runs Actually Cost</strong></p>
+<p>Students often have no frame of reference for agentic system costs. From Anthropic's engineering team running production harnesses (March 2026, Opus 4.5/4.6):</p>
+<table style="width:100%;font-size:13px;border-collapse:collapse;margin:8px 0;">
+<thead><tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:6px 8px;">Run Type</th><th style="text-align:left;padding:6px 8px;">Duration</th><th style="text-align:left;padding:6px 8px;">Cost</th></tr></thead>
+<tbody>
+<tr><td style="padding:6px 8px;">Solo agent (one-shot task)</td><td style="padding:6px 8px;">~20 min</td><td style="padding:6px 8px;">~$9</td></tr>
+<tr><td style="padding:6px 8px;">Full harness — planner + builder + QA (Opus 4.5)</td><td style="padding:6px 8px;">~6 hr</td><td style="padding:6px 8px;">~$200</td></tr>
+<tr><td style="padding:6px 8px;">Simplified harness (Opus 4.6)</td><td style="padding:6px 8px;">~4 hr</td><td style="padding:6px 8px;">~$125</td></tr>
+<tr><td style="padding:6px 8px;">Planner agent only</td><td style="padding:6px 8px;">~5 min</td><td style="padding:6px 8px;">~$0.50</td></tr>
+<tr><td style="padding:6px 8px;">Single QA/evaluation round</td><td style="padding:6px 8px;">~8 min</td><td style="padding:6px 8px;">~$3–4</td></tr>
+</tbody>
+</table>
+<p>For your sprints: a 110-minute sprint with one evaluator pass costs roughly $15–40 depending on model and complexity. Track with <code>/cost</code> after every session. <strong>Cost optimization levers:</strong> use Haiku for recon/read-only subagents (~5× cheaper than Sonnet); use <code>/effort low</code> for iteration passes, <code>/effort high</code> for final analysis; cache static system prompts (90% discount on cached tokens); set a failure cap to limit evaluator iterations. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If a single 200k-context model costs $20 per invocation and a 50k-context specialized agent costs $2 per invocation, but you need to invoke the large model 5 times versus 20 invocations of specialized agents, which is cheaper? What other dimensions matter (speed, auditing, error recovery)?</p>
 </div>
 <p><strong>Failure Modes &amp; Resilience</strong></p>
@@ -521,6 +534,27 @@ Show working Python code with error handling.
 <p>This cycle repeats every sprint. Week 14 is your first Think → Spec → Build → Retro cycle. Week 15 iterates on failures. By the capstone (Unit 8), you're running multiple cycles per week.</p>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on rapid iteration patterns for coverage of orchestration patterns that compress development timelines.</p>
 </div>
+<div class="callout callout-key"><p><strong>The Generator/Evaluator Loop — Build Is Not One Pass</strong></p>
+<p>Your sprint cycle is an iterative loop, not a single pass. Anthropic's engineering team formalizes this as a <strong>generator/evaluator pattern</strong>: a generator agent produces output, a separate evaluator agent grades it against explicit criteria, and feedback flows back to the generator for refinement.</p>
+<ol>
+<li><strong>Generate:</strong> Build the tool (<code>/spec</code> → plan → build)</li>
+<li><strong>Evaluate:</strong> Run the evaluator (<code>/code-review</code> + <code>/audit-aiuc1</code>) against explicit criteria</li>
+<li><strong>Decide:</strong> Based on evaluation feedback — if scores are trending up, refine the current approach; if scores are plateauing or declining, pivot to a different approach entirely</li>
+<li><strong>Iterate:</strong> Return to step 1 with evaluation feedback as input</li>
+<li><strong>Converge:</strong> Stop when evaluation criteria are met OR iteration cap reached (failure cap pattern)</li>
+</ol>
+<p>Anthropic's team runs 5–15 iterations for frontend design and 2–3 QA rounds for full-stack applications. Each iteration costs tokens — track with <code>/cost</code> and set an iteration cap as a governance guardrail. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
+
+<div class="callout callout-tip"><p><strong>Harness Complexity Is a Snapshot, Not a Constant</strong></p>
+<p>Every component in your harness encodes an assumption about what the model can't do on its own. Those assumptions expire as models improve. Anthropic found that Opus 4.5 needed sprint decomposition — breaking work into small chunks — to maintain coherence across long sessions. Opus 4.6 handles multi-hour sessions natively, making that scaffolding unnecessary overhead.</p>
+<p><strong>Practical rule — after each model upgrade, review your harness:</strong></p>
+<ol>
+<li>List every scaffolding component (sprint contracts, context resets, forced tool selection, explicit step ordering)</li>
+<li>For each component: "Does the new model still need this?"</li>
+<li>Test by removing one component and comparing output quality</li>
+<li>Remove components the model now handles natively; keep components where removal degrades output</li>
+</ol>
+<p>This applies to your course skills too: does <code>/spec</code> need to be as prescriptive with Opus 4.6? Do your failure caps need to be as tight? The goal is the minimum harness that produces required quality — more scaffolding than needed wastes tokens and constrains the model from finding better approaches. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <p><strong>The Prototype-to-Production Delivery Pipeline</strong></p>
 <p>As you move through Unit 4 and into Units 7–8, understand the full delivery pipeline:</p>
 <ol>
@@ -644,6 +678,18 @@ Show working Python code with error handling.
 </ol>
 <p>From a student sprint retrospective: <em>"The 5/5 pass rate is based on comparing output to expected results defined by the sprint spec author (same person). That's not a valid evaluation."</em> Don't make this mistake.</p>
 </div>
+<div class="callout callout-key"><p><strong>Tuning Your Evaluator — The Verifier Needs Verification</strong></p>
+<p>An evaluator agent that grades your security tool starts lenient. Anthropic's team found that even with explicit criteria, evaluators "identified legitimate issues, then talked themselves into deciding they weren't a big deal and approved the work anyway." A generous evaluator is worse than no evaluator — it gives false confidence.</p>
+<p><strong>Iterative calibration workflow:</strong></p>
+<ol>
+<li>Run the evaluator on a known output</li>
+<li>Read the evaluator's full assessment (not just the score)</li>
+<li>Find where its judgment diverges from yours: did it approve something you'd reject? Miss an issue you spotted? Score too high on a weak area?</li>
+<li>Update the evaluator's prompt to address the divergence</li>
+<li>Re-run on the same output and compare</li>
+<li>Repeat until the evaluator's judgment aligns with yours</li>
+</ol>
+<p><strong>Practical tip:</strong> Save 3–5 "reference assessments" where you graded the output manually. Use these as ground truth to test whether the evaluator agrees with your judgment. If it doesn't, adjust the prompt. If it does, you have a calibrated evaluator you can trust on new outputs. This is V&amp;V applied to the evaluator itself — the verifier needs verification. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
 <ul>
 <li>MTTP tells you how fast you execute</li>

@@ -394,6 +394,11 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Perfectionism in week 14. Don't spend 3 days optimizing agent prompts when you haven't built the orchestration layer yet. Build the skeleton first; refine later.</p>
 <p><strong>Pro Tip:</strong> Use Claude Code and Git heavily. Create a branch for each agent. Use pull requests for code review. Maintain a clear README so any team member can spin up the environment. You'll thank yourself in Week 16 when you need to demo quickly.</p>
 </div>
+<div class="callout callout-tip"><p><strong>Static Review vs. Dynamic QA — Testing the Running System</strong></p>
+<p><code>/code-review</code> and <code>/audit-aiuc1</code> analyze your code for vulnerabilities and compliance gaps. But code that looks correct can still break at runtime. Anthropic's engineering team adds a <strong>Playwright MCP</strong> to their evaluator agent, letting it navigate the running application like a real user — clicking through features, submitting inputs, and verifying outputs against expected behavior.</p>
+<p>For your capstone: if your system has a security dashboard, alert triage UI, or any user-facing interface, connect the Playwright MCP to your evaluator agent and have it test the live deployment — not just the source code. This catches "the agent runs but produces wrong findings" or "the dashboard loads but displays stale data" — issues that static review will always miss.</p>
+<p>For API-only systems (no UI): focus dynamic QA on the MCP server endpoints and agent output schemas. Have a separate evaluator agent call the tools directly with edge-case inputs and verify outputs meet the declared schemas. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
+
 <h4 id="deliverable-sprint-i-progress-report-due-friday">Deliverable: Sprint I Progress Report (Due Friday)</h4>
 <p><strong>Format:</strong> 2–3 pages, including:</p>
 <ol>
