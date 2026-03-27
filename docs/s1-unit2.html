@@ -237,6 +237,16 @@
 <li>Claude Code (or manual Claude Code API setup)</li>
 <li>A public CVE database API key (NVD API is free; no key required for basic queries)</li>
 </ul>
+<div class="callout callout-info"><p><strong>What You're Wrapping — The NVD API</strong></p>
+<p>Your MCP server is a structured interface in front of the <strong>NIST National Vulnerability Database (NVD) REST API</strong>. Before building the wrapper, understand the underlying service:</p>
+<ul>
+<li><strong>Endpoint:</strong> <code>https://services.nvd.nist.gov/rest/json/cves/2.0</code></li>
+<li><strong>Query by CVE ID:</strong> append <code>?cveId=CVE-2023-44487</code> — returns CVSS score, severity, affected products, references</li>
+<li><strong>Query by keyword:</strong> append <code>?keywordSearch=openssl&amp;cvssV3Severity=CRITICAL</code></li>
+<li><strong>Auth:</strong> unauthenticated = 5 req/30 sec; free API key (register at <a href="https://nvd.nist.gov/developers/request-an-api-key">nvd.nist.gov</a>) = 50 req/30 sec</li>
+<li><strong>Docs:</strong> <a href="https://nvd.nist.gov/developers/vulnerabilities">nvd.nist.gov/developers/vulnerabilities</a></li>
+</ul>
+<p>The MCP layer adds: input validation (CVE format check before the call), schema enforcement (structured output the agent can reason over), error handling (rate limits, unreachable API), and the natural language interface. The NVD API does the actual data retrieval — your MCP server makes it agent-accessible.</p></div>
 <p><strong>Install MCP SDK and dependencies:</strong></p>
 <p>If using Python:</p>
 <div class="codehilite"><pre><span></span><code>pip install mcp
