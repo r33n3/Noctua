@@ -641,6 +641,20 @@ Return format:
 </table>
 <p><strong>Key teaching point:</strong> Layer 1 controls (CLAUDE.md → system prompts) remain GUIDANCE in both environments. Layer 3-4 controls change implementation but stay ENFORCEMENT. The External Enforcement Principle is runtime-agnostic.</p></div>
 
+<div class="callout callout-key">
+  <div class="callout-title">Ephemeral-by-Default — The Production Memory Architecture</div>
+  <p>Production agent systems should persist nothing unless explicitly authorized through a controlled write path. Conversation history, tool results, and intermediate state are session-scoped by default. Persistence requires a classification tag, a retention policy, and an authorized write through a memory access layer — a centralized MCP tool or hook chain.</p>
+  <p>On session end: full state disposal with an audit log entry confirming destruction. This is Privacy-by-Design (GDPR Article 25) applied to agentic systems.</p>
+  <p><strong>Practical implementation:</strong></p>
+  <ul>
+    <li><strong>Conversation history</strong> — session-scoped, cleared on session end</li>
+    <li><strong>Tool call results</strong> — in-context only; strip sensitive fields via PostToolUse hook before they enter history</li>
+    <li><strong>Scratchpad files (plans/)</strong> — explicit write path, subject to retention policy; delete after project closes</li>
+    <li><strong>Vector DB / external memory</strong> — highest risk; requires classification at write time and right-to-erasure implementation path (GDPR Art. 17)</li>
+  </ul>
+  <p>The Control Translation Matrix above maps your Claude Code patterns to AWS equivalents. Apply the same discipline: noctua-keystore → Secrets Manager handles secrets; agent conversation state → session-scoped memory with explicit persistence gates handles everything else.</p>
+</div>
+
 <h3 id="strands-sdk-introduction">Strands SDK: Same Concepts, Production Runtime</h3>
 <p>Students already understand agents, tools, prompts, and the agentic loop from Semester 1. Strands is the same concepts with a production runtime:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">tool</span>

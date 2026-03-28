@@ -1380,6 +1380,47 @@ Limitation: Slower training, requires synchronization
 <li>Risk scoring doesn't need individual user behavior logs; aggregated group statistics work</li>
 <li>Incident investigation needs detailed logs, but only for investigation period (not indefinite retention)</li>
 </ul>
+<div class="callout callout-warn">
+  <div class="callout-title">Regulatory Retention Requirements for Agent Memory</div>
+  <p>These requirements apply to conversation history, tool results, scratchpad files, and vector DB entries — anywhere regulated data appears. "We didn't know it was stored there" is not a defense.</p>
+  <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left;padding:6px 10px;color:var(--accent);">Regulation</th>
+        <th style="text-align:left;padding:6px 10px;color:var(--accent);">Data Type</th>
+        <th style="text-align:left;padding:6px 10px;color:var(--accent);">Retention Period</th>
+        <th style="text-align:left;padding:6px 10px;color:var(--accent);">Key Requirement</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:6px 10px;">HIPAA</td>
+        <td style="padding:6px 10px;">PHI in any form, including AI-generated clinical documentation</td>
+        <td style="padding:6px 10px;color:var(--accent);">6 years</td>
+        <td style="padding:6px 10px;">Applies to AI-assisted clinical notes, diagnostic summaries, treatment recommendations</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:6px 10px;">PCI DSS</td>
+        <td style="padding:6px 10px;">Audit logs containing cardholder data</td>
+        <td style="padding:6px 10px;color:var(--accent);">1 year</td>
+        <td style="padding:6px 10px;">3 months immediately accessible; full year available on demand</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:6px 10px;">SOX</td>
+        <td style="padding:6px 10px;">Financial records including AI-assisted decisions</td>
+        <td style="padding:6px 10px;color:var(--accent);">7 years</td>
+        <td style="padding:6px 10px;">If an AI agent influenced a financial decision, that interaction log may be in scope</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;">GDPR</td>
+        <td style="padding:6px 10px;">Any personal data of EU data subjects</td>
+        <td style="padding:6px 10px;color:var(--accent);">Data minimization + right to erasure</td>
+        <td style="padding:6px 10px;">No fixed period — but deletion must be verifiable with a proof-of-deletion audit record (Art. 17)</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:12px;"><strong>Agent memory implication:</strong> If your agent's conversation history or scratchpad files contain PHI, cardholder data, or financial decisions, those files are in scope for the regulation. Design your memory architecture with retention and deletion built in from the start — retrofitting is significantly harder.</p>
+</div>
 <h4 id="data-governance-framework">Data Governance Framework</h4>
 <p>A data governance framework defines how data is classified, accessed, and retained:</p>
 <p><strong>Data Classification:</strong></p>

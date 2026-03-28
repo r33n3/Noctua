@@ -1728,6 +1728,11 @@ else:
     tool_result = {"type": "tool_result", "tool_use_id": tool_use_id, "content": results}
 </code></pre></div>
 <p>If you raise a Python exception instead of returning <code>is_error: true</code>, the model exits the agentic loop and you lose the chance for graceful recovery. With <code>is_error</code>, the model can decide to retry, fall back to a different tool, or surface the error to the operator.</p>
+<div class="callout callout-key"><p><strong>PostToolUse Hooks for Data Minimization</strong></p>
+<p>Every tool result enters your agent's conversation history — including verbose API responses with 40+ fields the agent will never need. Over a multi-turn session, this accumulates silently into a data governance liability.</p>
+<p><strong>PostToolUse hook pattern:</strong> The hook fires immediately after a tool call completes, before the result enters context. Use it to strip fields the agent doesn't need for reasoning, redact sensitive values in-place (e.g., <code>SSN → ***-**-1234</code>), and normalize inconsistent field names across tool sources.</p>
+<p>Why hooks beat prompts here: "don't include sensitive fields" in a system prompt has a non-zero failure rate that is unacceptable for compliance. A PostToolUse hook that strips fields before they reach the model is deterministic — it cannot be reasoned around. This is the same principle as <code>permissions.deny</code> vs. asking nicely.</p>
+<p><strong>Reference:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code/hooks">Claude Code Hooks documentation</a> — PostToolUse lifecycle, exit codes, and block patterns.</p></div>
 <hr />
 <p><strong>Component 3: Memory Architectures</strong></p>
 <p>An agent that operates for hours might need to remember earlier findings. Memory architectures are how you implement that.</p>

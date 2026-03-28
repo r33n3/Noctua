@@ -258,6 +258,15 @@ No hierarchy.
 when { principal.api_key_valid && principal.authorized_tools.contains(resource.identifier) };</code></pre>
 <p>When the orchestrator sends an A2A message with <code>"scope": ["invoke:threat_analyst"]</code>, it is asserting a Cedar policy claim at runtime. In production, the AgentBus validates this scope claim against your Cedar policy (via Amazon Verified Permissions) before dispatching to the subagent. The Cedar policies you wrote in Week 12 are not theoretical exercises — they are the authorization layer for every A2A call in production. The scope field is <code>authorized_tools</code> expressed as a runtime message.</p>
 </div>
+<div class="callout callout-key"><p><strong>Context Isolation as Blast Radius Control</strong></p>
+<p>Subagent isolated context is a security feature, not just an architectural convenience. When a subagent has no access to the coordinator's conversation history or other subagents' state, three properties hold:</p>
+<ol>
+<li><strong>Compromised subagent cannot exfiltrate data it never received.</strong> If the recon agent is prompt-injected, it cannot leak the case data that only the coordinator and analysis agent have seen.</li>
+<li><strong>Prompt injection in a subagent cannot redirect the parent orchestrator.</strong> The injection is contained to the subagent's isolated context — the coordinator only sees the subagent's structured output, not its conversation history.</li>
+<li><strong>Sensitive data scoped to one domain cannot leak to agents in other domains.</strong> The healthcare agent's PHI never appears in the finance agent's context, even if both report to the same coordinator.</li>
+</ol>
+<p><strong>The principle:</strong> explicit context passing — where the coordinator deliberately curates what each subagent receives — enforces need-to-know at the architectural level. Over-sharing context is a blast radius amplifier: the more context a subagent has, the more damage a compromised or injected subagent can do. This is least privilege applied to agent memory.</p>
+<p><strong>Design rule:</strong> before adding a piece of information to a subagent's context, ask "does this subagent need this to do its job?" If no, leave it out. The restriction is a security control.</p></div>
 <hr />
 <h3 id="when-multi-agent-is-overkill">When Multi-Agent is Overkill</h3>
 <ul>
