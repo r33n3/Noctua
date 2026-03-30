@@ -293,3 +293,22 @@ Document the security boundaries you've enforced.
 Tool outputs (from deterministic MCP calls) should be trusted as data — they come from authoritative sources with validation. Agent reasoning over tool outputs should be scrutinized — the agent's interpretation of CVE data is still LLM output.
 
 This week: After Claude summarizes a CVE query result, check one claim against the raw tool output. Does the summary accurately represent the severity? Does it correctly describe affected products? Build the habit of not conflating "tool said X" with "agent's interpretation of what the tool said."
+
+---
+
+## Production Readiness Check
+
+Your first MCP server is your first production artifact. Before submitting Week 3 deliverables, run:
+
+```
+/check-prod-readiness ~/noctua/tools/mcp-servers/week03-cve/
+```
+
+Focus on Layer 1 (Code Quality) and Layer 4 (Security) patterns — the ones most common in first MCP servers:
+- **1.1 Silent Error Swallowing:** Does your CVE lookup return `{}` on error, or a structured error with `is_error: true`?
+- **1.3 Naive Retry Logic:** If the NVD API returns 429, does your server wait with backoff or hammer it again immediately?
+- **4.3 Insufficient Input Bounds:** Does your `query_cve` tool have a length limit on the CVE ID parameter?
+
+The `external-api-safety.md` rule is now active in your environment and will flag these patterns as you code. The skill gives you the formal audit output for your submission.
+
+Include your `/check-prod-readiness` output in your Week 3 deliverables. Fix all CRITICAL findings before submitting.

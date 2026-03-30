@@ -287,3 +287,22 @@ Minimum: complete 4 stations with full measurements. Remaining 3 stations due as
 The entire lab this week is a V&V exercise: you're not trusting theoretical limits, you're measuring actual behavior. This builds the habit of empirical validation over theoretical assumption.
 
 Key V&V principle from this week: "Don't deploy at a scale you haven't tested." The breakpoints you find today are the safety margins for your architecture decisions going forward.
+
+---
+
+## Anti-Patterns as Attack Playbook
+
+The [AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-reference.md) is your Week 7 attack specification. Each Layer 1-4 pattern is a weakness that the Break Everything lab can exploit:
+
+| Station Type | Anti-Pattern to Exploit | Attack |
+|---|---|---|
+| Load test | 2.1 Connection Pool Exhaustion | Send 200 concurrent requests, watch DB connections spike |
+| Input test | 4.3 Insufficient Input Bounds | Send a 50KB query string to a search tool |
+| Dependency test | 2.6 No Graceful Degradation | Kill the CVE API, observe if the pipeline dies completely |
+| Webhook test | 2.2 Missing Idempotency | Fire the same webhook 50 times, count duplicate findings |
+| Log test | 4.2 Log Injection | Send user input containing newlines and fake log entries |
+| Timing test | 4.1 Timing Attacks | Measure response time for correct vs. wrong API key |
+
+For each exploit: document which pattern it targets, what the attack sends, what the failure mode is, and whether it would be detectable in production logs.
+
+> The anti-patterns aren't just code quality issues. They are attack vectors. This week you prove it empirically.

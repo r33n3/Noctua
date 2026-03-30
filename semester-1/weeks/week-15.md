@@ -353,6 +353,34 @@ Your capstone should explicitly document where on this spectrum each agent decis
 
 ---
 
+## Production Readiness: Layer 3 and Layer 4 Checklist
+
+Week 15 is where Layer 3 (Operations) and Layer 4 (Security) patterns become non-negotiable. Infrastructure can be deployed, but without operational observability and security hardening, it will fail silently or be exploited.
+
+Run your final pre-deployment audit:
+
+```
+/check-prod-readiness ~/noctua/tools/sprint-ii/
+```
+
+**Layer 3 — Operations (required for production):**
+- **3.1** Structured logging — all log messages use key-value fields, not f-strings
+- **3.2** Correlation IDs — `trace_id` flows through every agent, tool call, and log entry
+- **3.3** Health checks — `/health` endpoint verifies dependencies (DB, external APIs), returns 503 when degraded
+- **3.4** Graceful shutdown — SIGTERM handler finishes in-flight work before exit
+- **3.5** Metrics — Prometheus or equivalent exports `alerts_processed`, latency histograms, error rates
+
+**Layer 4 — Security (required for production):**
+- **4.1** No `==` for secret comparison — use `hmac.compare_digest()`
+- **4.2** No user input interpolated into log strings — structured fields only
+- **4.3** All tool inputs have explicit length/size bounds
+- **4.4** Credentials loaded via CredentialProvider with refresh interval, not `os.environ[]` at startup
+- **4.5** Every automated action has an audit record with `trace_id`, `agent_id`, `decision_basis`, and outcome
+
+**Target: READY status** (no CRITICAL or HIGH findings) before production deployment. Include the report in your Week 15 submission.
+
+---
+
 > **📖 Case Study Connection:** Your defense in depth implementation from this week mirrors the PeaRL case study's mitigation phases. Phase 1 controls (role gates, API restrictions) stop known attack paths at the application layer. Phase 2 controls (behavioral anomaly detection, context drift checking) represent the execution environment layer. Your production system needs both — and the architectural controls (separate users, container isolation, secrets management) that make bypass physically impossible.
 
 ---

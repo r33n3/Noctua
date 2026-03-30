@@ -374,3 +374,28 @@ The `/audit-aiuc1` skill is both the learning artifact and the practical tool st
 **Rugpull Adversarial Assumption:** This week introduces the adversarial perspective on V&V. It's not enough to verify that your skill works correctly — you must verify that it can't be repurposed toward harm by reframing the goal. The rugpull exercise makes this concrete.
 
 Starting from Week 6, every skill you build should include a "how could this be abused?" section in its design documentation.
+
+---
+
+## The Three-Evaluator Pipeline
+
+This week you build `/tool-select` and `/audit-aiuc1`. You now have access to a third course evaluator:
+
+```
+/code-review → /check-prod-readiness → /audit-aiuc1
+```
+
+Three evaluators. Three concerns. Each calibrated separately:
+- `/code-review` — Code quality (bugs, style, logic, readability)
+- `/check-prod-readiness` — Production survival (will this break at 3am under load?)
+- `/audit-aiuc1` — Governance compliance (AIUC-1 domains A-F)
+
+This is the Anthropic harness GAN-evaluator pattern (Update 46) applied to the course skill stack — three specialized evaluators instead of one general one. Each has a distinct failure mode it catches. Each can pass while the others fail.
+
+**Lab addition — examine `.claude/skills/check-prod-readiness/SKILL.md`:**
+
+1. Why does it use `context: fork` rather than the default context mode?
+2. How does its trigger description avoid false positives compared to a vague trigger like "use for security work"?
+3. What makes the structured report format (CRITICAL / HIGH / MEDIUM / LOW / PASSED) more useful than a prose summary?
+
+This is a canonical example of production-grade skill design — its frontmatter, reference file structure, and 6-step audit process reflect the progressive disclosure architecture you learned today. Reference it when designing your own course skills.

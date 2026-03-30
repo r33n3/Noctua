@@ -293,6 +293,27 @@ Optimize for efficiency, not just quality or cost alone.
 
 ---
 
+## Sprint I Production Readiness Requirement
+
+`/check-prod-readiness` output is a required Sprint I deliverable.
+
+Before your Week 11 sprint review, run:
+
+```
+/check-prod-readiness ~/noctua/tools/sprint-i/
+```
+
+Requirements:
+- **Zero CRITICAL findings** — these block deployment
+- **Document all HIGH findings** — fix or defer with written justification
+- **Include the report** in your sprint submission alongside your MTTS/MTTP/CPT metrics
+
+In your sprint retro: What patterns did the checker find? Were they patterns you anticipated? What does this tell you about gaps in your review process?
+
+> Track as a sprint metric: how many anti-pattern findings from `/check-prod-readiness` were found vs. fixed in Sprint I? This becomes the baseline for Sprint II improvement.
+
+---
+
 > **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
 > - "Quiz me on the key concepts from this reading. Start easy, then get harder."
 > - "I think I understand the Engineering Assessment Stack but I'm not sure. Explain it to me differently and then test whether I really get it."

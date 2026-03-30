@@ -310,3 +310,15 @@ If any are missing, iterate — don't accept a vague response as sufficient.
 ## V&V Lens
 
 **Light touch this week:** "Verify what the AI tells you." Apply minimal scrutiny — do the CCT output's claims match the evidence? Are the hypotheses actually plausible? This habit builds toward the full V&V framework introduced gradually through the semester.
+
+---
+
+## Production Readiness Reference
+
+Bookmark this now. You'll use it from Week 3 through Week 16.
+
+**[AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-reference.md)** — 26 patterns across 4 defense layers (Code Quality, Architecture, Operations, Security). Each pattern shows: what it is, why AI generates it, what breaks in production, how to detect it, how to fix it.
+
+From Week 3 onward, your deliverables will be audited against these patterns using the `/check-prod-readiness` course skill. Knowing the patterns before you build the tools that helps check for them gives you a significant head start.
+
+> **Reference path:** `docs/resources/ai-code-antipatterns-reference.md`

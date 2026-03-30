@@ -250,3 +250,17 @@ Semester 2 assumes all of this. It doesn't re-teach Docker basics, MCP fundament
 - Weeks 13-16: Capstone with full AIUC-1 certification and Assessment Stack documentation
 
 The context library you built in Semester 1 is your starting point. Every pattern, every governance template, every architecture decision — they're your foundation for Semester 2 complexity.
+
+---
+
+## Presentation Checklist: Production Readiness Evidence
+
+Include in your Week 16 presentation:
+
+1. **`/check-prod-readiness` clean report** — screenshot or paste of READY or CONDITIONAL status with findings documented
+2. **Anti-pattern journey** — which patterns were found across Weeks 3-15, which were fixed, which remain as documented risk
+3. **Three-evaluator pipeline summary** — findings from `/code-review`, `/check-prod-readiness`, and `/audit-aiuc1` side by side
+
+The clean report is evidence that your tool is not just functional but production-survivable. This distinction — between "it works in my terminal" and "it will work at 3am under load during an incident" — is what separates a prototype from a production system.
+
+> Your presentation should answer: "If we deployed this today, what would break first?" If the answer is "nothing on our `/check-prod-readiness` report," that is your evidence.

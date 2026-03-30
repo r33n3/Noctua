@@ -318,3 +318,24 @@ After building your multi-tool server, run these verification tests:
 4. Graceful degradation: Does `enrich_alert` continue when `check_ip_reputation` fails?
 
 Document the test results. This is Layer 6 of the Assessment Stack applied to your own tools.
+
+---
+
+## Production Readiness Check
+
+Before submitting Week 4 deliverables, run `/check-prod-readiness` on your multi-tool server:
+
+```
+/check-prod-readiness ~/noctua/tools/mcp-servers/week04-multi/
+```
+
+Multi-tool servers introduce Layer 2 (Architecture) patterns that single-tool servers don't have:
+- **2.1 Connection Pool Exhaustion:** Does your server create a new database connection per query, or does it use a pool?
+- **2.2 Missing Idempotency:** If a webhook handler fires twice, does it create two findings or one?
+- **2.3 Unbounded Collections:** Does `query_logs` return all matching rows, or does it enforce a `LIMIT`?
+
+Layer 3 (Operations) check: Does your multi-tool server have structured logging with a correlation ID so you can trace which tool call triggered which response?
+
+The `handler-safety.md` rule is now active in your environment for webhook and handler code.
+
+Include your `/check-prod-readiness` output in your Week 4 deliverables. Fix all CRITICAL and HIGH findings.

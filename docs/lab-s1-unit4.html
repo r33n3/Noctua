@@ -17,7 +17,7 @@
 <p>Two sprint-based labs building production-ready security prototypes, culminating in a demo and midyear project presentation. This is where everything comes together.</p>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 24 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 26 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -308,6 +308,19 @@ claude
         <div class="step-desc">You have 5 minutes to demo this prototype to leadership. Write the script: (1) Problem statement (30s), (2) Live demo (3 min), (3) Value delivered and what's missing (1 min), (4) What you'd build in Sprint II (30s). Practice it.</div>
       </div></label>
     </div>
+
+    <div class="lab-step" id="step-w14-8">
+      <label><input type="checkbox" onchange="toggleStep('w14-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Sprint I exit gate: run /check-prod-readiness on your prototype</div>
+        <div class="step-desc">Before closing Sprint I, audit your prototype against the 26 production anti-patterns. This is a required Sprint I deliverable — include the report output alongside your Sprint I metrics. Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprint II with written justification (what would need to change to fix each one). Track this as a sprint metric: how many findings in Sprint I vs. Sprint II?</div>
+      </div></label>
+      <div class="code-block"><pre><code>/check-prod-readiness ~/noctua/tools/sprint-i/
+
+# Required: Zero CRITICAL findings to pass Sprint I
+# Document: HIGH findings → deferred to Sprint II with justification
+# Include: report output in Sprint I deliverables package</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
   </div>
 </div>
 
@@ -415,6 +428,20 @@ class JSONFormatter(logging.Formatter):
         <div class="step-title">Step 6: Run Sprint II metrics and compare to Sprint I</div>
         <div class="step-desc">Run your hardened prototype against the same 3 Sprint I test cases. Record new metrics. Calculate: improvement in test pass rate, change in MTTSol, change in token cost, compliance improvement (Sprint I ethics gaps vs. Sprint II). Present as a comparison table.</div>
       </div></label>
+    </div>
+
+    <div class="lab-step" id="step-w15-7">
+      <label><input type="checkbox" onchange="toggleStep('w15-7',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Sprint II close: achieve READY status on production readiness audit</div>
+        <div class="step-desc">Run the full production readiness audit on your hardened prototype. Target: READY (no CRITICAL or HIGH findings). Layer 3 checklist: structured logging (3.1), correlation IDs (3.2), health check endpoint (3.3), graceful SIGTERM shutdown (3.4), metrics emission (3.5). Layer 4 checklist: constant-time secret comparison (4.1), structured log fields only — no f-strings with user input (4.2), input bounds on all tools (4.3), credential refresh support (4.4), audit records on automated actions (4.5). Track improvement from Sprint I. Include the final report in your Week 15 deliverables alongside your ethics audit.</div>
+      </div></label>
+      <div class="code-block"><pre><code>/check-prod-readiness ~/noctua/tools/sprint-ii/
+
+# Track improvement:
+# Sprint I:  CRITICAL __ HIGH __ MEDIUM __
+# Sprint II: CRITICAL __ HIGH __ MEDIUM __
+# Target: READY status (no CRITICAL or HIGH)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
 </div>

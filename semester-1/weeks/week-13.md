@@ -330,6 +330,31 @@ The Anthropic GTG-1002 espionage campaign (disclosed November 2025, detected Sep
 
 ---
 
+## Red Team Attack Playbook: Anti-Patterns Reference
+
+The [AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-reference.md) is your Week 13 attack specification. Every pattern with grep-detectable heuristics is a test you can run against the target system:
+
+```bash
+# Does their error handling swallow exceptions? (1.1 — false negatives)
+grep -rn "except.*:" --include="*.py" | grep -v "except.*Error"
+
+# Do they compare secrets with == ? (4.1 — timing attack)
+grep -rn "==.*key\|==.*token\|==.*secret" --include="*.py"
+
+# Do they log user input directly? (4.2 — log injection)
+grep -rn "logger.*f\"\|logging.*f\"" --include="*.py"
+
+# Do they have unbounded collections? (2.3 — memory exhaustion)
+grep -rn "\.append\b" --include="*.py"
+
+# Do they have input bounds? (4.3 — OOM / SQL injection)
+grep -rn "@tool\|@app.post" --include="*.py"
+```
+
+For each finding: document the pattern ID, file:line, what the exploit sends, what the production impact would be, and whether it maps to a PeaRL AA-TTP code. This is a professional penetration test, not just a code review.
+
+---
+
 > **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
 > - "Quiz me on the key concepts from this reading. Start easy, then get harder."
 > - "I think I understand MITRE ATLAS threat modeling but I'm not sure. Explain it to me differently and then test whether I really get it."

@@ -273,6 +273,25 @@ Document which PeaRL levels your defense covers and which remain exposed. This b
 
 ---
 
+## Blue Team Defense Artifact: Production Readiness Report
+
+Your Week 14 defense package includes a `/check-prod-readiness` report as evidence of production security posture.
+
+```
+/check-prod-readiness ~/noctua/tools/sprint-ii/
+```
+
+The report documents your defense in three categories:
+- **Fixed:** Patterns found and remediated before this week
+- **Accepted Risk:** Patterns found, documented, with mitigation rationale
+- **Gaps:** Patterns not found by the skill that the red team exploited
+
+Present this alongside your ARR (Attack Reduction Rate). If the red team found Pattern 2.2 (Missing Idempotency) and your Sprint II report flagged it, you have a documented process failure — you knew about it and didn't fix it. If your report missed it, that's a calibration gap for the skill.
+
+> The three-evaluator pipeline isn't just sequential — it's a feedback loop. Red team findings that `/check-prod-readiness` missed become calibration improvements for the next sprint.
+
+---
+
 > **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
 > - "Quiz me on the key concepts from this reading. Start easy, then get harder."
 > - "I think I understand the four-layer defense model but I'm not sure. Explain it to me differently and then test whether I really get it."

@@ -510,6 +510,27 @@ Your Week 9 agent team should document where each of its outputs falls on this s
 
 ---
 
+## Async Safety in Multi-Agent Code
+
+Week 9 is when Layer 2 (Architecture) anti-patterns become real. Your agents write to shared state. Your subagents run concurrently.
+
+Run `/check-prod-readiness` on your Week 9 multi-agent code with specific focus on **Layer 1 — Pattern 1.2 (Race Conditions)** and **Layer 2 — Patterns 2.3 and 2.4**:
+
+```
+/check-prod-readiness ~/noctua/agents/week09-soc/
+```
+
+The `async-safety.md` rule is now active in your Claude Code environment — it will flag race conditions automatically when editing async code. The skill gives you the formal audit report.
+
+Three questions for every shared data structure in your multi-agent system:
+1. **What happens if two subagents write to it simultaneously?** (Pattern 1.2 — Race Conditions)
+2. **What happens after 48 hours of continuous operation?** (Pattern 2.3 — Unbounded Collections)
+3. **What happens if you run two instances of the orchestrator?** (Pattern 2.4 — Multi-Instance Blindness)
+
+Also check Pattern 3.2 (Missing Correlation IDs) — can you trace a single alert through the full pipeline across all three agents?
+
+---
+
 > **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
 > - "Quiz me on the key concepts from this reading. Start easy, then get harder."
 > - "I think I understand multi-agent orchestration but I'm not sure. Explain it to me differently and then test whether I really get it."
