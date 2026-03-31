@@ -58,84 +58,52 @@
       <div class="quiz-block">
         <h3 class="quiz-title">Knowledge Check — Week 13</h3>
 
-        <div class="quiz-question" id="q-u8-w13-1">
-          <p class="question-text">1. Your capstone must include a minimum of how many specialized agents?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="b">
-              <input type="radio" name="q-u8-w13-1" value="b"> 3 agents with distinct roles, expertise, and tool sets
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="a">
-              <input type="radio" name="q-u8-w13-1" value="a"> 2 agents — one orchestrator and one worker
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="c">
-              <input type="radio" name="q-u8-w13-1" value="c"> 5 agents — one per AIUC-1 domain
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-1" data-answer="d">
-              <input type="radio" name="q-u8-w13-1" value="d"> No minimum — the right number for the problem
-            </label>
+        <div class="quiz-question" data-qid="u8w13q1" data-answer="b" data-explain="The capstone requires a minimum of 3 specialized agents with distinct roles, expertise, and tool sets. Agents must communicate clearly and work toward a common goal.">
+          <p class="q-text">1. Your capstone must include a minimum of how many specialized agents?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w13q1" value="b"> B) 3 agents with distinct roles, expertise, and tool sets</label>
+            <label><input type="radio" name="u8w13q1" value="a"> A) 2 agents — one orchestrator and one worker</label>
+            <label><input type="radio" name="u8w13q1" value="c"> C) 5 agents — one per AIUC-1 domain</label>
+            <label><input type="radio" name="u8w13q1" value="d"> D) No minimum — the right number for the problem</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-1', 'b', 'The capstone requires a minimum of 3 specialized agents with distinct roles, expertise, and tool sets. Agents must communicate clearly and work toward a common goal.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w13-1"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w13q1')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w13-2">
-          <p class="question-text">2. The AIUC-1 framework covers how many domains?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="c">
-              <input type="radio" name="q-u8-w13-2" value="c"> Six — Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="a">
-              <input type="radio" name="q-u8-w13-2" value="a"> Four — matching the NIST AI RMF stages
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="b">
-              <input type="radio" name="q-u8-w13-2" value="b"> Five — matching the OWASP agentic top-level categories
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-2" data-answer="d">
-              <input type="radio" name="q-u8-w13-2" value="d"> Ten — matching the OWASP Top 10 for Agentic Apps
-            </label>
+        <div class="quiz-question" data-qid="u8w13q2" data-answer="c" data-explain="AIUC-1 covers six domains: Data &amp; Privacy, Security, Safety, Reliability, Accountability, and Society. You must map your capstone to all six, documenting controls implemented, non-applicable controls, and gaps.">
+          <p class="q-text">2. The AIUC-1 framework covers how many domains?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w13q2" value="c"> C) Six — Data &amp; Privacy, Security, Safety, Reliability, Accountability, Society</label>
+            <label><input type="radio" name="u8w13q2" value="a"> A) Four — matching the NIST AI RMF stages</label>
+            <label><input type="radio" name="u8w13q2" value="b"> B) Five — matching the OWASP agentic top-level categories</label>
+            <label><input type="radio" name="u8w13q2" value="d"> D) Ten — matching the OWASP Top 10 for Agentic Apps</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-2', 'c', 'AIUC-1 covers six domains: Data &amp; Privacy, Security, Safety, Reliability, Accountability, and Society. You must map your capstone to all six, documenting controls implemented, non-applicable controls, and gaps.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w13-2"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w13q2')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w13-3">
-          <p class="question-text">3. The "Pit of Success" principle from <em>Agentic Engineering</em> means:</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="b">
-              <input type="radio" name="q-u8-w13-3" value="b"> Right behavior emerges naturally from the architecture, not from constant oversight
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="a">
-              <input type="radio" name="q-u8-w13-3" value="a"> Agents should compete with each other to reach the best solution
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="c">
-              <input type="radio" name="q-u8-w13-3" value="c"> Always default to the simplest single-agent solution
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-3" data-answer="d">
-              <input type="radio" name="q-u8-w13-3" value="d"> Human operators must approve every significant agent decision
-            </label>
+        <div class="quiz-question" data-qid="u8w13q3" data-answer="b" data-explain="The Pit of Success means designing your multi-agent system so that correct behavior—agents respecting role boundaries, escalating appropriately, handling failures gracefully—emerges naturally from the architecture itself, without requiring constant human supervision.">
+          <p class="q-text">3. The "Pit of Success" principle from <em>Agentic Engineering</em> means:</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w13q3" value="b"> B) Right behavior emerges naturally from the architecture, not from constant oversight</label>
+            <label><input type="radio" name="u8w13q3" value="a"> A) Agents should compete with each other to reach the best solution</label>
+            <label><input type="radio" name="u8w13q3" value="c"> C) Always default to the simplest single-agent solution</label>
+            <label><input type="radio" name="u8w13q3" value="d"> D) Human operators must approve every significant agent decision</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-3', 'b', 'The Pit of Success means designing your multi-agent system so that correct behavior—agents respecting role boundaries, escalating appropriately, handling failures gracefully—emerges naturally from the architecture itself, without requiring constant human supervision.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w13-3"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w13q3')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w13-4">
-          <p class="question-text">4. During the architecture review, what is identified as the most common pitfall?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="d">
-              <input type="radio" name="q-u8-w13-4" value="d"> Over-scoping — teams attempt to build a system that would take 6 months
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="a">
-              <input type="radio" name="q-u8-w13-4" value="a"> Under-documenting — insufficient architecture documentation
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="b">
-              <input type="radio" name="q-u8-w13-4" value="b"> Poor team formation — unbalanced skill sets across roles
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w13-4" data-answer="c">
-              <input type="radio" name="q-u8-w13-4" value="c"> Choosing the wrong framework — mismatching orchestration pattern
-            </label>
+        <div class="quiz-question" data-qid="u8w13q4" data-answer="d" data-explain="Over-scoping is the most common pitfall. Scope ruthlessly. A simple, well-executed 3-agent system beats an incomplete 10-agent vision. The minimum viable product that demonstrates the concepts is always the right target for a 4-week capstone.">
+          <p class="q-text">4. During the architecture review, what is identified as the most common pitfall?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w13q4" value="d"> D) Over-scoping — teams attempt to build a system that would take 6 months</label>
+            <label><input type="radio" name="u8w13q4" value="a"> A) Under-documenting — insufficient architecture documentation</label>
+            <label><input type="radio" name="u8w13q4" value="b"> B) Poor team formation — unbalanced skill sets across roles</label>
+            <label><input type="radio" name="u8w13q4" value="c"> C) Choosing the wrong framework — mismatching orchestration pattern</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w13-4', 'd', 'Over-scoping is the most common pitfall. Scope ruthlessly. A simple, well-executed 3-agent system beats an incomplete 10-agent vision. The minimum viable product that demonstrates the concepts is always the right target for a 4-week capstone.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w13-4"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w13q4')">Check Answer</button>
         </div>
       </div>
 
@@ -282,84 +250,52 @@ echo "Repository initialized. Architecture locked — begin Sprint I on Monday."
       <div class="quiz-block">
         <h3 class="quiz-title">Knowledge Check — Week 14</h3>
 
-        <div class="quiz-question" id="q-u8-w14-1">
-          <p class="question-text">5. When building with Claude Code during Sprint I, the recommended approach for agent system scaffolding is:</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="a">
-              <input type="radio" name="q-u8-w14-1" value="a"> Describe the architecture in a PROMPT.md and use Claude Code to generate the scaffolding in one structured session
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="b">
-              <input type="radio" name="q-u8-w14-1" value="b"> Write all agents manually to ensure full understanding before using AI assistance
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="c">
-              <input type="radio" name="q-u8-w14-1" value="c"> Start with a single working agent and add agents one at a time only after full testing
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-1" data-answer="d">
-              <input type="radio" name="q-u8-w14-1" value="d"> Copy the Unit 5 multi-agent examples directly and modify agent names
-            </label>
+        <div class="quiz-question" data-qid="u8w14q1" data-answer="a" data-explain="The recommended approach is to describe the full architecture in a PROMPT.md (including agent roles, tools, orchestration pattern, and data flow), then use Claude Code to generate the complete scaffolding. This is faster and produces more coherent code than building incrementally without a plan.">
+          <p class="q-text">5. When building with Claude Code during Sprint I, the recommended approach for agent system scaffolding is:</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w14q1" value="a"> A) Describe the architecture in a PROMPT.md and use Claude Code to generate the scaffolding in one structured session</label>
+            <label><input type="radio" name="u8w14q1" value="b"> B) Write all agents manually to ensure full understanding before using AI assistance</label>
+            <label><input type="radio" name="u8w14q1" value="c"> C) Start with a single working agent and add agents one at a time only after full testing</label>
+            <label><input type="radio" name="u8w14q1" value="d"> D) Copy the Unit 5 multi-agent examples directly and modify agent names</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-1', 'a', 'The recommended approach is to describe the full architecture in a PROMPT.md (including agent roles, tools, orchestration pattern, and data flow), then use Claude Code to generate the complete scaffolding. This is faster and produces more coherent code than building incrementally without a plan.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w14-1"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w14q1')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w14-2">
-          <p class="question-text">6. Which of the following is the correct priority order for Sprint I?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="c">
-              <input type="radio" name="q-u8-w14-2" value="c"> Core agent logic → inter-agent communication → basic logging → tests
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="a">
-              <input type="radio" name="q-u8-w14-2" value="a"> Observability → agents → UI → tests
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="b">
-              <input type="radio" name="q-u8-w14-2" value="b"> CI/CD pipeline → Dockerfile → agents → tests
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-2" data-answer="d">
-              <input type="radio" name="q-u8-w14-2" value="d"> Documentation → architecture → agents → observability
-            </label>
+        <div class="quiz-question" data-qid="u8w14q2" data-answer="c" data-explain="Sprint I priority is: core agent logic first (prove the value proposition), then inter-agent communication (prove the multi-agent design works), then basic structured logging (needed for Sprint II hardening), then tests to validate correctness. CI/CD and Dockerfile come in Sprint II.">
+          <p class="q-text">6. Which of the following is the correct priority order for Sprint I?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w14q2" value="c"> C) Core agent logic → inter-agent communication → basic logging → tests</label>
+            <label><input type="radio" name="u8w14q2" value="a"> A) Observability → agents → UI → tests</label>
+            <label><input type="radio" name="u8w14q2" value="b"> B) CI/CD pipeline → Dockerfile → agents → tests</label>
+            <label><input type="radio" name="u8w14q2" value="d"> D) Documentation → architecture → agents → observability</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-2', 'c', 'Sprint I priority is: core agent logic first (prove the value proposition), then inter-agent communication (prove the multi-agent design works), then basic structured logging (needed for Sprint II hardening), then tests to validate correctness. CI/CD and Dockerfile come in Sprint II.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w14-2"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w14q2')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w14-3">
-          <p class="question-text">7. Git worktrees are useful for capstone development because:</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="b">
-              <input type="radio" name="q-u8-w14-3" value="b"> Multiple team members can work on different agents simultaneously without branch conflicts
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="a">
-              <input type="radio" name="q-u8-w14-3" value="a"> They eliminate the need for pull requests in small teams
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="c">
-              <input type="radio" name="q-u8-w14-3" value="c"> They allow you to run agents without a Python virtual environment
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-3" data-answer="d">
-              <input type="radio" name="q-u8-w14-3" value="d"> They make it easier to deploy to Docker without a Dockerfile
-            </label>
+        <div class="quiz-question" data-qid="u8w14q3" data-answer="b" data-explain="Git worktrees allow multiple team members to check out different branches simultaneously in separate directories. During Sprint I, one developer can work on agent-1 in a worktree while another works on agent-2, without the overhead of constant branch switching and merge conflicts.">
+          <p class="q-text">7. Git worktrees are useful for capstone development because:</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w14q3" value="b"> B) Multiple team members can work on different agents simultaneously without branch conflicts</label>
+            <label><input type="radio" name="u8w14q3" value="a"> A) They eliminate the need for pull requests in small teams</label>
+            <label><input type="radio" name="u8w14q3" value="c"> C) They allow you to run agents without a Python virtual environment</label>
+            <label><input type="radio" name="u8w14q3" value="d"> D) They make it easier to deploy to Docker without a Dockerfile</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-3', 'b', 'Git worktrees allow multiple team members to check out different branches simultaneously in separate directories. During Sprint I, one developer can work on agent-1 in a worktree while another works on agent-2, without the overhead of constant branch switching and merge conflicts.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w14-3"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w14q3')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w14-4">
-          <p class="question-text">8. What constitutes the Sprint I "Definition of Done"?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="d">
-              <input type="radio" name="q-u8-w14-4" value="d"> All agents running and communicating end-to-end with at least one realistic test case producing meaningful output
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="a">
-              <input type="radio" name="q-u8-w14-4" value="a"> All agents individually tested with 100% unit test coverage
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="b">
-              <input type="radio" name="q-u8-w14-4" value="b"> Dockerfile and CI/CD pipeline operational in GitHub Actions
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w14-4" data-answer="c">
-              <input type="radio" name="q-u8-w14-4" value="c"> Complete AIUC-1 audit with zero gaps documented
-            </label>
+        <div class="quiz-question" data-qid="u8w14q4" data-answer="d" data-explain="Sprint I Definition of Done: all agents are running and communicating end-to-end, and the system produces meaningful output for at least one realistic test case. Hardening, full test coverage, CI/CD, and containerization come in Sprint II. If your system runs end-to-end, Sprint I is done.">
+          <p class="q-text">8. What constitutes the Sprint I "Definition of Done"?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w14q4" value="d"> D) All agents running and communicating end-to-end with at least one realistic test case producing meaningful output</label>
+            <label><input type="radio" name="u8w14q4" value="a"> A) All agents individually tested with 100% unit test coverage</label>
+            <label><input type="radio" name="u8w14q4" value="b"> B) Dockerfile and CI/CD pipeline operational in GitHub Actions</label>
+            <label><input type="radio" name="u8w14q4" value="c"> C) Complete AIUC-1 audit with zero gaps documented</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w14-4', 'd', 'Sprint I Definition of Done: all agents are running and communicating end-to-end, and the system produces meaningful output for at least one realistic test case. Hardening, full test coverage, CI/CD, and containerization come in Sprint II. If your system runs end-to-end, Sprint I is done.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w14-4"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w14q4')">Check Answer</button>
         </div>
       </div>
 
@@ -672,84 +608,52 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
       <div class="quiz-block">
         <h3 class="quiz-title">Knowledge Check — Week 15</h3>
 
-        <div class="quiz-question" id="q-u8-w15-1">
-          <p class="question-text">9. During peer red team review, which sources define the attack techniques you must test?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="a">
-              <input type="radio" name="q-u8-w15-1" value="a"> All 10 OWASP Agentic risks, tested systematically against the live production AgentCore deployment
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="b">
-              <input type="radio" name="q-u8-w15-1" value="b"> Any 5 techniques from OWASP Top 10 for LLMs that seem most applicable to the target system
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="c">
-              <input type="radio" name="q-u8-w15-1" value="c"> The top 5 MITRE ATLAS techniques identified in the target team's architecture threat model
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-1" data-answer="d">
-              <input type="radio" name="q-u8-w15-1" value="d"> Whatever the red team considers most creative or interesting about the target system
-            </label>
+        <div class="quiz-question" data-qid="u8w15q1" data-answer="a" data-explain="The capstone red team methodology uses the full OWASP Agentic Top 10 — all 10 risks tested against the live production deployment, not just the repository. Each finding gets an OWASP AIVSS severity score, OWASP Agentic risk number (#1–#10), defense layer classification (L1–L4), and a specific fix recommendation. Testing the live deployment (not just the code) is critical: a risk may be handled in code but misconfigured in the deployed infrastructure.">
+          <p class="q-text">9. During peer red team review, which sources define the attack techniques you must test?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w15q1" value="a"> A) All 10 OWASP Agentic risks, tested systematically against the live production AgentCore deployment</label>
+            <label><input type="radio" name="u8w15q1" value="b"> B) Any 5 techniques from OWASP Top 10 for LLMs that seem most applicable to the target system</label>
+            <label><input type="radio" name="u8w15q1" value="c"> C) The top 5 MITRE ATLAS techniques identified in the target team's architecture threat model</label>
+            <label><input type="radio" name="u8w15q1" value="d"> D) Whatever the red team considers most creative or interesting about the target system</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-1', 'a', 'The capstone red team methodology uses the full OWASP Agentic Top 10 — all 10 risks tested against the live production deployment, not just the repository. Each finding gets an OWASP AIVSS severity score, OWASP Agentic risk number (#1–#10), defense layer classification (L1–L4), and a specific fix recommendation. Testing the live deployment (not just the code) is critical: a risk may be handled in code but misconfigured in the deployed infrastructure.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w15-1"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w15q1')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w15-2">
-          <p class="question-text">10. A multi-stage Dockerfile is required for the capstone. What is the primary security benefit?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="c">
-              <input type="radio" name="q-u8-w15-2" value="c"> The final production image excludes build tools, compilers, and dev dependencies, reducing the attack surface
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="a">
-              <input type="radio" name="q-u8-w15-2" value="a"> It makes the build faster by caching layers more aggressively
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="b">
-              <input type="radio" name="q-u8-w15-2" value="b"> It enables running multiple agents in separate containers from one Dockerfile
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-2" data-answer="d">
-              <input type="radio" name="q-u8-w15-2" value="d"> It removes the need for a docker-compose.yml file
-            </label>
+        <div class="quiz-question" data-qid="u8w15q2" data-answer="c" data-explain="Multi-stage Docker builds separate the build environment (with compilers, pip, dev tools) from the production runtime image. Only the compiled artifacts and runtime dependencies are copied to the final stage. This dramatically reduces the attack surface — the final image has no build tools an attacker could abuse.">
+          <p class="q-text">10. A multi-stage Dockerfile is required for the capstone. What is the primary security benefit?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w15q2" value="c"> C) The final production image excludes build tools, compilers, and dev dependencies, reducing the attack surface</label>
+            <label><input type="radio" name="u8w15q2" value="a"> A) It makes the build faster by caching layers more aggressively</label>
+            <label><input type="radio" name="u8w15q2" value="b"> B) It enables running multiple agents in separate containers from one Dockerfile</label>
+            <label><input type="radio" name="u8w15q2" value="d"> D) It removes the need for a docker-compose.yml file</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-2', 'c', 'Multi-stage Docker builds separate the build environment (with compilers, pip, dev tools) from the production runtime image. Only the compiled artifacts and runtime dependencies are copied to the final stage. This dramatically reduces the attack surface — the final image has no build tools an attacker could abuse.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w15-2"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w15q2')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w15-3">
-          <p class="question-text">11. The GitHub Actions CI/CD pipeline must enforce which promotion gates?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="b">
-              <input type="radio" name="q-u8-w15-3" value="b"> Secrets detection → SAST scanning → container image scanning + SBOM → promotion with approval
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="a">
-              <input type="radio" name="q-u8-w15-3" value="a"> Lint → unit tests → integration tests → deploy
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="c">
-              <input type="radio" name="q-u8-w15-3" value="c"> Build → push to registry → notify team → done
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-3" data-answer="d">
-              <input type="radio" name="q-u8-w15-3" value="d"> Static analysis → dynamic testing → pen test → deploy
-            </label>
+        <div class="quiz-question" data-qid="u8w15q3" data-answer="b" data-explain="The required CI/CD DevSecOps pipeline: pre-commit secrets detection (gitleaks/trufflehog) → PR SAST scanning (Bandit/Semgrep) → build container image scanning (Trivy) + SBOM generation (cyclonedx-bom) → deploy with promotion gates (dev → pilot → preprod → prod) with approval workflows.">
+          <p class="q-text">11. The GitHub Actions CI/CD pipeline must enforce which promotion gates?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w15q3" value="b"> B) Secrets detection → SAST scanning → container image scanning + SBOM → promotion with approval</label>
+            <label><input type="radio" name="u8w15q3" value="a"> A) Lint → unit tests → integration tests → deploy</label>
+            <label><input type="radio" name="u8w15q3" value="c"> C) Build → push to registry → notify team → done</label>
+            <label><input type="radio" name="u8w15q3" value="d"> D) Static analysis → dynamic testing → pen test → deploy</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-3', 'b', 'The required CI/CD DevSecOps pipeline: pre-commit secrets detection (gitleaks/trufflehog) → PR SAST scanning (Bandit/Semgrep) → build container image scanning (Trivy) + SBOM generation (cyclonedx-bom) → deploy with promotion gates (dev → pilot → preprod → prod) with approval workflows.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w15-3"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w15q3')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w15-4">
-          <p class="question-text">12. After receiving peer red team findings, the target team must:</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="d">
-              <input type="radio" name="q-u8-w15-4" value="d"> Score findings with AIVSS, prioritize by score, implement patches, and document the patch-and-retest cycle
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="a">
-              <input type="radio" name="q-u8-w15-4" value="a"> Dispute all findings that were already covered in the architecture document threat model
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="b">
-              <input type="radio" name="q-u8-w15-4" value="b"> Accept all findings and rebuild the affected agents from scratch
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w15-4" data-answer="c">
-              <input type="radio" name="q-u8-w15-4" value="c"> Present the findings to faculty without taking action — they are for grading purposes only
-            </label>
+        <div class="quiz-question" data-qid="u8w15q4" data-answer="d" data-explain="After receiving red team findings: score each finding with AIVSS, prioritize by score (highest first), implement targeted patches (not full rebuilds), and document the patch-and-retest cycle. The retest proves the patch actually closed the vulnerability. This is the standard vulnerability remediation workflow used in production security engineering.">
+          <p class="q-text">12. After receiving peer red team findings, the target team must:</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w15q4" value="d"> D) Score findings with AIVSS, prioritize by score, implement patches, and document the patch-and-retest cycle</label>
+            <label><input type="radio" name="u8w15q4" value="a"> A) Dispute all findings that were already covered in the architecture document threat model</label>
+            <label><input type="radio" name="u8w15q4" value="b"> B) Accept all findings and rebuild the affected agents from scratch</label>
+            <label><input type="radio" name="u8w15q4" value="c"> C) Present the findings to faculty without taking action — they are for grading purposes only</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w15-4', 'd', 'After receiving red team findings: score each finding with AIVSS, prioritize by score (highest first), implement targeted patches (not full rebuilds), and document the patch-and-retest cycle. The retest proves the patch actually closed the vulnerability. This is the standard vulnerability remediation workflow used in production security engineering.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w15-4"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w15q4')">Check Answer</button>
         </div>
       </div>
 
@@ -1177,84 +1081,52 @@ Resources:
       <div class="quiz-block">
         <h3 class="quiz-title">Knowledge Check — Week 16</h3>
 
-        <div class="quiz-question" id="q-u8-w16-1">
-          <p class="question-text">13. The capstone presentation must include which live demonstration?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="b">
-              <input type="radio" name="q-u8-w16-1" value="b"> A realistic end-to-end system run with live agent traces visible in the observability dashboard
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="a">
-              <input type="radio" name="q-u8-w16-1" value="a"> A walkthrough of all code files and agent implementations
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="c">
-              <input type="radio" name="q-u8-w16-1" value="c"> A simulated attack against the system to show red team techniques
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-1" data-answer="d">
-              <input type="radio" name="q-u8-w16-1" value="d"> A live GitHub Actions pipeline run from commit to deployment
-            </label>
+        <div class="quiz-question" data-qid="u8w16q1" data-answer="b" data-explain="The live demo must show the system running end-to-end with a realistic scenario, and agent traces must be visible in the observability dashboard (showing inter-agent communication, latency, and cost metrics). This proves the system works and is observable — two core production requirements.">
+          <p class="q-text">13. The capstone presentation must include which live demonstration?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w16q1" value="b"> B) A realistic end-to-end system run with live agent traces visible in the observability dashboard</label>
+            <label><input type="radio" name="u8w16q1" value="a"> A) A walkthrough of all code files and agent implementations</label>
+            <label><input type="radio" name="u8w16q1" value="c"> C) A simulated attack against the system to show red team techniques</label>
+            <label><input type="radio" name="u8w16q1" value="d"> D) A live GitHub Actions pipeline run from commit to deployment</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-1', 'b', 'The live demo must show the system running end-to-end with a realistic scenario, and agent traces must be visible in the observability dashboard (showing inter-agent communication, latency, and cost metrics). This proves the system works and is observable — two core production requirements.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w16-1"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w16q1')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w16-2">
-          <p class="question-text">14. The capstone course reflection must address:</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="c">
-              <input type="radio" name="q-u8-w16-2" value="c"> How you'd take this from demo to production: what monitoring operators need, what governance policies apply, and how you'd handle failures
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="a">
-              <input type="radio" name="q-u8-w16-2" value="a"> What you would build differently if you had unlimited time and resources
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="b">
-              <input type="radio" name="q-u8-w16-2" value="b"> A comparison of your system against all existing commercial alternatives
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-2" data-answer="d">
-              <input type="radio" name="q-u8-w16-2" value="d"> Personal reflections on the most interesting AI research papers read during the course
-            </label>
+        <div class="quiz-question" data-qid="u8w16q2" data-answer="c" data-explain="The reflection must demonstrate the production engineer mindset: what monitoring would operators need? What policies would governance require? How would you handle failures? How does this scale? This is explicitly what makes a capstone production-quality vs. a demo — the reflection proves you understand the operational realities beyond just the code.">
+          <p class="q-text">14. The capstone course reflection must address:</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w16q2" value="c"> C) How you'd take this from demo to production: what monitoring operators need, what governance policies apply, and how you'd handle failures</label>
+            <label><input type="radio" name="u8w16q2" value="a"> A) What you would build differently if you had unlimited time and resources</label>
+            <label><input type="radio" name="u8w16q2" value="b"> B) A comparison of your system against all existing commercial alternatives</label>
+            <label><input type="radio" name="u8w16q2" value="d"> D) Personal reflections on the most interesting AI research papers read during the course</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-2', 'c', 'The reflection must demonstrate the production engineer mindset: what monitoring would operators need? What policies would governance require? How would you handle failures? How does this scale? This is explicitly what makes a capstone production-quality vs. a demo — the reflection proves you understand the operational realities beyond just the code.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w16-2"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w16q2')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w16-3">
-          <p class="question-text">15. The final capstone deliverable package must include which complete artifact set?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="a">
-              <input type="radio" name="q-u8-w16-3" value="a"> Working code, Dockerfile, docker-compose.yml, CI/CD pipeline, IaC template, observability runbook, and ethical impact assessment
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="b">
-              <input type="radio" name="q-u8-w16-3" value="b"> Working code and a slide deck
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="c">
-              <input type="radio" name="q-u8-w16-3" value="c"> Architecture document and code only — production infrastructure is out of scope
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-3" data-answer="d">
-              <input type="radio" name="q-u8-w16-3" value="d"> Code plus a 10-page research paper on agentic AI security
-            </label>
+        <div class="quiz-question" data-qid="u8w16q3" data-answer="a" data-explain="The complete capstone deliverable is a production-ready artifact package: working code with all agents, Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD with 4 security gates, IaC template (CloudFormation/Terraform), observability runbook (metrics/traces/alerts), and ethical impact assessment (stakeholder analysis, misuse scenarios, responsible AI alignment).">
+          <p class="q-text">15. The final capstone deliverable package must include which complete artifact set?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w16q3" value="a"> A) Working code, Dockerfile, docker-compose.yml, CI/CD pipeline, IaC template, observability runbook, and ethical impact assessment</label>
+            <label><input type="radio" name="u8w16q3" value="b"> B) Working code and a slide deck</label>
+            <label><input type="radio" name="u8w16q3" value="c"> C) Architecture document and code only — production infrastructure is out of scope</label>
+            <label><input type="radio" name="u8w16q3" value="d"> D) Code plus a 10-page research paper on agentic AI security</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-3', 'a', 'The complete capstone deliverable is a production-ready artifact package: working code with all agents, Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD with 4 security gates, IaC template (CloudFormation/Terraform), observability runbook (metrics/traces/alerts), and ethical impact assessment (stakeholder analysis, misuse scenarios, responsible AI alignment).')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w16-3"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w16q3')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" id="q-u8-w16-4">
-          <p class="question-text">16. The CSEC 601/602 program spans a full academic year. What is its central thesis?</p>
-          <div class="quiz-options">
-            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="d">
-              <input type="radio" name="q-u8-w16-4" value="d"> Agentic AI creates both new attack surfaces and new defensive capabilities — mastering both requires collaborative critical thinking and production engineering discipline
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="a">
-              <input type="radio" name="q-u8-w16-4" value="a"> AI will replace human security analysts within 5 years and this course prepares you for that transition
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="b">
-              <input type="radio" name="q-u8-w16-4" value="b"> Python programming proficiency is the core skill needed for AI security engineering
-            </label>
-            <label class="quiz-option" data-qid="q-u8-w16-4" data-answer="c">
-              <input type="radio" name="q-u8-w16-4" value="c"> Large language models are fundamentally insecure and should not be used in production security systems
-            </label>
+        <div class="quiz-question" data-qid="u8w16q4" data-answer="d" data-explain="The central thesis of Noctua: agentic AI creates both new attack surfaces (MITRE ATLAS, OWASP Top 10 for Agentic Apps) and new defensive capabilities (multi-agent SOC systems, automated threat hunting, continuous compliance). Mastering both — as an attacker, defender, and builder — requires the collaborative critical thinking framework and production engineering rigor developed across all 8 units.">
+          <p class="q-text">16. The CSEC 601/602 program spans a full academic year. What is its central thesis?</p>
+          <div class="quiz-opts">
+            <label><input type="radio" name="u8w16q4" value="d"> D) Agentic AI creates both new attack surfaces and new defensive capabilities — mastering both requires collaborative critical thinking and production engineering discipline</label>
+            <label><input type="radio" name="u8w16q4" value="a"> A) AI will replace human security analysts within 5 years and this course prepares you for that transition</label>
+            <label><input type="radio" name="u8w16q4" value="b"> B) Python programming proficiency is the core skill needed for AI security engineering</label>
+            <label><input type="radio" name="u8w16q4" value="c"> C) Large language models are fundamentally insecure and should not be used in production security systems</label>
           </div>
-          <button class="quiz-submit" onclick="checkQuestion('q-u8-w16-4', 'd', 'The central thesis of Noctua: agentic AI creates both new attack surfaces (MITRE ATLAS, OWASP Top 10 for Agentic Apps) and new defensive capabilities (multi-agent SOC systems, automated threat hunting, continuous compliance). Mastering both — as an attacker, defender, and builder — requires the collaborative critical thinking framework and production engineering rigor developed across all 8 units.')">Check Answer</button>
-          <div class="quiz-feedback" id="feedback-q-u8-w16-4"></div>
+          <div class="quiz-feedback"></div>
+          <button class="quiz-check-btn" onclick="checkQuestion('u8w16q4')">Check Answer</button>
         </div>
       </div>
 
