@@ -230,6 +230,13 @@ agents:
     credential_rotation_days: 30</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-key">
+      <strong>agent-identities.yaml IS an Allowance Profile</strong>
+      <p>The manifest you just wrote — per-agent tool permissions, credential scope, token budget — has a formal name: an <strong>Allowance Profile</strong>. An Allowance Profile defines what an agent is permitted to do before it is deployed, creating a verifiable boundary between what was authorized and what the agent attempts at runtime.</p>
+      <p>The pattern: specify allowed tools, allowed credential scopes, and cost limits per agent identity in a manifest that exists before any code runs. The enforcement layer reads the manifest at runtime and rejects tool calls outside the defined scope.</p>
+      <p>PeaRL (Policy-enforced Agent Runtime Layer) is a governance system built around Allowance Profile enforcement. No PeaRL installation is required for this lab; the concept is what matters. The <code>agent-identities.yaml</code> you wrote is a valid Allowance Profile by design.</p>
+    </div>
+
     <div class="lab-step" id="step-u7w10-2">
       <label><input type="checkbox" onchange="toggleStep('u7w10-2',this.checked)">
       <div class="step-content">
