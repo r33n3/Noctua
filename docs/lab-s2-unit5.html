@@ -146,6 +146,16 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     </div>
   </div>
 </div>
+
+<div class="callout callout-key">
+  <strong>A2A vs. MCP — Two Protocols, Two Jobs</strong>
+  <p>Two protocols appear in agentic system architecture. They solve different problems:</p>
+  <ul>
+    <li><strong>MCP (Model Context Protocol)</strong> — how an agent calls a tool. Defines the interface between an agent and external capabilities: APIs, databases, file systems.</li>
+    <li><strong>A2A (Agent-to-Agent Protocol)</strong> — how agents communicate with each other. Defines message passing, task delegation, and result handoff between agents in a multi-agent system.</li>
+  </ul>
+  <p>A production multi-agent system needs both: MCP to connect agents to tools, A2A to connect agents to each other. They operate at different trust boundaries — tool calls and inter-agent messages have different authentication and authorization requirements. The Claude Agent SDK used in this lab handles inter-agent communication natively; A2A is the standardized protocol for this layer when interoperability across agent frameworks is required.</p>
+</div>
 <hr>
 
 <!-- ======== WEEK 2 ======== -->
