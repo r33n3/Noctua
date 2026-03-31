@@ -433,6 +433,19 @@ with tracer.start_as_current_span("recon_agent") as span:
     span.set_attribute("tokens.output", result.usage.output_tokens)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-key">
+      <strong>Distributed Tracing Backends</strong>
+      <p>The <code>ConsoleSpanExporter</code> you just configured writes OTel spans to stdout — useful for local development, not useful in production where spans need to be stored, queried, and alerted on.</p>
+      <p>In production, the same spans route to a tracing backend. All of the following accept OTLP (OpenTelemetry Protocol) natively:</p>
+      <ul>
+        <li><strong>Grafana Tempo</strong> — open source, pairs with Grafana dashboards</li>
+        <li><strong>Jaeger</strong> — open source, strong for distributed tracing visualization</li>
+        <li><strong>Honeycomb</strong> — managed service, strong for high-cardinality queries</li>
+        <li><strong>AWS CloudWatch</strong> — managed service, native to AWS deployments</li>
+      </ul>
+      <p>Swapping from <code>ConsoleSpanExporter</code> to any backend is a one-line config change — the exporter endpoint. The instrumentation code is identical. The lab uses <code>ConsoleSpanExporter</code> for zero-dependency local development; the architecture is production-compatible by design.</p>
+    </div>
+
     <div class="lab-step" id="step-u7w11-3">
       <label><input type="checkbox" onchange="toggleStep('u7w11-3',this.checked)">
       <div class="step-content">
