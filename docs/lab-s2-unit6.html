@@ -237,6 +237,17 @@ from pyrit.common import default_values
       </div></label>
     </div>
 
+    <div class="callout callout-key">
+      <strong>AI Vulnerability Severity Scoring</strong>
+      <p>Score each finding on three axes:</p>
+      <ul>
+        <li><strong>Impact</strong> — what damage does exploitation cause? (data exfiltration, false negatives on real threats, system manipulation)</li>
+        <li><strong>Exploitability</strong> — how easy is this to trigger? (unauthenticated access, crafted input required, insider access required)</li>
+        <li><strong>Blast radius</strong> — how many users or systems are affected when exploited?</li>
+      </ul>
+      <p>Multiply these axes to assign severity: <strong>Critical</strong> (high exploit, broad impact), <strong>High</strong> (moderate exploit, significant impact), <strong>Medium</strong> (limited exploitability or contained blast radius), <strong>Low</strong> (difficult to exploit, negligible impact). AIVSS (AI Vulnerability Scoring System) is one framework that formalizes this reasoning — the underlying logic applies regardless of which scoring system you use. Apply this scale to your red team findings in the report below.</p>
+    </div>
+
     <div class="lab-step" id="step-u6w6-6">
       <label><input type="checkbox" onchange="toggleStep('u6w6-6',this.checked)">
       <div class="step-content">
