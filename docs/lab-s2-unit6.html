@@ -293,6 +293,17 @@ from pyrit.common import default_values
   </div>
 </div>
 
+<div class="callout callout-key">
+  <strong>Semantic Filtering Layers</strong>
+  <p>Defense tools operate at different granularities:</p>
+  <ul>
+    <li><strong>Syntactic layer</strong> — pattern matching on token sequences. Fast, deterministic, zero false negatives for known patterns. Blind to novel phrasing. (Regex, keyword filters, YARA rules)</li>
+    <li><strong>Semantic layer</strong> — meaning and intent classification. Catches novel phrasings of known attack types. Higher compute cost; can produce false positives on legitimate content that resembles attack patterns. (NeMo Guardrails, LlamaFirewall, embedding-based classifiers)</li>
+    <li><strong>Behavioral layer</strong> — cross-turn pattern analysis. Catches multi-turn manipulation that no single message would trigger. Requires session state. (Custom conversation analysis, anomaly detection on turn sequences)</li>
+  </ul>
+  <p>Production defense-in-depth uses all three layers. The NeMo Guardrails implementation below is the semantic layer. The principle applies regardless of which tool implements it.</p>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: Guardrails Implementation (Blue Team — 7% grade)</h4>
   <div class="lab-steps">
