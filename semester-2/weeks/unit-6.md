@@ -1011,6 +1011,7 @@ The industry uses several approaches to automated red teaming. Understanding the
    - Approach: 37+ probe modules covering prompt injection, jailbreaks, PII leakage, refusal attacks
    - Philosophy: Model-agnostic scanning with severity assessment
    - Key insight: Static probes systematically test known vulnerability patterns
+   - Note: Garak scans the base model directly via the API — it cannot see NeMo Guardrails or system prompt constraints. Use PyRIT to test the full hardened system.
 
 2. **PyRIT (Microsoft)** — Multi-turn adversarial campaign orchestration
    - Approach: Orchestrates sequences of prompts with state management

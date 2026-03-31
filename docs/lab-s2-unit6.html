@@ -168,6 +168,11 @@
 mkdir -p ~/noctua-labs/unit6/week6 && cd ~/noctua-labs/unit6/week6</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-warn">
+      <strong>Garak scans the base model, not your guardrails layer</strong>
+      <p>Garak scans the base Claude model directly via the Anthropic API — it does not test your guardrails layer or system prompt. Your NeMo Guardrails and system prompt hardening are invisible to Garak. Use PyRIT (Steps 3–4) to test the full hardened system. Treat Garak results as the base model's vulnerability profile, not your deployed system's.</p>
+    </div>
+
     <div class="lab-step" id="step-u6w6-2">
       <label><input type="checkbox" onchange="toggleStep('u6w6-2',this.checked)">
       <div class="step-content">
