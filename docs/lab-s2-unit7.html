@@ -660,6 +660,16 @@ aws iam put-role-policy \
 # Your Strands agent code runs as-is — AgentCore is the runtime</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-key">
+      <strong>Deployment Options — Managed Runtime vs. Serverless</strong>
+      <p>The AgentCore deployment you just completed is one of two primary production patterns:</p>
+      <ul>
+        <li><strong>AgentCore (managed persistent runtime)</strong> — always-on, stateful. Agent process persists between invocations — enables in-memory state, warm model connections, lower per-invocation latency. Cost model: pay for uptime regardless of request volume.</li>
+        <li><strong>Lambda (serverless)</strong> — event-triggered, stateless. Each invocation starts fresh. No cost when idle. Cold-start latency on first invocation. State must be externalized (DynamoDB, S3).</li>
+      </ul>
+      <p>The decision point: <strong>alert volume and state requirements</strong>. At low alert volumes (&lt;100/day), Lambda is cheaper. At sustained volume or when agents maintain session state between invocations, AgentCore is the right choice.</p>
+    </div>
+
     <div class="lab-step" id="step-u7w12-8">
       <label><input type="checkbox" onchange="toggleStep('u7w12-8',this.checked)">
       <div class="step-content">
