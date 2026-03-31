@@ -3249,6 +3249,12 @@ After the wargame, reflect on:
 
 ---
 
+## Key Concepts Added (PR 2)
+
+- **OWASP Agentic AI Top 10 (Week 5):** Ten attack categories specific to agentic systems — complements MITRE ATLAS (ATLAS = how attacks execute; OWASP = which categories are covered).
+- **AI Vulnerability Severity Scoring (Week 6):** Three-axis scoring (Impact x Exploitability x Blast radius) to assign Critical/High/Medium/Low severity to red team findings. Apply AIVSS logic to report findings.
+- **Semantic Filtering Layers (Week 7):** Defense-in-depth operates at syntactic (regex/YARA), semantic (NeMo/LlamaFirewall), and behavioral (cross-turn anomaly) layers. Production systems use all three.
+
 ## Course Resources
 
 - **[Reading List](resources/READING-LIST.md)** — Academic papers, reports, blog posts on AI security

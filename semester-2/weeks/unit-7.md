@@ -4537,6 +4537,13 @@ Based on the pre-join signals and the likely answers at Meridian, assign scores 
 
 ---
 
+## Key Concepts Added (PR 2)
+
+- **Workload Identity / SPIFFE (Week 10):** The JWT token service implements the workload identity principle by hand. SPIFFE/SPIRE automates this at infrastructure scale — same design decision, different implementation layer.
+- **Allowance Profiles (Week 10):** `agent-identities.yaml` is a formal Allowance Profile — per-agent tool scope, credential scope, and cost limit defined before deployment. PeaRL enforces Allowance Profiles at runtime.
+- **Distributed Tracing Backends (Week 11):** `ConsoleSpanExporter` is for local dev. Production backends (Grafana Tempo, Jaeger, Honeycomb, AWS CloudWatch) all accept OTLP — swap is one-line config, instrumentation unchanged.
+- **AgentCore vs. Lambda (Week 12):** AgentCore = always-on, stateful, lower per-invocation latency. Lambda = serverless, stateless, no cost when idle. Decision turns on alert volume and state requirements.
+
 ## Resources and References
 
 **Supply Chain Security (Week 9):**

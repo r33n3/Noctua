@@ -2836,6 +2836,10 @@ Real-world examples: MASS is essentially a plugin — 12 specialized analyzers c
 
 ---
 
+## Key Concepts Added (PR 2)
+
+- **A2A vs. MCP (Week 1):** Two protocols, two jobs — MCP connects agents to tools; A2A connects agents to agents. Production systems need both, at different trust boundaries.
+
 ## Final Integration: Unit 5 Capstone
 
 **Objective:** Design and defend your own multi-agent security system.
