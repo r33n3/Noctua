@@ -51,7 +51,7 @@ skill.md (SKILL.md)
 **Progressive Disclosure:**
 Claude Code doesn't load every skill in full at startup. Instead:
 1. **Metadata always loaded** — triggers, tags, brief description. Light footprint.
-2. **Body loaded on trigger** — when a user action matches the trigger description, the full skill loads.
+2. **Body loaded on trigger** — when a user action matches the skill's `description`, the full skill loads.
 3. **References loaded on demand** — when the skill explicitly asks for reference material.
 
 This is the Tool Search Tool pattern from Week 3 applied to skills: progressive disclosure prevents context window saturation.
