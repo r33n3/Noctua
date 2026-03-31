@@ -24,9 +24,9 @@ A Claude Code skill is a markdown file that extends Claude's capabilities for sp
 ```
 skill.md (SKILL.md)
 ├── YAML frontmatter (metadata — always loaded)
-│   ├── trigger_description: when to invoke this skill
-│   ├── author, version, tags
-│   └── context_budget: max tokens for this skill
+│   ├── description: when to invoke this skill
+│   ├── allowed-tools, context, user-invocable
+│   └── argument-hint: shown to user at invocation
 ├── Skill body (loaded on trigger)
 │   ├── Role and context
 │   ├── Step-by-step instructions
@@ -36,6 +36,17 @@ skill.md (SKILL.md)
     ├── Extended examples
     └── External documentation links
 ```
+
+**Frontmatter field reference:**
+
+| Field | Purpose |
+|---|---|
+| name          | Skill identifier — matches directory name |
+| description   | When to invoke — used by Claude to match invocations |
+| allowed-tools | Comma-separated tools the skill may use |
+| context       | fork (isolated) or shared (inherits session) |
+| user-invocable| true if callable as /skill-name |
+| argument-hint | Shown to users, e.g. "[path]" |
 
 **Progressive Disclosure:**
 Claude Code doesn't load every skill in full at startup. Instead:
@@ -49,7 +60,7 @@ This is the Tool Search Tool pattern from Week 3 applied to skills: progressive 
 
 **The Frontmatter Budget:** Every skill's YAML metadata occupies context window space. With 50 skills loaded, that's ~2K tokens of frontmatter alone — before any actual work. Design principles:
 
-- Keep frontmatter tight: trigger_description should be 1-2 sentences maximum
+- Keep frontmatter tight: description should be 1-2 sentences maximum
 - Use specific triggers to avoid false positives
 - Don't put reference material in frontmatter — that belongs in the body or reference files
 
@@ -212,10 +223,11 @@ Create `~/noctua/skills/tool-select.md`:
 ```markdown
 ---
 name: tool-select
-trigger_description: "Use when the user needs to choose the right tool, model, computation approach, or architecture for a security engineering task. Invoked by: 'help me choose', 'what model should I use', 'what's the right approach', 'assessment stack'"
-version: "1.0"
-tags: [assessment-stack, model-selection, architecture]
-context_budget: 800
+description: "Use when the user needs to choose the right tool, model, computation approach, or architecture for a security engineering task. Invoked by: 'help me choose', 'what model should I use', 'what's the right approach', 'assessment stack'"
+allowed-tools: Bash
+context: fork
+user-invocable: true
+argument-hint: ""
 ---
 
 # Tool Selection via Engineering Assessment Stack
@@ -264,10 +276,11 @@ Create `~/noctua/skills/audit-aiuc1.md`:
 ```markdown
 ---
 name: audit-aiuc1
-trigger_description: "Use when auditing an AI security tool against the AIUC-1 framework. Invoked by: 'audit this tool', 'check AIUC-1 compliance', 'governance audit', 'aiuc1'"
-version: "1.0"
-tags: [governance, aiuc1, audit, compliance]
-context_budget: 1200
+description: "Use when auditing an AI security tool against the AIUC-1 framework. Invoked by: 'audit this tool', 'check AIUC-1 compliance', 'governance audit', 'aiuc1'"
+allowed-tools: Bash
+context: fork
+user-invocable: true
+argument-hint: ""
 ---
 
 # AIUC-1 System Audit
@@ -326,8 +339,8 @@ For each, write the YAML frontmatter and skill body.
 
 Test trigger rates with vague vs. specific descriptions:
 
-Vague: `trigger_description: "Use for security tasks"`
-Specific: `trigger_description: "Use when analyzing a specific security incident using the CCT framework — applying evidence-based analysis, perspective gathering, and hypothesis generation"`
+Vague: `description: "Use for security tasks"`
+Specific: `description: "Use when analyzing a specific security incident using the CCT framework — applying evidence-based analysis, perspective gathering, and hypothesis generation"`
 
 Using Claude Code, demonstrate:
 1. The vague trigger fires on unrelated security questions
