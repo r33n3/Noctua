@@ -404,6 +404,10 @@ tests:
   <div class="scenario-box"><strong>Scenario:</strong> You have been given a synthetic dataset representing 1000 employee records scored by an AI-based insider threat detection system. The dataset includes: employee ID, department, tenure, geography, access level, and a risk_score (0-100) assigned by the AI. You will test whether the scoring system exhibits bias based on geography (US vs. non-US).</div>
 
   <div class="lab-steps">
+    <div class="callout callout-warn">
+      <strong>AIF360 requires Python 3.10 or 3.11</strong>
+      <p>AIF360 has known installation failures on Python 3.12+. If installation fails, use Python 3.10 or 3.11 for this exercise (<code>pyenv local 3.11.x</code>). The bias concepts in this lab are framework-independent — the code patterns apply regardless of which fairness library you use.</p>
+    </div>
     <div class="lab-step" id="step-w11-1">
       <label><input type="checkbox" onchange="toggleStep('w11-1',this.checked)">
       <div class="step-content">

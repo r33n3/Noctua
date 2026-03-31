@@ -194,6 +194,8 @@ A secure tool is only as secure as the environment it runs in. Environment secur
 
 ### Bias and Fairness Metrics (Compressed)
 
+> **Note:** The Unit 3 lab uses IBM AI Fairness 360 (AIF360) for bias detection exercises. AIF360 has known installation failures on Python 3.12+. Use Python 3.10 or 3.11 (`pyenv local 3.11.x`) if installation fails. The bias concepts are framework-independent — the code patterns apply regardless of which fairness library you use.
+
 **Disparate Impact Ratio:** For a binary security decision, measure decision rate per group:
 ```
 Disparate Impact = min(rate_A, rate_B) / max(rate_A, rate_B)
