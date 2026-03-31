@@ -254,6 +254,13 @@ agents:
 claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="callout callout-key">
+      <strong>Workload Identity — From JWTs to SPIFFE</strong>
+      <p>The JWT token service you just built establishes a principle: each agent gets its own cryptographic identity, issued fresh for each session, scoped to its allowed actions. That is workload identity.</p>
+      <p>SPIFFE (Secure Production Identity Framework for Everyone) and its implementation SPIRE automate exactly this at infrastructure scale. Instead of your application code generating JWTs, the SPIFFE runtime issues short-lived X.509 certificates or JWTs to each workload automatically, rotating them without application changes.</p>
+      <p>The connection: you built the workload identity principle by hand. In production, your security team runs SPIRE so your application code doesn't have to manage credential issuance. The design decision — short-lived, per-agent, cryptographically verifiable identity — is the same either way.</p>
+    </div>
+
     <div class="lab-step" id="step-u7w10-4">
       <label><input type="checkbox" onchange="toggleStep('u7w10-4',this.checked)">
       <div class="step-content">
