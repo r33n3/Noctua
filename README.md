@@ -297,6 +297,7 @@ Admission to this course requires:
 ## Recommended Reading
 
 ### Critical Thinking & CCT
+- **"The 5 Habits of Mind Framework"** by Seth Jaeger, EdD — The foundational framework the course's CCT 5 Pillars are built on. Jaeger's habits (Evidence, Perspective, Connections, Supposition, Significance) are the direct source of the course's five pillars. [sethjaeger.com](https://www.sethjaeger.com/p/the-5-habits-of-mind-framework-for.html)
 - **"Thinking, Fast and Slow"** by Daniel Kahneman — The cognitive science foundation for understanding bias in decision-making
 - **"The Art of Thinking Clearly"** by Rolf Dobelli — 99 cognitive biases explained with practical examples
 - **"Collaborative Intelligence"** by Dawna Markova and Angie McArthur — Building teams that think better together
