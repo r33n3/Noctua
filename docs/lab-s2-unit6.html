@@ -433,6 +433,34 @@ define bot require evidence before clearing
   <p>If no partner is available: use your own hardened system as the target. Select 5 attacks from your Week 6 red team that your Week 7 defenses did NOT block. Execute each against your hardened system and document whether your blue team detects them.</p>
 </div>
 
+<div class="quiz-block">
+  <h3 class="quiz-title">Knowledge Check — Week 8</h3>
+
+  <div class="quiz-question" data-qid="u6w8q1" data-answer="b" data-explain="More triggers than expected attacks suggests the attacker is adapting — testing variants of their attacks rather than executing the exact five attacks you anticipated. Each variant probes for weaknesses your defenses detect differently. This is normal red team behavior: intelligent attackers adjust when direct approaches fail.">
+    <p class="q-text">During the Blue Phase, your logs show 8 guardrail triggers but you only expected 5 attacks. What does this most likely indicate?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u6w8q1" value="a"> A) Your detection is double-counting — two triggers per attack</label>
+      <label><input type="radio" name="u6w8q1" value="b"> B) The attacker is adapting — testing variants, not just the exact attacks you anticipated</label>
+      <label><input type="radio" name="u6w8q1" value="c"> C) Your guardrails are misconfigured and triggering on legitimate traffic</label>
+      <label><input type="radio" name="u6w8q1" value="d"> D) The extra triggers are noise from the lab environment</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u6w8q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u6w8q2" data-answer="c" data-explain="The debrief exchange is valuable because red and blue teams have asymmetric information. The red team knows which attacks they designed and how they attempted to evade defenses — they can tell the blue team which attacks went undetected. The blue team knows which triggers fired and on what patterns — they can tell the red team what surprised them. Neither team has the full picture without the exchange.">
+    <p class="q-text">What is the primary value of the post-wargame debrief exchange between red and blue teams?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u6w8q2" value="a"> A) It allows teams to assign blame for defenses that failed</label>
+      <label><input type="radio" name="u6w8q2" value="b"> B) It creates documentation for the final course grade</label>
+      <label><input type="radio" name="u6w8q2" value="c"> C) Each team has information the other needs — red learns what was undetected, blue learns what surprised them</label>
+      <label><input type="radio" name="u6w8q2" value="d"> D) It lets instructors verify both teams followed the wargame rules</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u6w8q2')">Check Answer</button>
+  </div>
+</div>
+
 <div class="deliverables">
   <h5>Unit 6 Deliverables Summary</h5>
   <ul>
