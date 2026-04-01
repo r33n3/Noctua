@@ -1,4 +1,4 @@
-# Week 12: Rapid Prototyping Sprint II
+# Week 12: Privacy, Data Governance & AI Security Policy
 
 **Semester 1 | Week 12 of 16**
 
@@ -178,7 +178,7 @@ This is V&V at the sprint level: not trusting that your tool works, but measurin
 
 ---
 
-## Day 2 — Lab: Sprint II Hardening
+## Day 2 — Lab: Write Your Organization's AI Security Policy
 
 Teams spend 110 minutes hardening the Week 11 prototype. Required improvements across five dimensions.
 

@@ -1,4 +1,4 @@
-# Week 10: Multi-Agent Security Systems II
+# Week 10: OWASP Top 10 for Agentic Applications
 
 **Semester 1 | Week 10 of 16**
 
@@ -172,7 +172,7 @@ Design for 3-5 agents. If you need more, consider hierarchical agent teams (coor
 
 ## Day 2 — Lab
 
-### Extend the Week 9 SOC System
+### Lab: Vulnerability Assessment with Garak & Promptfoo
 
 **Lab Objectives:**
 - Add advanced orchestration to your Week 9 SOC system

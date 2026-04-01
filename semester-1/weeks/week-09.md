@@ -1,4 +1,4 @@
-# Week 9: Multi-Agent Security Systems I
+# Week 9: Responsible AI Principles: Ethics Audit
 
 **Semester 1 | Week 9 of 16**
 
@@ -183,7 +183,7 @@ Using Opus for the orchestrator (which just routes between agents) is a $5 mista
 
 ---
 
-## Day 2 — Lab (Three-Step Progression)
+## Day 2 — Lab: AIUC-1 Standard Audit of a Security AI System
 
 **Lab Objective:** Build a SOC Agent Team through three progressive steps, experiencing the tradeoffs at each level.
 

@@ -1,4 +1,4 @@
-# Week 11: Rapid Prototyping Sprint I
+# Week 11: Bias, Fairness, and Explainability
 
 **Semester 1 | Week 11 of 16**
 
@@ -140,7 +140,7 @@ The best sprint code is "good enough" code. Iterate from there.
 
 ---
 
-## Day 2 — Lab: Sprint I
+## Day 2 — Lab: Bias Detection with IBM AI Fairness 360
 
 ### Problem Statement
 
