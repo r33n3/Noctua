@@ -6,7 +6,7 @@
 
 ---
 
-## Week 5: The Adversarial AI Threat Landscape
+## Week 5: Adversarial AI Threat Landscape
 
 ### Day 1 — Theory & Foundations
 
@@ -397,7 +397,7 @@ This pipeline runs 24/7, hits thousands of targets simultaneously, and costs alm
 
 ---
 
-## Week 6: Red Teaming AI Agents — Offensive Techniques
+## Week 6: Red Teaming AI Agents
 
 ### Day 1 — Theory & Foundations
 
@@ -1669,7 +1669,7 @@ Structure:
 
 ---
 
-## Week 7: Defending AI Agents — Guardrails and Hardening
+## Week 7: Defending AI Agents: Guardrails & Hardening
 
 ### Day 1 — Theory & Foundations
 

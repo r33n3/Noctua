@@ -579,7 +579,7 @@ If recommendations are too generic, ask: "For a CRITICAL dependency vulnerabilit
 
 ---
 
-## Week 10: Non-Human Identity (NHI) Governance
+## Week 10: Non-Human Identity Governance
 
 ### Day 1 — Theory & Foundations
 
@@ -1573,7 +1573,7 @@ Include example showing dashboard being generated and printed.
 
 ---
 
-## Week 11: Observability, Cost Management, and Operational Excellence
+## Week 11: Observability & Cost Management
 
 ### Day 1 — Theory & Foundations
 

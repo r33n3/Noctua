@@ -2299,7 +2299,7 @@ If execution is missing, ask Claude to add run_incident_response(). If retry log
 
 ---
 
-# WEEK 4: Agent Evaluation and Benchmarking
+# WEEK 4: Agent Evaluation & Framework Comparison
 
 ## Day 1 — Theory & Foundations
 

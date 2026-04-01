@@ -18,7 +18,7 @@
 
 ---
 
-## Week 13: Capstone Kickoff and Architecture Reviews
+## Week 13: Capstone Kickoff & Architecture Reviews
 
 ### Day 1 — Theory & Foundations: Project Selection and Architecture Design
 
@@ -307,7 +307,7 @@ After your presentation, you'll receive written feedback from reviewers focusing
 
 ---
 
-## Week 14: Capstone Development Sprint I
+## Week 14: Sprint I — Core Agent System Build
 
 ### Day 1 — Daily Standup Check-In
 
@@ -389,7 +389,7 @@ Each team demos progress to faculty:
 
 ---
 
-## Week 15: Capstone Development Sprint II and Red Team Review
+## Week 15: Sprint II — Production Hardening & Peer Red Team
 
 ### Day 1 — Sprint II Kickoff and Red Team Assignment
 
@@ -550,7 +550,7 @@ By Thursday, you'll receive the red team report. **Action plan:**
 
 ---
 
-## Week 16: Capstone Presentations and Course Wrap
+## Week 16: Final Presentations & Course Completion
 
 ### Day 1 — Presentation Prep and Polish
 
