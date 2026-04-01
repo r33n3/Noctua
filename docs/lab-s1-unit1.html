@@ -564,6 +564,12 @@ cd ~/noctua-labs/unit1/week3
   <li><strong>Privacy tradeoffs:</strong> What data should never leave your network, even to a trusted AI API provider? Build a quick classification: (a) safe to send, (b) anonymize first, (c) never send.</li>
   </ol>
 </div>
+<div class="callout callout-tip">
+  <p><strong>Extension: Context budget logging</strong> — Add a counter to your agent that logs the token count before and after each tool call. When does context grow fastest? What types of tool results are most expensive? Observe the pattern before optimizing. You can surface this with Claude's API response metadata (<code>usage.input_tokens</code>), or prompt Claude Code to estimate token counts per step. Document your findings in a brief note: which steps are the most expensive context contributors, and which are cheap?</p>
+</div>
+<div class="callout callout-tip">
+  <p><strong>Extension: Context window stress test</strong> — Take your working agent and deliberately fill the context with a long conversation history. At what point does response quality degrade? At what point does cost per call make the agent economically unviable? Document your findings in a one-paragraph note. Suggested approach: add 10–15 turns of prior conversation to the context before your main analysis prompt, and compare output quality against a clean-context run. This is not a theoretical exercise — context bloat in multi-turn agent workflows is one of the most common production failure modes.</p>
+</div>
 
 <div class="deliverables">
   <h5>Week 3 Deliverables</h5>
