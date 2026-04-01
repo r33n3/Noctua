@@ -257,9 +257,9 @@
 <li>Quantify risk and propose concrete mitigations tied to specific AIUC-1 controls</li>
 <li>Present findings in a format suitable for non-technical stakeholders</li>
 </ul>
-<div class="callout callout-key"><p><strong>This audit is not a learning exercise — it is a PeaRL elevation gate.</strong></p>
-<p>The report you produce today (<code>reports/AUDIT-{name}.md</code>) is the AIUC-1 baseline evidence that PeaRL's Cedar policies check before allowing your agent system to operate in SUPERVISED_AUTONOMOUS mode. This is not metaphorical: in production, Cedar literally reads your audit report's "Elevation Gate Status" block to decide whether to unlock the next autonomy level.</p>
-<p>Run the audit with <code>/audit-aiuc1</code> in Claude Code. The skill walks you through all 6 domains systematically and produces a structured report with a machine-readable footer:</p>
+<div class="callout callout-key"><p><strong>This audit is not a learning exercise — it is the baseline evidence record that authorizes your system to move to supervised autonomous operation.</strong></p>
+<p>The report you produce today (<code>reports/AUDIT-{name}.md</code>) is the AIUC-1 baseline a human reviewer attests before your agent system operates with greater autonomy. Without a passing audit on record, the system stays in ASSISTIVE mode — not by convention, but by the governance controls you'll implement later in this course.</p>
+<p>Run the audit with <code>/audit-aiuc1</code> in Claude Code. The skill walks you through all 6 domains systematically and produces a structured report with a standard footer:</p>
 <div class="codehilite"><pre><span></span><code>## Elevation Gate Status
 - AIUC-1 Baseline: PASS | FAIL
 - Domains: A✓  B✓  C✗  D✓  E✓  F✓
