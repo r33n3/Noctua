@@ -268,6 +268,41 @@
 </table>
 <div class="callout callout-key"><p>Classify your system before starting the audit. Higher tiers require more rigorous AIUC-1 coverage. <em>In Week 12, you will express these tier boundaries as Cedar policies — executable enforcement rather than documentation.</em></p>
 </div>
+<h4 id="aiuc-1-deployment-governance-tiers">AIUC-1 Deployment Tiers — Governance Requirements</h4>
+<p>AIUC-1 assigns a deployment tier based on the combined risk score across all six domains. Tier determines the governance requirements before a system can be released.</p>
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+  <thead>
+    <tr style="background: #1a2035;">
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Tier</th>
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Risk Profile</th>
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Required Before Deployment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background: #0f1726;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 1</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Low risk across all domains — informational output, no autonomous action, no sensitive data</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Documentation + self-attestation</td>
+    </tr>
+    <tr style="background: #0b0f19;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 2</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Moderate risk — limited tool use, non-sensitive data, human-in-the-loop</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Documentation + peer review + /audit-aiuc1 output filed</td>
+    </tr>
+    <tr style="background: #0f1726;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 3</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">High risk — autonomous action, sensitive data, real-world consequences</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">All Tier 2 + independent security review + incident response plan</td>
+    </tr>
+    <tr style="background: #0b0f19;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 4</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Critical risk — regulated data, high blast radius, or safety-critical systems</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">All Tier 3 + legal/compliance sign-off + staged rollout with monitoring gate</td>
+    </tr>
+  </tbody>
+</table>
+<div class="callout callout-tip"><p>The <code>/audit-aiuc1</code> skill produces a domain-by-domain assessment. Use it to determine your tier before you write a line of code — the tier determines what governance artifacts you need to produce before you can ship.</p>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives">Lab Objectives</h4>
@@ -833,6 +868,51 @@
 <p><strong>Part 3: Remediation (30 minutes)</strong></p>
 <p>For each High or Critical vulnerability, implement a fix. Rather than providing complete code here, we'll use <strong>Claude Code</strong> to help you build remediation solutions.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Remediation follows defense-in-depth: multiple layers protect against the same vulnerability. A path traversal attack is defended by path validation, directory whitelisting, resource limits, and principle of least privilege. No single layer is perfect; layered defense catches mistakes.</p>
+</div>
+<h4 id="defense-in-depth-for-ai-systems">Defense-in-Depth for AI Systems</h4>
+<p>No single control stops a determined attacker. Defense-in-depth means layering controls so that bypassing one layer still requires defeating the next.</p>
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+  <thead>
+    <tr style="background: #1a2035;">
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Layer</th>
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">What It Defends</th>
+      <th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Example Controls</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background: #0f1726;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>1. Input validation</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Malformed or adversarial inputs before they reach the model</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Schema enforcement, length limits, encoding checks</td>
+    </tr>
+    <tr style="background: #0b0f19;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>2. Prompt hardening</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Instruction injection and jailbreak attempts</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">System prompt constraints, role anchoring, explicit refusal instructions</td>
+    </tr>
+    <tr style="background: #0f1726;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>3. Semantic filtering</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Intent-level attacks that pass syntactic validation</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">NeMo Guardrails, LlamaFirewall, intent classifiers</td>
+    </tr>
+    <tr style="background: #0b0f19;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>4. Tool-level gates</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Unauthorized tool invocations from compromised agents</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Tool allowlists, per-tool RBAC, Cedar policy enforcement</td>
+    </tr>
+    <tr style="background: #0f1726;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>5. Output validation</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Harmful or policy-violating model responses</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Output classifiers, PII detectors, content policy checks</td>
+    </tr>
+    <tr style="background: #0b0f19;">
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>6. Audit and detection</strong></td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Post-hoc identification of attacks that succeeded</td>
+      <td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">OTel tracing, anomaly detection, forensic log retention</td>
+    </tr>
+  </tbody>
+</table>
+<div class="callout callout-key"><p>Each layer has a different granularity: syntactic (what it looks like), semantic (what it means), behavioral (what it does), and forensic (what happened). A complete defense requires all four granularities — not just the ones that are easy to implement.</p>
 </div>
 <p><strong>Remediation Architecture Patterns:</strong></p>
 <p>The vulnerable <code>read_and_summarize</code> function above has several gaps:

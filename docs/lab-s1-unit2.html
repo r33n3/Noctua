@@ -324,6 +324,17 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       </div></label>
     </div>
 
+    <div class="callout callout-tip">
+      <p><strong>Apply this to your server</strong></p>
+      <p>Stop and answer these four questions for YOUR server before continuing. A threat model you don't finish is a threat model that doesn't protect you.</p>
+      <ol>
+        <li>What is the most valuable data your MCP server can access? Who (or what) would want unauthorized access to it?</li>
+        <li>Which of your tools has the widest blast radius if compromised? What could an attacker do with it?</li>
+        <li>If your MCP server were replaced by a malicious clone, what is the first thing an attacker would do with your tools?</li>
+        <li>What is one control you don't currently have that would prevent the most serious attack scenario you identified?</li>
+      </ol>
+    </div>
+
     <div class="lab-step" id="step-w6-8">
       <label><input type="checkbox" onchange="toggleStep('w6-8',this.checked)">
       <div class="step-content">
