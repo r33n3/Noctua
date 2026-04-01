@@ -190,7 +190,7 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'lab-setup.html', 'Lab Setup Guide'],
     ['link', 'assessment.html', 'Design Rationale'],
     ['link', 'reading.html', 'Reading List'],
-    ['link', 'skills/index.html', 'Claude Code Skills'],
+    ['link', 'skills/index.html', 'Course Skills'],
     ['link', 'resources/course-cheatsheet.html', 'Course Cheatsheet'],
     ['link', 'resources/claude-code-commands.html', 'Command Reference'],
     ['link', 'resources/claude-code-directory.html', 'Directory Reference'],
