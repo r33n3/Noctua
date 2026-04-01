@@ -95,14 +95,43 @@
 cd ~/noctua-labs/unit2/week5/cve-mcp
 python3 -m venv .venv && source .venv/bin/activate
 pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>Get an NVD API key before Step 6.</strong> Without one, the NVD API rate-limits at 5 requests per 30 seconds — easy to hit during testing. Registration is free and instant: <a href="https://nvd.nist.gov/developers/request-an-api-key" style="color:#d4a017;">nvd.nist.gov/developers/request-an-api-key</a>. Store the key as an environment variable: <code>export NVD_API_KEY=your-key-here</code> and add it to your <code>.venv/bin/activate</code> or a <code>.env</code> file. Your server reads it with <code>os.environ.get("NVD_API_KEY")</code> and passes it as the <code>apiKey</code> query parameter.</p></div>
     </div>
 
     <div class="lab-step" id="step-w5-2">
       <label><input type="checkbox" onchange="toggleStep('w5-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Design the query_cve tool schema</div>
-        <div class="step-desc">Create <code>schema.py</code> defining the input schema (CVE ID with regex validation, optional include_remediation flag) and output schema (id, description, severity, cvss score, affected products, remediation). Document why each field and constraint exists from a security perspective. <em>(Theory: Week 5 Day 1 — Schema Design &amp; Input Validation)</em></div>
+        <div class="step-desc">Create <code>schema.py</code> using the starter below. Fill in the <code># TODO</code> comments — add the regex pattern, the optional flag, and the output fields. For each constraint you add, write a one-line comment explaining why it exists from a security perspective (see examples already in the starter). <em>(Theory: Week 5 Day 1 — Schema Design &amp; Input Validation)</em></div>
       </div></label>
+      <div class="code-block"><pre><code># schema.py — starter (create in ~/noctua-labs/unit2/week5/cve-mcp/schema.py)
+import re
+from typing import Optional
+
+# Input schema
+CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,}$", re.IGNORECASE)
+# Why: regex validates format before any network call — rejects garbage early,
+# prevents malformed strings from reaching the NVD API
+
+class QueryCVEInput:
+    cve_id: str          # Required — must match CVE_PATTERN
+    include_remediation: Optional[bool] = False
+    # TODO: add the regex constraint as an annotation or validator
+    # TODO: document why include_remediation defaults to False
+    #       (hint: remediation text can be long — don't inflate context unless needed)
+
+# Output schema
+class QueryCVEOutput:
+    id: str              # Normalized CVE ID, uppercase
+    description: str     # English-language description from NVD
+    severity: str        # CRITICAL / HIGH / MEDIUM / LOW / UNKNOWN
+    cvss_score: Optional[float]   # Base score 0.0–10.0; None if not published yet
+    affected_products: list       # TODO: what type should list items be?
+    remediation: Optional[str]    # Only populated when include_remediation=True
+    error: bool = False  # True if API call failed — never raise, always return
+    # TODO: add an error_code field (str) and error_message field (str)
+    # Why: callers check error=True rather than catching exceptions —
+    #      MCP tools should return structured errors, not raise</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="callout callout-tip"><p><strong>Optional extension — build a local mock API.</strong> Instead of calling the live NVD API, you can build a local Flask or FastAPI server that returns mock CVE data. This demonstrates the service layer pattern more clearly (your MCP server doesn't know or care whether it's talking to the real NVD or a local mock) and works offline. Instructions: create a simple server returning hardcoded CVE JSON at the same endpoint your MCP tool expects. Swap the base URL in your MCP config.</p><p><em>(Theory: Week 5 Day 1 — Service Layer Pattern)</em></p></div>
@@ -257,18 +286,17 @@ else:
       <label><input type="checkbox" onchange="toggleStep('w5-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Register the server with Claude Code</div>
-        <div class="step-desc">Create or edit <code>~/.claude/claude_desktop_config.json</code> (or the Claude Code MCP config) to register your new server. The key fields are <code>command</code> (path to python), <code>args</code> (path to server.py), and <code>env</code> (environment variables).</div>
+        <div class="step-desc">Use <code>claude mcp add</code> to register your server. Use <code>--scope user</code> so the server is available in all your Claude Code sessions, not just the current project. <strong>Important:</strong> point to the venv Python, not system Python — that's where <code>mcp</code> and <code>httpx</code> are installed. <em>(Theory: Week 5 Day 1 — MCP Registration)</em></div>
       </div></label>
-      <div class="code-block"><pre><code># ~/.claude/claude_desktop_config.json
-{
-  "mcpServers": {
-    "cve-lookup": {
-      "command": "python3",
-      "args": ["/path/to/noctua-labs/unit2/week5/cve-mcp/server.py"],
-      "env": {}
-    }
-  }
-}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code># Register with Claude Code (user scope = available in all sessions)
+claude mcp add --scope user cve-lookup \
+  ~/noctua-labs/unit2/week5/cve-mcp/.venv/bin/python \
+  ~/noctua-labs/unit2/week5/cve-mcp/server.py
+
+# Confirm registration
+claude mcp list
+# Expected output: cve-lookup  ~/noctua-labs/unit2/week5/cve-mcp/server.py</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-warn" style="margin-top:10px;"><p><strong>Common failure: wrong Python path.</strong> If you point <code>claude mcp add</code> at <code>python3</code> (system Python), the server will fail with <code>ModuleNotFoundError: No module named 'mcp'</code> because the <code>mcp</code> package is in your venv, not the system. Use the full path to <code>.venv/bin/python</code> inside your project directory. Verify: <code>~/noctua-labs/unit2/week5/cve-mcp/.venv/bin/python -c "import mcp; print('ok')"</code></p></div>
     </div>
 
     <div class="lab-step" id="step-w5-5">
@@ -757,7 +785,7 @@ forbid (
       <label><input type="checkbox" onchange="toggleStep('w7-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Define the Incident Report JSON Schema</div>
-        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst. Connect this to your Week 4 V2 schema if you defined output fields there — reuse those fields here rather than redefining. <em>(Theory: Week 7 Day 1 — Schema-Driven Decomposition)</em></div>
+        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst. If you defined output schemas for <code>query_cve</code> or <code>query_asset_exposure</code> in Week 5–6, reuse those field names here for consistency — don't redefine what you've already validated. <em>(Theory: Week 7 Day 1 — Schema-Driven Decomposition)</em></div>
       </div></label>
     </div>
 
@@ -776,7 +804,7 @@ text = response.content[0].text</code></pre><button class="copy-btn" onclick="co
       <p>For enforcing structured output: a system prompt instruction ("Return only valid JSON") is simpler at this stage than tool_use. Handle <code>anthropic.APIConnectionError</code>, <code>AuthenticationError</code>, and <code>RateLimitError</code> explicitly — don't let them surface as unhandled exceptions.</p>
     </div>
 
-    <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Connect to your Week 4 V2 schema — if you defined output fields there, reuse them here rather than redefining. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
+    <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Connect to your Week 5–6 schemas — if you defined output fields for your CVE or asset tools, reuse those field names here rather than redefining. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
 
     <div class="lab-step" id="step-w7-2">
       <label><input type="checkbox" onchange="toggleStep('w7-2',this.checked)">
