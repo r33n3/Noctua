@@ -237,46 +237,36 @@
 <p>Students will track these metrics across lab exercises to quantify how agentic tools and CCT practices accelerate each phase of security engineering.</p>
 <hr />
 <h2 id="repository-structure">Repository Structure</h2>
-<div class="codehilite"><pre><span></span><code><span class="n">Noctua</span><span class="o">-</span><span class="mi">2026</span><span class="o">/</span><span class="w"></span>
-<span class="err">├──</span><span class="w"> </span><span class="n">README</span><span class="o">.</span><span class="n">md</span><span class="w">                          </span><span class="c1"># This file</span><span class="w"></span>
-<span class="err">├──</span><span class="w"> </span><span class="n">COURSE</span><span class="o">-</span><span class="n">ASSESSMENT</span><span class="o">.</span><span class="n">md</span><span class="w">               </span><span class="c1"># Comparative analysis: 2023 vs. 2026 landscape</span><span class="w"></span>
-<span class="err">│</span><span class="w"></span>
-<span class="err">├──</span><span class="w"> </span><span class="n">semester</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">SYLLABUS</span><span class="o">.</span><span class="n">md</span><span class="w">                   </span><span class="c1"># Full Semester 1 syllabus with policies</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">weeks</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">01.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">02.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">16.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">labs</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">agent</span><span class="o">.</span><span class="n">md</span><span class="w">      </span><span class="c1"># Hello World with Claude Agent SDK</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="n">cct</span><span class="o">-</span><span class="n">frameworks</span><span class="o">.</span><span class="n">md</span><span class="w">   </span><span class="c1"># Applying CCT to security decisions</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="n">context</span><span class="o">-</span><span class="n">engineering</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="n">mcp</span><span class="o">-</span><span class="n">servers</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="p">(</span><span class="n">lab</span><span class="w"> </span><span class="n">guides</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">unit</span><span class="p">)</span><span class="w"></span>
-<span class="err">│</span><span class="w"></span>
-<span class="err">├──</span><span class="w"> </span><span class="n">semester</span><span class="o">-</span><span class="mi">2</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">SYLLABUS</span><span class="o">.</span><span class="n">md</span><span class="w">                   </span><span class="c1"># Full Semester 2 syllabus with policies</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">weeks</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">01.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">02.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">week</span><span class="o">-</span><span class="mf">16.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">labs</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="n">multi</span><span class="o">-</span><span class="n">agent</span><span class="o">-</span><span class="n">orchestration</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="n">prompt</span><span class="o">-</span><span class="n">injection</span><span class="o">-</span><span class="n">attacks</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">├──</span><span class="w"> </span><span class="n">lab</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="n">red</span><span class="o">-</span><span class="n">team</span><span class="o">-</span><span class="n">exercise</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
-<span class="err">│</span><span class="w">       </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="p">(</span><span class="n">advanced</span><span class="w"> </span><span class="n">lab</span><span class="w"> </span><span class="n">guides</span><span class="p">)</span><span class="w"></span>
-<span class="err">│</span><span class="w"></span>
-<span class="err">├──</span><span class="w"> </span><span class="n">resources</span><span class="o">/</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">LAB</span><span class="o">-</span><span class="n">SETUP</span><span class="o">.</span><span class="n">md</span><span class="w">                  </span><span class="c1"># Environment setup guide (all platforms)</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">READING</span><span class="o">-</span><span class="n">LIST</span><span class="o">.</span><span class="n">md</span><span class="w">               </span><span class="c1"># Updated reading list for 2026</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">FRAMEWORKS</span><span class="o">.</span><span class="n">md</span><span class="w">                 </span><span class="c1"># Reference for security frameworks</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">TOOLS</span><span class="o">-</span><span class="n">GUIDE</span><span class="o">.</span><span class="n">md</span><span class="w">                </span><span class="c1"># Setup and comparison of multi-vendor tools</span><span class="w"></span>
-<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">API</span><span class="o">-</span><span class="n">REFERENCE</span><span class="o">.</span><span class="n">md</span><span class="w">              </span><span class="c1"># Claude SDK, CrewAI, LangGraph reference</span><span class="w"></span>
-<span class="err">│</span><span class="w"></span>
-<span class="err">└──</span><span class="w"> </span><span class="n">original</span><span class="o">-</span><span class="n">materials</span><span class="o">/</span><span class="w"></span>
-<span class="w">    </span><span class="err">├──</span><span class="w"> </span><span class="n">CYBEMINDS</span><span class="o">-</span><span class="mi">2023</span><span class="o">-</span><span class="n">OVERVIEW</span><span class="o">.</span><span class="n">md</span><span class="w">    </span><span class="c1"># Original course philosophy</span><span class="w"></span>
-<span class="w">    </span><span class="err">└──</span><span class="w"> </span><span class="n">EVOLUTION</span><span class="o">.</span><span class="n">md</span><span class="w">                  </span><span class="c1"># How the course evolved from 2023 to 2026</span><span class="w"></span>
-</code></pre></div>
+<p>The course site is HTML-first. <code>docs/</code> is the canonical source for all student-facing content and is served via GitHub Pages. Markdown files in <code>semester-1/</code> and <code>semester-2/</code> are supplementary and must align to the HTML.</p>
+<pre><code>Noctua/
+├── README.md                    # Repo overview
+├── CLAUDE.md                    # HTML-is-canonical rule + authoring conventions
+│
+├── docs/                        # GitHub Pages site — all student-facing content
+│   ├── index.html               # Course Overview (this page)
+│   ├── semester1.html / semester2.html
+│   ├── s1-unit[1-4].html        # Semester 1 theory pages
+│   ├── lab-s1-unit[1-4].html   # Semester 1 interactive lab guides
+│   ├── s2-unit[5-8].html        # Semester 2 theory pages
+│   ├── lab-s2-unit[5-8].html   # Semester 2 interactive lab guides
+│   ├── reading.html / frameworks.html / lab-setup.html / assessment.html
+│   ├── labs.css / labs.js       # Shared stylesheet and interactive system
+│   ├── skills/                  # Course skill files (/think, /spec, /retro, etc.)
+│   ├── resources/               # Reference pages (cheatsheet, command ref, etc.)
+│   └── data/                    # Downloadable lab data files
+│
+├── semester-1/                  # Supplementary Markdown content (aligns to HTML)
+│   ├── SYLLABUS.md
+│   └── weeks/unit-[1-4].md
+│
+├── semester-2/                  # Supplementary Markdown content (aligns to HTML)
+│   ├── SYLLABUS.md
+│   └── weeks/unit-[5-8].md
+│
+└── resources/                   # Supporting materials (case studies, references)
+    ├── FRAMEWORKS.md / READING-LIST.md / LAB-SETUP.md
+    └── case-studies/
+</code></pre>
 
 <hr />
 <h2 id="prerequisites">Prerequisites</h2>
@@ -344,6 +334,7 @@
 <li><strong>"Collaborative Intelligence"</strong> by Dawna Markova and Angie McArthur — Building teams that think better together</li>
 <li><strong>Carl Sagan's Baloney Detection Kit</strong> (excerpt from <em>The Demon-Haunted World</em>) — Skeptical inquiry methods</li>
 <li><strong>Richard Paul's Critical Thinking Frameworks</strong> — Structured approaches to evaluating arguments and evidence</li>
+<li><strong>Seth Jaeger — "The 5 Habits of Mind Framework"</strong> (<a href="https://www.sethjaeger.com/p/the-5-habits-of-mind-framework-for.html" target="_blank">sethjaeger.com</a>) — The framework underlying this course's CCT pillars: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, and Ethical Governance.</li>
 </ul>
 <h3 id="agentic-engineering-ai-systems">Agentic Engineering &amp; AI Systems</h3>
 <ul>

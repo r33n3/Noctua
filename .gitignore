@@ -28,3 +28,12 @@ node_modules/
 .env
 *.key
 *.pem
+
+# Dev session artifacts (screenshots, browser automation output)
+*.png
+*.jpg
+*.jpeg
+.playwright-mcp/
+
+# Internal planning docs (not student-facing)
+docs/superpowers/
