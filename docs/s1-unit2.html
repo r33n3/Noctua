@@ -59,6 +59,10 @@
 <h2 id="week-5-model-context-protocol-mcp-the-agent-tool-interface">Week 5: Model Context Protocol (MCP) — The Agent-Tool Interface</h2>
 <div class="callout callout-key"><p><strong>Start your context library now.</strong> The context library is the collection of curated reference files you build throughout this course — prompts that worked, patterns you discovered, schemas you designed. Start it in Week 5. At the end of every lab this unit, you'll add one entry. By Unit 4 you'll have a personal reference library you can pull into any Claude session.</p>
 </div>
+<div class="callout callout-tip">
+  <strong>Build your context library as you go</strong>
+  <p>Throughout Unit 2 you will build MCP tools, schemas, and patterns. After each week's lab, capture what worked into <code>context-library/patterns/</code> — a growing artifact you will reuse in later units. Week 8 will show you the full structure; start adding to it from Week 5.</p>
+</div>
 <h3 id="day-1-theory-foundations">Day 1 — Theory &amp; Foundations</h3>
 <h4 id="learning-objectives">Learning Objectives</h4>
 <ul>
@@ -105,6 +109,21 @@
 <p>This three-layer model provides crucial security advantages. A client (agent) never directly executes code on the server; it sends structured requests and receives structured responses. The server can enforce rate limits, validate inputs, and log every interaction. The transport layer can be encrypted and authenticated independently.</p>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> If you were designing a tool that gives an AI agent access to your organization's vulnerability database, what security policies would you enforce at each layer (client restrictions, server validation, transport security)?</p>
 </div>
+<div class="callout callout-key">
+  <strong>MCP Concepts Mapped to OOP</strong>
+  <p>If you come from an OOP background, MCP maps directly to concepts you already know:</p>
+  <table>
+    <tr><th>OOP Concept</th><th>Agentic Equivalent</th></tr>
+    <tr><td>Class</td><td>MCP Server</td></tr>
+    <tr><td>Interface / Abstract class</td><td>Tool schema (the contract)</td></tr>
+    <tr><td>Method</td><td>Tool (single responsibility function)</td></tr>
+    <tr><td>Encapsulation</td><td>Server hides implementation, exposes only the schema</td></tr>
+    <tr><td>Access modifiers</td><td>PoLP — tools exposed only to agents that need them</td></tr>
+    <tr><td>Decorator pattern</td><td>Rate limiting + audit logging wrapping tools at the dispatch layer</td></tr>
+    <tr><td>Circuit breaker</td><td>Graceful degradation when external APIs fail</td></tr>
+  </table>
+  <p><strong>Where the analogy breaks — non-determinism:</strong> In OOP you control the call graph. In agentic engineering the agent controls the call graph — you only control the boundaries. Temperature=0 and structured outputs make agent behavior more predictable, not deterministic. The orchestration layer — which tools get called, in what order, how intermediate results get interpreted — remains genuinely non-deterministic. Design for this: define boundaries, observe behavior over time, make audit trails mandatory.</p>
+</div>
 <h4 id="tool-discovery-and-metadata">Tool Discovery and Metadata</h4>
 <p>MCP servers expose their capabilities through a discovery mechanism. When an agent connects to an MCP server, the server responds with a list of available tools, including:</p>
 <ul>
@@ -116,6 +135,11 @@
 </ul>
 <p>This metadata allows agents to understand what's available without requiring hardcoded knowledge. A new security analyst can launch Claude Code, load an MCP server, and immediately see all available tools with documentation.</p>
 <div class="callout callout-discuss"><p><strong>Discussion: tool discovery as attack surface.</strong> Every tool your MCP server exposes is discoverable by any agent (or attacker) with access to the server. Overpermissioned MCP servers don't just risk misuse — they enable capability amplification: an agent that should only read CVE data can instead scan networks if those tools are available. The governance response is allowance profiles — pre-approved lists of which tools each agent role can invoke. You'll implement this with Cedar policies in Unit 3.</p>
+</div>
+<div class="callout callout-key">
+  <strong>Discussion: Agentic RBAC and PoLP</strong>
+  <p>If MCP tool discovery exposes all server capabilities to any connected agent, what governance controls prevent an agent from using tools beyond its intended scope? How does Principle of Least Privilege apply to agent-tool relationships?</p>
+  <p>Agents without scope boundaries will pursue goals using any available tool — including tools outside their intended role. Tool discovery is an attack surface. The defense is PoLP applied at the control plane: only expose tools the agent needs, enforced by identity, not just permission checks.</p>
 </div>
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> See the <a href="https://modelcontextprotocol.io/spec">MCP Specification</a> for detailed schema examples and <a href="frameworks.html">Tool Design Patterns</a> for reference implementations.</p>
 </div>
@@ -539,6 +563,11 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 <p><strong>Further Reading:</strong> See the Agentic Engineering additional reading on tool design for deeper discussion of tool design principles and the Pit of Success pattern.</p>
 </div>
 <h4 id="the-service-layer-pattern-api-first-mcp-second">The Service Layer Pattern: API First, MCP Second</h4>
+<div class="callout callout-key">
+  <strong>Service Layer Pattern</strong>
+  <p>Build your core logic as a standard REST API first. Then treat MCP as a thin translation layer that maps agent tool calls to your API endpoints. This keeps your business logic testable, reusable, and independent of any AI framework.</p>
+  <p>The MCP server describes what the agent can do — the API defines how it actually gets done. Changes to the AI interface (MCP) don't require touching business logic, and vice versa. This separation is where production governance hooks live in Unit 7.</p>
+</div>
 <p>In production environments, the most resilient tool architectures follow a critical principle: <strong>build the REST API first, then layer the MCP server on top as a consumption client.</strong> This pattern decouples core business logic from the AI integration layer.</p>
 <p><strong>The Architecture:</strong></p>
 <div class="codehilite"><pre><span></span><code>Core Business Logic
