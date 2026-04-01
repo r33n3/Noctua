@@ -27,6 +27,11 @@
 <div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Multi-Agent SOC System with Worktrees</span></div>
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a three-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
+<div class="callout callout-key">
+  <strong>Tool-agnostic framing: worktrees and multi-agent patterns</strong>
+  <p><strong>Worktrees</strong> are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.</p>
+  <p><strong>Orchestrator + specialized worker</strong> is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), LangGraph, AutoGen, or CrewAI — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.</p>
+</div>
 
 <div class="quiz-block" id="quiz-w13">
   <h4> Knowledge Check — Week 13</h4>
