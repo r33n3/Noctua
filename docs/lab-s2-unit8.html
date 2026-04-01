@@ -929,6 +929,11 @@ jobs:
         <label for="step-u8-15-5"><strong>Step 5 (Red Team):</strong> Access the peer team's live production deployment (not their repository) and test all 10 OWASP Agentic risks systematically. For each risk: attempt exploitation, document what was found, score with OWASP AIVSS, classify the defense layer exploited, and recommend a specific fix.</label>
       </div>
 
+<div class="callout callout-tip">
+  <strong>Solo/self-red-team version</strong>
+  <p>If no peer team is available, conduct a self-red-team against your own production deployment. Test all 10 OWASP Agentic risks systematically, documenting which your defenses address and which remain open. A self-red-team is a legitimate security practice — the limitation is that it cannot find blind spots the team shares.</p>
+</div>
+
       <div class="code-block" data-collapsible data-collapsed="true" data-label="Red Team Report Template">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># Red Team Report Template
