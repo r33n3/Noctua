@@ -416,7 +416,7 @@ class JSONFormatter(logging.Formatter):
             'tool': getattr(record, 'tool', None),
         })
 
-# Use: logger.info("tool_call", extra={'agent':'recon','tool':'ip_lookup'})</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Use: logger.info("tool_call", extra={'agent':'recon','tool':'query_cve'})</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w15-4">
@@ -488,6 +488,18 @@ class JSONFormatter(logging.Formatter):
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Present your hardened prototype to the class and instructor panel. Defend architectural decisions using CCT. Conduct peer reviews. Reflect on the semester's learning trajectory.</p></div>
 
+<div class="callout">
+  <strong>Class Discussion — Before Presentations</strong>
+  <p>Before the demo session begins, take 15 minutes for structured reflection. These questions are the synthesis moment — 16 weeks of CCT, tools, ethics, and prototyping converge here.</p>
+  <ul>
+    <li><strong>Week 1 vs. Week 16 MTTI:</strong> Your MTTI at Week 1 was roughly 26 minutes. What is your Week 16 MTTI for a similar-complexity investigation? What accounts for the difference — skill, tooling, or workflow? How much of the improvement came from faster CCT reasoning vs. faster execution?</li>
+    <li><strong>Changed assumptions:</strong> What assumption about AI-assisted security work did you hold in Week 1 that turned out to be wrong? What evidence from a specific lab changed your mind?</li>
+    <li><strong>CCT in practice:</strong> Which of the five CCT pillars challenged your instincts most? Was there a lab where you realized you had been applying a pillar superficially?</li>
+    <li><strong>Course redesign:</strong> If you were designing this semester's curriculum, what would you add, cut, or reorder?</li>
+    <li><strong>Portfolio gap:</strong> Your Sprint II prototype is now a portfolio item. What would you need to do to present it in a job interview with confidence? What is the gap between "it works" and "I would stake my professional reputation on this"?</li>
+  </ul>
+</div>
+
 <div class="lab-section">
   <h4> Ship It: Release Pipeline Checklist</h4>
   <p>Before your prototype earns a PR and goes to leadership review, run it through this shipping checklist. Each step has a reason — this is the production shipping discipline practiced throughout the course: spec before build, test before ship, document before deploy.</p>
@@ -503,21 +515,34 @@ class JSONFormatter(logging.Formatter):
       <label><input type="checkbox" onchange="toggleStep('ship-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Pre-landing AI checklist: all 7 items reviewed</div>
-        <div class="step-desc">Work through the Unit 4 pre-landing checklist: LLM trust boundaries, SQL safety, race conditions, enum completeness, error propagation, secrets in env vars, blast radius under 5 files. Document any item you knowingly skip and why.</div>
+        <div class="step-desc">Work through the Unit 4 pre-landing checklist below. Document any item you knowingly skip and why — that note is a required part of the deliverable.</div>
       </div></label>
     </div>
     <div class="callout callout-key">
-  <strong>Pre-Landing AI Checklist — Preview</strong>
-  <p>The full checklist is developed across Unit 7 (Semester 2). The items below preview what production readiness requires — you will build each one through the second semester:</p>
-  <ul>
-    <li>AIUC-1 governance audit complete across all 6 domains</li>
-    <li>MASS security scan run, critical findings addressed</li>
-    <li>Agent identity and allowance profiles defined</li>
-    <li>Structured logging and distributed tracing instrumented</li>
-    <li>Red team report filed, mitigations documented</li>
-    <li>Cost caps and circuit breakers in place</li>
-    <li>Human escalation paths tested</li>
-  </ul>
+  <strong>Unit 4 Pre-Landing AI Checklist</strong>
+  <p>Review each item. Pass = confirmed. Skipped = documented in your PR description with written justification.</p>
+  <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;">
+    <thead><tr style="border-bottom:1px solid var(--border);">
+      <th style="text-align:left;padding:6px 8px;">#</th>
+      <th style="text-align:left;padding:6px 8px;">Item</th>
+      <th style="text-align:left;padding:6px 8px;">What to check</th>
+      <th style="text-align:left;padding:6px 8px;">Pass criteria</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:6px 8px;">1</td><td style="padding:6px 8px;"><strong>LLM trust boundaries</strong></td><td style="padding:6px 8px;">Does your system treat all LLM outputs as untrusted input? Is there validation before acting on agent decisions?</td><td style="padding:6px 8px;">Every agent output is validated before downstream use</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">2</td><td style="padding:6px 8px;"><strong>SQL / injection safety</strong></td><td style="padding:6px 8px;">If your system writes to any database or constructs queries, are inputs parameterized?</td><td style="padding:6px 8px;">No string concatenation in queries</td></tr>
+      <tr><td style="padding:6px 8px;">3</td><td style="padding:6px 8px;"><strong>Race conditions</strong></td><td style="padding:6px 8px;">If agents run concurrently, is shared state (logs, files, rate counters) protected?</td><td style="padding:6px 8px;">Thread-safe or process-isolated</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">4</td><td style="padding:6px 8px;"><strong>Enum completeness</strong></td><td style="padding:6px 8px;">Do all match/case or if-elif blocks have an explicit default?</td><td style="padding:6px 8px;">No silent fall-through on unexpected values</td></tr>
+      <tr><td style="padding:6px 8px;">5</td><td style="padding:6px 8px;"><strong>Error propagation</strong></td><td style="padding:6px 8px;">Does every exception either recover gracefully or surface clearly to the caller?</td><td style="padding:6px 8px;">No bare <code>except: pass</code> blocks</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">6</td><td style="padding:6px 8px;"><strong>Secrets in env vars</strong></td><td style="padding:6px 8px;">Are all API keys, tokens, and credentials in environment variables — not in code or committed files?</td><td style="padding:6px 8px;"><code>git grep -i "api_key\s*="</code> returns zero matches</td></tr>
+      <tr><td style="padding:6px 8px;">7</td><td style="padding:6px 8px;"><strong>Blast radius</strong></td><td style="padding:6px 8px;">Does this PR change fewer than 5 files? If more, is the scope justified?</td><td style="padding:6px 8px;">Documented rationale for any large-scope change</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:8px;color:var(--text-muted);font-size:13px;">Document any item you knowingly skip and the reason why. This is a graded deliverable — the documentation is as important as the checklist result.</p>
+</div>
+    <div class="callout callout-reading">
+  <strong>Coming in Semester 2 — the full production checklist</strong>
+  <p>Unit 7 extends this checklist with governance-grade requirements: AIUC-1 audit across all 6 domains, MASS security scan, agent identity and allowance profiles, distributed tracing, red team report, cost caps, and tested human escalation paths. The 7 items above are the Semester 1 foundation you build on.</p>
 </div>
     <div class="lab-step" id="step-ship-3">
       <label><input type="checkbox" onchange="toggleStep('ship-3',this.checked)">
@@ -594,9 +619,33 @@ Analysts spend 45 min/day triaging phishing alerts manually.
       <label><input type="checkbox" onchange="toggleStep('w16-4',this.checked)">
       <div class="step-content">
         <div class="step-title">During: Peer review feedback submitted</div>
-        <div class="step-desc">For each peer presentation, complete the structured peer review form: (1) What problem did they solve? (2) Most impressive technical achievement? (3) Most significant gap or risk? (4) One specific improvement suggestion? Submit within 24 hours of each presentation.</div>
+        <div class="step-desc">For each peer presentation, complete the structured peer review form below. Save as <code>log/peer-reviews/[presenter-name]-w16.md</code> in your student workspace and share with the presenter within 24 hours.</div>
       </div></label>
     </div>
+    <div class="callout callout-tip">
+  <strong>Peer Review Template — copy and complete for each presenter</strong>
+  <div class="code-block"><pre><code># Peer Review — [Presenter Name]
+**Reviewer:** [Your Name] | **Date:** [Date] | **System:** [System Name]
+
+## 1. Problem solved
+[1-2 sentences: What security problem did they address? Was the problem well-defined?]
+
+## 2. Most impressive technical achievement
+[Specific: name the component, approach, or design decision that stood out.
+Not "it worked well" — what specifically demonstrated skill?]
+
+## 3. Most significant gap or risk
+[Specific: a security gap, architectural weakness, or untested edge case.
+Apply CCT Pillar 1 — what evidence supports this being a real risk?]
+
+## 4. One improvement suggestion
+[Actionable: "Add rate limiting to the enrichment API call in recon_agent.py"
+not "improve security." Something they could implement in a day.]
+
+## Overall: Would you use this in a real SOC?
+[ ] Yes, as-is  [ ] Yes, with modifications  [ ] Not yet — needs X first
+Reason: [one sentence]</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+</div>
 
     <div class="lab-step" id="step-w16-5">
       <label><input type="checkbox" onchange="toggleStep('w16-5',this.checked)">
