@@ -271,6 +271,11 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     </div>
 
     <div class="callout callout-warn"><p><strong>Rate limiting and audit logging are architectural foundations, not optional additions.</strong> Build them before you wire in your tools — not after. When rate limiting is built first, every tool inherits it automatically. When audit logging is built first, every tool call is logged from day one. Retrofitting these controls after the fact is where gaps appear.</p><p><em>(Theory: Week 6 Day 1 — Defense-in-Depth for Tool Servers)</em></p></div>
+    <div class="callout callout-key">
+      <strong>Security controls as architectural foundations</strong>
+      <p>Rate limiting and audit logging are cross-cutting concerns — they belong in the server architecture before you implement any tools. A decorator pattern wraps every tool call at the dispatch layer. Steps 3 and 4 set up that foundation; the tools you build in Step 2 run on top of it automatically.</p>
+      <p>This is the Pit of Success principle: make the secure path the easy path. When security controls are foundational, every new tool inherits them without extra work.</p>
+    </div>
 
     <div class="lab-step" id="step-w6-3">
       <label><input type="checkbox" onchange="toggleStep('w6-3',this.checked)">
@@ -331,6 +336,12 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 # Include report output in your deliverables package</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
+</div>
+
+<div class="callout callout-key">
+  <strong>Practitioner workflow: /think → /spec → build</strong>
+  <p>Before specifying your tool, run <code>/think</code> with your tool selection problem as the argument. Let the CCT session surface what you actually know about the operational context before committing to a design. Then run <code>/spec</code> to capture the decisions that emerged. Build from the spec.</p>
+  <p>The spec is only as good as the thinking that preceded it. This workflow applies any time you make a significant design decision — tool design, context engineering, RAG architecture, governance decisions.</p>
 </div>
 
 <div class="deliverables">
@@ -519,22 +530,19 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       </div></label>
     </div>
 
-    <div class="callout callout-tip">
-      <p><strong>Anthropic SDK primer — what you need to know for this step:</strong></p>
+    <div class="callout callout-key">
+      <strong>Anthropic SDK — quick reference</strong>
+      <p>This step requires the Anthropic Python SDK. The basic pattern:</p>
       <div class="code-block"><pre><code>import anthropic
-client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from environment
-
-# Basic call
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 response = client.messages.create(
-    model="claude-sonnet-4-6",
+    model="claude-haiku-4-5-20251001",
     max_tokens=1024,
-    messages=[{"role": "user", "content": "Your prompt here"}]
+    system="Return only valid JSON. No explanation.",
+    messages=[{"role": "user", "content": prompt}]
 )
-result_text = response.content[0].text
-
-# To enforce JSON output: add to system prompt
-system = "Respond only with valid JSON matching this schema: {...}"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <p>Two patterns for structured output: (1) instruct via system prompt ("respond only with JSON matching schema X"), or (2) use <code>tool_use</code> mode where Claude fills tool parameters as structured output. This lab uses the system prompt approach.</p>
+text = response.content[0].text</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <p>For enforcing structured output: a system prompt instruction ("Return only valid JSON") is simpler at this stage than tool_use. Handle <code>anthropic.APIConnectionError</code>, <code>AuthenticationError</code>, and <code>RateLimitError</code> explicitly — don't let them surface as unhandled exceptions.</p>
     </div>
 
     <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Connect to your Week 4 V2 schema — if you defined output fields there, reuse them here rather than redefining. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
@@ -555,6 +563,11 @@ system = "Respond only with valid JSON matching this schema: {...}"</code></pre>
     </div>
 
     <div class="callout callout-key"><p><strong>You've just implemented "Claude Calling Claude."</strong> One Claude session (your agent) called a tool that internally called Claude again (the report generator). This is composition: each Claude call has a focused, narrow task. The orchestrating Claude handles conversation; the tool-level Claude handles a single reasoning task (classification, extraction, generation). This pattern scales — you can chain multiple specialized Claude calls through your tool layer without the orchestrating Claude needing to know about them.</p></div>
+    <div class="callout callout-key">
+      <strong>Pattern: Claude Calling Claude</strong>
+      <p>When an MCP tool calls the Anthropic API internally, you have created a composition layer. The outer agent (Claude Code) orchestrates and selects tools. The inner call does structured generation with a tight schema constraint. Each does what it's best at.</p>
+      <p>The outer agent is unaware the inner call is also Claude. The inner model can be chosen independently — Haiku is sufficient for template-constrained JSON generation and costs a fraction of Sonnet. The inner API key lives in the MCP server's environment, not accessible to the outer agent.</p>
+    </div>
 
     <div class="lab-step" id="step-w7-3">
       <label><input type="checkbox" onchange="toggleStep('w7-3',this.checked)">
