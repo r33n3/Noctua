@@ -192,8 +192,8 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'reading.html', 'Reading List'],
     ['link', 'skills/index.html', 'Claude Code Skills'],
     ['link', 'resources/course-cheatsheet.html', 'Course Cheatsheet'],
-    ['sublink', 'resources/claude-code-commands.html', 'Command Reference'],
-    ['sublink', 'resources/claude-code-directory.html', 'Directory Reference'],
+    ['link', 'resources/claude-code-commands.html', 'Command Reference'],
+    ['link', 'resources/claude-code-directory.html', 'Directory Reference'],
   ];
 
   let html = '<div class="sidebar-header"><h1>Noctua</h1><p>AI Security Engineering</p></div>\n'
