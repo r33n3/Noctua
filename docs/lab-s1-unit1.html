@@ -745,6 +745,25 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   <p><strong>Why you're creating CLAUDE.md here.</strong> In this lab, you're using Claude Code to review your own work from earlier weeks. CLAUDE.md tells Claude what kind of project this is, what your role is, and what context to bring to every session. Without it, Claude starts every conversation cold. With it, Claude enters already oriented. You'll update this file throughout the course as your project evolves.</p>
 </div>
 
+<div class="callout callout-tip">
+  <strong>CLAUDE.md vs. Context Library — what's the difference?</strong>
+  <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">
+    <thead><tr style="border-bottom:1px solid var(--border);">
+      <th style="text-align:left;padding:6px 10px;"></th>
+      <th style="text-align:left;padding:6px 10px;">CLAUDE.md</th>
+      <th style="text-align:left;padding:6px 10px;">Context Library</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:6px 10px;color:var(--text-muted);">What it is</td><td style="padding:6px 10px;">Project file Claude Code auto-loads</td><td style="padding:6px 10px;">Your portable collection of reusable patterns</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 10px;color:var(--text-muted);">When it loads</td><td style="padding:6px 10px;">Every Claude Code session in that directory</td><td style="padding:6px 10px;">When you explicitly feed it to the model</td></tr>
+      <tr><td style="padding:6px 10px;color:var(--text-muted);">Scope</td><td style="padding:6px 10px;">Project-specific</td><td style="padding:6px 10px;">Portable across projects and platforms</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 10px;color:var(--text-muted);">Platform</td><td style="padding:6px 10px;">Claude Code only</td><td style="padding:6px 10px;">Any AI platform</td></tr>
+      <tr><td style="padding:6px 10px;color:var(--text-muted);">Analogy</td><td style="padding:6px 10px;">Standing orders for a specific office</td><td style="padding:6px 10px;">Your professional playbook you carry everywhere</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:8px;">Use CLAUDE.md for project-specific context. Use your context library for reusable analyst patterns and system prompts you want available anywhere.</p>
+</div>
+
 <div class="callout callout-key">
   <strong>Save Your Context Permanently — Create a CLAUDE.md</strong>
   <p>You now have a context library. Teach Claude Code to load it automatically. Create a <code>CLAUDE.md</code> file in your project root — Claude Code reads it at the start of every session before you type a single word. Put your context library references, working standards, and architectural preferences there. You'll never have to re-explain your style to a new session again.</p>
