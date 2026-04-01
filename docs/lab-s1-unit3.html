@@ -151,6 +151,11 @@
     <li><strong>CCT Journal</strong> — reflect: how does building an ethics audit change how you design systems? What would you do differently if starting Unit 2 over?</li>
   </ul>
 </div>
+<div class="callout callout-warn">
+  <strong>Audits produce fixes, not just documents</strong>
+  <p>Before moving to Week 10: implement at least one P1 remediation from your ethics audit. Common P1 items in this lab: missing API key validation, ephemeral-only logs (no persistent audit trail), no injection pattern scanning on KB ingestion.</p>
+  <p>A security audit that produces only documentation teaches that documentation is the deliverable. The deliverable is a more secure system. Document the fix, not just the gap.</p>
+</div>
 
 <div class="lab-section">
   <h4> Cedar Introduction: From Audit Finding to Executable Policy</h4>
@@ -261,6 +266,12 @@ when {
       <div class="code-block"><pre><code>pip install garak
 npm install -g promptfoo
 mkdir -p ~/noctua-labs/unit3/week10 && cd ~/noctua-labs/unit3/week10</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>Garak tests the base model, not your MCP server stack</strong>
+      <p>Garak runs against the Claude API directly — it cannot see your MCP server's input validation, tool parameter schemas, system prompt construction, or output filtering. Passing Garak does not mean your MCP server is injection-resistant; it means the base model resists known payloads.</p>
+      <p>In Steps 3–4, use Promptfoo to test the full stack through your actual agent configuration. That is where your real defense posture is measured.</p>
     </div>
 
     <div class="lab-step" id="step-w10-2">
