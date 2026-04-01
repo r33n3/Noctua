@@ -73,7 +73,7 @@ The AIUC-1 domains emerged from real incidents in the financial sector where AI 
 
 - **Model Drift in Fraud Detection:** Banks deployed fraud models that performed well in 2020 but degraded significantly by 2023 as criminal tactics evolved. Without continuous validation, these systems flagged legitimate transactions as fraudulent, frustrating customers and damaging trust.
 
-> **💬 Discussion Prompt:** In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six principles is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?
+> **💬 Discussion Prompt:** In a financial institution deploying an AI system to flag suspicious transactions for money laundering detection, which of the six domains is most critical to get right first? Why might fairness and explainability actually prevent false positives and customer friction better than just maximizing raw detection accuracy?
 
 #### Mapping to NIST AI RMF
 
@@ -150,7 +150,7 @@ Organizations implementing AIUC-1 domains realize tangible benefits:
 
 **Part 1: Audit Preparation (30 minutes)**
 
-You will audit a security tool or system you've built in previous weeks (or a provided example). For each of the six principles, you'll evaluate the system against the following audit questions:
+You will audit a security tool or system you've built in previous weeks (or a provided example). For each of the six domains, you'll evaluate the system against the following audit questions:
 
 **Safe/Secure/Resilient Audit Questions:**
 - What are the failure modes of this system? What happens if it makes a wrong recommendation?
@@ -188,7 +188,7 @@ You will audit a security tool or system you've built in previous weeks (or a pr
 - Who is responsible if the system makes a bad decision? Is that clear?
 - Are there mechanisms for users to appeal or challenge decisions?
 
-> **💡 Pro Tip:** Create a spreadsheet with the six principles as rows and "Evaluation," "Evidence," "Gap," "Severity," and "Mitigation" as columns. This forces systematic evaluation and makes the findings easy to present.
+> **💡 Pro Tip:** Create a spreadsheet with the six domains as rows and "Evaluation," "Evidence," "Gap," "Severity," and "Mitigation" as columns. This forces systematic evaluation and makes the findings easy to present.
 
 **Part 2: Hands-On Evaluation (60 minutes)**
 
