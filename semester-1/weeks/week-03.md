@@ -1,4 +1,4 @@
-# Week 3: MCP Servers + Tool Design
+# Week 3: Modern AI Landscape for Security
 
 **Semester 1 | Week 3 of 16**
 
@@ -128,7 +128,7 @@ Apply this to your Week 3 lab: when building your CVE lookup MCP server, include
 
 ## Day 2 — Lab
 
-### Build: CVE Lookup MCP Server
+### Lab: Phishing Email Analysis Comparative Study
 
 **Lab Objectives:**
 - Build an MCP server exposing a CVE lookup tool

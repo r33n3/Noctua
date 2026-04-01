@@ -1,4 +1,4 @@
-# Week 2: Context Engineering + Model Selection
+# Week 2: Cognitive Bias & CCT Deep Dive
 
 **Semester 1 | Week 2 of 16**
 
@@ -141,7 +141,7 @@ To optimize for caching:
 
 ## Day 2 — Lab
 
-### Lab: Context Engineering + Cost Tracking
+### Lab: Bias Identification & CCT-Structured Rewrite
 
 #### Company Profile: CloudShift
 

@@ -1,4 +1,4 @@
-# Week 1: CCT + Engineering Assessment + Tool Setup
+# Week 1: First Agent & CCT Incident Analysis
 
 **Semester 1 | Week 1 of 16**
 

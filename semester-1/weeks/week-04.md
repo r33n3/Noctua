@@ -1,4 +1,4 @@
-# Week 4: Multi-Tool Systems + Data Architecture
+# Week 4: Context Engineering
 
 **Semester 1 | Week 4 of 16**
 
@@ -142,7 +142,7 @@ Per-request analysis context    → Context window (ephemeral synthesis)
 
 ## Day 2 — Lab
 
-### Build: Multi-Tool MCP Server with Structured Security Report
+### Lab: Engineering a Security Analyst System Prompt
 
 **Architecture: Three Composed Tools**
 
