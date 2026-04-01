@@ -17,7 +17,7 @@
 <p>Two sprint-based labs building production-ready security prototypes, culminating in a demo and midyear project presentation. This is where everything comes together.</p>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 26 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 27 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -245,6 +245,19 @@ claude
   <div class="callout callout-warn"><p><strong>Timer is active:</strong> The lab instructor will signal the start. Record your exact start time. Each phase is time-boxed — when the phase ends, move on regardless of completion state. Track your metrics honestly.</p></div>
 
   <div class="lab-steps">
+    <div class="lab-step" id="step-w14-0">
+  <label><input type="checkbox" onchange="toggleStep('w14-0', this.checked)">
+    <div class="step-content">
+      <div class="step-title">Step 0: AIUC-1 pre-check — run before writing code</div>
+      <div class="step-desc">Run <code>/audit-aiuc1</code> on your planned system architecture. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save the output as <code>sprint1/aiuc1-precheck.md</code> — this is a graded deliverable. The full audit happens in Unit 7; this pre-check surfaces design decisions you would otherwise have to reverse later.</div>
+    </div>
+  </label>
+</div>
+<div class="callout callout-tip">
+  <strong>Finding the skill</strong>
+  <p>The <code>/audit-aiuc1</code> skill was built in Unit 2 Week 6. If you haven't configured it yet, the skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
+</div>
+
     <div class="lab-step" id="step-w14-1">
       <label><input type="checkbox" onchange="toggleStep('w14-1',this.checked)">
       <div class="step-content">
