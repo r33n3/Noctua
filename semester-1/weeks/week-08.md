@@ -1,4 +1,4 @@
-# Week 8: Audit Your Own Tools (AIUC-1 Synthesis)
+# Week 8: RAG for Security Knowledge
 
 **Semester 1 | Week 8 of 16**
 
@@ -234,7 +234,7 @@ Map your Week 3-5 tools against this chain. At which levels are you vulnerable?
 
 ## Day 2 — Lab
 
-### Audit Your Own Week 3-5 Tools
+### Lab: Security Knowledge Base with RAG
 
 #### Company Profile: Apex Financial Services
 

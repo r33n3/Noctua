@@ -1,4 +1,4 @@
-# Week 5: Hybrid RAG for Security
+# Week 5: Model Context Protocol (MCP): Your First Server
 
 **Semester 1 | Week 5 of 16**
 
@@ -132,7 +132,7 @@ In your lab, add a verification step: after the RAG assistant answers a question
 
 ## Day 2 — Lab
 
-### Build: Hybrid RAG System for Security Intelligence
+### Lab: CVE Lookup MCP Server
 
 **Lab Objectives:**
 - Build a hybrid RAG system combining vector search + relational filtering

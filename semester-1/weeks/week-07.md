@@ -1,4 +1,4 @@
-# Week 7: Break Everything (Scaling Limits Lab)
+# Week 7: Structured Outputs & Security Reporting
 
 **Semester 1 | Week 7 of 16**
 
@@ -67,7 +67,7 @@ The governance gate pattern: at each escalation point in the PeaRL chain, a huma
 
 ---
 
-## Day 2 — Lab (Station Rotation)
+## Day 2 — Lab: Machine-Readable Security Report Generator
 
 **Format:** 7 stations, 15-20 minutes each. Teams of 2-3 rotate through at least 4 stations. Remaining stations can be completed as homework.
 

@@ -1,4 +1,4 @@
-# Week 6: Skill Building + Assessment Crystallization
+# Week 6: Tool Design Patterns for Security Agents
 
 **Semester 1 | Week 6 of 16**
 
@@ -212,7 +212,7 @@ The PeaRL (Progressive Exploitation and Recursive Leverage) attack chain demonst
 
 ## Day 2 — Lab
 
-### Build: `/tool-select` and `/audit-aiuc1` Skills
+### Lab: Multi-Tool Security MCP Server
 
 **Step 1: Build `/tool-select` Skill**
 
