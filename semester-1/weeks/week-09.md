@@ -540,3 +540,10 @@ Also check Pattern 3.2 (Missing Correlation IDs) — can you trace a single aler
 ---
 
 > **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## PR 6 Callout Additions (lab-s1-unit3.html)
+
+- **Item 43** — Added `callout-warn`: "Audits produce fixes, not just documents" after Week 9 Deliverables section. Reinforces that the deliverable is a more secure system, not just documentation. Lists common P1 items: missing API key validation, ephemeral-only logs, no injection scanning on KB ingestion.
+- **Item 35** — Added `callout-warn`: "Garak tests the base model, not your MCP server stack" before Step 2 (Week 10 Garak step). Directs students to Promptfoo for full-stack testing.

@@ -364,3 +364,9 @@ For each finding: document the pattern ID, file:line, what the exploit sends, wh
 ---
 
 > **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## PR 6 Callout Additions (lab-s1-unit4.html)
+
+- **Item 44** — Added `callout-key`: "Tool-agnostic framing: worktrees and multi-agent patterns" at the start of Week 13, after the Lab Goal callout. Clarifies that worktrees are a git feature (not Claude Code-specific), and that orchestrator + specialized worker is a framework-independent pattern applicable to LangGraph, AutoGen, CrewAI, and the Anthropic SDK.

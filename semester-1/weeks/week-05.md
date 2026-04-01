@@ -355,3 +355,12 @@ The knowledge base poisoning exercise makes A's importance concrete: incorrect o
 When a RAG system makes a claim, the verification question is: "Does the cited source actually say this?" This is different from verifying model reasoning — you're checking whether the retrieval and synthesis accurately represents source material.
 
 This week's verification habit: for any RAG response you'll use in a real decision, verify at least 3 citations before trusting the conclusion.
+
+---
+
+## PR 6 Callout Additions (s1-unit2.html)
+
+- **Item 13** — Added `callout-key`: Agentic RBAC and PoLP discussion prompt after the "tool discovery as attack surface" callout (Week 5 Day 1, Tool Discovery section).
+- **Item 16** — Added `callout-key`: Service Layer Pattern summary before the Service Layer Pattern section header (Week 6 Day 1 theory).
+- **Item 23** — Added `callout-key`: Expanded OOP-to-MCP mapping table (7 rows) with non-determinism caveat, placed after the three-layer architecture callout-discuss and before Tool Discovery.
+- **Item 33** — Added `callout-tip`: Context library forward-reference at the top of Week 5, after the existing "Start your context library now" callout, pointing students to `context-library/patterns/` from Week 5 onward.

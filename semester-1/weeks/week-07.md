@@ -306,3 +306,10 @@ The [AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-
 For each exploit: document which pattern it targets, what the attack sends, what the failure mode is, and whether it would be detectable in production logs.
 
 > The anti-patterns aren't just code quality issues. They are attack vectors. This week you prove it empirically.
+
+---
+
+## PR 6 Callout Additions (lab-s1-unit2.html — Week 7 section)
+
+- **Item 30** — Replaced `callout-tip` Anthropic SDK primer with enhanced `callout-key` version: includes `claude-haiku-4-5-20251001` model reference, explicit error handling for `APIConnectionError`, `AuthenticationError`, `RateLimitError`.
+- **Item 31** — Added `callout-key`: "Pattern: Claude Calling Claude" — explains model selection independence (Haiku for inner call), API key isolation in MCP server environment, and the composition architecture.
