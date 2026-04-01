@@ -1,4 +1,4 @@
-# Week 16: Midyear Presentations
+# Week 16: Midyear Project Presentations
 
 **Semester 1 | Week 16 of 16**
 
@@ -125,7 +125,7 @@ All seven of the following must appear in the presentation or supporting documen
 
 ---
 
-## Day 2 — Presentations and Peer Feedback
+## Day 2 — Demo, Defend, Reflect
 
 ### Presentation Schedule
 

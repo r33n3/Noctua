@@ -1,4 +1,4 @@
-# Week 14: Red Team Your Prototypes — Attack + Defend + Iterate
+# Week 14: Rapid Prototyping Sprint I
 
 **Semester 1 | Week 14 of 16**
 
@@ -137,7 +137,7 @@ A system with controls at all 7 PeaRL levels has 100% coverage. Week 13 likely f
 
 ---
 
-## Day 2 — Lab: Cross-Team Attack and Defend
+## Day 2 — Lab: Concept to Working Demo in 3 Hours (Sprint I)
 
 ### Setup (10 min)
 

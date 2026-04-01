@@ -1,4 +1,4 @@
-# Week 15: Production Hardening
+# Week 15: Rapid Prototyping Sprint II: Hardening
 
 **Semester 1 | Week 15 of 16**
 
@@ -226,7 +226,7 @@ Completion target before Week 16: all rows with "Yes" or documented accepted ris
 
 ---
 
-## Day 2 — Lab
+## Day 2 — Lab: Sprint II Hardening
 
 ### Step 1: SBOM and Dependency Audit (20 min)
 

@@ -1,4 +1,4 @@
-# Week 13: Red Team Your Prototypes — Threat Modeling + Attack Tools
+# Week 13: Multi-Agent Architecture Deep Dive
 
 **Semester 1 | Week 13 of 16**
 
@@ -106,7 +106,7 @@ Every item on the OWASP Top 10 for Agentic Applications is both a defense requir
 
 ## Day 2 — Lab
 
-### Build Your Threat Model
+### Lab: Three-Agent SOC System
 
 Before building attack tools, document the threat model for your prototype.
 
