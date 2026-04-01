@@ -2660,6 +2660,15 @@ Max Score = 900 points
 
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Teams trying to use 0-day exploits or attacks not covered in the course. This violates rules. Stick to what you've learned. Sophistication comes from combining basic techniques, not from using new ones.</p>
 </div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~10 min): Hypothesis-Driven Attacking</strong>
+  <p><strong>Setup:</strong> Meta's fault localization template requires agents to state a HYPOTHESIS before exploring code, then update the hypothesis based on evidence: CONFIRMED, REFUTED, or REFINED. This structure prevents random poking and forces systematic investigation.</p>
+  <p><strong>Discussion prompt:</strong> You're about to red team a classmate's security tool. You could spend an hour trying random inputs and hoping something breaks. Or you could spend 10 minutes reviewing their architecture, forming 5 specific hypotheses about where it's vulnerable, and then testing each one systematically. Which approach finds more vulnerabilities? Which produces a report the blue team can actually act on?</p>
+  <p><strong>Key insight:</strong> Random testing finds surface-level bugs. Hypothesis-driven testing finds architectural vulnerabilities. Before each test: state the HYPOTHESIS ("The webhook handler doesn't check idempotency because the /check-prod-readiness report showed no idempotency key in the handler function"), the EVIDENCE ("grep found no deduplication logic in webhook_handler.py"), and CONFIDENCE level. After each test: record the OBSERVATION, update HYPOTHESIS to CONFIRMED/REFUTED/REFINED, and define the NEXT ACTION. Each finding in your red team report must have this chain. If you can't show the hypothesis → evidence → conclusion chain, the finding isn't substantiated.</p>
+  <p><strong>Instructor note:</strong> Have students write 3 hypotheses about another team's tool BEFORE they start testing. Review the hypotheses as a class. Then let them test. After, compare: did the hypothesis-driven approach find things random testing wouldn't have?</p>
+  <p><strong>Course connection:</strong> AASAM methodology Phase 3. The four phases (Test Semantics → Code Path Tracing → Divergence Analysis → Ranked Predictions) map directly to (Expected Behavior → Actual Behavior → Gap → Finding).</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+</div>
 <p><strong>Strategy Considerations for Red Team</strong></p>
 <p>The goal is <strong>not</strong> to get caught. Detected attacks score far fewer points than stealthy attacks.</p>
 <p>Strategy questions:</p>

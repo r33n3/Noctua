@@ -266,6 +266,14 @@
 </table>
 <div class="callout callout-tip"><p>Run <code>/audit-aiuc1</code> on your system design before writing a line of production code. The domain scores determine your tier. A Tier 3 or Tier 4 result means you need an incident response plan and an independent review — start that process early, not the day before you ship.</p>
 </div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~13 min): Is 88% Accurate Good Enough?</strong>
+  <p><strong>Setup:</strong> The semi-formal reasoning approach achieved 88% accuracy on challenging patch equivalence examples, and 93% on real-world patches. In a code review context, that's impressive. But you're building security tools.</p>
+  <p><strong>Discussion prompt:</strong> Is 88% accuracy acceptable for a security tool that runs your nightly vulnerability scan? Work through the math together: 88% accuracy = 12% error rate. 100 assessments per day = 12 wrong per day. Some are false positives (annoying but safe). Some are false negatives (dangerous — real vulnerability reported as clean). Over a month: ~360 wrong assessments. If 1 in 10 errors is a false negative: 36 missed vulnerabilities per month. At what accuracy percentage would you trust this tool to run completely unattended? Is there ANY accuracy percentage where you'd let a security tool auto-remediate without human approval?</p>
+  <p><strong>Key insight:</strong> The accuracy number determines which defense layer you need. 78% accuracy → human reviews every finding (attended). 88% accuracy → human reviews flagged items. 93% accuracy → human reviews exceptions. 99%+ accuracy → maybe auto-file tickets. For security: the consequences of a false negative are asymmetric. One missed vulnerability can lead to a breach. One false positive is just a wasted investigation. The accuracy threshold for security tools is HIGHER than for code quality tools because the failure mode is more dangerous.</p>
+  <p><strong>Course connection:</strong> AIUC-1 attended/unattended taxonomy and the Agentic Scoping Matrix. The accuracy of your evaluator determines the minimum scope level you can operate at. Your harness design must account for the gap between current accuracy and required accuracy with enforcement controls.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+</div>
 <hr />
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h4 id="lab-objectives">Lab Objectives</h4>
@@ -391,6 +399,14 @@
 <li>Mitigation: Implement SHAP or LIME explanations; document the top features influencing threat scores</li>
 </ul>
 <div class="callout callout-remember"><p><strong>Remember:</strong> The goal of this audit is not to declare a system "safe" or "unsafe." Rather, it's to systematically identify gaps, understand their severity, and plan concrete improvements. Most real systems will have gaps; the question is whether they're acceptable given the risk and whether you have a plan to address them.</p>
+</div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~11 min): The Confident Wrong Answer</strong>
+  <p><strong>Setup:</strong> An agent was asked whether a particular code check was necessary. Using semi-formal reasoning, the agent traced FIVE different functions thoroughly, found a real edge case where an empty string could cause issues, built a rigorous evidence chain across multiple files, and concluded with HIGH confidence: "Yes, the check is needed." It was wrong. A SIXTH function — one the agent never traced — already handled the edge case. The check was redundant.</p>
+  <p><strong>Discussion prompt:</strong> What's more dangerous — an uncertain wrong answer or a confident wrong answer? Now imagine this is your security evaluator — the agent that checks whether your security tool is production-ready. It traces five attack vectors, tests them thoroughly, and reports "READY — all checks passed." But it missed the sixth attack vector. And because it was so thorough on the other five, you trust the result completely.</p>
+  <p><strong>Key insight:</strong> The more evidence the agent provides, the more convincing the wrong conclusion becomes. Thoroughness creates false confidence in the human reviewer. "It traced five functions and showed its work — it must be right." No. It might have missed the function that invalidates everything. This is why you need all four: (1) separate evaluator — doesn't evaluate its own work, (2) semi-formal template — requires evidence for claims, (3) evaluator calibration — test against known-bad examples, (4) human spot-check — verify evidence is COMPLETE, not just present. The semi-formal template reduces errors by nearly half (78% → 88%). It doesn't eliminate them. The remaining 12% are often MORE dangerous because they look thoroughly reasoned.</p>
+  <p><strong>Course connection:</strong> V&amp;V Discipline (verification of the verifier), the three-evaluator pipeline (/code-review → /check-prod-readiness → /audit-aiuc1), peer red teaming in the capstone (humans checking agent work). This is the most important teaching moment in the research — students who internalize "confident wrong answers are more dangerous than uncertain wrong answers" will be better security engineers.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
 <p><strong>Part 3: Peer Review and Presentation (20 minutes)</strong></p>
 <ul>

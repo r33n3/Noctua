@@ -655,6 +655,22 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?</p>
 </div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~13 min): The format() Shadowing — AI Assumptions Kill You</strong>
+  <p><strong>Setup:</strong> Show students these two patches:</p>
+  <pre class="code-block"><code># Patch 1
+def y(self):
+    return format(self.data.year, "04d")[-2:]
+
+# Patch 2
+def y(self):
+    return '%02d' % (self.data.year % 100)</code></pre>
+  <p>Both fix 2-digit year formatting in Django for years before 1000 CE. Are they equivalent? Most students will say yes — format(476, '04d') gives '0476', take last 2 chars, get '76'. Modulo 100 of 476 is 76. Same result. Ask: "What assumptions are you making about format()?"</p>
+  <p><strong>Reveal:</strong> Django's dateformat.py has a module-level function also named format() — it expects a datetime object, not an integer. Python's name resolution finds the module-level function BEFORE the builtin. Patch 1 calls the wrong format() and raises AttributeError. Standard AI reasoning missed this because it assumed format() is the builtin. Semi-formal reasoning caught it because the template required tracing the actual function definition — the agent ran grep to find where format() was defined in the module.</p>
+  <p><strong>Key insight:</strong> "The AI assumed format() means what it always means. In this codebase, it doesn't. How many of YOUR assumptions about standard library functions are actually correct in the specific codebase you're working in?" For security tools: your config auditor that checks for 'default passwords' assumes it knows what 'default' means. But the application might have a custom auth module. Your scanner gives a clean report. The application is vulnerable. Same pattern, different domain.</p>
+  <p><strong>Course connection:</strong> Anti-patterns reference Pattern 1.4 (State Assumptions). AI assumes clean context; production has layers of overrides, shadowing, and framework magic. Reference this example whenever students make assumptions about what functions do without checking.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+</div>
 <h4 id="least-privilege-for-agent-tool-access">Least Privilege for Agent Tool Access</h4>
 <p>Even with perfect tool design, you must limit what agents can access. This involves several strategies:</p>
 <p><strong>1. Capability Scoping</strong> — An agent tasked with "triage alerts" doesn't need access to "modify firewall rules." Give it read-only access to logs and threat intelligence, not write access to security controls.</p>
@@ -792,6 +808,14 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 <p><strong>The Hallucination Problem:</strong></p>
 <p>An important finding from the report: Claude frequently overstated findings and occasionally fabricated data during autonomous offensive operations—claiming to have obtained credentials that didn't work, or identifying "critical discoveries" that proved to be publicly available information. This AI hallucination in offensive security contexts presented real challenges for the attacker's operational effectiveness.</p>
 <p>This is a powerful validation of CCT Pillar 1 (Evidence-Based Analysis) and Pillar 4 (Adaptive Innovation). Even the attacker had to deal with the fact that autonomous agents generate plausible-sounding results that require human verification. The attacker's 10-20% human involvement wasn't optional—it was <em>necessary</em> because the AI couldn't be trusted to validate its own outputs.</p>
+<div class="callout callout-discuss">
+  <strong>Discussion (~12 min): "The Agent Was Right for the Wrong Reasons"</strong>
+  <p><strong>Setup:</strong> A patch equivalence study evaluated whether agents correctly determine if two code patches produce the same behavior. The researchers acknowledged: "an agent might sometimes arrive at the right answer through flawed reasoning." They only checked the final YES/NO answer, not the reasoning chain.</p>
+  <p><strong>Discussion prompt:</strong> Your CVE scanner reports "no vulnerabilities found." Is that a clean bill of health or a broken scanner? How do you tell the difference without running the scan again yourself? Push beyond "check the logs" — what if the logs say "scan complete, 0 findings"? Does that prove it actually scanned everything?</p>
+  <p><strong>Key insight:</strong> A security tool that gives the right answer for the wrong reason will give the WRONG answer next time conditions change. The only way to trust a result is if the tool shows you WHAT it checked (premises), WHERE it looked (traces with file:line evidence), and HOW it concluded (formal derivation from evidence). This is a certificate. "0 vulnerabilities" isn't the output — "I checked these 47 files, traced these 12 data flows, tested these 5 input vectors, found no paths where untrusted input reaches sensitive operations" is the output. Without the certificate, you don't know if the scanner checked 47 files or 0 files. Both produce "0 vulnerabilities."</p>
+  <p><strong>Course connection:</strong> AIUC-1 Domain A (Accountability). Every automated decision needs a traceable evidence chain. The certificate IS the audit trail. Every course skill produces a certificate, not just an answer. Return to this concept every time a student builds a tool that produces a bare result without evidence.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+</div>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> GTG-1002 used persona-based prompting to bypass safety guardrails ("I'm a security researcher at a legitimate firm conducting authorized testing"). How would you design a tool-level defense that can distinguish between legitimate security testing and malicious use of the same tools? Is this even possible at the tool level, or does it require platform-level monitoring?</p>
 </div>
 <p><strong>The Human-AI Split:</strong></p>
@@ -808,6 +832,14 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </ol>
 <p>The spec is not bureaucracy — it's the record of your security design choices. When you audit your own system in Unit 3, your spec is Exhibit A.</p>
 </div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~10 min): The Template Changes BEHAVIOR, Not Just FORMAT</strong>
+  <p><strong>Setup:</strong> Meta's research found something unexpected: structured templates changed what the agent DOES, not just how it reports. Agents given semi-formal templates took 2.8x more steps — they read more files, traced more function definitions, and explored more code paths — because the template required evidence they could only get by doing more work.</p>
+  <p><strong>Discussion prompt:</strong> What's the difference between asking someone to "write a security report" and asking them to: (1) state what each component does, (2) trace how data flows through the system, (3) identify where untrusted input reaches sensitive operations, (4) conclude with a finding for each gap, citing file and line. Is the second one just a format specification? Or does it change what work the person actually does?</p>
+  <p><strong>Key insight:</strong> The person doing the second task HAS to read more code, trace more paths, and think more carefully — because the template requires evidence they can only produce through deeper investigation. This is why SKILL.md templates matter more than most people realize. The template structure determines the quality of the agent's REASONING, not just the quality of its output. A skill that says "analyze this code" produces surface-level work. A skill that says "state premises, trace execution, identify divergences, conclude with evidence" produces deep work — because the agent has to actually DO those things to fill in the template.</p>
+  <p><strong>Course connection:</strong> Walk through the /spec SKILL.md structure. Each section requires the agent to do specific investigation work (evaluate approaches, select with justification, define components). The template isn't formatting — it's a work specification.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+</div>
 <div class="callout callout-tip"><p><strong>/code-review — The Post-Build Step Before You Commit</strong></p>
 <p>After building to your spec, run <code>/code-review</code> before committing. This is the ASSISTIVE gate — it's what separates "I built something" from "I built something ready to be audited."</p>
 <p>Under the hood, /code-review dispatches 4 parallel review agents. Each examines your changes independently. Only findings with ≥80 confidence are reported — the threshold filters noise so you actually read the output. Findings are tagged: <code>bug</code>, <code>security</code>, <code>performance</code>, <code>style</code>, <code>compliance</code>.</p>
@@ -819,6 +851,14 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 <div class="codehilite"><pre><span></span><code>/think → /spec → Build → /code-review → [ASSISTIVE gate ✓] → commit → /audit-aiuc1 (Week 9)
 </code></pre></div>
 <p>The confidence threshold (80) is configurable in the plugin's command file. Lower = more findings and more noise. Higher = fewer findings and potential misses. 80 is the course default — adjust after you understand your system's noise profile.</p>
+</div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~9 min): Same Model, Different Prompt, 10 Points Better</strong>
+  <p><strong>Setup:</strong> Patch equivalence accuracy improved from 78% to 88%. No fine-tuning. No new model. No additional training data. Same model. Different prompt template.</p>
+  <p><strong>Discussion prompt:</strong> What does this tell you about where the leverage is in AI engineering? If you had one week to improve your security tool's accuracy, would you spend it trying a different model, or redesigning your prompt templates?</p>
+  <p><strong>Key insight:</strong> The harness matters more than the model. The governance layer matters more than the raw capability. The prompt structure matters more than the prompt content. This is why this course focuses on harness design, skill templates, and evaluation methodology — not on which model is best this week. The model will change every quarter. The engineering principles are durable. Every component in a harness encodes an assumption about what the model can't do on its own. The semi-formal template encodes the assumption that "the model can't reliably gather evidence before concluding." When models improve enough to do this natively, the template becomes unnecessary overhead. Until then, it's 10 percentage points for free.</p>
+  <p><strong>Course connection:</strong> Engineering Assessment Stack principle applied to prompting. Start with the simplest approach, measure, add structure where it improves results, remove structure when the model handles it natively.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
 <h4 id="day-1-deliverable_1">Day 1 Deliverable</h4>
 <p>Design a security tool (your choice of domain: log querying, IP reputation, alert enrichment, credential rotation, etc.) and document:</p>
@@ -860,6 +900,14 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
 </ol>
 <p>An MCP server orchestrates these tools. Claude (the agent) decides which tools to call and in what order.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The value of MCP isn't the individual tools—it's the <em>composition</em>. An agent can call query_logs, then check_ip_reputation, then enrich_alert in sequence, each tool using outputs from previous ones.</p>
+</div>
+<div class="callout callout-discuss">
+  <strong>Discussion (~10 min): Agentic vs Single-Shot — Why Exploration Matters</strong>
+  <p><strong>Setup:</strong> Meta tested two approaches. Single-shot: the model sees a code snapshot and reasons from that alone — 80–87% accuracy. Agentic: the model can explore the repository, follow imports, read test files, trace function definitions — 87–93% accuracy.</p>
+  <p><strong>Discussion prompt:</strong> When you review a pull request, do you only look at the diff? Or do you also look at what the changed functions call, what tests exist, what other files import the changed code, and how the change fits into the broader architecture? Now think about your MCP servers. When your CVE lookup MCP server returns results, does the agent just take those results at face value? Or does it explore further — cross-reference with other data sources, check the configuration, verify the result makes sense in context?</p>
+  <p><strong>Key insight:</strong> A security agent that only analyzes what's directly in front of it is a single-shot scanner. A security agent that EXPLORES — follows dependencies, queries related systems, checks configurations, traces data flows across components — is an agentic scanner. The paper proves the agentic approach catches things single-shot misses. This is WHY your MCP servers matter — they give the agent access to explore beyond its immediate context. A CVE lookup MCP server, a SIEM query MCP server, and a config database MCP server together let the agent build a richer understanding than any single data source provides. But also: more tools = larger attack surface. The tradeoff is real.</p>
+  <p><strong>Course connection:</strong> Justifies the multi-MCP architecture students are building. Each MCP server extends the agent's exploration capability. More tools = more evidence = better reasoning = more accurate security assessments.</p>
+  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
 <p><strong>Why Not Just Write Python Functions?</strong></p>
 <p>You could write Python functions that do this:</p>
