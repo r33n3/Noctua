@@ -17,7 +17,7 @@
 <p>Build, compare, and evaluate multi-agent security systems using Claude Agent SDK, CrewAI, and LangGraph. Produce a quantitative framework comparison for your midyear report.</p>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 5 Lab Progress</span><span id="prog-text">0 / 29 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 5 Lab Progress</span><span id="prog-text">0 / 30 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -83,6 +83,19 @@
 <div class="lab-section">
   <h4> Lab Exercise: Supervisor Pattern SOC System</h4>
   <div class="lab-steps">
+    <div class="lab-step" id="step-u5w1-0">
+  <label><input type="checkbox" onchange="toggleStep('u5w1-0', this.checked)">
+    <div class="step-content">
+      <div class="step-title">Step 0: AIUC-1 pre-check — run before writing code</div>
+      <div class="step-desc">Run <code>/audit-aiuc1</code> on your planned system architecture. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save the output as <code>unit5/aiuc1-precheck.md</code> — this is a graded deliverable. The full audit happens in Unit 7; this pre-check surfaces design decisions you would otherwise have to reverse later.</div>
+    </div>
+  </label>
+</div>
+<div class="callout callout-tip">
+  <strong>Finding the skill</strong>
+  <p>The <code>/audit-aiuc1</code> skill was built in Unit 2 Week 6. If you haven't configured it yet, the skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
+</div>
+
     <div class="lab-step" id="step-u5w1-1">
       <label><input type="checkbox" onchange="toggleStep('u5w1-1',this.checked)">
       <div class="step-content">
