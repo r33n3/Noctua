@@ -313,6 +313,8 @@ pip install anthropic langchain pydantic
 
 ### Lab: Multi-Agent SOC Triage System (Claude Agent SDK)
 
+> **Step 0 (graded):** Before writing code, run `/audit-aiuc1` on your planned system architecture. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save the output as `unit5/aiuc1-precheck.md`. The full audit happens in Unit 7; this pre-check surfaces design decisions you would otherwise have to reverse later. If you haven't configured the skill yet, the file is at `.claude/skills/audit-aiuc1/SKILL.md`.
+
 #### Architecture Overview
 
 ```

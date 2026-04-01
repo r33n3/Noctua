@@ -301,3 +301,9 @@ Present this alongside your ARR (Attack Reduction Rate). If the red team found P
 ---
 
 > **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## Lab Update (PR 4)
+
+`docs/lab-s1-unit4.html` Week 14 (Sprint I) now includes **Step 0: AIUC-1 pre-check** as the first lab step (id: `step-w14-0`). Run `/audit-aiuc1` on your planned system architecture before writing code. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save output as `sprint1/aiuc1-precheck.md` — this is a graded deliverable. The skill was built in Unit 2 Week 6; the file is at `.claude/skills/audit-aiuc1/SKILL.md`. Progress bar updated from 26 to 27 steps.

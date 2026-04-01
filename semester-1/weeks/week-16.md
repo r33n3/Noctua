@@ -253,6 +253,15 @@ The context library you built in Semester 1 is your starting point. Every patter
 
 ---
 
+## Lab Updates (PR 4)
+
+The following additions were made to `docs/lab-s1-unit4.html` for Week 16:
+
+- **Knowledge Check — Week 16:** Two quiz questions added at the end of Week 16 covering production readiness (what it means for an AI system to handle failure gracefully) and applying the production engineer mindset to presentations (identifying failure modes and preparing contingencies).
+- **Pre-Landing AI Checklist Preview callout:** A `callout-key` added after the "Pre-landing AI checklist: all 7 items reviewed" ship step. Lists the 7 items that the full checklist (developed in Unit 7) requires: AIUC-1 governance audit, MASS security scan, agent identity/allowance profiles, structured logging and tracing, red team report, cost caps and circuit breakers, and human escalation paths tested.
+
+---
+
 ## Presentation Checklist: Production Readiness Evidence
 
 Include in your Week 16 presentation:
