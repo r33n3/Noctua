@@ -197,42 +197,48 @@ Noctua/
 ├── README.md                          # This file
 ├── COURSE-ASSESSMENT.md               # Comparative analysis: 2023 vs. 2026 landscape
 │
+├── docs/                              # GitHub Pages site — PRIMARY COURSE CONTENT
+│   ├── index.html                     # Course home page
+│   ├── semester1.html                 # Semester 1 overview
+│   ├── semester2.html                 # Semester 2 overview
+│   ├── labs.css                       # Shared stylesheet for all lab pages
+│   ├── labs.js                        # Shared JS (quizzes, progress tracking, sidebar)
+│   │
+│   ├── lab-s1-unit1.html             # Unit 1 lab guide: CCT Foundations & AI Landscape
+│   ├── lab-s1-unit2.html             # Unit 2 lab guide: Context Engineering & Tool Design
+│   ├── lab-s1-unit3.html             # Unit 3 lab guide: Ethical AI & Responsible AI
+│   ├── lab-s1-unit4.html             # Unit 4 lab guide: Rapid Prototyping
+│   ├── lab-s2-unit5.html             # Unit 5 lab guide: Multi-Agent Orchestration
+│   ├── lab-s2-unit6.html             # Unit 6 lab guide: AI Attacker vs. AI Defender
+│   ├── lab-s2-unit7.html             # Unit 7 lab guide: Production Security Engineering
+│   ├── lab-s2-unit8.html             # Unit 8 lab guide: Capstone Projects
+│   │
+│   ├── s1-unit[1-4].html             # Semester 1 theory/lecture pages (Units 1–4)
+│   ├── s2-unit[5-8].html             # Semester 2 theory/lecture pages (Units 5–8)
+│   │
+│   ├── assessment.html               # Assessment guide
+│   ├── frameworks.html               # Security frameworks reference
+│   ├── reading.html                  # Reading list
+│   └── lab-setup.html                # Lab environment setup guide
+│
 ├── semester-1/
 │   ├── SYLLABUS.md                   # Full Semester 1 syllabus with policies
-│   ├── weeks/
-│   │   ├── week-01.md
-│   │   ├── week-02.md
-│   │   └── ... through week-16.md
-│   └── labs/
-│       ├── lab-01-first-agent.md      # Hello World with Claude Agent SDK
-│       ├── lab-02-cct-frameworks.md   # Applying CCT to security decisions
-│       ├── lab-03-context-engineering.md
-│       ├── lab-04-mcp-servers.md
-│       └── ... (lab guides for each unit)
+│   └── weeks/
+│       ├── week-01.md through week-16.md   # Weekly content (aligned to HTML)
 │
 ├── semester-2/
 │   ├── SYLLABUS.md                   # Full Semester 2 syllabus with policies
-│   ├── weeks/
-│   │   ├── week-01.md
-│   │   ├── week-02.md
-│   │   └── ... through week-16.md
-│   └── labs/
-│       ├── lab-05-multi-agent-orchestration.md
-│       ├── lab-06-prompt-injection-attacks.md
-│       ├── lab-07-red-team-exercise.md
-│       └── ... (advanced lab guides)
+│   └── weeks/
+│       ├── unit-5.md through unit-8.md     # Unit content (aligned to HTML)
 │
-├── resources/
-│   ├── LAB-SETUP.md                  # Environment setup guide (all platforms)
-│   ├── READING-LIST.md               # Updated reading list for 2026
-│   ├── FRAMEWORKS.md                 # Reference for security frameworks
-│   ├── TOOLS-GUIDE.md                # Setup and comparison of multi-vendor tools
-│   └── API-REFERENCE.md              # Claude SDK, CrewAI, LangGraph reference
+├── resources/                         # Reference materials
 │
 └── original-materials/
     ├── CYBEMINDS-2023-OVERVIEW.md    # Original course philosophy
     └── EVOLUTION.md                  # How the course evolved from 2023 to 2026
 ```
+
+> **Note:** The `docs/lab-s[1-2]-unit[N].html` files are the canonical course content. The Markdown week files in `semester-1/weeks/` and `semester-2/weeks/` are supporting content aligned to the HTML. When HTML and Markdown conflict, HTML is correct.
 
 ---
 
@@ -387,6 +393,6 @@ Developed in collaboration with cybersecurity and AI research communities, infor
 
 ---
 
-**Last Updated:** March 2026
+**Last Updated:** April 2026
 
 For questions or feedback, open an issue in this repository.
