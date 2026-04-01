@@ -169,7 +169,7 @@ function buildSidebar(activeLink, pathPrefix) {
     ['link', 'semester1.html', 'Semester 1 Overview'],
     ['sublink', 's1-unit1.html', 'Unit 1: CCT Foundations'],
     ['sublink', 'lab-s1-unit1.html', 'Lab: Unit 1'],
-    ['sublink', 's1-unit2.html', 'Unit 2: Context Engineering'],
+    ['sublink', 's1-unit2.html', 'Unit 2: Agent Tool Architecture'],
     ['sublink', 'lab-s1-unit2.html', 'Lab: Unit 2'],
     ['sublink', 's1-unit3.html', 'Unit 3: Ethical AI'],
     ['sublink', 'lab-s1-unit3.html', 'Lab: Unit 3'],
