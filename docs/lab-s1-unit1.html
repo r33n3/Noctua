@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lab Guide: Unit 1 — CCT Foundations | Noctua</title>
 <link rel="stylesheet" href="labs.css">
+<style>
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent, #d4a017);
+  color: #0b0f19;
+  padding: 7px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  transition: opacity 0.15s;
+}
+.download-btn:hover { opacity: 0.85; }
+.download-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--teal, #2dd4bf);
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid rgba(45,212,191,0.3);
+  transition: background 0.15s;
+}
+.download-btn-secondary:hover { background: rgba(45,212,191,0.08); }
+</style>
 </head>
 <body>
 
@@ -145,22 +176,21 @@ cd ~/noctua-labs/unit1/week1</code></pre><button class="copy-btn" onclick="copyC
         <div class="step-title">Step 3: Download the incident data file</div>
         <div class="step-desc">Download <code>incident-data.md</code> — the pre-built Meridian Financial incident report with full SIEM alert, authentication logs, data warehouse session detail, file inventory, contextual intelligence, and known unknowns. Save it to your lab directory.</div>
       </div></label>
+      <div class="callout callout-tip" style="margin-top:10px;">
+        <strong>Lab data files</strong> — all data files for this course are available in the course data directory. Click the download button below or access them directly from the course GitHub repository under <code>docs/data/</code>. If a file does not open, right-click the button and choose "Save link as."
+      </div>
       <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;">
-        <a href="incident-data.md" download="incident-data.md"
-           style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;border:none;transition:opacity 0.15s;"
-           onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <a href="data/incident-data.md" download="incident-data.md" class="download-btn">
           &#11123; Download incident-data.md
         </a>
-        <a href="incident-data.md" target="_blank"
-           style="display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;"
-           onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">
+        <a href="data/incident-data.md" target="_blank" class="download-btn-secondary">
           &#128065; View in browser
         </a>
       </div>
       <div class="code-block" style="margin-top:10px;"><pre><code>mkdir -p ~/noctua-labs/unit1/week1
 cp ~/Downloads/incident-data.md ~/noctua-labs/unit1/week1/
 # Or if viewing locally from the course docs folder:
-cp ./incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+cp ./data/incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w1-4">

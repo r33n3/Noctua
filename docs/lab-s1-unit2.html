@@ -17,7 +17,7 @@
 <p>Four labs covering MCP server implementation, tool design patterns, structured outputs, and RAG-based security knowledge systems.</p>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 2 Lab Progress</span><span id="prog-text">0 / 33 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 2 Lab Progress</span><span id="prog-text">0 / 35 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -100,17 +100,144 @@ pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="cop
     <div class="lab-step" id="step-w5-3">
       <label><input type="checkbox" onchange="toggleStep('w5-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Implement server.py — the MCP server</div>
-        <div class="step-desc">Use the MCP SDK to create a server that: (1) exposes <code>query_cve</code>, (2) validates the CVE ID format with regex before making any API call, (3) calls NVD API with proper headers, (4) returns structured JSON, (5) handles rate limits and API failures gracefully with fallback responses.</div>
+        <div class="step-title">Step 3: Read the stub — understand what <code>query_cve</code> must do</div>
+        <div class="step-desc">Open <code>server.py</code> and read the stub below. Before writing any code, answer in your notes: What does the function signature expect? What should it return? What are the two failure modes it must handle? <em>Do not implement yet — read first.</em></div>
       </div></label>
-      <div class="code-block"><pre><code># server.py skeleton (use Claude Code to complete the implementation)
-# Prompt Claude Code:
-# "Build an MCP server in Python using the mcp SDK that exposes a
-# query_cve tool. The tool should: validate CVE ID format (regex),
-# call the NVD API (https://services.nvd.nist.gov/rest/json/cves/2.0),
-# return structured JSON with id/description/severity/cvss/remediation,
-# handle API errors with graceful fallback. Use stdio transport."
-claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code># server.py — stub version (your starting point)
+# Create this file in ~/noctua-labs/unit2/week5/cve-mcp/server.py
+
+import re
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp import types
+
+app = Server("cve-lookup")
+
+CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,}$", re.IGNORECASE)
+
+@app.tool()
+async def query_cve(cve_id: str) -> dict:
+    """
+    Look up a CVE by ID and return structured vulnerability data.
+
+    Args:
+        cve_id: A valid CVE identifier, e.g. "CVE-2021-44228"
+
+    Returns:
+        dict with keys: id, description, severity, cvss_score,
+        affected_products (list), remediation (str)
+
+    Raises:
+        ValueError: if cve_id does not match the CVE format pattern
+        RuntimeError: if the NVD API is unreachable after retries
+
+    TODO: Implement this function.
+    Hints:
+      - Validate cve_id against CVE_PATTERN before making any network call
+      - NVD API endpoint: https://services.nvd.nist.gov/rest/json/cves/2.0
+        Query param: ?cveId={cve_id}
+      - Parse response: vulnerabilities[0].cve.descriptions, metrics, weaknesses
+      - On HTTP 429 (rate limit): return a structured error dict, do NOT raise
+      - On any other network failure: return a fallback dict with error=True
+    """
+    raise NotImplementedError("Your implementation goes here")
+
+
+async def main():
+    async with stdio_server() as streams:
+        await app.run(*streams, app.create_initialization_options())
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer; color:#d4a017; padding:0.5rem 0; font-weight:600;">Show solution</summary>
+        <div class="callout callout-tip" style="margin-top:8px;"><strong>Try your implementation before looking.</strong> The solution is here as a reference — not a shortcut. If your version works, it is correct even if it looks different from the solution below.</div>
+        <div class="code-block"><pre><code># server.py — reference implementation
+import re, httpx, asyncio
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp import types
+
+app = Server("cve-lookup")
+CVE_PATTERN = re.compile(r"^CVE-\d{4}-\d{4,}$", re.IGNORECASE)
+NVD_BASE = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+
+@app.tool()
+async def query_cve(cve_id: str) -> dict:
+    if not CVE_PATTERN.match(cve_id):
+        raise ValueError(f"Invalid CVE format: {cve_id!r}. Expected CVE-YYYY-NNNNN.")
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(NVD_BASE, params={"cveId": cve_id})
+        if resp.status_code == 429:
+            return {"error": True, "code": "rate_limited",
+                    "message": "NVD API rate limit hit. Retry after 30s."}
+        resp.raise_for_status()
+        data = resp.json()
+        vuln = data["vulnerabilities"][0]["cve"]
+        desc = next((d["value"] for d in vuln["descriptions"] if d["lang"] == "en"), "")
+        metrics = vuln.get("metrics", {})
+        cvss = None
+        severity = "UNKNOWN"
+        for key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
+            if key in metrics:
+                m = metrics[key][0]["cvssData"]
+                cvss = m.get("baseScore")
+                severity = m.get("baseSeverity", "UNKNOWN")
+                break
+        return {"id": cve_id, "description": desc, "severity": severity,
+                "cvss_score": cvss, "affected_products": [],
+                "remediation": "See NVD for vendor advisories."}
+    except Exception as e:
+        return {"error": True, "code": "api_error", "message": str(e)}
+
+async def main():
+    async with stdio_server() as streams:
+        await app.run(*streams, app.create_initialization_options())
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      </details>
+    </div>
+
+    <div class="lab-step" id="step-w5-3b">
+      <label><input type="checkbox" onchange="toggleStep('w5-3b',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3b: Implement the stub</div>
+        <div class="step-desc">Write your own implementation of <code>query_cve</code> in the stub file. You may use Claude Code to help, but give it the stub and your schema from Step 2 — not the solution above. Prompt: <em>"Complete the TODO in this server.py stub. Follow the docstring exactly. Do not change the function signature."</em></div>
+      </div></label>
+      <div class="code-block"><pre><code>claude
+# Paste prompt: "Complete the TODO in this server.py stub.
+# Follow the docstring exactly. Do not change the function signature.
+# [paste your stub file contents]"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w5-3c">
+      <label><input type="checkbox" onchange="toggleStep('w5-3c',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3c: Verify your implementation passes the contract</div>
+        <div class="step-desc">Before registering the server with Claude Code, run these manual checks: (1) Pass an invalid CVE ID — does it raise <code>ValueError</code>? (2) Pass a valid CVE ID with the NVD API unreachable (disable network) — does it return a dict with <code>error=True</code> instead of crashing? (3) Pass <code>CVE-2021-44228</code> with live network — does it return a dict with <code>severity</code> and <code>cvss_score</code>?</div>
+      </div></label>
+      <div class="code-block"><pre><code># Quick manual test (run in your venv)
+python3 -c "
+import asyncio
+from server import query_cve
+
+# Test 1: invalid format — should raise ValueError
+try:
+    asyncio.run(query_cve('CVE-ABC'))
+    print('FAIL: should have raised ValueError')
+except ValueError as e:
+    print(f'PASS: invalid format rejected — {e}')
+
+# Test 2: valid format, live API (if connected)
+result = asyncio.run(query_cve('CVE-2021-44228'))
+if 'error' not in result:
+    print(f'PASS: returned severity={result[\"severity\"]}')
+else:
+    print(f'INFO: API unreachable — fallback returned correctly: {result}')
+"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="callout callout-warn"><p><strong>&#x26A0; Before registering tools: apply the Principle of Least Privilege.</strong> Every tool you expose increases your MCP server's attack surface. Before adding a tool, ask: Does this agent actually need this capability? What's the minimum scope needed? What should this tool never be able to do? Overpermissioned MCP servers enable capability amplification — an agent that should only read CVE data can scan networks if those tools exist. Define scope boundaries before you write the implementation.</p><p><em>(Theory: Week 5 Day 1 — Principle of Least Privilege)</em></p></div>
@@ -244,6 +371,24 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
   </div>
 </div>
 
+<div class="callout callout-warn">
+  <strong>Week 6 continues directly from Week 5.</strong> Before proceeding, verify you have: (1) a working MCP server from Week 5 with at least the <code>query_cve</code> tool functional, (2) your Week 5 test suite passing (Step 3c checks pass), (3) the server confirmed running and reachable in Claude Code. If Week 5 was done in a previous session, restart your server and re-verify tool discovery before starting Week 6 steps.
+</div>
+<div class="callout callout-tip">
+  <strong>Quick connectivity check before Week 6:</strong> Run your Week 5 server verification before writing any Week 6 code. If your <code>query_cve</code> tool does not respond, fix it before the Week 6 steps — Week 6 builds on a working Week 5 server, not a broken one.
+  <div class="code-block" style="margin-top:10px;"><pre><code># Verify Week 5 server is alive before starting Week 6
+cd ~/noctua-labs/unit2/week5/cve-mcp
+source .venv/bin/activate
+python3 -c "
+import asyncio
+from server import query_cve
+result = asyncio.run(query_cve('CVE-2021-44228'))
+print('Week 5 server OK:', 'error' not in result or result.get('code') == 'rate_limited')
+"
+# Expected: Week 5 server OK: True
+# If False: fix your Week 5 server before proceeding</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: Extend to a Multi-Tool Security Server</h4>
   <div class="lab-steps">
@@ -251,7 +396,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('w6-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Extend your Week 5 server — add query_asset_exposure tool</div>
-        <div class="step-desc">Extend your Week 5 <code>query_cve</code> server. Add a <code>query_asset_exposure</code> tool that cross-references a CVE ID against an asset inventory and returns affected systems. Input: CVE ID + optional asset tag. Output: list of affected assets, exposure level, remediation priority. <em>(Theory: Week 6 Day 1 — Tool Design Patterns)</em></div>
+        <div class="step-desc">Extend your Week 5 <code>query_cve</code> server (the server.py you built and verified in Week 5). Add a <code>query_asset_exposure</code> tool that cross-references a CVE ID against an asset inventory and returns affected systems. Input: CVE ID + optional asset tag. Output: list of affected assets, exposure level, remediation priority. <em>(Theory: Week 6 Day 1 — Tool Design Patterns)</em></div>
       </div></label>
       <div class="code-block"><pre><code># Claude Code prompt:
 # "Add a query_asset_exposure tool to my existing MCP server that:
@@ -371,13 +516,23 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 
 <hr>
 
-<!-- ======== WEEK 6.5 — OPTIONAL EXTENSION ======== -->
-<h2 id="week-6-forge-fire"><span style="background:#2d2d2d;color:#f0a500;padding:2px 10px;border-radius:4px;font-size:0.85em;vertical-align:middle;">Optional Extension &mdash; Week 6.5</span> Operation Forge Fire</h2>
+<!-- ======== WEEK 6.5 — OPERATION FORGE FIRE ======== -->
+<div style="border-top: 2px solid #d4a017; margin: 2rem 0; padding-top: 2rem;">
+  <h2 id="forge-fire-session" style="color:#d4a017; margin-top:0;">Operation Forge Fire — Separate Lab Session</h2>
+</div>
 <div class="week-header"><span class="week-badge" style="background:#8b0000;">WEEK 6.5</span><span class="week-sub">Optional Extension: Red Team / Blue Team Lab Exercise</span></div>
 
-<div class="callout callout-warn"><p><strong>&#x26A0; This is an optional extension — complete the Week 6 main lab first.</strong> Operation Forge Fire is a red team / blue team exercise that requires your multi-tool MCP server from the main lab to be working. Before starting, verify: your MCP server is running, all tools respond correctly, rate limiting is in place.</p></div>
+<div class="callout callout-warn">
+  <strong>Complete the Weeks 4–6 lab steps before starting Forge Fire.</strong> Forge Fire is a timed pressure test of a working system, not a debugging session for a broken one. Starting with broken tools will mean spending your entire session on setup instead of learning. Verify: your MCP server is running, all tools respond correctly, rate limiting is in place, and your Week 5 connectivity check passes.
+</div>
 
-<div class="callout callout-warn"><p><strong>Before starting Operation Forge Fire:</strong> Verify you have completed Weeks 4 and 5 and have a working MCP server with at least two tools. Forge Fire assumes your server is running and tool calls succeed. If your Week 5 server has errors, fix them before proceeding — debugging a broken server inside a timed exercise is significantly harder than fixing it before. Recommended: run <code>claude /status</code> or test your tools manually before the exercise begins.</p></div>
+<div class="callout callout-key">
+  <strong>Lab Session: Operation Forge Fire</strong><br>
+  <strong>Estimated time:</strong> 60–90 minutes<br>
+  <strong>Prerequisites:</strong> Working MCP server from Weeks 4–5 with at least 2 functional tools, Week 6 multi-tool extension complete<br>
+  <strong>Deliverable:</strong> Completed Forge Fire report saved as <code>unit2/forge-fire-report.md</code><br>
+  <strong>Session type:</strong> Timed exercise — complete this in one sitting
+</div>
 
 <div class="callout callout-tip">
   <p><strong>Prerequisites for Operation Forge Fire:</strong></p>
@@ -489,12 +644,24 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="deliverables">
-  <h5>Week 6.5 Deliverables (optional)</h5>
+  <h5>Forge Fire Deliverables</h5>
   <ul>
     <li><strong>responsible-testing-policy.md</strong> — required before running any Forge Fire tools</li>
     <li><strong>forge-fire-report.md</strong> — red team findings, blue team detection results, gap analysis</li>
+    <li><strong>forge-fire-debrief.md</strong> — your retrospective answers (see debrief below)</li>
     <li><strong>Updated server.py</strong> — with port_scan, banner_grab, detect_port_scan, analyze_reconnaissance_pattern tools</li>
   </ul>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Forge Fire Debrief (do this immediately after the exercise)</strong>
+  <ol>
+    <li>What was the hardest part of the exercise? Was it technical, time-based, or conceptual?</li>
+    <li>Which tool in your server had the most unexpected behavior under pressure?</li>
+    <li>If you had 30 more minutes, what would you have fixed first?</li>
+    <li>What does your Forge Fire experience tell you about your system's production readiness?</li>
+  </ol>
+  Record your answers in <code>unit2/forge-fire-debrief.md</code>. This is not graded — it is for your own retrospective.
 </div>
 
 <hr>
