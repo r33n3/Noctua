@@ -16,6 +16,10 @@
 <p><strong>CSEC 601 | Weeks 5–8 | Semester 1</strong></p>
 <p>Four labs covering MCP server implementation, tool design patterns, structured outputs, and RAG-based security knowledge systems.</p>
 
+<div class="callout callout-tip">
+  <strong>Claude as your MCP debugging partner:</strong> Use Claude as your MCP debugging partner. When a tool call fails, paste the error and your server code and ask: "What's wrong with this tool schema?" Don't debug alone when Claude can read stack traces.
+</div>
+
 <div class="lab-progress">
   <div class="lab-progress-header"><span>Unit 2 Lab Progress</span><span id="prog-text">0 / 35 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
@@ -302,7 +306,7 @@ else:
   <strong>Build a Skill — Shortcut This Workflow Forever</strong>
   <p>You just built your first reusable MCP tool. This is exactly what <strong>course skills</strong> are designed for. A skill is a custom <code>/command</code> you create once and reuse in any project. Create a <code>/register-cve-server</code> skill so any future session can spin up and connect your MCP server in one command — no re-explaining, no copy-pasting setup steps.</p>
   <p>Skills live in <code>~/.claude/skills/</code> or your project's <code>.claude/skills/</code> directory. Use this prompt:</p>
-  <div class="prompt-block">Write a Claude Code skill file called register-cve-server.md that spins up my CVE lookup MCP server, registers it in Claude Code, and confirms it's responding to tool calls.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <div class="conversation-starter">Write a Claude Code skill file called register-cve-server.md that spins up my CVE lookup MCP server, registers it in Claude Code, and confirms it's responding to tool calls.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
   <p>Then <code>/register-cve-server</code> becomes a one-liner for every future session.</p>
 </div>
 
@@ -662,6 +666,40 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <li>What does your Forge Fire experience tell you about your system's production readiness?</li>
   </ol>
   Record your answers in <code>unit2/forge-fire-debrief.md</code>. This is not graded — it is for your own retrospective.
+</div>
+
+<div class="callout callout-key">
+  <strong>Cedar Policy — What It Looks Like</strong>
+  <p>Cedar is Amazon's authorization policy language. It reads like English and enforces like a database constraint.</p>
+  <pre class="code-block"><code>// Allow the analyst agent to use the query tool
+permit (
+  principal == Agent::"analyst-agent",
+  action == Action::"query",
+  resource == Tool::"cve-lookup"
+);</code></pre>
+  <pre class="code-block"><code>// Allow the reporter agent to read CVE data, but not write or delete
+permit (
+  principal == Agent::"reporter-agent",
+  action in [Action::"read", Action::"list"],
+  resource in Resource::"cve-database"
+);</code></pre>
+  <pre class="code-block"><code>// No agent can access the production database directly — ever
+// Note: forbid cannot be overridden by any permit
+forbid (
+  principal,
+  action,
+  resource == Database::"production-db"
+);</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <p>Cedar's <code>forbid</code> is unconditional — no <code>permit</code> can override it. This is by design: your most critical restrictions (no direct database access, no PII export) go in <code>forbid</code> blocks so they can never be accidentally granted. Use <code>permit</code> for what agents CAN do; use <code>forbid</code> for what they MUST NEVER do.</p>
+</div>
+
+<div class="callout callout-key">
+  <p><strong>What:</strong> Cedar is a policy language that defines what agents are allowed to do — which tools they can call, which resources they can access, under what conditions.</p>
+  <p><strong>Why:</strong> Hard-coding permissions in agent code creates security debt. Cedar externalizes authorization so you can audit, rotate, and restrict permissions without touching agent code.</p>
+  <p><strong>How to start:</strong> Define one Cedar policy per agent. Start with a default-deny posture (no permits) and add explicit permits for every capability the agent needs. If a capability isn't listed, it doesn't exist.</p>
 </div>
 
 <hr>

@@ -16,6 +16,10 @@
 <p><strong>CSEC 602 | Weeks 5–8 | Semester 2</strong></p>
 <p>Threat model, red team, harden, and wargame your own multi-agent security systems. All offensive testing is conducted only against your own course-built systems.</p>
 
+<div class="callout callout-tip">
+  <strong>Claude as your red team partner:</strong> Use Claude as your red team partner. Describe your defense, then ask: "What attack vectors does this miss?" A red team of one is better than no red team.
+</div>
+
 <div class="callout callout-warn">
 <p><strong>Ethics &amp; Scope:</strong> All offensive techniques in this unit are practiced exclusively against systems you built in this course. No unauthorized testing against production systems, third-party services, or infrastructure you do not own. Violations will result in course failure.</p>
 </div>
@@ -264,6 +268,34 @@ from pyrit.common import default_values
 <div class="week-header"><span class="week-badge">WEEK 7</span><span class="week-sub">Lab: Deploy NeMo Guardrails &amp; LlamaFirewall (Blue Team)</span></div>
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement defensive guardrails using NeMo Guardrails and LlamaFirewall. Retest your Week 6 red team scenarios against the hardened system. Measure defense effectiveness. This is the Blue Team Exercise (7% of grade).</p></div>
+
+<div class="callout callout-key">
+  <strong>NeMo Guardrails — What, Why, and How to Start</strong>
+  <p><strong>What:</strong> NeMo Guardrails is a semantic filtering layer that sits between user input and your LLM. It intercepts requests, applies rules about what topics the model can and cannot discuss, and validates outputs before they reach the user.</p>
+  <p><strong>Why:</strong> System prompt instructions can be overridden by sophisticated prompt injection. NeMo Guardrails is a code-level defense — rules are defined in Colang (a domain-specific language), enforced programmatically, and cannot be talked out of.</p>
+  <p><strong>How to start:</strong> Three concepts you need before writing any Colang:</p>
+  <ol>
+    <li><strong>Flows</strong> — named sequences of actions (e.g., "if user asks about X, respond with Y")</li>
+    <li><strong>Input rails</strong> — rules that run on every user message before the LLM sees it</li>
+    <li><strong>Output rails</strong> — rules that run on every model response before the user sees it</li>
+  </ol>
+  <pre class="code-block"><code># Input rail: block off-topic requests
+define user ask about competitors
+  "tell me about OpenAI"
+  "what does GPT-4 do"
+  "compare you to other models"
+
+define bot refuse off-topic
+  "I'm focused on CVE analysis and security workflows. I can't discuss other AI systems."
+
+define flow handle off-topic
+  user ask about competitors
+  bot refuse off-topic</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <p>This is a working guardrail, not pseudocode. <code>define user</code> blocks teach the classifier what a user intent looks like. <code>define bot</code> blocks define canned responses. <code>define flow</code> wires them together. Start with 3–5 flows for your highest-risk inputs, not a comprehensive ruleset — you can add more after you see what users actually try.</p>
+</div>
 
 <div class="quiz-block" id="quiz-u6w7">
   <h4> Knowledge Check — Week 7</h4>

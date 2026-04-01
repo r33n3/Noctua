@@ -48,6 +48,10 @@
 <p><strong>CSEC 601 | Weeks 1–4 | Semester 1</strong></p>
 <p>Four hands-on lab sessions applying Collaborative Critical Thinking to real security scenarios, building your first AI agent interactions, and establishing baseline performance metrics.</p>
 
+<div class="callout callout-tip">
+  <strong>Claude as your CCT learning partner:</strong> Use Claude to pressure-test your CCT reasoning. After each reflection question in this unit, share your answer with Claude and ask: "What am I missing? What assumption am I making that might not hold?"
+</div>
+
 <!-- PROGRESS BAR -->
 <div class="lab-progress">
   <div class="lab-progress-header">
@@ -65,6 +69,10 @@
 
 <div class="callout callout-key">
 <p><strong>Lab Goal:</strong> Install Claude Code, interact with your first AI agent, and apply all five CCT pillars to a realistic data exfiltration scenario. You will measure your baseline MTTI and submit a structured threat assessment.</p>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Using Claude as your learning partner:</strong> Throughout this course, you'll see "Conversation Starters" — pre-written prompts you can paste directly into Claude or adapt for your own context. These aren't scripts to copy blindly. They're starting points. After running a conversation starter, follow up with your own questions based on what Claude actually said. The best learning happens in the back-and-forth after the first prompt, not in the first prompt itself.
 </div>
 
 <!-- Week 1 Knowledge Check -->
@@ -804,7 +812,7 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   <strong>Save Your Context Permanently — Create a CLAUDE.md</strong>
   <p>You now have a context library. Teach Claude Code to load it automatically. Create a <code>CLAUDE.md</code> file in your project root — Claude Code reads it at the start of every session before you type a single word. Put your context library references, working standards, and architectural preferences there. You'll never have to re-explain your style to a new session again.</p>
   <p>Use this prompt right now:</p>
-  <div class="prompt-block">Based on the context library files I just built, write a CLAUDE.md that Claude Code should auto-load at the start of every security project session. Include my analyst system prompt reference, CCT framework, and output format standards.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <div class="conversation-starter">Based on the context library files I just built, write a CLAUDE.md that Claude Code should auto-load at the start of every security project session. Include my analyst system prompt reference, CCT framework, and output format standards.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
 <hr>

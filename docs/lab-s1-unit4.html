@@ -16,6 +16,10 @@
 <p><strong>CSEC 601 | Weeks 13–16 | Semester 1</strong></p>
 <p>Two sprint-based labs building production-ready security prototypes, culminating in a demo and midyear project presentation. This is where everything comes together.</p>
 
+<div class="callout callout-tip">
+  <strong>Claude for velocity, not shortcuts:</strong> Use Claude for velocity, not shortcuts. The goal is to learn production thinking fast — not to avoid thinking. Ask Claude to review your architecture decisions, not to make them for you.
+</div>
+
 <div class="lab-progress">
   <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 33 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
@@ -677,14 +681,14 @@ Reason: [one sentence]</code></pre><button class="copy-btn" onclick="copyCode(th
   <p>Stop and take stock of what you've built: a CCT analysis framework, a multi-tool MCP server with RAG, an AI security policy, an AI ethics audit, and a 3-agent SOC prototype that went through two hardening sprints. That is a real portfolio — not coursework, not exercises, actual working security systems.</p>
   <p>If your repositories aren't public on GitHub with proper READMEs, fix that now. Share the links — on LinkedIn, in security forums, with your team, in Discord servers like BloodHound Gang or Security BSides channels. There are security practitioners, hobbyists, and students who would learn from your AI ethics audit template alone. Security only improves when practitioners share what works. <strong>You don't have to wait until you're an expert to share. You are already building things people need.</strong></p>
   <p>Use this prompt to generate READMEs:</p>
-  <div class="prompt-block">Write a GitHub README for my [project name] that explains the security problem it solves, how to run it locally, what tools it uses, and what someone could fork or extend.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <div class="conversation-starter">Write a GitHub README for my [project name] that explains the security problem it solves, how to run it locally, what tools it uses, and what someone could fork or extend.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
 <div class="callout callout-reading">
   <strong>Build Your Sprint Skill — Shortcut the Next One</strong>
   <p>You've now run two sprints and have a repeatable pattern: planning → scaffolding → hardening → review. Turn this into a Claude Code skill. Create a <code>/sprint-setup</code> skill that scaffolds a new security agent project with your preferred directory structure, CLAUDE.md, logging config, and ethics checklist pre-wired. The next sprint starts in 20 seconds instead of 20 minutes.</p>
   <p>Use this prompt:</p>
-  <div class="prompt-block">Based on my Sprint I and II work, write a Claude Code skill file called sprint-setup.md that scaffolds a new security agent project with my standard structure, dependencies, CLAUDE.md, and hardening checklist already in place.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <div class="conversation-starter">Based on my Sprint I and II work, write a Claude Code skill file called sprint-setup.md that scaffolds a new security agent project with my standard structure, dependencies, CLAUDE.md, and hardening checklist already in place.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
 <div class="quiz-block" id="quiz-w16">
