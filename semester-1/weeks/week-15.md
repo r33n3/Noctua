@@ -360,7 +360,7 @@ Week 15 is where Layer 3 (Operations) and Layer 4 (Security) patterns become non
 Run your final pre-deployment audit:
 
 ```
-/check-prod-readiness ~/noctua/tools/sprint-ii/
+/check-antipatterns ~/noctua/tools/sprint-ii/
 ```
 
 **Layer 3 — Operations (required for production):**

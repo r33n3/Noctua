@@ -395,17 +395,17 @@ Starting from Week 6, every skill you build should include a "how could this be 
 This week you build `/tool-select` and `/audit-aiuc1`. You now have access to a third course evaluator:
 
 ```
-/code-review → /check-prod-readiness → /audit-aiuc1
+/code-review → /check-antipatterns → /audit-aiuc1
 ```
 
 Three evaluators. Three concerns. Each calibrated separately:
 - `/code-review` — Code quality (bugs, style, logic, readability)
-- `/check-prod-readiness` — Production survival (will this break at 3am under load?)
+- `/check-antipatterns` — Production survival (will this break at 3am under load?)
 - `/audit-aiuc1` — Governance compliance (AIUC-1 domains A-F)
 
 This is the Anthropic harness GAN-evaluator pattern (Update 46) applied to the course skill stack — three specialized evaluators instead of one general one. Each has a distinct failure mode it catches. Each can pass while the others fail.
 
-**Lab addition — examine `.claude/skills/check-prod-readiness/SKILL.md`:**
+**Lab addition — examine `.claude/skills/check-antipatterns/SKILL.md`:**
 
 1. Why does it use `context: fork` rather than the default context mode?
 2. How does its trigger description avoid false positives compared to a vague trigger like "use for security work"?

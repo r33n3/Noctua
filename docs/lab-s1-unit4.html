@@ -334,10 +334,10 @@ claude
     <div class="lab-step" id="step-w14-8">
       <label><input type="checkbox" onchange="toggleStep('w14-8',this.checked)">
       <div class="step-content">
-        <div class="step-title">Sprint I exit gate: run /check-prod-readiness on your prototype</div>
+        <div class="step-title">Sprint I exit gate: run /check-antipatterns on your prototype</div>
         <div class="step-desc">Before closing Sprint I, audit your prototype against the 26 production anti-patterns. This is a required Sprint I deliverable — include the report output alongside your Sprint I metrics. Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprint II with written justification (what would need to change to fix each one). Track this as a sprint metric: how many findings in Sprint I vs. Sprint II?</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-prod-readiness ~/noctua/tools/sprint-i/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/sprint-i/
 
 # Required: Zero CRITICAL findings to pass Sprint I
 # Document: HIGH findings → deferred to Sprint II with justification
@@ -349,9 +349,9 @@ claude
 <div class="callout callout-discuss">
   <strong>Discussion (~10 min): The Cost of Being Thorough</strong>
   <p><strong>Setup:</strong> The semi-formal approach took 2.8x more agent steps. Full harness runs cost $125–200 and took 4–6 hours. The quick version was $9 and took 20 minutes.</p>
-  <p><strong>Discussion prompt:</strong> Your sprint has a token budget. Running /check-prod-readiness with full semi-formal analysis costs 3x more than a quick scan. You have 5 components to assess. Do you run the thorough check on all 5? Or do you triage — run the quick check on everything, and the thorough check on the 2 highest-risk components? How do you decide WHICH components get the thorough check? What makes a component high-risk?</p>
+  <p><strong>Discussion prompt:</strong> Your sprint has a token budget. Running /check-antipatterns with full semi-formal analysis costs 3x more than a quick scan. You have 5 components to assess. Do you run the thorough check on all 5? Or do you triage — run the quick check on everything, and the thorough check on the 2 highest-risk components? How do you decide WHICH components get the thorough check? What makes a component high-risk?</p>
   <p><strong>Key insight:</strong> Thoroughness is a budget allocation problem, not a binary choice. The answer is tiered verification: every commit gets quick checks (linting, basic /code-review); every PR gets standard checks (/code-review with confidence threshold); before deployment gets full semi-formal analysis (all three evaluators); high-risk components get additional manual review on top. The cost of a thorough assessment is always less than the cost of a missed vulnerability in production. But you can't run thorough assessments on everything — you'd never ship. Match the reasoning depth to the stakes of the decision.</p>
-  <p><strong>Instructor note:</strong> Have students actually measure the cost difference. Run /check-prod-readiness on a component and record the token cost. Then run it with explicit instructions to "trace every function call and provide file:line evidence for every finding." Compare costs. The difference makes the tradeoff concrete.</p>
+  <p><strong>Instructor note:</strong> Have students actually measure the cost difference. Run /check-antipatterns on a component and record the token cost. Then run it with explicit instructions to "trace every function call and provide file:line evidence for every finding." Compare costs. The difference makes the tradeoff concrete.</p>
   <p><strong>Course connection:</strong> /cost tracking, /effort levels, three-tier code review, sprint budget management. Students should track their actual token costs for quick vs thorough assessments across the sprint.</p>
   <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
@@ -468,7 +468,7 @@ class JSONFormatter(logging.Formatter):
         <div class="step-title">Sprint II close: achieve READY status on production readiness audit</div>
         <div class="step-desc">Run the full production readiness audit on your hardened prototype. Target: READY (no CRITICAL or HIGH findings). Layer 3 checklist: structured logging (3.1), correlation IDs (3.2), health check endpoint (3.3), graceful SIGTERM shutdown (3.4), metrics emission (3.5). Layer 4 checklist: constant-time secret comparison (4.1), structured log fields only — no f-strings with user input (4.2), input bounds on all tools (4.3), credential refresh support (4.4), audit records on automated actions (4.5). Track improvement from Sprint I. Include the final report in your Week 15 deliverables alongside your ethics audit.</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-prod-readiness ~/noctua/tools/sprint-ii/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/sprint-ii/
 
 # Track improvement:
 # Sprint I:  CRITICAL __ HIGH __ MEDIUM __

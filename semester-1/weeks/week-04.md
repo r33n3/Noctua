@@ -323,10 +323,10 @@ Document the test results. This is Layer 6 of the Assessment Stack applied to yo
 
 ## Production Readiness Check
 
-Before submitting Week 4 deliverables, run `/check-prod-readiness` on your multi-tool server:
+Before submitting Week 4 deliverables, run `/check-antipatterns` on your multi-tool server:
 
 ```
-/check-prod-readiness ~/noctua/tools/mcp-servers/week04-multi/
+/check-antipatterns ~/noctua/tools/mcp-servers/week04-multi/
 ```
 
 Multi-tool servers introduce Layer 2 (Architecture) patterns that single-tool servers don't have:
@@ -338,4 +338,4 @@ Layer 3 (Operations) check: Does your multi-tool server have structured logging 
 
 The `handler-safety.md` rule is now active in your environment for webhook and handler code.
 
-Include your `/check-prod-readiness` output in your Week 4 deliverables. Fix all CRITICAL and HIGH findings.
+Include your `/check-antipatterns` output in your Week 4 deliverables. Fix all CRITICAL and HIGH findings.

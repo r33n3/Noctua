@@ -295,12 +295,12 @@ Optimize for efficiency, not just quality or cost alone.
 
 ## Sprint I Production Readiness Requirement
 
-`/check-prod-readiness` output is a required Sprint I deliverable.
+`/check-antipatterns` output is a required Sprint I deliverable.
 
 Before your Week 11 sprint review, run:
 
 ```
-/check-prod-readiness ~/noctua/tools/sprint-i/
+/check-antipatterns ~/noctua/tools/sprint-i/
 ```
 
 Requirements:
@@ -310,7 +310,7 @@ Requirements:
 
 In your sprint retro: What patterns did the checker find? Were they patterns you anticipated? What does this tell you about gaps in your review process?
 
-> Track as a sprint metric: how many anti-pattern findings from `/check-prod-readiness` were found vs. fixed in Sprint I? This becomes the baseline for Sprint II improvement.
+> Track as a sprint metric: how many anti-pattern findings from `/check-antipatterns` were found vs. fixed in Sprint I? This becomes the baseline for Sprint II improvement.
 
 ---
 

@@ -337,7 +337,7 @@ Document: which verification step did you automate, and what did it catch that m
 Before Week 13 red teaming begins, your Sprint II tool must achieve CONDITIONAL or READY status:
 
 ```
-/check-prod-readiness ~/noctua/tools/sprint-ii/
+/check-antipatterns ~/noctua/tools/sprint-ii/
 ```
 
 **All CRITICAL findings must be fixed before Week 13.** The red team will find them using the same anti-patterns reference — knowing about them first gives you the chance to fix rather than defend.
@@ -345,8 +345,8 @@ Before Week 13 red teaming begins, your Sprint II tool must achieve CONDITIONAL 
 Document MEDIUM findings as accepted risk or deferred work. For each deferred item, state the condition under which it would be addressed (e.g., "Deferred — no database in current sprint; will address in Week 15 when adding persistent storage").
 
 Include the production readiness report in your Sprint II submission. Track improvement from Sprint I:
-- Sprint I `/check-prod-readiness` findings: CRITICAL __ HIGH __ MEDIUM __
-- Sprint II `/check-prod-readiness` findings: CRITICAL __ HIGH __ MEDIUM __
+- Sprint I `/check-antipatterns` findings: CRITICAL __ HIGH __ MEDIUM __
+- Sprint II `/check-antipatterns` findings: CRITICAL __ HIGH __ MEDIUM __
 
 ---
 

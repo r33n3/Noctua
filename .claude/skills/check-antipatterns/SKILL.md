@@ -1,5 +1,5 @@
 ---
-name: check-prod-readiness
+name: check-antipatterns
 description: >
   Audit code for production anti-patterns that AI commonly generates.
   Checks for: silent error swallowing, race conditions, naive retry logic,
@@ -124,7 +124,7 @@ Production Readiness Assessment
 Tool: [name]
 Path: [audited path]
 Date: [date]
-Auditor: /check-prod-readiness v1.0
+Auditor: /check-antipatterns v1.0
 
 CRITICAL (blocks deployment):
   ❌ [Pattern ID] [Pattern name] in [file:line]

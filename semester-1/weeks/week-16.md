@@ -266,10 +266,10 @@ The following additions were made to `docs/lab-s1-unit4.html` for Week 16:
 
 Include in your Week 16 presentation:
 
-1. **`/check-prod-readiness` clean report** — screenshot or paste of READY or CONDITIONAL status with findings documented
+1. **`/check-antipatterns` clean report** — screenshot or paste of READY or CONDITIONAL status with findings documented
 2. **Anti-pattern journey** — which patterns were found across Weeks 3-15, which were fixed, which remain as documented risk
-3. **Three-evaluator pipeline summary** — findings from `/code-review`, `/check-prod-readiness`, and `/audit-aiuc1` side by side
+3. **Three-evaluator pipeline summary** — findings from `/code-review`, `/check-antipatterns`, and `/audit-aiuc1` side by side
 
 The clean report is evidence that your tool is not just functional but production-survivable. This distinction — between "it works in my terminal" and "it will work at 3am under load during an incident" — is what separates a prototype from a production system.
 
-> Your presentation should answer: "If we deployed this today, what would break first?" If the answer is "nothing on our `/check-prod-readiness` report," that is your evidence.
+> Your presentation should answer: "If we deployed this today, what would break first?" If the answer is "nothing on our `/check-antipatterns` report," that is your evidence.

@@ -514,10 +514,10 @@ Your Week 9 agent team should document where each of its outputs falls on this s
 
 Week 9 is when Layer 2 (Architecture) anti-patterns become real. Your agents write to shared state. Your subagents run concurrently.
 
-Run `/check-prod-readiness` on your Week 9 multi-agent code with specific focus on **Layer 1 — Pattern 1.2 (Race Conditions)** and **Layer 2 — Patterns 2.3 and 2.4**:
+Run `/check-antipatterns` on your Week 9 multi-agent code with specific focus on **Layer 1 — Pattern 1.2 (Race Conditions)** and **Layer 2 — Patterns 2.3 and 2.4**:
 
 ```
-/check-prod-readiness ~/noctua/agents/week09-soc/
+/check-antipatterns ~/noctua/agents/week09-soc/
 ```
 
 The `async-safety.md` rule is now active in your Claude Code environment — it will flag race conditions automatically when editing async code. The skill gives you the formal audit report.

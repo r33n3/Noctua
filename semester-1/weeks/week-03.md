@@ -301,7 +301,7 @@ This week: After Claude summarizes a CVE query result, check one claim against t
 Your first MCP server is your first production artifact. Before submitting Week 3 deliverables, run:
 
 ```
-/check-prod-readiness ~/noctua/tools/mcp-servers/week03-cve/
+/check-antipatterns ~/noctua/tools/mcp-servers/week03-cve/
 ```
 
 Focus on Layer 1 (Code Quality) and Layer 4 (Security) patterns — the ones most common in first MCP servers:
@@ -311,4 +311,4 @@ Focus on Layer 1 (Code Quality) and Layer 4 (Security) patterns — the ones mos
 
 The `external-api-safety.md` rule is now active in your environment and will flag these patterns as you code. The skill gives you the formal audit output for your submission.
 
-Include your `/check-prod-readiness` output in your Week 3 deliverables. Fix all CRITICAL findings before submitting.
+Include your `/check-antipatterns` output in your Week 3 deliverables. Fix all CRITICAL findings before submitting.
