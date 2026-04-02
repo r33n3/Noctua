@@ -623,19 +623,32 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <div class="lab-step" id="step-ff-1">
       <label><input type="checkbox" onchange="toggleStep('ff-1',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step FF-1: Set up the Docker target environment</div>
-        <div class="step-desc">Launch the local Docker containers that serve as your authorized scan targets. These run entirely on localhost — no external systems are involved.</div>
+        <div class="step-title">Step FF-1: Verify Docker and launch the target environment</div>
+        <div class="step-desc">Run the pre-flight check first — confirm Docker is installed and running before launching containers. If Docker is not installed, see the <a href="lab-setup.html">Lab Setup Guide</a>. The containers run entirely on localhost — no external systems are involved.</div>
       </div></label>
-      <div class="code-block"><pre><code># Target containers — authorized localhost lab environment only
+      <div class="code-block"><pre><code># Pre-flight: verify Docker is installed and running
+docker --version
+docker ps
+# Expected: version output + empty container list (no error)
+# If you get "Cannot connect to the Docker daemon" — start Docker Desktop first
+# If you get "command not found" — install Docker before proceeding (see lab-setup.html)
+
+# Clean up any leftover containers from a previous attempt
+docker rm -f forge-nginx forge-postgres 2>/dev/null; true
+
+# Launch target containers — authorized localhost lab environment only
 docker run -d -p 8080:80 --name forge-nginx nginx:alpine
 docker run -d -p 5432:5432 --name forge-postgres \
   -e POSTGRES_PASSWORD=labpassword postgres:15-alpine
 python3 -m http.server 9000 &amp;
 
-# Expected environment:
-# Port 8080: nginx web server
-# Port 5432: PostgreSQL
-# Port 9000: Python HTTP server</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Verify all three targets are reachable before proceeding
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 && echo " nginx OK"
+python3 -c "import socket; s=socket.create_connection(('localhost',5432),2); print('postgres OK'); s.close()"
+curl -s -o /dev/null -w "%{http_code}" http://localhost:9000 && echo " python-http OK"
+
+# Expected: 200 nginx OK / postgres OK / 200 python-http OK
+# Do NOT proceed to FF-2 until all three show OK</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-ff-2">
