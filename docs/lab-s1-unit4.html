@@ -84,7 +84,7 @@
     <a href="skills/worktree-setup.md" download="worktree-setup.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download worktree-setup.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 # Then in Claude Code, after your spec is ready:
 /worktree-setup three-agent SOC system: recon-agent, analysis-agent, reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
@@ -140,7 +140,7 @@ claude
       <label><input type="checkbox" onchange="toggleStep('w13-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Build the Reporting Agent</div>
-        <div class="step-desc">In <code>../soc-reporting/</code>, build <code>reporting_agent.py</code>: takes Analysis Agent output and generates a validated incident report (using your Week 7 schema) in both JSON and Markdown formats. Calculates MTTI based on timestamps passed from the Orchestrator.</div>
+        <div class="step-desc">In <code>../soc-reporting/</code>, build <code>reporting_agent.py</code>: takes Analysis Agent output and generates a validated incident report (using your Week 5–6 schemas) in both JSON and Markdown formats. Calculates MTTI based on timestamps passed from the Orchestrator.</div>
       </div></label>
     </div>
 
@@ -150,6 +150,17 @@ claude
         <div class="step-title">Step 5: Build the Orchestrator</div>
         <div class="step-desc">In the main <code>soc-agent-system/</code> branch, build <code>orchestrator.py</code>: receives the alert, calls Recon → Analysis → Reporting in sequence, handles timeouts (30s per agent), and implements graceful degradation (if Recon fails, Analysis works with partial data).</div>
       </div></label>
+      <div class="code-block"><pre><code>cd ~/noctua-labs/soc-agent-system
+claude
+# Prompt: "Build orchestrator.py that coordinates three agents in sequence.
+# Import: recon_agent.run(alert_text), analysis_agent.run(recon_json),
+# reporting_agent.run(analysis_json, start_ts)
+# Requirements:
+# - 30s asyncio timeout per agent via asyncio.wait_for()
+# - If recon times out: pass partial data to analysis with recon_status='timeout'
+# - If analysis fails: reporting still runs with error summary
+# - Return: {mtti_seconds, recon_status, analysis_status, report}
+# - Log each stage with timestamp to structured JSON log"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w13-6">
@@ -221,7 +232,7 @@ claude
     <a href="skills/build-spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/build-spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/commands/build-spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
 # Sprint scoping sequence in Claude Code:
 /think I want to build a phishing email triage pipeline for this sprint. What are the risks and unknowns?
 # Then after validating direction:
@@ -337,7 +348,7 @@ claude
         <div class="step-title">Sprint I exit gate: run /check-antipatterns on your prototype</div>
         <div class="step-desc">Before closing Sprint I, audit your prototype against the 26 production anti-patterns. This is a required Sprint I deliverable — include the report output alongside your Sprint I metrics. Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprint II with written justification (what would need to change to fix each one). Track this as a sprint metric: how many findings in Sprint I vs. Sprint II?</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/sprint-i/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit4/sprint1/
 
 # Required: Zero CRITICAL findings to pass Sprint I
 # Document: HIGH findings → deferred to Sprint II with justification
@@ -468,7 +479,7 @@ class JSONFormatter(logging.Formatter):
         <div class="step-title">Sprint II close: achieve READY status on production readiness audit</div>
         <div class="step-desc">Run the full production readiness audit on your hardened prototype. Target: READY (no CRITICAL or HIGH findings). Layer 3 checklist: structured logging (3.1), correlation IDs (3.2), health check endpoint (3.3), graceful SIGTERM shutdown (3.4), metrics emission (3.5). Layer 4 checklist: constant-time secret comparison (4.1), structured log fields only — no f-strings with user input (4.2), input bounds on all tools (4.3), credential refresh support (4.4), audit records on automated actions (4.5). Track improvement from Sprint I. Include the final report in your Week 15 deliverables alongside your ethics audit.</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/sprint-ii/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit4/sprint1/
 
 # Track improvement:
 # Sprint I:  CRITICAL __ HIGH __ MEDIUM __
@@ -504,7 +515,7 @@ class JSONFormatter(logging.Formatter):
     <a href="skills/retro.md" download="retro.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download retro.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/commands/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
 # After Sprint II, in Claude Code:
 /retro Unit 4 Sprint I + II — phishing triage pipeline</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
