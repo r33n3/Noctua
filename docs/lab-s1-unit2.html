@@ -326,15 +326,35 @@ claude mcp list
     <div class="lab-step" id="step-w5-8">
       <label><input type="checkbox" onchange="toggleStep('w5-8',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 8: Run production readiness audit on your CVE server</div>
-        <div class="step-desc">Before submitting, audit your server against 26 production anti-patterns. Run <code>/check-antipatterns</code> in Claude Code. Focus on: 1.1 (does your tool return <code>{}</code> on API error?), 1.3 (naive retry — does it hammer the NVD API on 429?), 4.3 (no length limit on CVE ID parameter?). Fix all CRITICAL findings before submitting. Include the report in your Week 5 deliverables. <em>(Reference: <code>docs/resources/ai-code-antipatterns-reference.md</code>)</em></div>
+        <div class="step-title">Step 8: Run anti-pattern audit on your CVE server</div>
+        <div class="step-desc">Before submitting, audit your server against production anti-patterns. Run <code>/check-antipatterns</code> in Claude Code pointing at your server directory. Fix all CRITICAL findings before submitting. Include the report in your Week 5 deliverables. <em>(Reference: <code>docs/resources/ai-code-antipatterns-reference.md</code>)</em></div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/mcp-servers/week05-cve/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit2/week5/cve-mcp/
 
 # Fix all CRITICAL findings before submitting
 # Target: CONDITIONAL or READY status</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
+</div>
+
+<div class="callout callout-key">
+  <strong>Reading /check-antipatterns output</strong>
+  <p>The audit produces findings at four severity levels. Here is what two common findings look like on an MCP server — and why they matter:</p>
+  <div class="code-block" style="margin:10px 0;"><pre><code>CRITICAL — Silent error swallowing [server.py:47]
+  except Exception:
+      pass
+  Why it matters: your tool returns {} with no error flag. Claude sees
+  an empty result and reasons from it as if it were valid data. The
+  caller has no way to know the NVD API call failed. On a governance
+  platform this is worse than a crash — the system appears to work.</code></pre></div>
+  <div class="code-block" style="margin:10px 0;"><pre><code>HIGH — New connection per request [server.py:31]
+  async with httpx.AsyncClient() as client:
+      resp = await client.get(...)
+  Why it matters: works correctly in dev and passes all tests. Under
+  concurrent load (10+ simultaneous CVE lookups) this exhausts
+  available connections. Fix: create the client once at module level
+  and reuse it across requests.</code></pre></div>
+  <p>The pattern: CRITICAL findings are silent — they produce wrong behavior with no signal. HIGH findings are load-dependent — they work in dev and fail in production. Neither will fail a test. Both require the deliberate audit lens to catch.</p>
 </div>
 
 <div class="callout callout-reading">
