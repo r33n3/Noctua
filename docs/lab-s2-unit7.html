@@ -82,12 +82,12 @@
       <div class="code-block"><pre><code>pip install cyclonedx-bom
 mkdir -p ~/noctua-labs/unit7/week9 && cd ~/noctua-labs/unit7/week9
 
-# Generate SBOM for your SOC agent system
-cyclonedx-py --requirement ~/noctua-labs/unit5/requirements.txt \
-  --output sbom.json --format json
+# Generate SBOM for your SOC agent system (cyclonedx-bom v4+ syntax)
+cyclonedx-py requirements ~/noctua-labs/unit5/requirements.txt > sbom.json
 
 # Inspect: how many components? Any with known vulnerabilities?
-cat sbom.json | python3 -m json.tool | grep -c '"type"'</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+cat sbom.json | python3 -m json.tool | grep -c '"type"'
+# Note: if CLI flags differ on your version, run: cyclonedx-py --help</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w9-2">
@@ -97,7 +97,7 @@ cat sbom.json | python3 -m json.tool | grep -c '"type"'</code></pre><button clas
       </div></label>
       <div class="code-block"><pre><code>pip install pip-audit
 pip-audit --requirement ~/noctua-labs/unit5/requirements.txt \
-  --output json --output-file audit-results.json
+  --format json -o audit-results.json
 
 # Review findings
 cat audit-results.json | python3 -m json.tool | grep -E '"id"|"description"|"fix"'</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
@@ -109,11 +109,12 @@ cat audit-results.json | python3 -m json.tool | grep -E '"id"|"description"|"fix
         <div class="step-title">Step 3: Scan for transitive dependency vulnerabilities</div>
         <div class="step-desc">Install safety scanner for a second opinion on transitive deps. Compare results with pip-audit. Document: how many direct dependencies vs. transitive? Any high/critical CVEs in transitive deps that pip-audit missed?</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install safety
+      <div class="code-block"><pre><code>pip install 'safety<3.0'
 safety check --json > safety-results.json
 
 # Compare with pip-audit results
-# Document: discrepancies between scanners, high/critical findings</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Document: discrepancies between scanners, high/critical findings
+# Note: safety v3+ changed CLI and requires account auth — pin to <3.0 for this lab</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w9-4">
@@ -281,6 +282,37 @@ forbid (
         <div class="step-title">Step 2: Implement permission enforcement in the MCP server</div>
         <div class="step-desc">Modify your MCP server to accept an agent_id header with each tool call. Before executing any tool, check the agent-identities.yaml: is this agent_id allowed to call this tool? If not, return 403 Forbidden with a structured error. Log all permission checks.</div>
       </div></label>
+      <div class="code-block"><pre><code>import yaml, logging
+from functools import wraps
+
+# Load identity manifest at startup
+with open("agent-identities.yaml") as f:
+    IDENTITIES = {a["agent_id"]: a for a in yaml.safe_load(f)["agents"]}
+
+def require_permission(tool_name):
+    """Decorator: check agent_id header before any tool executes."""
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(request, *args, **kwargs):
+            agent_id = request.headers.get("X-Agent-Id")
+            identity = IDENTITIES.get(agent_id)
+            if not identity:
+                logging.warning(f"DENIED unknown agent_id={agent_id} tool={tool_name}")
+                return {"error": "403 Forbidden", "reason": "unknown agent"}
+            if tool_name in identity.get("denied_tools", []):
+                logging.warning(f"DENIED agent_id={agent_id} tool={tool_name} (explicitly denied)")
+                return {"error": "403 Forbidden", "reason": "tool explicitly denied"}
+            if tool_name not in identity.get("allowed_tools", []):
+                logging.warning(f"DENIED agent_id={agent_id} tool={tool_name} (not in allowlist)")
+                return {"error": "403 Forbidden", "reason": "tool not in allowlist"}
+            logging.info(f"ALLOWED agent_id={agent_id} tool={tool_name}")
+            return fn(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+# Apply to each tool handler:
+# @require_permission("query_cve")
+# def handle_query_cve(request): ...</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w10-3">
