@@ -128,7 +128,6 @@ These read as genuine curiosity. The answers reveal more than any questionnaire:
 
 Confident, specific answers = Stage 3–4. Pauses, qualifications ("I think we have..."), or redirects = Stage 1–2 with aspirational vocabulary. The full assessment framework — including pre-join signals, first-week observation protocol, and the scoring rubric — is in `resources/dark-factory-stage-assessment.md`.
 
-> **Architecture Reference:** Open `resources/diagrams/dark-factory-architecture.html` in any browser to see what a fully built Secure Dark Factory looks like across all layers — pipeline, governance, security scanning, identity, observability, and network egress. No install required. Use it as a reference map throughout the course: as you learn each layer, find it in the diagram. By Week 12, you'll have touched every part of it.
 
 ---
 
@@ -162,13 +161,10 @@ mkdir -p ~/noctua/{evidence,analysis,context/{prompts,system-prompts,skills,plug
 
 # 2. Install course skills — these become slash commands in Claude Code
 mkdir -p ~/.claude/commands
-
-# Copy the four course skills from the repo docs/skills/ directory
-# (adjust the path below to wherever you cloned the Noctua repo)
-cp ~/path/to/noctua-repo/docs/skills/think.md ~/.claude/commands/think.md
-cp ~/path/to/noctua-repo/docs/skills/build-spec.md ~/.claude/commands/build-spec.md
-cp ~/path/to/noctua-repo/docs/skills/retro.md ~/.claude/commands/retro.md
-cp ~/path/to/noctua-repo/docs/skills/worktree-setup.md ~/.claude/commands/worktree-setup.md
+curl -o ~/.claude/commands/think.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
+curl -o ~/.claude/commands/build-spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
+curl -o ~/.claude/commands/retro.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 ```
 
 **Verify they're installed** — open any Claude Code session and type `/` — you should see `/think`, `/build-spec`, `/retro`, `/worktree-setup` in the autocomplete list.
@@ -188,7 +184,7 @@ Save all lab outputs to the appropriate directory. For this lab:
 - Performance metrics → `~/noctua/metrics/`
 - Final deliverable → `~/noctua/deliverables/week01/`
 
-> **🛠️ Tool Guide:** This lab uses **Claude Chat** for analysis (thinking exercise), **Claude Projects/Cowork** for organizing deliverables, and **Claude Code** as a homework setup task. Use the right tool for each phase.
+> **🛠️ Tool Guide:** This lab uses **Claude Code** as the primary tool throughout — mount the Noctua repo and you get full chat, analysis, and execution in one place. Use **Claude Projects/Cowork** for organizing and storing deliverables across sessions.
 
 **Scenario:** You are a junior SOC analyst at Meridian Financial. On March 3rd, 2026, your SIEM triggered an alert: John Chen (VP Operations) accessed the data warehouse from an unusual IP (203.45.12.89, Singapore proxy) at 2:34 AM EST, downloaded 47 CSV files (2.3 GB), with valid credentials and successful MFA.
 
@@ -215,7 +211,7 @@ Before analyzing with AI, map the investigation steps to tool types. Complete th
 >
 > This is Inclusive Perspective in action — you're acquiring expert viewpoints to make your analysis richer. Do Part 2 AFTER you've done a first-pass analysis without domain context, so you can see how the domain briefing changes your thinking.
 
-Open Claude Chat (not Claude Code — this is a thinking exercise, not a building exercise). Use the `/think` command or simply prompt Claude to apply CCT:
+Open Claude Code with the Noctua repo mounted. Use the `/think` skill or prompt Claude directly to apply CCT:
 
 ```
 You are an expert SOC lead analyzing a data exfiltration incident at Meridian Financial.
