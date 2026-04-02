@@ -1,370 +1,396 @@
-# Week 2: Cognitive Bias & CCT Deep Dive
+# Week 2: The 5 Pillars of Collaborative Critical Thinking
 
 **Semester 1 | Week 2 of 16**
 
 ## Learning Objectives
 
-- Understand the evolution from naive prompting to context engineering
-- Master model tiers and when to use each (with current 2026 pricing)
-- Understand token economics and why context engineering compresses cost
-- Learn automatic prompt caching and how to optimize for it
-- Apply computation approach selection: deterministic vs. statistical vs. reasoning
-- Implement SDK cost tracking for context-engineered vs. naive prompts
-- Recognize that structured outputs serve as audit trails (AIUC-1 Domain E introduction)
+- Master the five pillars of CCT in depth: their history, rationale, and application
+- Understand how cognitive biases corrupt security analysis and how CCT mitigates them
+- Develop structured questioning techniques that surface hidden assumptions
+- Learn to distinguish between evidence-based claims and intuition masquerading as certainty
+- Apply CCT to real security scenarios in a team setting
+
+---
+
+> **CCT is the durable skill.** As models improve, the value of AI outputs rises — but so does the cost of uncritical acceptance. The students who get the most from AI improvement are those with strong reasoning frameworks to direct, challenge, and integrate model output. CCT is not temporary scaffolding. It is the skill that compounds.
 
 ---
 
 ## Day 1 — Theory
 
-### From Prompts to Context Engineering
+Last week, we introduced Collaborative Critical Thinking as a framework. This week, we make it concrete. CCT rests on five pillars, each grounded in decades of research into human decision-making, organizational behavior, and information analysis. Understanding each pillar deeply will transform how you work with AI agents—and with colleagues.
 
-In 2023, "prompt engineering" meant phrasing a question better. In 2026, context engineering means designing the entire information environment in which the model operates. This includes:
+| Pillar | Core Question | Common Failure Mode |
+|--------|--------------|-------------------|
+| **1. Evidence-Based Analysis** | What do we *observe* vs. what do we *infer*? | Confirmation bias — seeking evidence to confirm a hunch |
+| **2. Inclusive Perspective** | Whose voice is missing from this analysis? | Organizational silos — each team only sees their slice |
+| **3. Strategic Connections** | What patterns connect these indicators? | Tunnel vision — analyzing events in isolation |
+| **4. Adaptive Innovation** | What would prove us wrong? | Defensive thinking — protecting the initial hypothesis |
+| **5. Ethical Governance** | Is our response proportional and documented? | Skipping accountability — acting fast without audit trail |
 
-1. **System prompts** — defining role, constraints, and output format
-2. **Tool definitions** — declaring what the model can invoke
-3. **Memory architectures** — maintaining state across turns
-4. **Structured output schemas** — forcing deterministic, machine-readable results
-5. **Retrieval patterns** — injecting fresh domain knowledge when needed
+### Pillar 1: Evidence-Based Analysis
 
-The shift matters because you're no longer asking one-off questions. You're building systems that make decisions, integrate with production infrastructure, and require consistent, auditable outputs.
+The most dangerous words in security are "I think" and "probably." In forensics, we say "observe, document, infer—in that order." Too often, analysts reverse this. They begin with inference (a hunch about what happened), then seek evidence that confirms it, then document selectively.
 
-### The AI Landscape in 2026: Model Tiers
+This is confirmation bias, and it's rampant in security. An analyst who suspects an insider threat will interpret innocent log entries as suspicious. A threat hunter who believes a vulnerability is exploited in the wild will see false positives as "additional confirmations." The bias is not dishonesty; it's cognitive efficiency. The brain shortcuts data-gathering to confirm existing beliefs. Fast. Efficient. Dangerous.
 
-The market has stratified into tiers. Current pricing (2026):
+Evidence-based analysis means: Start with what you *observe*, not what you *suspect*. What are the raw artifacts? IP addresses. Timestamps. File hashes. Authentication factors. Packet payloads. These are observations. Everything else—attribution, intent, impact—is inference built atop these observations.
 
-| Tier | Model | Price (Input/Output) | Best For |
-|------|-------|---------------------|---------|
-| Reasoning | `claude-opus-4-6` | $5/$25 per MTok | Deep analysis, complex judgment, rare high-stakes |
-| Balanced | `claude-sonnet-4-6` | $3/$15 per MTok | Operational workflow, everyday reasoning |
-| Fast | `claude-haiku-4-5-20251001` | $1/$5 per MTok | Routing, classification, high-throughput tasks |
-| Specialized | Code/vision models | Variable | Domain-specific tasks |
-| Open-source | Llama, Mistral | Infrastructure cost | Privacy-critical, high-volume batch |
+The key practice is *separation of layers*. Layer 1: Observations (what the logs show, what the network recorded, what the endpoint reported). Layer 2: Inferences (what this might mean). Layer 3: Hypotheses (what story would explain these observations). Layer 4: Conclusions (which hypothesis is most likely, and what's our confidence level).
 
-### The Critical Question: Deterministic, Statistical, or Reasoning?
+When you work with AI agents, this discipline becomes even more critical. Claude might generate a plausible narrative that *sounds* evidence-based — citing made-up sources or conflating related events. An agent without CCT structure will happily jump from "unusual IP access" to "probable nation-state compromise" without the supporting evidence layer. Your job is to insist on the layers.
 
-Before choosing a model tier, ask what *type* of computation you need:
+> **🔑 Key Concept:** In security, "I have a hypothesis" is not the same as "I have evidence." Learn to use the phrase "If this indicator means X, then we should observe Y." If Y is absent, your hypothesis might be wrong. This is the scientific method applied to incident response.
 
-**Deterministic:** Known rules, exact matching, no ambiguity
-- Use regex, rules engines, lookup tables — no LLM at all
-- Example: "Is this a valid IPv4 address?" → `re.match()` is faster and cheaper than Haiku
+### Pillar 2: Inclusive Perspective
 
-**Statistical:** Pattern matching on known categories
-- Use classifiers, embeddings, anomaly detectors — small/specialized models
-- Example: "Is this email phishing?" → A fine-tuned classifier may outperform Opus on precision
+Security analysis happens within organizations, and organizations are built from silos. The network team doesn't talk to the application team. The developers don't attend security meetings. The HR department and the SOC operate in different universes. Each silo has information the others lack.
 
-**Reasoning:** Novel situations, ambiguous evidence, complex judgment
-- Use LLM — and choose the tier based on depth required
-- Example: "What does this attack chain mean for our specific organization?" → Sonnet or Opus
+Inclusive perspective means deliberately including voices outside your immediate discipline. When you investigate a suspicious data access, you need:
 
-> **Assessment Stack Layers 2-3:** This week crystallizes the computation approach (Layer 2) and model selection (Layer 3) decisions. The rule: never use a reasoning model for a deterministic task. A regex beats Opus for pattern matching. Opus beats regex for novel analysis.
+- The application owner: "Is this user supposed to access this data? Does it align with their job function?"
+- The network team: "Where is this IP coming from? Is there a VPN connection in the logs?"
+- The system administrator: "Has this account been recently compromised? Are there other indicators on this endpoint?"
+- The manager: "Has this employee mentioned travel plans? Any behavioral changes?"
+- The compliance team: "What are our legal obligations if this is a real breach?"
 
-### Why a Regex Beats Opus for Pattern Matching
+Inclusive perspective also means seeking dissenting views. If everyone in the room agrees, you're probably missing something. The organization that finds vulnerabilities *before* attackers is the one that has someone saying, "Wait, what if we're wrong about that?"
 
-Concrete cost comparison for CVE ID validation:
+A famous example is the Space Shuttle Challenger disaster in 1986. Engineers at Morton Thiokol raised concerns about O-ring failure in cold temperatures. Management overrode them. The full information was distributed across the organization — engineering, management, safety — but the perspective that mattered most was never adequately included in the final decision. Inclusive perspective means building cultures where that dissenting engineer's voice is not just heard but *sought*.
 
-| Approach | Cost per 1K checks | Latency | Accuracy |
-|----------|-------------------|---------|---------|
-| Regex `^CVE-\d{4}-\d{4,6}$` | $0.000001 | <1ms | 100% |
-| Haiku API call | $0.001 | 500ms | ~99% |
-| Opus API call | $0.005 | 2000ms | ~99% |
+> **📖 Further Reading:** Daniel Kahneman's "Thinking, Fast and Slow" (Chapters 8–10) explores groupthink, overconfidence, and the value of dissenting voices. See [Reading List](../../resources/READING-LIST.md).
 
-For this task, regex is 5,000× cheaper and 2,000× faster than Opus, with higher accuracy.
+### Pillar 3: Strategic Connections
 
-### Token Economics
+Individual indicators are data. Connections between indicators are patterns. Patterns are where the real story emerges.
 
-**Input vs. Output pricing:** Input tokens cost less than output tokens. Optimize by:
-- Being concise in prompts (reduce input)
-- Asking for structured outputs (reduce output verbosity)
-- Caching repeated context (reduce repeated input cost)
+A failed login attempt by itself is noise — thousands occur daily. But a failed login attempt *followed* by a successful login from a different geography 3 minutes later, combined with the creation of a new admin account 7 minutes after that, combined with a large data exfiltration 30 minutes later — that's a narrative. The strategic connection between these events tells a story that no single indicator could.
 
-**Practical example:** A 27.5K token incident analysis with Opus:
-- Input cost: 27,500 × $0.000005 = **$0.14**
-- Output (2K tokens): 2,000 × $0.000025 = **$0.05**
-- Total: **$0.19 per analysis**
+Strategic connections also include second- and third-order effects. If an attacker compromises a VP's account and exfiltrates client data, the immediate consequence is data theft. But the secondary consequences include: regulatory notification requirements, customer churn risk, reputation damage, potential fines, competitive disadvantage. The tertiary consequences include: how your detection affects future attacker behavior, whether this was a testing phase for a larger operation, whether this exposes other gaps.
 
-At 100 incidents/day → ~$7K/year. A human analyst costs $80K+/year. If Claude accelerates analysis by 5%, it's ROI-positive.
+The GTG-1002 espionage campaign (disclosed November 2025) illustrates this. The initial detection wasn't a smoking gun — it was a *pattern*: unusual API usage from multiple accounts, requests for logs about recent policy changes, queries to enumerate infrastructure. Individually, any one could be legitimate. The *connection* between them told the story of reconnaissance.
 
-**The hidden cost of irrelevant context:** Including unnecessary content in your prompt (a full log file when only 5% applies) can double your token spend. Context engineering means curating what to include.
+Strategic connections are also about *dependencies*. If your detection depends on a firewall log, but the attacker compromised the firewall, your detection is broken. Strategic thinking means asking: What are the dependencies in our detection and response, and what happens if each one fails?
 
-### V&V Discipline: The CCT Companion
+> **💡 Discussion Prompt:** Think of a real or hypothetical attack. Map the timeline of events. Now remove each event one at a time. Which event, if missing, would have made detection impossible? Which events are redundant?
 
-The five pillars of CCT are thinking frameworks — they help you reason better about complex problems. V&V Discipline is an action framework — it tells you what to *do* before acting on AI-generated outputs.
+### Pillar 4: Adaptive Innovation
 
-Think of it this way: CCT helps you ask better questions. V&V Discipline helps you confirm the answers.
+This is the pillar most often misunderstood. "Adaptive" doesn't mean "improvise when things go wrong." It means *building in the assumption that you will be wrong, and preparing to change course*.
 
-**The Four Dimensions of V&V Discipline:**
+In adaptive innovation, you state your hypothesis clearly, identify what evidence would *prove you wrong*, and actively look for that evidence. If a security analyst believes an attacker is still in the network, an adaptive approach would be: "Here's what I believe. Here's the evidence that would prove me right. But here's also what I would observe if I'm wrong. I'm going to search for both."
 
-1. **Output Verification** (this semester) — "Is this true? Can I check?"
-   - Verify factual claims against independent sources
-   - Check for hallucination or fabrication
-   - Confirm that evidence cited actually exists and says what the agent claims
-   - Ask the agent to show its reasoning, then evaluate whether the reasoning supports the conclusion
+This is the opposite of defensive thinking, where every new piece of data either confirms ("see, that confirms it") or is ignored ("that's just noise"). Adaptive thinking keeps you nimble.
 
-2. **Calibrated Trust** (this semester) — "How much should I trust this specific output?"
-   - Factual lookups (CVE data, IP geolocation): high trust, light verification
-   - Pattern analysis (anomaly detection, correlation): medium trust, spot-check verification
-   - Judgment calls (intent assessment, risk severity): low trust, independent analysis required
-   - Action recommendations (isolate server, block user): near-zero trust, human decision required
+Adaptive innovation also applies to working with AI. An AI agent might generate a hypothesis you find compelling. Adaptive thinking says: "That's interesting. Now tell me: what would prove you wrong? What data would change your mind?" An agent that will defend its hypothesis as more evidence comes in is not adaptive. It's just stubborn.
 
-3. **Failure Imagination** (this semester) — "What if this is wrong?"
-   - Before acting on an AI recommendation, ask: what's the worst outcome if this is incorrect?
-   - Reversible actions (add a monitoring rule) have lower verification thresholds than irreversible actions (wipe a server)
-   - The consequence determines the verification effort, not the confidence score
+### Pillar 5: Ethical Governance
 
-4. **Adversarial Assumption** (Semester 2) — "Could someone have manipulated this?"
-   - Could an attacker have poisoned the data the agent used?
-   - Could the agent's tools have returned compromised results?
-   - Could the agent itself have been manipulated through prompt injection?
-   - This dimension connects directly to red teaming and adversarial AI (Unit 6)
+This is the pillar many security teams skip, to their peril. Ethics isn't a nice-to-have. It's a foundation.
 
-> **🔑 Key Concept:** You don't need to apply all four dimensions every time. Output Verification is the default — always do it. Calibrated Trust becomes instinctive with practice. Failure Imagination kicks in for high-consequence decisions. Adversarial Assumption is for threat modeling and security-critical deployments. The dimensions layer on as stakes increase.
+When you investigate a user, you're collecting data about their behavior. You might find they're innocent. But you've still surveilled them, flagged them internally, and affected their psychological safety at work. If you escalate without good evidence, you've damaged an innocent person — and exposed the organization to legal liability.
 
-### Automatic Prompt Caching
+Ethical governance means:
 
-Claude automatically caches prompt prefixes that are repeated across API calls. If your system prompt is 2K tokens and you make 100 API calls with the same system prompt:
-- Without caching: 100 × 2K = 200K tokens billed at full price
-- With caching: 2K tokens at full price + 99 × 2K at cache price (~10% of full price)
-- **Savings: ~90% on repeated context**
+- **Transparency:** People have a right to know they're being investigated (with narrow exceptions for active exfiltration or violence)
+- **Proportionality:** Your response should match the actual risk, not the potential worst case
+- **Accuracy:** You have a duty to verify before accusing
+- **Accountability:** There should be a record of who made which decision and why
 
-To optimize for caching:
-1. Put stable content first (system prompt, examples, reference material)
-2. Put variable content last (the actual incident data)
-3. Minimize changes to the early portion of your prompt between calls
+When an AI agent recommends an action (ban this user, block this IP, escalate to law enforcement), there should be a documented chain of reasoning. Not just "the model recommended it," but "we observed these indicators, we inferred this threat, we considered these alternatives, and we chose this response because..."
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on context engineering concepts. Start easy, then get harder."
-> - "I think I understand prompt caching but I'm not sure. Explain it to me differently and then test whether I really get it."
-> - "What are the three most common mistakes when doing context engineering for the first time?"
-> - "Connect this week's material on token economics to what we learned in Week 1 about the Engineering Assessment Stack."
+> **🔑 Key Concept:** Ethical governance in AI-assisted security isn't about being nice. It's about being reliable. Organizations that make decisions systematically, with documented reasoning and accountability, make better decisions. Full stop.
+
+> **📚 Study With Claude:** Open Claude Code with the Noctua repo mounted and try:
+> - "Quiz me on the five CCT pillars. Start easy, then get harder."
+> - "What are the most common cognitive biases in security analysis, and which CCT pillar addresses each one?"
+> - "Walk me through how CCT Pillar 4 (Adaptive Innovation) applies to working with AI agents."
+> - "Connect the Challenger disaster example to a modern AI-assisted security decision. What would Inclusive Perspective look like in a SOC?"
 
 ---
 
 ## Day 2 — Lab
 
-### Lab: Bias Identification & CCT-Structured Rewrite
-
-#### Company Profile: CloudShift
-
-CloudShift is a SaaS platform management company that helps mid-market businesses orchestrate their cloud infrastructure across AWS, Azure, and GCP. They have 300 employees, 800+ enterprise customers, and manage $2M/month in customer cloud spend. Their own infrastructure runs entirely on AWS (us-east-1 primary, us-west-2 DR). The security team is lean — a 4-person team handling everything from vulnerability management to incident response. They process sensitive customer data including cloud credentials, API keys, and infrastructure configurations. SOC 2 Type II certified, and their largest customers require annual penetration tests.
-
-> **🧠 Domain Assist:** To evaluate model outputs meaningfully, you need to understand what makes one analysis better than another. If you're not sure how to judge whether a context-engineered response is better, ask Claude Chat before starting:
->
-> "I'm about to compare naive vs. context-engineered AI outputs for security incident analysis. What does a high-quality structured analysis include? What do experienced SOC analysts look for that juniors miss? What are the telltale signs of a superficial vs. deep analysis?"
-
-> **💡 Tool Pattern:** Use **Chat** for the Phase 1 comparison and iteration work. Switch to **Code** for Phase 2 implementation. This is the Think → Build handoff.
+### The CloudShift Lateral Movement Case
 
 **Setup:**
 ```bash
-mkdir -p ~/noctua/week02
-cd ~/noctua/week02
+mkdir -p ~/noctua-labs/unit1/week2
+cd ~/noctua-labs/unit1/week2
 ```
 
-**Phase 1 (Claude Chat): Naive vs. Context-Engineered Prompt Comparison**
+#### Company Profile: CloudShift
 
-Start in Claude Chat — this is a thinking and iteration exercise before building.
+CloudShift is a SaaS platform management company that helps mid-market businesses orchestrate cloud infrastructure across AWS, Azure, and GCP. 300 employees, 800+ enterprise customers, managing $2M/month in customer cloud spend. Infrastructure runs on AWS (us-east-1 primary). The security team is lean — 4 people handling everything from vulnerability management to incident response. SOC 2 Type II certified.
 
-**Naive prompt:**
+#### Scenario Overview
+
+On March 4, 2026, at 14:22 UTC, a security alert fired: an EC2 instance (`prod-db-01`, a database server in us-east-1) spawned an unusual child process:
+
 ```
-Analyze this security alert: A user downloaded 47 files from the data warehouse at 2:34 AM from Singapore.
-Is this suspicious?
-```
-
-**Context-engineered prompt:**
-```
-You are a senior SOC analyst at Meridian Financial. Your role is to assess whether security alerts
-represent genuine threats, insider threats, or false positives.
-
-CONSTRAINTS:
-- Base all conclusions on observable evidence only
-- Use confidence levels: 0-100% for each hypothesis
-- State one assumption that, if wrong, would change your conclusion
-- Format output as JSON with: {threat_level, confidence, primary_hypothesis, alternative_hypothesis, next_investigation_step, assumptions}
-
-INCIDENT DATA:
-User: John Chen (VP Operations) | jchen@meridian.local
-IP: 203.45.12.89 (Singapore proxy) | Time: 2:34 AM EST
-Action: Downloaded 47 CSV files, 2.3 GB (revenue data, client balances)
-Auth: Valid credentials + successful MFA
-Recent context: 3 failed logins this week, last office access Feb 28
-
-Analyze this incident and provide structured assessment.
+cmd.exe /c powershell.exe -noprofile -c "Get-ChildItem C:\Users\ -recurse | Select-Object FullName"
 ```
 
-Document: How does the output quality differ? Which response would you trust more in a real incident?
+This is a reconnaissance command enumerating user directories. The process ran for 3 seconds and exited. No obvious follow-up activity. The instance has been running for 72 days without incident. The attached IAM role has permissions for:
+- S3 read (buckets: customer-configs, logs, backups)
+- RDS read/write (all databases)
+- EC2 describe/list
+- CloudWatch logs read
 
-**Phase 2 (Claude Code): Implement as Python System**
+Initial response: SOC escalated to Level 2 (team lead), but hasn't called an all-hands incident yet.
 
-Once you've validated the prompt design in Chat, implement it as a Python system with the Claude SDK:
+#### Lab Data Files
 
-```python
-import anthropic
-import json
-import csv
-from datetime import datetime
+Create these files in your working directory before starting:
 
-client = anthropic.Anthropic()
+**`cloudshift-logs.txt`**
+```
+[EC2 Instance: prod-db-01]
+Launch Date: Dec 18, 2025
+OS: Windows Server 2019
+Patching: Current (Feb 2026 patches applied)
+Network: Restricted security group - port 3306 (MySQL) inbound only from app tier
 
-SYSTEM_PROMPT = """You are a senior SOC analyst at Meridian Financial.
-Analyze security incidents with rigor and accuracy.
+[Recent Activity, past 14 days]
+Mar 2: Normal database operations, CPU 25-40%, no unusual network
+Mar 3: Normal operations, CPU 30-35%
+Mar 4 14:00-14:21 UTC: Normal operations
+Mar 4 14:22 UTC: cmd.exe spawned, directory enumeration command
+Mar 4 14:25 UTC: Process exited. No further cmd.exe execution
+Mar 4 14:30 UTC: Large outbound S3 transfer (2.3 GB, prod-db-01 to customer-configs bucket)
+Mar 4 14:32 UTC: S3 bucket access log shows 47 file downloads
+Mar 4 14:35 UTC: RDS database read query targeting customer_accounts table
+Mar 4 14:37 UTC: Query execution halted. IAM role temporarily revoked by automated alert system
+Mar 4 14:38 UTC: Instance terminated manually by security team
 
-CONSTRAINTS:
-- Base all conclusions on observable evidence only
-- Use confidence levels 0-100% for each hypothesis
-- State one assumption that would change your conclusion if wrong
-- Always return valid JSON with the required structure
+[No indicators of OS-level compromise]
+- No suspicious scheduled tasks
+- No new user accounts
+- No persistence mechanisms (no WMI event subscriptions, no registry modifications)
+- Boot logs normal
 
-OUTPUT FORMAT:
-{
-  "threat_level": "critical|high|medium|low|false_positive",
-  "confidence": 0-100,
-  "primary_hypothesis": "string",
-  "alternative_hypothesis": "string",
-  "next_investigation_step": "string",
-  "assumptions": ["string"],
-  "audit_trail": {
-    "analyst": "claude-sonnet",
-    "timestamp": "ISO8601",
-    "evidence_cited": ["string"]
-  }
-}"""
-
-def analyze_incident_naive(incident_data: str) -> dict:
-    """Naive approach: no system prompt, minimal context."""
-    start = datetime.now()
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": f"Analyze this security alert: {incident_data}"}]
-    )
-    duration = (datetime.now() - start).total_seconds()
-    return {
-        "response": response.content[0].text,
-        "input_tokens": response.usage.input_tokens,
-        "output_tokens": response.usage.output_tokens,
-        "duration_sec": duration,
-        "approach": "naive"
-    }
-
-def analyze_incident_engineered(incident_data: str) -> dict:
-    """Context-engineered approach: system prompt + structured output."""
-    start = datetime.now()
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1024,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": f"Analyze this incident:\n{incident_data}"}]
-    )
-    duration = (datetime.now() - start).total_seconds()
-    return {
-        "response": response.content[0].text,
-        "input_tokens": response.usage.input_tokens,
-        "output_tokens": response.usage.output_tokens,
-        "duration_sec": duration,
-        "approach": "engineered"
-    }
-
-INCIDENT = """
-User: jchen@meridian.local (John Chen, VP Operations)
-Source IP: 203.45.12.89 (GeoIP: Singapore, proxy service)
-Action: Downloaded 47 CSV files (2.3 GB) from data warehouse
-Files: Revenue reports, client balances, transaction histories
-Time: March 3, 2026, 2:34 AM EST (outside business hours)
-Auth: Valid credentials + successful MFA
-Context: 3 failed logins this week; last office access Feb 28
-"""
-
-# Run comparison
-naive_result = analyze_incident_naive(INCIDENT)
-engineered_result = analyze_incident_engineered(INCIDENT)
-
-# SDK Cost Tracking
-SONNET_INPUT_PRICE = 3.0 / 1_000_000  # $3 per MTok
-SONNET_OUTPUT_PRICE = 15.0 / 1_000_000  # $15 per MTok
-
-def calculate_cost(result):
-    return (result["input_tokens"] * SONNET_INPUT_PRICE +
-            result["output_tokens"] * SONNET_OUTPUT_PRICE)
-
-# Save costs to CSV
-with open("metrics/week02-costs.csv", "w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["approach", "input_tokens", "output_tokens", "cost_usd", "duration_sec"])
-    writer.writerow([
-        "naive", naive_result["input_tokens"], naive_result["output_tokens"],
-        f"{calculate_cost(naive_result):.6f}", naive_result["duration_sec"]
-    ])
-    writer.writerow([
-        "engineered", engineered_result["input_tokens"], engineered_result["output_tokens"],
-        f"{calculate_cost(engineered_result):.6f}", engineered_result["duration_sec"]
-    ])
-
-print(f"Naive cost: ${calculate_cost(naive_result):.6f}")
-print(f"Engineered cost: ${calculate_cost(engineered_result):.6f}")
+[Network Analysis]
+- Instance had no inbound SSH/RDP sessions during the window
+- All activity consistent with legitimate automated operations
+- No evidence of C2 communication
 ```
 
-Create the metrics directory first:
-```bash
-mkdir -p ~/noctua/metrics
+**`team-perspectives.txt`**
+```
+[Database Administrator perspective]
+- Prod-db-01 hosts customer master accounts and transaction logs
+- The S3 transfer to customer-configs was NOT scheduled (I checked the backup jobs)
+- The database query on customer_accounts is suspicious - no legitimate user should bulk-read that table
+- But: I manually tested credential compromise last week, and this doesn't match the attack pattern
+  (legitimate remote access would be SSH key-based, not raw OS commands)
+- Question: Could this be a compromised IAM role rather than an OS compromise?
+
+[Network Team perspective]
+- The security group allows only port 3306 (MySQL) inbound. RDP/SSH rules are not present.
+- So how did an attacker get a shell to run that cmd.exe command?
+- If it wasn't remote access, it must be local execution. Scheduled task? Malware? But we see no evidence.
+- The outbound S3 transfer was large but routable through normal AWS API calls
+- This doesn't look like a typical EC2 compromise - it looks like someone's using the IAM role from outside
+
+[Application Team perspective]
+- Prod-db-01 is the database. Our application (CloudShift API) accesses it via connection pooling
+- We did deploy a new version of the API on Mar 3 evening (US Eastern time)
+- The new version includes a feature to export customer configuration to S3 for backups
+- Could this be the new code behaving unexpectedly? Let me check the logs from the deployment...
+
+[Incident Response Team perspective]
+- This looks like lateral movement: Attacker got EC2 access, then leveraged IAM role to access data
+- Need to assume breach. Notify customers. Begin forensics.
+- But wait: If this is lateral movement, why no persistence? Why such a short execution window?
+- And the commands were very basic - a real attacker would be more sophisticated
+
+[Finance/Legal perspective]
+- If this is a real breach of customer data, we have 72 hours to notify customers under CCPA
+- The S3 bucket "customer-configs" contains customer connection strings and API keys (not good)
+- Even if not a breach, the unauthorized data access is a compliance violation
+- We need clarity fast before we have to make notification decisions
 ```
 
-**Phase 3: SDK Cost Tracking Exercise**
+---
 
-Run the script and compare:
-1. How many more tokens did the naive approach use vs. engineered?
-2. Was the naive approach actually cheaper? (Often it costs MORE because the output is verbose and unstructured)
-3. Which output would you trust to make a real security decision?
+#### Part 1: Unstructured Analysis (15 minutes)
 
-**Save results to:** `~/noctua/metrics/week02-costs.csv`
+Assign roles within your team (2–3 people): Database Admin, Network Lead, Application Lead, Incident Commander.
 
-#### V&V Lens: Calibrated Trust in Practice
+Without any structure or framework, spend 10 minutes discussing:
+- "What happened here?"
+- "Is this a security incident or false alarm?"
+- "What should we do?"
 
-This lab naturally demonstrates Calibrated Trust. As you compare naive and context-engineered outputs, notice:
+Document the conversation. Record:
+- Did people agree?
+- Were there conflicting conclusions?
+- What was the decision reached?
+- How confident are you in that decision?
 
-- Different prompt structures produce different answers to the same question. Which do you trust more? Why?
-- The context-engineered output has confidence levels and evidence citations. Does this make it *actually* more trustworthy, or just *feel* more trustworthy?
-- Notice which parts of the output are factual lookups (verifiable) vs. judgment calls (requiring scrutiny). Trust calibration means treating these differently.
+> **Separate the security track from the personnel track.** Investigation data (logs, alerts, access records) and personnel data (HR records, role, employment status) must be handled in separate workstreams. Attribution and containment are distinct processes. Do not include personnel judgments in technical incident documentation.
 
-**V&V Component:** After completing Phase 2, designate 5 minutes to apply Output Verification to the context-engineered response:
-1. Pick the highest-confidence claim in the JSON output
-2. Does the evidence cited in `evidence_cited` actually support that claim?
-3. Is the confidence level internally consistent with the evidence quality?
-4. Document: did verification change your assessment of the output?
+---
 
-> **💡 Tool Pattern for V&V:** Use **Chat** to iterate on prompt design (think). Use **Code** to implement and measure (build). Use **Chat** again to reflect on what the cost comparison tells you about good vs. poor prompting (retro).
+#### Part 2: CCT-Structured Analysis (35 minutes)
+
+Analyze the *same* scenario using the five CCT pillars.
+
+**Pillar 1: Evidence-Based Analysis (7 minutes)**
+
+Create `evidence-layer.md`:
+
+```markdown
+## OBSERVATIONS (Facts from logs)
+
+### Confirmed Events
+- Date/Time: March 4, 2026, 14:22 UTC
+- Instance: prod-db-01 (Windows Server 2019)
+- Process: cmd.exe spawned, executed PowerShell directory enumeration
+- Duration: 3 seconds execution
+- Outcome: Process exited normally
+- S3 Activity: 2.3 GB transferred to customer-configs bucket at 14:30 UTC (8 min after cmd.exe)
+- RDS Activity: customer_accounts table queried at 14:35 UTC (13 min after cmd.exe)
+- Security Response: IAM role revoked at 14:37 UTC; instance terminated at 14:38 UTC
+
+### What We Did NOT Observe
+- No RDP/SSH sessions in any logs
+- No new user accounts on the OS
+- No scheduled tasks created
+- No registry modifications
+- No malware signatures detected
+- No C2 communication
+- No persistence mechanisms
+
+## LAYER 2: INFERENCES (What might this mean?)
+
+Inference A: "The cmd.exe process means the instance was compromised at the OS level"
+  - Evidence for: Process execution on the instance itself
+  - Evidence against: No RDP/SSH sessions; no persistence; only 3 seconds; no follow-up
+
+Inference B: "The S3 transfer was unauthorized exfiltration"
+  - Evidence for: Timing (8 min after cmd.exe); large size; sensitive bucket
+  - Evidence against: Transfer used normal AWS API; consistent with automated backup code
+
+## LAYER 3: HYPOTHESES
+
+Hypothesis A: OS-level compromise — attacker executed commands on prod-db-01, used IAM role to exfil
+Hypothesis B: Compromised IAM role — attacker using credentials from outside AWS
+Hypothesis C: Legitimate code behaving unexpectedly — buggy Mar 3 deployment
+Hypothesis D: False alarm — all activity is legitimate
+```
+
+**Pillar 2: Inclusive Perspective (8 minutes)**
+
+Create `perspectives.md` — for each team (DBA, Network, Application, Incident Response):
+- What information do they have that others don't?
+- What assumption might they be making that others would challenge?
+- What question would they ask to resolve the uncertainty?
+
+Use the `team-perspectives.txt` data file as your source.
+
+> **🧠 Domain Assist:** If you haven't worked in one of these roles, open Claude Code and ask: "Brief me on what a Database Administrator would notice about suspicious query activity — what's normal vs. abnormal, what logs they'd check." Repeat for network team and HR. This is Inclusive Perspective in action.
+
+**Pillar 3: Strategic Connections (7 minutes)**
+
+Create `connections.md`. Map the timeline:
+
+```mermaid
+flowchart TD
+    A((14:22 UTC)):::trigger --> B["cmd.exe directory enumeration\nPowerShell Get-ChildItem recon"]
+    B -->|"8 min gap"| C((14:30 UTC)):::trigger
+    C --> D["S3 transfer — 2.3 GB\ncustomer-configs bucket\n47 files downloaded"]
+    D -->|"Config/API key data\nfrom customer setups"| E((14:35 UTC)):::trigger
+    E --> F["RDS read query\ncustomer_accounts table\ntransaction histories"]
+    F -->|"Larger dataset extracted"| G((14:37 UTC)):::trigger
+    G --> H["IAM role revoked\nautomated alert system"]
+    H --> I((14:38 UTC)):::trigger
+    I --> J["Instance terminated\nmanual security decision"]:::danger
+
+    classDef trigger fill:#1f6feb,stroke:#388bfd,color:#fff
+    classDef danger fill:#f85149,stroke:#da3633,color:#fff
+```
+
+For each narrative (Lateral Movement, Insider Threat, Buggy Code), document:
+- Second-order effects if this narrative is true
+- Dependencies in your detection/response that could fail
+
+**Pillar 4: Adaptive Innovation (7 minutes)**
+
+Create `adaptive-questions.md`:
+
+```markdown
+## My Current Hypothesis
+[State it clearly]
+
+## Evidence That Would Prove Me RIGHT
+[List 2-3 specific observations you'd expect to see]
+
+## Evidence That Would Prove Me WRONG
+[For each assumption you're making, what would falsify it?]
+
+## Action Plan (ordered by diagnostic value)
+1. [Check X first — takes 5 min, eliminates hypothesis A if negative]
+2. [Check Y second — takes 10 min, differentiates B from C]
+3. [Check Z third — takes 1-2 hours, confirms/denies OS compromise]
+```
+
+**Pillar 5: Ethical Governance (6 minutes)**
+
+Create `ethics.md`. For each possible action (escalate now, investigate first, close as false alarm):
+- Who is affected?
+- Is this proportional to the evidence so far?
+- What's your accountability record?
+
+| Decision | Who | When | Evidence | Reasoning | Outcome |
+|----------|-----|------|----------|-----------|---------|
+| Escalate to L2? | SOC Analyst | 14:40 UTC | cmd.exe + S3 transfer | Both together suggest compromise | Investigation launched |
+| Revoke IAM role? | Automated | 14:37 UTC | Alert threshold | Prevent further access | Clean if false alarm? |
+| Terminate instance? | Incident Commander | 14:38 UTC | Precautionary | Assume breach | Production downtime — was this right? |
+
+---
+
+#### Part 3: Comparison & Debrief (10 minutes)
+
+Reconvene as a team. Compare your unstructured discussion (Part 1) with your CCT-structured analysis (Part 2):
+
+1. **Did you reach the same conclusion?** If not, why? Which process was more rigorous?
+2. **Confidence:** On a scale of 1–10, how confident were you in each conclusion?
+3. **Time:** Did CCT add time, or save it by preventing false escalations?
+4. **Surprising insights:** What did the Inclusive Perspective pillar surface that you hadn't considered?
 
 ---
 
 ## Deliverables
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+> **🛠️ Use Claude Code with the Noctua repo mounted.** Use `/think` to structure your analysis before drafting, and Cowork to organize your final submission.
 
-1. **Comparison report** (500–750 words) — naive vs. context-engineered prompt: quality difference, cost difference, which you'd trust for a real incident decision
-2. **`week02-costs.csv`** — actual token counts and costs for both approaches
-3. **Python script** — your working implementation with comments explaining each design choice
-4. **Governance reflection** — "What if someone feeds false context to your context-engineered system? The system prompt says 'base conclusions on evidence' — what happens if the 'evidence' is fabricated?"
-5. **V&V documentation** — which claims did you verify, how, and did verification change your assessment?
+1. **CCT Analysis Report** (1,500–2,000 words)
+   - The five completed markdown files from Part 2
+   - A synthesis: Given all five pillars, what's your final assessment? Is this a breach? What's the next action?
+   - Comparison: How did unstructured vs. CCT-structured analysis differ?
 
-> **📁 Save to:** `~/noctua/analysis/week02/` (analysis outputs), `~/noctua/metrics/` (cost CSV), `~/noctua/deliverables/week02/` (final submission)
+2. **Team Debrief Memo** (300–500 words)
+   - How did including multiple perspectives change the analysis?
+   - What assumption did your team initially make that was challenged by the data?
+   - How would you pitch the CCT framework to a security leader skeptical of "process overhead"?
+
+3. **Decision Log** (CSV or table)
+   - Key decision points, supporting evidence, who decided, when
+
+> **📁 Save to:** `~/noctua-labs/unit1/week2/` (analysis outputs), `~/noctua/deliverables/week02/` (final submission)
 
 ---
 
 ## AIUC-1 Integration
 
-**Domain E (Accountability):** First formal introduction.
-
-Your structured JSON output this week is not just a convenience — it *is* your audit trail. The `audit_trail` field in the output schema captures analyst identity, timestamp, and evidence cited. This is AIUC-1 E in practice:
-
-- **E001 — Decision logging:** Every API call produces a structured record
-- **E002 — Evidence citation:** The `evidence_cited` field documents what was used to reach the conclusion
-- **E003 — Accountability chain:** The `analyst` field (even when it's "claude-sonnet") establishes who made the call
-
-> **Governance Moment:** "Your structured output IS an audit trail. If you can't explain why the model reached a conclusion, you can't defend the decision to a regulator."
+**Not yet formally introduced.** Students encounter governance through CCT Pillar 5 (Ethical Governance) and the decision log exercise. The accountability table in Pillar 5 is proto-AIUC-1 E001 (decision logging) — students are building the habit before learning the framework name. AIUC-1 Domains are introduced progressively starting Week 3.
 
 ## V&V Lens
 
-**Output Verification:** This week introduces verifying the context-engineered output. Steps:
-1. Check that the JSON is valid (parse it)
-2. Check that confidence levels are internally consistent (high confidence + high threat + "no next step needed" is a red flag)
-3. Check that evidence cited actually appears in the incident data
+**Light touch this week:** After completing Part 2, apply V&V to one claim from your CCT analysis:
+1. Pick the highest-confidence claim in your `adaptive-questions.md`
+2. Does the evidence in `evidence-layer.md` actually support that claim?
+3. Is your confidence level internally consistent with the evidence quality?
 
-The V&V discipline this week: "Can I reconstruct the reasoning from the evidence cited?"
+Document: did this check change your assessment?
