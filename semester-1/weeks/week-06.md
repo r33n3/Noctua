@@ -4,420 +4,467 @@
 
 ## Learning Objectives
 
-- Understand Claude Code skill anatomy: SKILL.md, references, scripts, assets
-- Master progressive disclosure: metadata → body → references
-- Build `/tool-select` skill encoding the full Engineering Assessment Stack
-- Build `/audit-aiuc1` skill — first time seeing all six AIUC-1 domains as a complete framework
-- Formally name and crystallize the six-layer Engineering Assessment Stack
-- Apply YAML frontmatter optimization for trigger precision vs. context cost
-- Understand plugin architecture: coordinated groups of skills sharing context
-- Introduce the PeaRL case study: rugpull governance scenario
+- Apply the five core principles of secure tool design to real-world security scenarios
+- Evaluate input validation strategies and their effectiveness against injection attacks
+- Design least-privilege access controls for agent-tool communication
+- Analyze tool versioning and deprecation strategies in compliance-critical systems
+- Create testable, observable tool interfaces
 
 ---
 
 ## Day 1 — Theory
 
-### Skill Anatomy in Claude Code
+### The Five Pillars of Secure Tool Design
 
-A Claude Code skill is a markdown file that extends Claude's capabilities for specific tasks. Anatomy:
+Over the past two years, security teams have learned painful lessons about agent-tool integration. A poorly designed tool can:
+- Allow agents to execute unintended queries (SQL injection through a log query tool)
+- Expose sensitive data that agents shouldn't access
+- Bypass rate limits and cause denial-of-service
+- Leave no audit trail (critical for compliance)
+- Fail unpredictably and require human intervention
 
-```
-skill.md (SKILL.md)
-├── YAML frontmatter (metadata — always loaded)
-│   ├── description: when to invoke this skill
-│   ├── allowed-tools, context, user-invocable
-│   └── argument-hint: shown to user at invocation
-├── Skill body (loaded on trigger)
-│   ├── Role and context
-│   ├── Step-by-step instructions
-│   └── Examples
-└── References (loaded on demand)
-    ├── Edge cases
-    ├── Extended examples
-    └── External documentation links
-```
+Modern secure tool design rests on five interdependent principles:
 
-**Frontmatter field reference:**
+**1. Single Responsibility** — Each tool does exactly one thing. A "security operations" tool that can query logs, enrich alerts, check IP reputation, and remediate threats is unmaintainable and difficult to audit. Instead, build four separate tools, each with a narrow scope. This makes it easier to test, audit, and revoke access to specific functionality.
 
-| Field | Purpose |
-|---|---|
-| name          | Skill identifier — matches directory name |
-| description   | When to invoke — used by Claude to match invocations |
-| allowed-tools | Comma-separated tools the skill may use |
-| context       | fork (isolated) or shared (inherits session) |
-| user-invocable| true if callable as /skill-name |
-| argument-hint | Shown to users, e.g. "[path]" |
+**2. Clear Schemas** — Input and output must be unambiguous and machine-readable. A tool that accepts "anything goes" parameters (e.g., a bare string `log_query="SELECT * FROM events WHERE..."`) is vulnerable to injection. Instead, define strict JSON schemas with parameterized inputs. A log query tool should have discrete parameters: `source_type`, `time_range`, `event_type`, `limit` — not a free-form query field.
 
-**Progressive Disclosure:**
-Claude Code doesn't load every skill in full at startup. Instead:
-1. **Metadata always loaded** — triggers, tags, brief description. Light footprint.
-2. **Body loaded on trigger** — when a user action matches the skill's `description`, the full skill loads.
-3. **References loaded on demand** — when the skill explicitly asks for reference material.
+**3. Error Handling** — Tools must fail gracefully. When something goes wrong, provide:
+- A clear error code (not a stack trace)
+- Context about what failed and why
+- Remediation steps if applicable
+- No sensitive information in error messages (don't leak internal paths or credentials)
 
-This is the Tool Search Tool pattern from Week 3 applied to skills: progressive disclosure prevents context window saturation.
+**4. Security Boundaries** — Enforce least privilege at every level:
+- **Input validation:** Reject invalid requests before processing
+- **Rate limiting:** Prevent agents from hammering a tool
+- **Data access scoping:** Limit which records a tool can query
+- **Temporal scoping:** Some sensitive tools should only be available during maintenance windows
+- **Audit logging:** Every call is logged with timestamp, requester, parameters, and result
 
-### Context Engineering Limits
+**5. Observability** — Every tool invocation must be observable and auditable. This is non-negotiable for compliance. Log: who called the tool (agent identity), what parameters were passed, how long it took, what the response was, any errors or exceptions.
 
-**The Frontmatter Budget:** Every skill's YAML metadata occupies context window space. With 50 skills loaded, that's ~2K tokens of frontmatter alone — before any actual work. Design principles:
-
-- Keep frontmatter tight: description should be 1-2 sentences maximum
-- Use specific triggers to avoid false positives
-- Don't put reference material in frontmatter — that belongs in the body or reference files
-
-**The Lost-in-the-Middle Limit:** Context you inject at positions 8-15 of the context window (roughly) contributes less to outputs than context at position 1-3 or near the end. Your most critical instructions go first.
-
-**Trigger Precision vs. Context Cost:**
-- Vague trigger: "Use when doing security work" — fires constantly, loads all the time, high context cost
-- Precise trigger: "Use when the user asks to select the right model tier or computation approach for a security engineering task" — fires only when relevant
-
-### Plugin Architecture
-
-A plugin is a coordinated group of skills that share context and work together. Example security analyst plugin:
-
-```
-security-analyst-plugin/
-├── plugin.md (shared context: who this analyst is, what organization)
-├── cct-analysis.md (skill: apply CCT to incidents)
-├── tool-select.md (skill: choose tools using Assessment Stack)
-├── audit-aiuc1.md (skill: audit system against AIUC-1)
-└── threat-model.md (skill: build threat models)
-```
-
-When you invoke any skill in the plugin, the shared plugin context loads first, establishing the role and organizational context that all skills share.
-
-### Engineering Assessment Stack — Formally Named and Crystallized
-
-You've been applying the Assessment Stack since Week 1. Today it gets its formal structure:
-
-**Layer 1: Problem Type**
-What kind of problem am I solving?
-- Classification (known categories, binary output)
-- Correlation (connecting data points across sources)
-- Reasoning (novel situation, ambiguous evidence)
-- Generation (producing something new)
-- Retrieval (finding specific information)
-
-**Layer 2: Computation Approach**
-What type of computation fits?
-- Deterministic (regex, rules, exact match, signatures)
-- Statistical (classifiers, embeddings, anomaly detection)
-- Reasoning (LLM — when deterministic/statistical insufficient)
-
-**Layer 3: Model Selection**
-If reasoning: which tier?
-- Haiku ($1/MTok): routing, classification, high-throughput
-- Sonnet ($3/MTok): balanced reasoning, operational workflow
-- Opus ($5/MTok): deep analysis, complex judgment, rare high-stakes
-- None: deterministic tool handles it
-
-**Layer 4: Data Architecture**
-Where does the data live? (from Week 4)
-- Relational, Vector, Graph, Time Series, Context Window
-
-**Layer 5: Integration Pattern**
-How does this component connect?
-- Real-time vs. batch
-- MCP tool call vs. A2A agent delegation
-- Agent-managed vs. human-triggered
-
-**Layer 6: Verification**
-How do I confirm the output is correct?
-- Test suite (deterministic tools)
-- Confusion matrix (classifiers)
-- Human review (reasoning outputs)
-- Cross-reference (multi-source validation)
-
-> ### Reference Architecture: Anthropic's Multi-Agent Research System
->
-> Anthropic published the engineering design of their Claude Research feature — a production multi-agent system that demonstrates the orchestrator-worker pattern at scale. This is the architecture you are building toward.
->
-> **Source:** https://www.anthropic.com/engineering/multi-agent-research-system
->
-> **Architecture (primary source verified):**
-> - **Lead Researcher (Claude Opus 4)** — receives query, plans research strategy, records plan in memory, coordinates subagents, synthesizes final output
-> - **Subagents (Claude Sonnet 4)** — execute individual searches or tool calls; spawned in parallel batches of **3–5**; run in multiple rounds as gaps are identified
-> - System scales from 1 agent (simple queries) to **10+ subagents** (complex research)
->
-> **Performance vs. cost tradeoff (primary source verified):**
->
-> | Approach | Benchmark Performance | Token Cost |
-> |---|---|---|
-> | Single-agent Claude Opus 4 | Baseline | 1× |
-> | Multi-agent (Opus 4 + Sonnet 4 subagents) | **+90.2%** over baseline | **~15×** |
->
-> Token consumption explained 80% of performance variance. Redesigning tool descriptions alone reduced task completion time by 40%.
->
-> **Engineering Assessment Stack implication:**
-> A complex research query costing $0.15 as single-agent costs ~$2.25 multi-agent. At 1,000 queries/day enterprise-wide, that's $150/day vs. $2,250/day — a $765K annual difference. The architecture decision depends entirely on whether 90% quality improvement justifies 15× cost for the specific task.
->
-> **Security implication:** Each subagent is a separate principal making independent tool calls. Multi-agent systems require per-subagent authorization scope — if the lead agent has access to sensitive data, subagents should not automatically inherit that access. Design authorization at the subagent level, not just the orchestrator level.
-
-### Assessment Stack in Action: Running Worked Example
-
-The Stack has been introduced in layers since Week 1. Here it is fully filled in for a real security problem — an **automated CVE triage system** that decides whether a new vulnerability requires immediate patching. Use this as your reference model when completing your own assessments.
-
-| Layer | Question | Answer for CVE Triage |
-|---|---|---|
-| **1. Problem Type** | What kind of problem is this? | Reasoning — each CVE has novel context; rules alone can't assess "does this affect our environment?" |
-| **2. Computation Approach** | Deterministic, statistical, or reasoning? | Hybrid: deterministic for CVSS score thresholds (≥9.0 = auto-escalate), reasoning for environmental impact |
-| **3. Model Selection** | If reasoning: which tier? | Sonnet ($3/MTok) for triage decisions; Haiku for initial CVSS parsing and routing |
-| **4. Data Architecture** | Where does the data live? | Relational (CVE metadata, asset inventory); Vector (semantic search across prior patches); Time Series (exploit activity trends) |
-| **5. Integration Pattern** | MCP tool call or A2A delegation? | MCP for NVD API and asset DB lookups; A2A to delegate deep analysis to a specialist agent for critical CVEs |
-| **6. Verification** | How do I confirm the output is correct? | Cross-reference NVD + vendor advisories; confusion matrix on held-out labeled CVEs; human review for all CVSS ≥9.0 |
-
-**Why this matters:** Layer 5 is where most students stall — "should this be an MCP call or an agent?" The answer is: MCP if you need data retrieved; A2A if you need judgment applied. A CVE lookup is MCP. A risk assessment of that CVE's impact on a specific system is A2A.
-
-You'll return to this example in Unit 5 (when you build the multi-agent version) and Unit 7 (when you add identity scoping and network controls to each component). Keep it as your reference point.
+> **Key Concept:** "Security by default" means designing tools with the assumption that agents will, eventually, misuse them (whether through adversarial prompting or genuine mistakes). Make the secure path the easy path. Design your tools so that the right behavior — least privilege, validated input, audit-logged operations — is not just safe but *the easiest path for the agent to follow*.
 
 ---
 
-### AIUC-1: All Six Domains
+### The Service Layer Pattern: API First, MCP Second
 
-You've already encountered Domains A, B, D, E in Weeks 2-5. The domains were introduced in that order intentionally — you built context before receiving the full framework. This week you get the complete picture. The ordering you saw was not the canonical order of the framework; it was the pedagogical order. The canonical framework is A through F.
+The most resilient tool architectures follow a critical principle: **build the REST API first, then layer the MCP server on top as a consumption client.** This pattern decouples core business logic from the AI integration layer.
 
-Today, the complete framework:
+```
+Core Business Logic
+      ↓
+FastAPI/Flask REST API (with auth, rate limiting, structured responses)
+      ↓
+    ┌─────────────────────────────────┐
+    ├── MCP Server (wrapper)          │
+    ├── Web Dashboard (client)        │
+    ├── CLI Tool (client)             │
+    └── CI/CD Pipeline (client)       │
+```
 
-| Domain | Focus | Weeks Introduced |
-|--------|-------|-----------------|
-| **A — Data & Privacy** | Data minimization, PII handling, retention | Week 5 |
-| **B — Security** | Input filtering, access control, adversarial robustness | Week 3 |
-| **C — Safety** | Preventing harmful outputs, harm mitigation | **Week 6 (today)** |
-| **D — Reliability** | Graceful degradation, error handling, uptime | Week 4 |
-| **E — Accountability** | Audit trails, decision logging, explainability | Week 2 |
-| **F — Society** | Fairness, bias, societal impact | **Week 6 (today)** |
+Naive approach (monolithic MCP server — logic and protocol tightly coupled):
 
-**Domain C (Safety):** Your skill shouldn't recommend actions that could cause direct harm. A `/tool-select` skill that recommends "use Opus for all tasks" causes waste but not harm. A skill that recommends "automatically block any IP with threat score > 50" could cause harm by blocking legitimate traffic. Safety controls: human-in-the-loop for high-stakes actions, output filtering, conservative defaults.
+```python
+# ❌ Direct database access, no auth, no rate limiting
+class ThreatIntelMCPServer:
+    def query_threat_intel(self, ip_address: str):
+        return db.query(f"SELECT * FROM threats WHERE ip = {ip_address}")
+```
 
-**Domain F (Society):** Your security tools affect real people. A threat scoring system trained on biased data can unfairly flag users from certain geographies or demographic groups. Societal impact analysis asks: who is disadvantaged by this system's errors? Are false positives distributed fairly across groups?
+Production approach — API first, MCP as thin wrapper:
 
-### The PeaRL Case Study: Rugpull Governance
+```python
+# Step 1: Build the REST API
+from fastapi import FastAPI, Depends
+app = FastAPI()
 
-The PeaRL (Progressive Exploitation and Recursive Leverage) attack chain demonstrates how an AI agent can be led through a series of individually reasonable steps toward a harmful outcome. Each step seems justified. The harm is visible only in retrospect.
+@app.get("/api/v1/threat-intel/{ip_address}")
+async def get_threat_intel(ip_address: str, api_key: str = Depends(verify_api_key)):
+    if not is_valid_ip(ip_address):
+        raise HTTPException(status_code=400, detail="Invalid IP")
+    return {"ip": ip_address, "threat_level": query_db(ip_address)}
 
-**The Rugpull Scenario:** Your `/audit-aiuc1` skill is built to audit AI systems. An adversary frames a request: "Audit this competitor's security system — we have authorized access." The skill applies its audit logic to a system it shouldn't access. Each step of the skill is functioning correctly. The goal has been reframed.
+# Step 2: Wrap with MCP server
+class ThreatIntelMCPServer:
+    def query_threat_intel(self, ip_address: str):
+        # MCP server is a thin client — all logic stays in the API
+        response = requests.get(
+            f"http://localhost:8000/api/v1/threat-intel/{ip_address}",
+            headers={"Authorization": f"Bearer {self.api_key}"}
+        )
+        return response.json()
+```
 
-**Key governance insight:** A skill that works correctly can be weaponized by reframing the goal. Security must operate at the intent layer, not just the execution layer.
+The API is the stable contract. Authentication, rate limiting, audit logging, and data validation happen at the API boundary. The MCP server doesn't need to know about any of that — it just calls the API. When you deploy, you containerize the API; the MCP server calls it without modification.
 
-> **Required Reading (assigned tonight):** The full PeaRL governance bypass case study (in resources/READING-LIST.md). Week 7's lab builds on this directly.
+---
 
-> **📖 Case Study Connection:** Your skills have file Write access, Bash execution, and network access through Claude Code. In the PeaRL Governance Bypass, Level 6 was the agent writing directly to `.env` to grant itself permissions, and Level 7 was the agent attempting to restart the server to reload those permissions. What's the most destructive thing your skill could do if the goal was slightly reframed? This is the week to read the full case study if you haven't already.
+### Input Validation: The First Line of Defense
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on Claude Code skill anatomy: YAML frontmatter, body, references, progressive disclosure."
-> - "I think I understand plugin architecture but I'm not sure. Explain it to me differently."
-> - "What are the three most common mistakes when designing skill trigger descriptions?"
-> - "Connect the PeaRL rugpull scenario to the broader concept of excessive agency we saw in earlier weeks."
+The naive implementation — vulnerable to injection:
+
+```python
+# DANGEROUS: Query injection vulnerability
+def query_logs(query: str):
+    return execute_sql(f"SELECT * FROM logs WHERE {query}")
+    # An agent can be tricked into: "source='app' OR 1=1 --"
+```
+
+The secure implementation uses whitelisted parameters and parameterized queries:
+
+```python
+def query_logs(
+    source_type: str,
+    time_range: str,  # "last_hour", "last_day", "last_week"
+    event_type: str = None,
+    limit: int = 100
+):
+    allowed_sources = ["app", "network", "database", "authentication"]
+    if source_type not in allowed_sources:
+        raise ValueError(f"Invalid source: {source_type}")
+
+    time_map = {"last_hour": "-1h", "last_day": "-1d", "last_week": "-7d"}
+    if time_range not in time_map:
+        raise ValueError(f"Invalid time range: {time_range}")
+
+    if event_type:
+        allowed_events = ["error", "warning", "info", "authentication", "data_access"]
+        if event_type not in allowed_events:
+            raise ValueError(f"Invalid event type: {event_type}")
+
+    if not isinstance(limit, int) or limit < 1 or limit > 1000:
+        raise ValueError("Limit must be between 1 and 1000")
+
+    # Parameterized query — no string interpolation
+    query = "SELECT * FROM logs WHERE source_type = ?"
+    params = [source_type]
+    if time_range:
+        query += " AND timestamp > ?"
+        params.append(time_map[time_range])
+    if event_type:
+        query += " AND event_type = ?"
+        params.append(event_type)
+    query += " LIMIT ?"
+    params.append(limit)
+    return execute_parameterized_sql(query, params)
+```
+
+> **Discussion:** Your security team has a tool that can block IP addresses. The MCP schema requires an IP address as input. What validation would you add to prevent an agent from accidentally blocking 0.0.0.0 or blocking your company's entire subnet?
+
+---
+
+### Least Privilege for Agent Tool Access
+
+Even with perfect tool design, you must limit what agents can access.
+
+**1. Capability Scoping** — An agent tasked with "triage alerts" doesn't need access to "modify firewall rules." Give it read-only access to logs and threat intelligence, not write access to security controls.
+
+**2. Data Scoping** — An alert triage agent shouldn't access all historical logs — only logs from the past hour. Implement this at the tool level:
+
+```python
+def query_logs(source_type: str, time_range: str = "last_hour", ...):
+    if agent_role == "alert_triage":
+        allowed_ranges = ["last_hour", "last_day"]
+    elif agent_role == "compliance_auditor":
+        allowed_ranges = ["last_hour", "last_day", "last_week", "last_month"]
+
+    if time_range not in allowed_ranges:
+        raise PermissionError(f"Agent {agent_id} cannot access time range {time_range}")
+```
+
+**3. Temporal Scoping** — Sensitive tools (credential rotation, firewall changes) might only be available during maintenance windows.
+
+**4. Rate Limiting** — Prevent an agent from hammering a tool:
+
+```python
+from collections import defaultdict
+from time import time
+
+call_history = defaultdict(list)
+
+def rate_limit_check(agent_id: str, max_calls_per_minute: int = 10):
+    now = time()
+    call_history[agent_id] = [t for t in call_history[agent_id] if now - t < 60]
+    if len(call_history[agent_id]) >= max_calls_per_minute:
+        raise RateLimitError(f"Rate limit exceeded. Try again in {60 - (now - call_history[agent_id][0]):.0f}s")
+    call_history[agent_id].append(now)
+```
+
+> **Policy must be in the tool, not trusted to the operator.** A tool's scope constraints must be baked into its implementation — hardcoded allowed targets, maximum operation counts, required authorization checks. If `ALLOWED_TARGETS` is a `frozenset` in the tool code, it cannot be overridden at runtime. If it's a parameter the operator sets, it can be changed. Know the difference.
+
+---
+
+### Tool Versioning and Deprecation
+
+Security tools evolve. How do you update tools without breaking agents that depend on them?
+
+**Semantic Versioning for Tools:**
+- **MAJOR version** — Incompatible changes (removing a parameter, changing output type)
+- **MINOR version** — Backward-compatible additions (new optional parameter)
+- **PATCH version** — Bug fixes (no behavior changes)
+
+**Deprecation Strategy:**
+1. Release new MINOR version with new parameter, keeping old behavior
+2. Document deprecation path in tool description
+3. Log deprecation warnings when agents use old parameters
+4. Set deprecation timeline (e.g., "query parameter removed in v3.0, available until Jan 1, 2027")
+5. Migrate gradually — give agents and applications time to update
+
+```python
+def query_logs_v2(
+    source_type: str,
+    time_range: str,
+    filters: dict = None,   # NEW in v2.0
+    query: str = None       # DEPRECATED, kept for backward compatibility
+):
+    if query is not None:
+        logger.warning("query parameter is deprecated. Use filters instead.")
+        filters = parse_legacy_query(query)
+    if filters is None:
+        filters = {}
+    # ... rest of implementation
+```
+
+---
+
+### Testing Secure Tools
+
+A security tool test suite should include:
+
+```python
+import pytest
+
+def test_query_logs_rejects_invalid_source():
+    with pytest.raises(ValueError, match="Invalid source"):
+        query_logs(source_type="invalid_source", time_range="last_hour")
+
+def test_query_logs_sql_injection_protection():
+    with pytest.raises(ValueError):
+        query_logs(source_type="app", time_range="'; DROP TABLE logs; --")
+
+def test_query_logs_rate_limiting():
+    agent_id = "test_agent"
+    for i in range(10):
+        query_logs(agent_id, source_type="app", time_range="last_hour")
+    with pytest.raises(RateLimitError):  # 11th call should fail
+        query_logs(agent_id, source_type="app", time_range="last_hour")
+
+def test_query_logs_audit_logged():
+    with patch('audit_log.write') as mock_log:
+        query_logs(source_type="app", time_range="last_hour")
+        mock_log.assert_called_once()
+        call_args = mock_log.call_args[0][0]
+        assert "query_logs" in call_args
+        assert "app" in call_args
+```
+
+---
+
+### Case Study: Operation GTG-1002
+
+In November 2025, Anthropic published the full technical report on **GTG-1002**: the first documented case of AI-orchestrated cyber espionage executed at scale. A Chinese state-sponsored threat actor built an autonomous attack framework using Claude Code and custom MCP servers. The framework decomposed complex multi-stage cyberattacks into discrete technical tasks for Claude sub-agents: vulnerability scanning, credential validation, data extraction, and lateral movement.
+
+**The Architecture Through Our Five Pillars Lens:**
+
+The attacker's MCP server architecture mirrors what you built in Week 5 — but with every secure design principle inverted:
+
+1. **Single Responsibility — Weaponized:** Each MCP server wrapped one commodity tool (network scanner, search tool, data retrieval, exploit). This modularity made the attack hard to detect — each individual tool call looked like legitimate security work. The lesson: single responsibility is a design principle, not a security guarantee.
+
+2. **Clear Schemas — Exploited for Deception:** The attacker's tool schemas were clean and well-defined. The attack wasn't through malformed inputs — it was through correctly-formed inputs with malicious intent. Input validation alone is insufficient. You also need **intent validation**: Does this sequence of tool calls make sense for the agent's stated purpose?
+
+3. **Error Handling — Turned into Reconnaissance:** When exploitation attempts failed, error responses became intelligence. "Connection refused" on port 443 = no HTTPS service. "Timeout" = firewall filtering. The attacker's framework parsed errors to map infrastructure. Your error messages must be designed assuming an adversary is reading them.
+
+4. **Security Boundaries — Bypassed Through Social Engineering:** The attacker's key innovation was role-play: they convinced Claude it was conducting authorized defensive security testing. Claude is trained to refuse harmful requests — but persona-based prompting bypassed this. The attacker didn't break security boundaries; they convinced the agent the boundaries didn't apply.
+
+5. **Observability — What Caught Them:** Ultimately, operational tempo triggered detection. Sustained request rates (thousands of requests, multiple operations per second) were physically impossible for human-directed operations. Anthropic's platform-level monitoring caught what tool-level security missed.
+
+**The Human-AI Split:** AI executed 80-90% of tactical work independently. Humans made decisions at critical escalation points: approving transition from reconnaissance to active exploitation, authorizing use of harvested credentials, making final decisions about data exfiltration scope.
+
+**The Hallucination Problem:** Claude frequently overstated findings and occasionally fabricated data during autonomous offensive operations. The attacker's 10-20% human involvement wasn't optional — it was *necessary* because the AI couldn't be trusted to validate its own outputs.
+
+> **GTG-1002 demonstrates that the tools and patterns you're learning are dual-use.** The same architecture that powers your defensive SOC agent can power an autonomous attack framework. The difference isn't the technology — it's the governance, oversight, and intent validation you build around it.
+
+---
+
+### Design Before You Build
+
+```
+/think → /build-spec → build
+```
+
+1. `/think` — use Claude Code's /think skill to surface your design reasoning: "What are the security implications of each tool I'm adding? What could go wrong?"
+2. `/build-spec` — capture decisions in a spec document: interface contracts, error handling strategy, PoLP decisions, known gaps
+3. **Build** — with the spec written, build to the spec; decisions already made don't slow you down
+
+The spec is not bureaucracy — it's the record of your security design choices. When you audit your own system in Unit 3, your spec is Exhibit A.
+
+After building, run `/code-review` before committing. Under the hood, `/code-review` dispatches 4 parallel review agents. Findings are tagged: `bug`, `security`, `performance`, `style`, `compliance`. Only findings with ≥80% confidence are reported.
+
+---
+
+### Day 1 Deliverable
+
+Design a security tool specification (2-3 pages, 800-1000 words):
+1. **Tool Specification** — name, description, single responsibility statement
+2. **Input Schema** — all parameters with validation rules
+3. **Output Schema** — response structure
+4. **Security Boundaries** — least privilege, rate limiting, data scoping decisions
+5. **Error Handling** — 5-10 documented error cases
+6. **Testing Plan** — 10-15 test cases
+7. **Audit Logging Strategy**
 
 ---
 
 ## Day 2 — Lab
 
-### Lab: Multi-Tool Security MCP Server
+### Lab: Multi-Tool MCP Server with Security Boundaries
 
-**Step 1: Build `/tool-select` Skill**
+**Lab Objectives:**
+- Build a multi-tool MCP server with validation and error handling
+- Implement rate limiting and audit logging
+- Design and test security boundaries
+- Compose multiple tools for realistic alert enrichment workflows
+- Measure tool performance and security properties
 
-This skill encodes the full Assessment Stack and helps select the right tool for any security engineering task.
+### Architecture: Three Composable Tools
 
-Create `~/noctua/skills/tool-select.md`:
+1. **`query_logs`** — Structured log queries (source_type, time_range, event_type, limit)
+2. **`check_ip_reputation`** — IP threat assessment (threat_level, reputation_score, known_attacks, false_positive_risk)
+3. **`enrich_alert`** — Synthesize assessment from logs + IP reputation
 
-```markdown
----
-name: tool-select
-description: "Use when the user needs to choose the right tool, model, computation approach, or architecture for a security engineering task. Invoked by: 'help me choose', 'what model should I use', 'what's the right approach', 'assessment stack'"
-allowed-tools: Bash
-context: fork
-user-invocable: true
-argument-hint: ""
----
+**Setup:**
 
-# Tool Selection via Engineering Assessment Stack
-
-You are applying the 6-layer Engineering Assessment Stack to determine the right technical approach.
-
-## Step-by-step process:
-
-1. **Layer 1 — Problem Type:** Ask: Is this classification, correlation, reasoning, generation, or retrieval?
-
-2. **Layer 2 — Computation Approach:**
-   - If answer is deterministic → use regex/rules, NO LLM needed
-   - If answer is statistical → use classifier/embedding, NO full LLM needed
-   - If answer requires reasoning → proceed to Layer 3
-
-3. **Layer 3 — Model Selection (only if reasoning required):**
-   - High-throughput / simple → Haiku ($1/MTok)
-   - Balanced / operational → Sonnet ($3/MTok)
-   - Deep analysis / high-stakes → Opus ($5/MTok)
-   - Consider: using Opus for a classification task is $5 when regex costs $0
-
-4. **Layer 4 — Data Architecture:** Match query type to store (exact=relational, semantic=vector, path=graph, trend=time-series)
-
-5. **Layer 5 — Integration Pattern:** Real-time MCP vs. batch vs. A2A
-
-6. **Layer 6 — Verification:** How will you confirm the output is correct?
-
-## Output format:
-Provide a decision table:
-| Layer | Decision | Justification | Cost Implication |
-|-------|----------|---------------|-----------------|
-| Problem Type | [type] | [why] | |
-| Computation | [approach] | [why] | |
-| Model | [tier or none] | [why] | [$/MTok] |
-| Data Architecture | [store] | [why] | |
-| Integration | [pattern] | [why] | |
-| Verification | [method] | [why] | |
+```bash
+mkdir -p ~/noctua-labs/unit2/week6
+cd ~/noctua-labs/unit2/week6
 ```
 
-**Step 2: Build `/audit-aiuc1` Skill**
+### Part 1: Design in Claude Code
 
-This skill runs a systematic AIUC-1 audit against any AI security tool. This is the first time students see all six domains as an integrated audit framework.
+Walk through the composition pattern before building:
 
-Create `~/noctua/skills/audit-aiuc1.md`:
+```
+I'm building a security alert enrichment system with three tools:
 
-```markdown
----
-name: audit-aiuc1
-description: "Use when auditing an AI security tool against the AIUC-1 framework. Invoked by: 'audit this tool', 'check AIUC-1 compliance', 'governance audit', 'aiuc1'"
-allowed-tools: Bash
-context: fork
-user-invocable: true
-argument-hint: ""
----
+1. query_logs(source_type, time_range, event_type, limit)
+   - source_type: ["app", "network", "database", "auth"]
+   - Validation: reject anything outside these enums
 
-# AIUC-1 System Audit
+2. check_ip_reputation(ip_address)
+   - Returns {threat_level, reputation_score, known_attacks, false_positive_risk}
+   - Validation: reject non-IP-format strings
 
-You are conducting a formal AIUC-1 (AI Use in Cybersecurity) compliance audit.
+3. enrich_alert(alert_id, logs, ip_threat) → {incident_severity, recommended_action, reasoning}
+   - Synthesizes the results of tools 1 and 2
 
-## Six Domain Audit Questions:
+Walk me through how an agent would analyze this alert:
 
-### Domain A — Data & Privacy
-- What data does this system process? Is all of it necessary?
-- Are there PII or sensitive data that could be minimized?
-- How long is data retained? Is there a defined retention policy?
+ALERT:
+- Source IP: 203.45.12.89
+- User: admin@meridian.local
+- Action: Downloaded 10 GB from customer database
+- Time: 2026-03-05 14:22 UTC
 
-### Domain B — Security
-- Are all inputs validated before processing? (B005)
-- Are agent tool access permissions minimized? (B006)
-- Can this system be manipulated by adversarial inputs? (B001)
-
-### Domain C — Safety
-- Can this system cause direct harm through autonomous action?
-- Are there human-in-the-loop controls for high-stakes decisions?
-- Are there output filters for harmful recommendations?
-
-### Domain D — Reliability
-- Does the system degrade gracefully when components fail?
-- Are timeouts and retries implemented for external calls?
-- Is there fallback logic when the primary approach fails?
-
-### Domain E — Accountability
-- Is every decision logged with: timestamp, inputs, reasoning, output?
-- Can a decision be reconstructed from the audit trail?
-- Is there clear ownership — who is responsible when this system errs?
-
-### Domain F — Society
-- Has the system been tested on diverse datasets?
-- Are there subgroups where error rates differ significantly?
-- Could errors from this system have disparate impact on any population?
-
-## Output format:
-For each domain, provide:
-| Domain | Status | Evidence | Gaps | Severity | Recommended Fix |
-|--------|--------|----------|------|----------|----------------|
-
-Overall AIUC-1 compliance score: [X/6 domains compliant, Y gaps found]
+1. What logs should the agent query first?
+2. What should the IP reputation check return for 203.45.12.89?
+3. How does enrich_alert combine the results?
+4. What if the tools return conflicting signals?
 ```
 
-**Step 3: Package Best Work from Weeks 2-5**
+### Part 2: Implement with Security Boundaries
 
-Identify two artifacts from your earlier work worth packaging as skills:
-1. Your CCT analysis prompt from Week 1 → package as `/cct-analyze`
-2. Your context-engineered SOC analyst prompt from Week 2 → package as `/soc-analyze`
+Key patterns to implement:
 
-For each, write the YAML frontmatter and skill body.
+**Rate limiting:**
+```python
+from collections import defaultdict
+from time import time
 
-**Step 4: Frontmatter Optimization Exercise**
+call_history = defaultdict(list)
 
-Test trigger rates with vague vs. specific descriptions:
+def rate_limit_check(agent_id: str, max_calls_per_minute: int = 20):
+    now = time()
+    call_history[agent_id] = [t for t in call_history[agent_id] if now - t < 60]
+    if len(call_history[agent_id]) >= max_calls_per_minute:
+        raise RateLimitError(f"Rate limit exceeded. Try again in {60 - (now - call_history[agent_id][0]):.0f}s")
+    call_history[agent_id].append(now)
+```
 
-Vague: `description: "Use for security tasks"`
-Specific: `description: "Use when analyzing a specific security incident using the CCT framework — applying evidence-based analysis, perspective gathering, and hypothesis generation"`
+**Audit logging:**
+```python
+import json
+from datetime import datetime
 
-Using Claude Code, demonstrate:
-1. The vague trigger fires on unrelated security questions
-2. The specific trigger fires only on CCT-relevant prompts
-3. Document the false positive rate difference
+def audit_log(tool_name: str, agent_id: str, params: dict, result: dict, duration_ms: float):
+    entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "tool": tool_name,
+        "agent_id": agent_id,
+        "parameters": params,
+        "result_summary": {k: v for k, v in result.items() if k != "raw_data"},
+        "duration_ms": duration_ms,
+        "aiuc1_domain": "E001"
+    }
+    with open("audit.log", "a") as f:
+        f.write(json.dumps(entry) + "\n")
+```
 
-**Step 5: Rugpull Reflection**
+### Part 3: Test with Claude Code
 
-Based on the PeaRL required reading, apply to your `/audit-aiuc1` skill:
+Test these scenarios:
 
-> "What can your skill destroy if the goal is reframed?"
+**Scenario 1 — IP Reputation Check:**
+```
+Check the reputation of IP 203.45.12.89. Is this a known threat actor?
+```
 
-For your `/audit-aiuc1` skill:
-- What's the intended goal? (Audit AI security tools)
-- What reframing could weaponize it? (Audit a competitor's system under false authorization)
-- What safeguard would prevent misuse? (Authorization verification step before proceeding)
+**Scenario 2 — Alert Enrichment:**
+```
+Enrich this alert: user admin@meridian.local downloaded 10GB from the customer database.
+Source IP is 203.45.12.89. What's the incident severity?
+```
 
-Write a 300-word analysis answering these three questions.
+**Scenario 3 — Multi-Tool Investigation:**
+```
+Investigate this alert using all available tools. Start with logs,
+then check IP reputation, then synthesize an assessment.
+```
+
+### Part 4: Security Validation Tests
+
+Run these verification tests:
+1. **Input validation:** Does `query_logs(source_type="DROP TABLE--")` reject cleanly?
+2. **Rate limiting:** Does the 21st call in a minute get rejected?
+3. **Audit logging:** Does every call appear in `audit.log`?
+4. **Graceful degradation:** Does `enrich_alert` continue when `check_ip_reputation` fails?
+
+Document all test results.
+
+### Part 5: Red Team/Blue Team Exercise — Operation Forge Fire
+
+In a sandboxed local environment (Docker containers):
+
+**Red Team:** Build a reconnaissance tool that performs port scanning, service enumeration, and banner grabbing — against localhost only, with explicit authorization documentation.
+
+**Blue Team:** Build a detection tool that logs connection attempts, identifies port scan patterns, and surfaces anomalies.
+
+**Required:** Write a Security Testing Policy document before running any tools. Include: scope (localhost only), authorization chain, ethical boundaries, and what constitutes a finding vs. a violation.
+
+**Debrief questions:**
+- Which GTG-1002 patterns did the red team's tool exhibit?
+- What observability signals would have caught it at the platform level?
+- How would tool-level security boundaries have prevented or limited the attack?
 
 ---
 
 ## Deliverables
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through skill design decisions and the rugpull analysis, Cowork to structure and format the reflection, and Code to build and test the skills. The quality of your thinking matters — the mechanical production should be AI-assisted.
+> **Save to:** `~/noctua-labs/unit2/week6/` (server code and tests), `context-library/patterns/` (add tool-design and error-handling patterns)
 
-1. **`/tool-select` skill** — complete YAML frontmatter + skill body encoding the full Assessment Stack
-2. **`/audit-aiuc1` skill** — complete YAML frontmatter + skill body covering all six AIUC-1 domains
-3. **Two packaged skills from Weeks 2-5** — with frontmatter optimization
-4. **Frontmatter trigger test results** — vague vs. specific trigger comparison
-5. **Rugpull reflection** (300 words) — how your `/audit-aiuc1` skill could be weaponized, and the safeguard
-
-> **📁 Save to:** `~/noctua/context/skills/` (skill files), `~/noctua/deliverables/week06/` (final submission)
-
----
-
-## AIUC-1 Integration
-
-**All six domains introduced together this week.** Students already know A (Week 5), B (Week 3), D (Week 4), E (Week 2). Domains C and F are new.
-
-The `/audit-aiuc1` skill is both the learning artifact and the practical tool students will use in Week 8 to audit their own Week 3-5 work.
-
-## V&V Lens
-
-**Rugpull Adversarial Assumption:** This week introduces the adversarial perspective on V&V. It's not enough to verify that your skill works correctly — you must verify that it can't be repurposed toward harm by reframing the goal. The rugpull exercise makes this concrete.
-
-Starting from Week 6, every skill you build should include a "how could this be abused?" section in its design documentation.
-
----
-
-## The Three-Evaluator Pipeline
-
-This week you build `/tool-select` and `/audit-aiuc1`. You now have access to a third course evaluator:
-
-```
-/code-review → /check-antipatterns → /audit-aiuc1
-```
-
-Three evaluators. Three concerns. Each calibrated separately:
-- `/code-review` — Code quality (bugs, style, logic, readability)
-- `/check-antipatterns` — Production survival (will this break at 3am under load?)
-- `/audit-aiuc1` — Governance compliance (AIUC-1 domains A-F)
-
-This is the Anthropic harness GAN-evaluator pattern (Update 46) applied to the course skill stack — three specialized evaluators instead of one general one. Each has a distinct failure mode it catches. Each can pass while the others fail.
-
-**Lab addition — examine `.claude/skills/check-antipatterns/SKILL.md`:**
-
-1. Why does it use `context: fork` rather than the default context mode?
-2. How does its trigger description avoid false positives compared to a vague trigger like "use for security work"?
-3. What makes the structured report format (CRITICAL / HIGH / MEDIUM / LOW / PASSED) more useful than a prose summary?
-
-This is a canonical example of production-grade skill design — its frontmatter, reference file structure, and 6-step audit process reflect the progressive disclosure architecture you learned today. Reference it when designing your own course skills.
-
----
-
-## PR 6 Callout Additions (lab-s1-unit2.html)
-
-- **Item 15** — Already present: `callout-warn` PoLP warning before Step 4 (tool registration). No duplicate added.
-- **Item 24** — Added `callout-key`: /think → /build-spec → build practitioner workflow before Week 6 Deliverables section.
-- **Item 26** — Already present: inline `(Theory: ...)` references in step descriptions. No additions needed.
-- **Item 27** — Added `callout-key`: Security controls as architectural foundations (Pit of Success) before Step 3 (rate limiting), alongside the existing `callout-warn`.
+1. **Multi-tool MCP server** with validation, rate limiting, and audit logging
+2. **Security test results** — input validation, injection tests, rate limit tests, audit log tests
+3. **Tool specification document** (Day 1 deliverable) — design doc for your tool
+4. **Audit Log Governance Exercise** — document the "delete audit.log and reconstruct" results
+5. **Red Team/Blue Team writeup** — Security Testing Policy + findings from Operation Forge Fire

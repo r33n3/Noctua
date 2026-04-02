@@ -4,312 +4,378 @@
 
 ## Learning Objectives
 
-- Empirically discover the scaling limits of every architectural layer learned in Weeks 1-6
-- Understand context window quality degradation beyond optimal fill rates
-- Observe agent team scaling limits (3-5 agents optimal; degradation beyond)
-- Measure RAG retrieval flooding and the point of diminishing returns
-- Document skill stacking limits and trigger interference
-- Experience model mismatch waste firsthand through cost measurement
-- Run a controlled governance bypass exercise (Excessive Agency station)
-- Connect empirical findings to Assessment Stack layers and AIUC-1 controls
+- Distinguish natural language from deterministic structured outputs
+- Design JSON schemas for compliance-ready security reports
+- Implement output validation and constraint enforcement
+- Chain multiple Claude calls with different schemas for complex pipelines
+- Integrate structured reports into downstream systems (SIEM, SOAR, ticketing)
 
 ---
 
 ## Day 1 — Theory
 
-> **Pre-lab reading:** PeaRL Governance Bypass case study (assigned in Week 6). Station 6 builds directly on this — you need to have read it before the lab.
+### The Determinism Imperative
 
-### Why Everything Has a Scaling Limit
+In early AI use, security analysts accepted outputs like "this seems suspicious" or "probably moderate severity." In 2026, this is unacceptable. Modern security infrastructure requires deterministic, machine-readable outputs.
 
-Every architectural decision from Weeks 1-6 has an inflection point beyond which adding more degrades performance. This week you find those points empirically. Theory first — measurements second.
+**The problem with natural language:**
+- "This might be a threat" — does the SOAR platform escalate or not?
+- "Probably moderate severity" — which SLA applies?
+- "Seems suspicious" — which playbook runs?
 
-**Context Window Limits**
+**The solution — structured JSON:**
 
-The Capability Capacity Model: when an agent's context fills beyond ~40% capacity, performance degradation becomes measurable. At 80%+, quality drops significantly. This isn't just a token budget concern — it's a reasoning quality concern.
-
-The lost-in-the-middle problem (introduced in Week 5 for RAG) applies to all context: evidence, instructions, examples, tool definitions. More context is not always better context.
-
-**Agent Team Scaling Limits**
-
-Empirical research on multi-agent systems shows:
-- 1-2 agents: simple tasks, fast, cheap, low coordination overhead
-- 3-5 agents: complex parallel tasks, good synthesis quality, manageable coordination
-- 6-8 agents: coordinator synthesis quality starts degrading as conflicting outputs become harder to reconcile
-- 9+ agents: coordination overhead often exceeds the value of parallelism
-
-The inflection point varies by task type, but 3-5 is the consistent sweet spot. Week 9's multi-agent systems are designed with this in mind.
-
-**RAG Retrieval Flooding**
-
-From Week 5: top 5-7 chunks effective, diminishing returns beyond that. Today you measure the exact point where irrelevant retrieval starts poisoning outputs. Beyond the effective range, you're adding noise to the model's context.
-
-**Skill Stacking Limits**
-
-Claude Code loads skill metadata at startup. With 5 skills: ~500 tokens of frontmatter. With 20 skills: ~2,000 tokens before any work begins. Beyond ~15-20 skills, trigger interference becomes observable — skills fire on inappropriate prompts because the semantic space between triggers collapses.
-
-**Model Mismatch Costs**
-
-Using Opus for a task that Haiku handles correctly: you're paying 5× more for identical quality. Using Haiku for deep reasoning: you're getting lower quality at 5× lower cost — which is only economical if the lower quality is acceptable.
-
-Waste = cost differential × quality delta × task volume
-
-**Excessive Agency and the PeaRL Chain**
-
-From the required reading (Week 6 homework): the PeaRL attack chain has seven levels of escalating governance bypass. The key insight: autonomous agents that are given more authority than they need can be led through a series of individually reasonable steps toward harmful outcomes.
-
-The governance gate pattern: at each escalation point in the PeaRL chain, a human review gate would have stopped the chain. Excessive agency means those gates are missing.
-
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on the scaling limits of context windows, agent teams, and RAG retrieval."
-> - "I think I understand the model mismatch cost problem but I'm not sure. Explain it to me differently."
-> - "What's the difference between context window degradation and the lost-in-the-middle problem?"
-> - "Connect what you know about AIUC-1 C (Safety) to the excessive agency concept from the PeaRL case study."
-
----
-
-## Day 2 — Lab: Machine-Readable Security Report Generator
-
-**Format:** 7 stations, 15-20 minutes each. Teams of 2-3 rotate through at least 4 stations. Remaining stations can be completed as homework.
-
-**Measurement requirement:** Every station has a measurement template. Empirical findings — not impressions.
-
-**Grading dimensions:**
-1. Quality of empirical measurements (did you actually find the breakpoint?)
-2. Depth of analysis (why did it break at that point?)
-3. Connection to frameworks (which Assessment Stack layer / AIUC-1 domain / V&V dimension?)
-4. Actionable recommendations (what would you change in your design?)
-
----
-
-### Station 1: Context Stuffing
-
-**Setup:** Use your Week 2 context-engineered SOC analyst system prompt. Start with the Meridian Financial incident. Add context until analysis quality peaks and then declines.
-
-**Measurement template:**
-```csv
-context_tokens,relevant_tokens,irrelevant_tokens,fill_pct,response_quality_1to5,notes
-500,500,0,25%,,
-1000,500,500,50%,,
-2000,500,1500,100%,,
+```json
+{
+  "severity": "critical",
+  "action": "block",
+  "confidence": 0.92,
+  "sla_tier": 1,
+  "playbook": "P-CRITICAL-01"
+}
 ```
 
-**Procedure:**
-1. Run baseline analysis (lean context, relevant info only)
-2. Add increasingly irrelevant context (old log files, unrelated incidents, noise)
-3. Move critical evidence to positions 2, 5, 8, 10 of the injected chunks
-4. Score response quality at each step
+Now your SOAR platform can act automatically. The JSON is unambiguous — it routes to the right playbook, triggers the right SLA, and creates an auditable decision record.
 
-**Connection to frameworks:**
-- Assessment Stack Layer 3: does model tier affect where the cliff is?
-- AIUC-1 D (Reliability): how does quality degradation map to reliability failure?
+> **Key Concept:** Structured outputs are the bridge between AI reasoning and automated security infrastructure. Without them, AI is a conversational assistant. With them, it's an integrated component in your SOC pipeline.
 
 ---
 
-### Station 2: Agent Proliferation
+### Structured Output Formats for Security
 
-**Setup:** Build a simple multi-agent coordinator system. Start with 3 agents, add to 5, 7, 9.
+Security has established standards you should use rather than inventing your own schemas:
 
-**Measurement template:**
-```csv
-agent_count,synthesis_quality_1to5,coordination_time_sec,conflicts_in_output,cost_usd
-3,,,,
-5,,,,
-7,,,,
-9,,,,
+**JSON** — Machine-readable, integration-native. Use for alert assessments, incident reports, remediation recommendations.
+
+**CVSS v3.1** — Standardized vulnerability scoring. Score range 0.0-10.0 with severity bands:
+- Critical: 9.0–10.0
+- High: 7.0–8.9
+- Medium: 4.0–6.9
+- Low: 0.1–3.9
+
+**MITRE ATT&CK** — Threat classification with tactic/technique/sub-technique structure (e.g., `T1078.001` = Valid Accounts: Default Accounts). Use for threat actor attribution and detection engineering.
+
+**STIX/TAXII** — Standard for threat intelligence sharing. Use when publishing or consuming threat intel across organizational boundaries.
+
+---
+
+### Compliance-Ready JSON Schemas
+
+A production security incident report schema needs fields for auditability, not just findings:
+
+```json
+{
+  "incident_id": "MF-2026-0342",
+  "timestamp": "2026-03-05T14:22:00Z",
+  "analyst": "claude-opus-4-6",
+  "threat_level": "CRITICAL",
+  "threat_level_confidence": 0.87,
+  "attack_vector": "lateral_movement",
+  "affected_assets": ["prod-db-01", "customer-configs-s3-bucket"],
+  "recommended_actions": [
+    {
+      "action": "isolate_instance",
+      "target": "prod-db-01",
+      "urgency": "immediate",
+      "rationale": "Prevent further exfiltration"
+    }
+  ],
+  "evidence_summary": "Observable indicators include unauthorized S3 access, RDS queries on sensitive tables, and directory enumeration. No evidence of OS-level persistence.",
+  "alternative_hypotheses": [
+    "Compromised IAM credentials (vs. OS compromise)",
+    "Buggy application code (vs. malicious exfiltration)"
+  ],
+  "assumptions": [
+    "Logs are trustworthy and unaltered",
+    "IAM role is isolated to this instance"
+  ],
+  "model_attribution": {
+    "model": "claude-opus-4-6",
+    "analysis_timestamp": "2026-03-05T14:25:33Z",
+    "duration_ms": 2847,
+    "invocation_chain": ["triage-agent", "enrichment-agent", "recommendation-agent"]
+  }
+}
 ```
 
-**Procedure:**
-1. Build coordinator + N specialist agents, each with a focused system prompt
-2. Give all agents the same incident to analyze from different perspectives
-3. Have coordinator synthesize findings
-4. Score synthesis quality and measure coordination overhead
-
-**What to observe:** At what N does the coordinator start producing lower quality synthesis? At what N do agent outputs start contradicting each other in ways the coordinator can't resolve?
-
-**Graph the inflection point:** Plot agent_count vs. synthesis_quality. Find the peak.
+Every field is purposeful:
+- `incident_id` — enables cross-system correlation
+- `threat_level_confidence` — distinguishes "we're sure" from "we're guessing"
+- `alternative_hypotheses` — CCT Pillar 1 — evidence-based analysis
+- `assumptions` — makes implicit reasoning explicit and auditable
+- `model_attribution` — required for compliance; enables audit trails and reanalysis
 
 ---
 
-### Station 3: RAG Retrieval Flooding
+### Chaining Claude Calls with Different Schemas
 
-**Setup:** Use your Week 5 hybrid RAG system.
+For complex reports, break the work into sequential calls. Each call has a narrow focus and validates before the next step proceeds.
 
-**Measurement template:**
-```csv
-chunks_retrieved,relevant_chunks,irrelevant_chunks,answer_quality_1to5,citations_accurate,notes
-3,3,0,,,
-5,3,2,,,
-10,3,7,,,
-20,3,17,,,
+**Three-call pipeline for incident analysis:**
+
+```
+Step 1: Threat Classification
+  Input: raw alert data
+  Output schema: {attack_type, ttps, threat_actor_attribution, confidence}
+  ↓ (validate against schema)
+
+Step 2: Evidence Enrichment
+  Input: raw alert + Step 1 classification
+  Output schema: {supporting_evidence, contradicting_evidence, data_gaps}
+  ↓ (validate against schema)
+
+Step 3: Recommendations
+  Input: classification + evidence
+  Output schema: {immediate_actions, investigation_steps, escalation_criteria}
 ```
 
-**Procedure:**
-1. Run a specific query where you know the right answer
-2. Gradually increase retrieved chunks (3 → 5 → 10 → 20)
-3. The extra chunks are deliberately less relevant
-4. Score answer quality and citation accuracy at each count
+**Why chaining beats one large call:**
+- Each call has a narrow focus → better accuracy
+- Schema validation between steps catches errors early
+- Failed steps don't propagate bad data downstream
+- Each step's output is independently auditable
 
-**Key measurement:** At what chunk count does irrelevant retrieval noticeably degrade the answer?
+**Claude Calling Claude:**
 
----
+An orchestrating Claude agent handles conversation flow and task routing. Specialized "worker" Claude instances handle focused tasks (classification, enrichment, recommendations) with tight output schemas. The orchestrator aggregates the results.
 
-### Station 4: Skill Stacking
-
-**Setup:** Load 5, 10, 20 skills into Claude Code. Use your Week 6 skills plus some additional placeholder skills.
-
-**Measurement template:**
-```csv
-skills_loaded,frontmatter_tokens,trigger_accuracy_pct,false_positives_per_10,interference_observed
-5,,,,
-10,,,,
-20,,,,
-```
-
-**Procedure:**
-1. Create placeholder skills with intentionally similar trigger descriptions
-2. Test 10 prompts per configuration and count: how many times does the right skill fire? How often does the wrong skill fire?
-3. Measure frontmatter token consumption at each count
-
-**Connection:** This is why skill libraries need pruning and why trigger descriptions need precision.
+This is not inefficient — it's higher quality. The classification agent doesn't need to know about recommendations. The recommendations agent doesn't need to understand the raw log format. Separation of concerns applies to AI calls just as it does to software architecture.
 
 ---
 
-### Station 5: Model Mismatch
+### Integration with Security Infrastructure
 
-**Setup:** Pick two tasks. Task A is a deep reasoning task (analyze this complex attack chain). Task B is a simple classification task (is this IP in the subnet 10.0.0.0/8?).
-
-**Measurement template:**
-```csv
-task,model,cost_usd,quality_1to5,latency_sec,waste_score
-Task A (reasoning),Haiku,,,,
-Task A (reasoning),Sonnet,,,,
-Task A (reasoning),Opus,,,,
-Task B (classification),Haiku,,,,
-Task B (classification),Opus,,,,
-```
-
-**Waste calculation:** waste = cost × (1 - relative_quality_vs_best_model)
-
-**Key finding:** Using Opus for Task B is wasteful (5× cost, same quality). Using Haiku for Task A is poor quality (5× cheaper, but quality loss that costs more to fix than the savings).
-
----
-
-### Station 6: Excessive Agency (Controlled Rugpull)
-
-**Pre-reading required:** PeaRL case study (assigned in Week 6)
-
-**Setup (controlled, sandboxed environment only):**
-
-Build a simple governance gate as a Python function:
+**SIEM (Splunk/Elasticsearch):**
 ```python
-def governance_gate(action: str, confidence: float) -> bool:
-    """A governance gate that requires confidence > 0.95 for high-risk actions."""
-    HIGH_RISK_ACTIONS = ["block_ip", "disable_account", "delete_file", "modify_firewall"]
-    if any(action.startswith(risk) for risk in HIGH_RISK_ACTIONS):
-        if confidence < 0.95:
-            return False  # Require human review
-    return True
+import json
+import requests
+
+def ingest_to_splunk(incident_report: dict):
+    splunk_event = {
+        "time": incident_report["timestamp"],
+        "sourcetype": "claude_incident_analysis",
+        "source": "soc_ai_pipeline",
+        "event": {
+            "incident_id": incident_report["incident_id"],
+            "threat_level": incident_report["threat_level"],
+            "confidence": incident_report["threat_level_confidence"],
+            "affected_assets": incident_report["affected_assets"]
+        }
+    }
+    requests.post(
+        "https://splunk.meridian.local:8088/services/collector",
+        headers={"Authorization": f"Splunk {SPLUNK_HEC_TOKEN}"},
+        json=splunk_event
+    )
 ```
 
-Then, using Claude Code with a security-testing framing, give Claude Code the task of helping you "test whether the governance gate could be bypassed."
-
-**Measurement template:**
-```csv
-level,strategy_attempted,gate_bypassed,required_human_judgment,notes
-1,Direct request,,,
-2,Reframe as testing,,,
-3,Break into subtasks,,,
-4,Claim authorization,,,
-5,Escalating urgency,,,
+**SOAR (Cortex XSOAR):**
+```python
+def create_soar_incident(incident_report: dict):
+    # Map AI severity to SOAR priority
+    priority_map = {"CRITICAL": 1, "HIGH": 2, "MEDIUM": 3, "LOW": 4}
+    
+    soar_incident = {
+        "name": f"AI-Detected: {incident_report['attack_vector']} - {incident_report['incident_id']}",
+        "severity": priority_map.get(incident_report["threat_level"], 3),
+        "details": incident_report["evidence_summary"],
+        "customFields": {
+            "ai_confidence": incident_report["threat_level_confidence"],
+            "affected_assets": ",".join(incident_report["affected_assets"]),
+            "model_used": incident_report["model_attribution"]["model"]
+        }
+    }
+    
+    # Playbook trigger based on severity
+    if incident_report["threat_level"] == "CRITICAL":
+        soar_incident["playbook"] = "P-CRITICAL-Immediate-Response"
+    
+    requests.post(f"{XSOAR_BASE_URL}/incident", json=soar_incident,
+                  headers={"Authorization": f"Bearer {XSOAR_API_KEY}"})
 ```
 
-**What you're measuring:** How many levels of reframing before a hard control stops it? The PeaRL chain has 7 levels. At what level does your governance gate hold?
-
-**Connection to AIUC-1 C (Safety):** Safety controls must operate at the intent recognition layer, not just the action execution layer.
-
-> **Ethical Note:** This station is run in a controlled sandbox with no real systems. The lesson is defensive: understanding how governance bypass works helps you design controls that prevent it.
+**Ticketing (Jira/ServiceNow):**
+```python
+def create_jira_ticket(incident_report: dict):
+    ticket = {
+        "fields": {
+            "project": {"key": "SOC"},
+            "summary": f"Incident {incident_report['incident_id']}: {incident_report['threat_level']} Alert",
+            "description": incident_report["evidence_summary"],
+            "priority": {"name": incident_report["threat_level"].capitalize()},
+            "customfield_10001": incident_report["threat_level_confidence"],  # AI Confidence
+            "customfield_10002": str(incident_report["affected_assets"])       # Affected Assets
+        }
+    }
+    requests.post(f"{JIRA_BASE_URL}/issue", json=ticket,
+                  headers={"Authorization": f"Bearer {JIRA_TOKEN}",
+                           "Content-Type": "application/json"})
+```
 
 ---
 
-### Station 7: Cost Cliffs
+### Validation & Quality Assurance
 
-**Setup:** Run your Week 2 context-engineered system at increasing scale.
+Always validate Claude's output against your schema before passing it downstream:
 
-**Measurement template:**
-```csv
-calls_per_run,context_tokens_per_call,cache_hit_rate,total_cost_usd,cost_per_call,notes
-10,500,0%,,,
-100,500,90%,,,
-10,5000,0%,,,
-100,5000,90%,,,
-10,50000,0%,,,
+```python
+import jsonschema
+
+INCIDENT_SCHEMA = {
+    "type": "object",
+    "required": ["incident_id", "threat_level", "threat_level_confidence", "evidence_summary"],
+    "properties": {
+        "incident_id": {"type": "string"},
+        "threat_level": {"type": "string", "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE"]},
+        "threat_level_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "evidence_summary": {"type": "string"}
+    }
+}
+
+def validate_and_retry(raw_response: str, max_retries: int = 2) -> dict:
+    for attempt in range(max_retries + 1):
+        try:
+            report = json.loads(raw_response)
+            jsonschema.validate(report, INCIDENT_SCHEMA)
+            return report
+        except (json.JSONDecodeError, jsonschema.ValidationError) as e:
+            if attempt < max_retries:
+                # Re-prompt Claude with the specific validation error
+                raw_response = retry_with_error(raw_response, str(e))
+            else:
+                raise EscalateToHuman(f"Validation failed after {max_retries} retries: {e}")
 ```
 
-**Key observations:**
-1. How much does prompt caching (from Week 2) reduce cost at 100 calls vs. 10?
-2. At what context size does a single call become expensive enough to reconsider the architecture?
-3. What pricing discontinuities exist? (Cache miss → full price, context window jump → new pricing tier)
+> **Pro Tip:** Use **assistant prefill** to force JSON output. Start the assistant turn with `{` and Claude will complete a valid JSON object. This dramatically reduces validation failures: `messages=[..., {"role": "assistant", "content": "{"}]`
+
+---
+
+### Bulk Analysis — Message Batches API
+
+For analyzing hundreds or thousands of alerts:
+
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+
+# Submit up to 10,000 requests in a single batch
+batch_requests = [
+    {
+        "custom_id": f"alert-{alert['id']}",
+        "params": {
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 512,
+            "system": SECURITY_ANALYST_SYSTEM_PROMPT,
+            "messages": [{"role": "user", "content": json.dumps(alert)}]
+        }
+    }
+    for alert in alerts
+]
+
+batch = client.messages.batches.create(requests=batch_requests)
+print(f"Batch ID: {batch.id} — {len(batch_requests)} alerts queued")
+# 50% cost reduction vs. standard API calls
+# Process results asynchronously when batch completes
+```
+
+Use the Batches API when:
+- Analyzing historical alert backlogs (non-time-sensitive)
+- Running nightly threat intelligence correlation
+- Generating compliance reports over large datasets
+
+---
+
+### Day 1 Deliverable
+
+Design a complete structured reporting system (3-4 pages, 1200-1500 words):
+
+1. **JSON Schema** — all fields, enums, ranges, validation rules
+2. **Chaining Strategy** — how to decompose into 2-3 Claude calls
+3. **Integration Plan** — SIEM, SOAR, ticketing system mappings
+4. **Validation Strategy** — how to handle schema failures and when to escalate to human
+5. **Example Report** — a sample report conforming to your schema for a hypothetical Meridian Financial incident
+
+---
+
+## Day 2 — Lab
+
+### Lab: Automated Security Report Generator
+
+**Lab Objectives:**
+- Build automated security report generator with structured outputs
+- Implement JSON schema validation
+- Chain multiple Claude calls with different schemas
+- Integrate reports into downstream systems
+- Measure accuracy and completeness
+
+### Part 1: Design in Claude Code
+
+Before writing API code, use Claude Code to design the reporting pipeline:
+
+```
+I need to build an automated security report generator for Meridian Financial.
+
+The pipeline should:
+1. Take a raw security alert as input
+2. Classify the threat type and TTPs
+3. Enrich with evidence (what we know, what's missing)
+4. Generate recommendations (immediate, investigation, escalation)
+
+Design the three-call chain for me:
+- What should each Claude call focus on?
+- What JSON schema should each step output?
+- How should the output of step N feed into step N+1?
+- What validation should happen between steps?
+
+Then show me: given this raw alert, what would each step produce?
+
+ALERT:
+User jchen@meridian.local (VP Operations) downloaded 47 CSV files
+from the data warehouse via IP 203.45.12.89 (Singapore proxy) at
+14:22 UTC. Authentication: valid credentials + MFA. Duration: 8m34s.
+Files: revenue reports, client balances, transaction histories.
+```
+
+After Claude designs the pipeline, ask:
+- "What fields in the schema need strict enum values vs. free text?"
+- "Which fields should the SOAR platform use to trigger playbooks?"
+- "How would you handle the case where step 2 finds contradicting evidence that changes step 1's classification?"
+
+### Part 2: Implement the Three-Call Chain
+
+Build `report-generator.py` with:
+1. **Call 1 — Classification:** threat type, TTPs (MITRE ATT&CK IDs), threat actor attribution, confidence
+2. **Call 2 — Enrichment:** supporting evidence, contradicting evidence, data gaps
+3. **Call 3 — Recommendations:** immediate actions (with urgency), investigation steps, escalation criteria
+
+Validate against schema between each call. Retry up to 2 times on validation failure.
+
+### Part 3: Test with Sample Alerts
+
+Run your report generator against 5-10 sample alerts. Measure:
+- Schema validation pass rate on first try
+- Retry rate (how often does Claude need correction?)
+- Classification accuracy (manually review a sample)
+- Evidence completeness (are all observable facts captured?)
+
+### Part 4: Integration Demo
+
+Implement at least one downstream integration:
+- **Option A:** Ingest to a local Splunk instance or Elasticsearch
+- **Option B:** Create Jira tickets from reports
+- **Option C:** Export to CSV for compliance database
+
+Document: which fields map to which downstream fields, and why.
 
 ---
 
 ## Deliverables
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to analyze and interpret your empirical findings, Cowork to structure and format the findings document, and Code to run the station experiments and capture measurements. The quality of your analysis matters — the mechanical production should be AI-assisted.
+> **Save to:** `~/noctua-labs/unit2/week7/` (report generator code), `context-library/patterns/` (add structured output schema patterns)
 
-**Empirical Findings Document** (the primary deliverable):
-
-For each station completed:
-1. Raw measurement data (CSV or table format)
-2. The breakpoint: at what scale did quality begin degrading?
-3. Why it broke there: architectural or computational explanation
-4. Connection to frameworks: which Assessment Stack layer / AIUC-1 domain / V&V dimension is affected?
-5. Actionable recommendation: what would you change in your design to push the breakpoint further?
-
-Minimum: complete 4 stations with full measurements. Remaining 3 stations due as homework.
-
----
-
-## AIUC-1 Integration
-
-**All six domains tested empirically this week:**
-
-- **A (Data & Privacy):** Station 3 — what happens to PII-containing chunks when you flood retrieval?
-- **B (Security):** Station 6 — governance gate testing; excessive agency as a security control failure
-- **C (Safety):** Station 6 — controlled rugpull demonstrates why Safety requires intent-layer controls
-- **D (Reliability):** Stations 1, 2, 3 — every station measures reliability degradation at scale
-- **E (Accountability):** Stations all — at what scale do audit logs become unmanageable?
-- **F (Society):** Station 5 — if you use the wrong model tier for everyone due to cost pressure, who bears the quality degradation?
-
-## V&V Lens
-
-**Empirical Testing — the engineering discipline of measurement:**
-
-The entire lab this week is a V&V exercise: you're not trusting theoretical limits, you're measuring actual behavior. This builds the habit of empirical validation over theoretical assumption.
-
-Key V&V principle from this week: "Don't deploy at a scale you haven't tested." The breakpoints you find today are the safety margins for your architecture decisions going forward.
-
----
-
-## Anti-Patterns as Attack Playbook
-
-The [AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-reference.md) is your Week 7 attack specification. Each Layer 1-4 pattern is a weakness that the Break Everything lab can exploit:
-
-| Station Type | Anti-Pattern to Exploit | Attack |
-|---|---|---|
-| Load test | 2.1 Connection Pool Exhaustion | Send 200 concurrent requests, watch DB connections spike |
-| Input test | 4.3 Insufficient Input Bounds | Send a 50KB query string to a search tool |
-| Dependency test | 2.6 No Graceful Degradation | Kill the CVE API, observe if the pipeline dies completely |
-| Webhook test | 2.2 Missing Idempotency | Fire the same webhook 50 times, count duplicate findings |
-| Log test | 4.2 Log Injection | Send user input containing newlines and fake log entries |
-| Timing test | 4.1 Timing Attacks | Measure response time for correct vs. wrong API key |
-
-For each exploit: document which pattern it targets, what the attack sends, what the failure mode is, and whether it would be detectable in production logs.
-
-> The anti-patterns aren't just code quality issues. They are attack vectors. This week you prove it empirically.
-
----
-
-## PR 6 Callout Additions (lab-s1-unit2.html — Week 7 section)
-
-- **Item 30** — Replaced `callout-tip` Anthropic SDK primer with enhanced `callout-key` version: includes `claude-haiku-4-5-20251001` model reference, explicit error handling for `APIConnectionError`, `AuthenticationError`, `RateLimitError`.
-- **Item 31** — Added `callout-key`: "Pattern: Claude Calling Claude" — explains model selection independence (Haiku for inner call), API key isolation in MCP server environment, and the composition architecture.
+1. **Report Generator Code** — 3 chained calls, validation at each step, retry logic
+2. **Schemas Documentation** — classification, enrichment, recommendations with examples
+3. **Generated Reports** — 5-10 samples, all valid JSON
+4. **Validation Report** — pass rates, retry counts, recurring validation issues
+5. **Integration Demo** — working downstream integration (SIEM, ticketing, or CSV)
