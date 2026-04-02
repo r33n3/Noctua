@@ -1,5 +1,5 @@
 ---
-name: spec
+name: build-spec
 description: "Generate a complete specification package from an idea, /think output, or feature requirement. Produces component manifests with approach types (static code, automation, SLM, LLM, deterministic tool), confidence ratings, agent swarm configurations (2-5 agents), data contracts, and build instructions that Claude Code or a /worktree skill can consume to execute in one shot. Use this skill whenever someone says 'spec this', 'write a spec', 'spec out', 'design this system', 'plan this build', 'how should we build this', 'create a spec package', 'spec a feature', 'what agents do we need', or wants to go from idea to buildable plan. Also use when updating an existing project with a new feature or requirement. Always use this skill before building anything non-trivial — the spec is what makes one-shot builds possible."
 ---
 

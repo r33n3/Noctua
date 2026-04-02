@@ -454,7 +454,7 @@ Show working Python code with error handling.
 <p>This 3-hour sprint implements the <strong>Think → Spec → Build → Retro</strong> cycle, powered by four Claude Code skills:</p>
 <ol>
 <li><strong>Think (~15 min):</strong> Use <code>/think</code> to critically analyze the problem, surface assumptions, identify risks, and consider alternatives before writing any spec.</li>
-<li><strong>Spec (~20 min):</strong> Use <code>/spec</code> to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.</li>
+<li><strong>Spec (~20 min):</strong> Use <code>/build-spec</code> to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.</li>
 <li><strong>Build (~50 min):</strong> Use Claude Code and <code>/worktree-setup</code> to implement the agent and tools rapidly in an isolated git worktree. Cut anything that doesn't directly serve the specification.</li>
 <li><strong>Retro (~15 min):</strong> Use <code>/retro</code> to review what was built against the spec, capture what worked, what didn't, and what to carry into the next cycle.</li>
 </ol>
@@ -464,7 +464,7 @@ Show working Python code with error handling.
 <div class="callout callout-key"><p><strong>The Generator/Evaluator Loop — Build Is Not One Pass</strong></p>
 <p>Your sprint cycle is an iterative loop, not a single pass. Anthropic's engineering team formalizes this as a <strong>generator/evaluator pattern</strong>: a generator agent produces output, a separate evaluator agent grades it against explicit criteria, and feedback flows back to the generator for refinement.</p>
 <ol>
-<li><strong>Generate:</strong> Build the tool (<code>/spec</code> → plan → build)</li>
+<li><strong>Generate:</strong> Build the tool (<code>/build-spec</code> → plan → build)</li>
 <li><strong>Evaluate:</strong> Run the evaluator (<code>/code-review</code> + <code>/audit-aiuc1</code>) against explicit criteria</li>
 <li><strong>Decide:</strong> Based on evaluation feedback — if scores are trending up, refine the current approach; if scores are plateauing or declining, pivot to a different approach entirely</li>
 <li><strong>Iterate:</strong> Return to step 1 with evaluation feedback as input</li>
@@ -480,7 +480,7 @@ Show working Python code with error handling.
 <li>Test by removing one component and comparing output quality</li>
 <li>Remove components the model now handles natively; keep components where removal degrades output</li>
 </ol>
-<p>This applies to your course skills too: does <code>/spec</code> need to be as prescriptive with Opus 4.6? Do your failure caps need to be as tight? The goal is the minimum harness that produces required quality — more scaffolding than needed wastes tokens and constrains the model from finding better approaches. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
+<p>This applies to your course skills too: does <code>/build-spec</code> need to be as prescriptive with Opus 4.6? Do your failure caps need to be as tight? The goal is the minimum harness that produces required quality — more scaffolding than needed wastes tokens and constrains the model from finding better approaches. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <p><strong>The Prototype-to-Production Delivery Pipeline</strong></p>
 <p>As you move through Unit 4 and into Units 7–8, understand the full delivery pipeline:</p>
 <ol>
@@ -1711,11 +1711,11 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
     {t:"Prompt Injection",d:"Attacker-controlled input that redirects agent behavior. Direct (user input) and indirect (tool output / retrieved content).",tags:["prompt injection","attack","unit6"],url:"s2-unit6.html"},
     {t:"NeMo Guardrails",d:"NVIDIA framework for adding safety rails to LLM outputs. Colang rules, topical/safety/jailbreak rails.",tags:["nemo","guardrails","safety","nvidia"],url:"s2-unit6.html"},
     {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
-    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
+    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /build-spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
     {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
     {t:"Architecture Diagram",d:"Interactive diagram of the full Secure Dark Factory — all layers: pipeline, security, governance, identity, observability, network.",tags:["diagram","architecture","dark factory"],url:"resources/dark-factory-architecture.html"},
     {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
-    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /build-spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
     {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
     {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
     {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},

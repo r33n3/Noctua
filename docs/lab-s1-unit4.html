@@ -201,7 +201,7 @@ claude
     <button class="quiz-check-btn" onclick="checkQuestion('w14q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="w14q2" data-answer="c" data-explain="The Think → Spec → Build → Retro cycle structures rapid prototyping: Think (~15% — critical analysis and risk identification using /think), Spec (~20% — formal architecture and success criteria using /spec), Build (~50% — implement rapidly with Claude Code using /worktree-setup for isolated parallel work), Retro (~15% — structured review and learning capture using /retro). This cycle repeats at production scale when prototypes are selected for delivery.">
+  <div class="quiz-question" data-qid="w14q2" data-answer="c" data-explain="The Think → Spec → Build → Retro cycle structures rapid prototyping: Think (~15% — critical analysis and risk identification using /think), Spec (~20% — formal architecture and success criteria using /build-spec), Build (~50% — implement rapidly with Claude Code using /worktree-setup for isolated parallel work), Retro (~15% — structured review and learning capture using /retro). This cycle repeats at production scale when prototypes are selected for delivery.">
     <p class="q-text">2. What does the Think → Spec → Build → Retro cycle prescribe for time allocation?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="w14q2" value="a"> A) 50% thinking, 30% building, 20% retro</label>
@@ -215,17 +215,17 @@ claude
 </div>
 
 <div class="callout callout-tip">
-  <strong>Use <code>/think</code> + <code>/spec</code> for Your 20-Minute Scoping Phase</strong>
-  <p>The Think → Spec → Build → Retro cycle was built for exactly this sprint format. In your 20-minute planning window: run <code>/think</code> first to validate your chosen problem, then run <code>/spec</code> to produce the formal 1-page spec. Both skills give you structured output you can paste directly into the build phase.</p>
+  <strong>Use <code>/think</code> + <code>/build-spec</code> for Your 20-Minute Scoping Phase</strong>
+  <p>The Think → Spec → Build → Retro cycle was built for exactly this sprint format. In your 20-minute planning window: run <code>/think</code> first to validate your chosen problem, then run <code>/build-spec</code> to produce the formal 1-page spec. Both skills give you structured output you can paste directly into the build phase.</p>
   <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
-    <a href="skills/spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
+    <a href="skills/build-spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
   </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/skills/spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
+  <div class="code-block"><pre><code>curl -o ~/.claude/skills/build-spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
 # Sprint scoping sequence in Claude Code:
 /think I want to build a phishing email triage pipeline for this sprint. What are the risks and unknowns?
 # Then after validating direction:
-/spec phishing email triage pipeline — single sprint, Claude agent + MCP tools, 3-hour build window</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+/build-spec phishing email triage pipeline — single sprint, Claude agent + MCP tools, 3-hour build window</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
 <div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
@@ -811,11 +811,11 @@ Reason: [one sentence]</code></pre><button class="copy-btn" onclick="copyCode(th
     {t:"Prompt Injection",d:"Attacker-controlled input that redirects agent behavior. Direct (user input) and indirect (tool output / retrieved content).",tags:["prompt injection","attack","unit6"],url:"s2-unit6.html"},
     {t:"NeMo Guardrails",d:"NVIDIA framework for adding safety rails to LLM outputs. Colang rules, topical/safety/jailbreak rails.",tags:["nemo","guardrails","safety","nvidia"],url:"s2-unit6.html"},
     {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
-    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
+    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /build-spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
     {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
     {t:"Architecture Diagram",d:"Interactive diagram of the full Secure Dark Factory — all layers: pipeline, security, governance, identity, observability, network.",tags:["diagram","architecture","dark factory"],url:"resources/dark-factory-architecture.html"},
     {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
-    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /build-spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
     {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
     {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
     {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},

@@ -34,7 +34,7 @@ This sprint implements a four-phase cycle, each powered by a Claude Code skill:
 
 **Think (~15 min):** Use `/think` to critically analyze the problem, surface assumptions, identify risks, and consider alternatives before writing any spec.
 
-**Spec (~20 min):** Use `/spec` to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.
+**Spec (~20 min):** Use `/build-spec` to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.
 
 **Build (~50 min):** Use Claude Code to implement the agent and tools rapidly in an isolated git worktree. Cut anything that doesn't directly serve the specification.
 

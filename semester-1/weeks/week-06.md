@@ -418,6 +418,6 @@ This is a canonical example of production-grade skill design — its frontmatter
 ## PR 6 Callout Additions (lab-s1-unit2.html)
 
 - **Item 15** — Already present: `callout-warn` PoLP warning before Step 4 (tool registration). No duplicate added.
-- **Item 24** — Added `callout-key`: /think → /spec → build practitioner workflow before Week 6 Deliverables section.
+- **Item 24** — Added `callout-key`: /think → /build-spec → build practitioner workflow before Week 6 Deliverables section.
 - **Item 26** — Already present: inline `(Theory: ...)` references in step descriptions. No additions needed.
 - **Item 27** — Added `callout-key`: Security controls as architectural foundations (Pit of Success) before Step 3 (rate limiting), alongside the existing `callout-warn`.

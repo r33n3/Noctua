@@ -217,7 +217,7 @@
   </div>
   <div class="dir">
     <div class="dir-name">.claude/skills/</div>
-    <div class="dir-desc">On-demand workflow definitions. <span class="tip">~100 tok idle, full SKILL.md loaded on activation.</span> Course skills: <code>/think</code>, <code>/spec</code>, <code>/audit-aiuc1</code>, <code>/tool-select</code>, <code>/retro</code>, <code>/harness</code>, <code>/worktree</code>.</div>
+    <div class="dir-desc">On-demand workflow definitions. <span class="tip">~100 tok idle, full SKILL.md loaded on activation.</span> Course skills: <code>/think</code>, <code>/build-spec</code>, <code>/audit-aiuc1</code>, <code>/tool-select</code>, <code>/retro</code>, <code>/harness</code>, <code>/worktree</code>.</div>
   </div>
   <div class="dir">
     <div class="dir-name">.claude/agents/</div>
@@ -241,7 +241,7 @@
   </div>
   <div class="dir">
     <div class="dir-name dir-file">resources/</div>
-    <div class="dir-desc">Reference materials: approach-selection.md, swarm-patterns.md. Read by <code>/spec</code> during planning.</div>
+    <div class="dir-desc">Reference materials: approach-selection.md, swarm-patterns.md. Read by <code>/build-spec</code> during planning.</div>
   </div>
 </div>
 
@@ -367,7 +367,7 @@
       <tr><td>Week 2</td><td>.mcp.json</td><td>Register first MCP server. Introduce tool access scope, ${VAR} pattern for secrets.</td></tr>
       <tr><td>Week 2</td><td>.claude/rules/security.md</td><td>Path-scoped security rules. Introduce lazy loading vs always-on context tradeoff.</td></tr>
       <tr><td>Week 3</td><td>.claude/skills/think.md</td><td>First course skill. Introduce skills frontmatter: name, description, context mode.</td></tr>
-      <tr><td>Week 4</td><td>.claude/skills/spec.md</td><td>Second skill. Spec generation workflow. Introduce plans/ directory and plansDirectory setting.</td></tr>
+      <tr><td>Week 4</td><td>.claude/skills/build-spec.md</td><td>Second skill. Spec generation workflow. Introduce plans/ directory and plansDirectory setting.</td></tr>
       <tr><td>Week 5</td><td>.claude/agents/analyzer.md</td><td>First subagent. Introduce agent YAML structure: system prompt, tools, model override.</td></tr>
       <tr><td>Week 6</td><td>.claude/hooks/pre-tool.sh</td><td>First enforcement hook. PreToolUse pattern — block or log tool calls before execution.</td></tr>
       <tr><td>Week 7</td><td>.claude/skills/audit-aiuc1.md</td><td>AIUC-1 audit skill. Introduce reports/ directory. First artifact-producing skill.</td></tr>
@@ -429,7 +429,7 @@
   │  reads: CLAUDE.md (CCT framework)
   │
   ▼
-/spec ──────────────────────────────→ plans/SPEC-{name}.md
+/build-spec ──────────────────────────────→ plans/SPEC-{name}.md
   │  reads: resources/approach-selection.md, resources/swarm-patterns.md
   │  reads: .claude/agents/ (available worker definitions)
   │

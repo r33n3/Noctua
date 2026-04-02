@@ -1,4 +1,4 @@
-# /spec — Specification Before Building
+# /build-spec — Specification Before Building
 
 Write a formal specification document for the current task before any
 implementation begins. The spec answers: What are we building, why,
@@ -164,7 +164,7 @@ The build is complete when:
 
 ## Installation
 
-Save as `~/.claude/commands/spec.md` (global) or `.claude/commands/spec.md`
+Save as `~/.claude/commands/build-spec.md` (global) or `.claude/commands/build-spec.md`
 (project-local).
 
-Use `/spec` at the start of any build session. Works best after `/think`.
+Use `/build-spec` at the start of any build session. Works best after `/think`.

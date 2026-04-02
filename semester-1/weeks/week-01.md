@@ -166,17 +166,17 @@ mkdir -p ~/.claude/commands
 # Copy the four course skills from the repo docs/skills/ directory
 # (adjust the path below to wherever you cloned the Noctua repo)
 cp ~/path/to/noctua-repo/docs/skills/think.md ~/.claude/commands/think.md
-cp ~/path/to/noctua-repo/docs/skills/spec.md ~/.claude/commands/spec.md
+cp ~/path/to/noctua-repo/docs/skills/build-spec.md ~/.claude/commands/build-spec.md
 cp ~/path/to/noctua-repo/docs/skills/retro.md ~/.claude/commands/retro.md
 cp ~/path/to/noctua-repo/docs/skills/worktree-setup.md ~/.claude/commands/worktree-setup.md
 ```
 
-**Verify they're installed** — open any Claude Code session and type `/` — you should see `/think`, `/spec`, `/retro`, `/worktree-setup` in the autocomplete list.
+**Verify they're installed** — open any Claude Code session and type `/` — you should see `/think`, `/build-spec`, `/retro`, `/worktree-setup` in the autocomplete list.
 
 | Skill | When to use |
 |---|---|
 | `/think` | Before starting any task — structured critical analysis |
-| `/spec` | After thinking — produce a structured specification |
+| `/build-spec` | After thinking — produce a structured specification |
 | `/retro` | After completing a sprint — capture what worked and what didn't |
 | `/worktree-setup` | When running parallel agent tasks — configure isolated git worktrees |
 

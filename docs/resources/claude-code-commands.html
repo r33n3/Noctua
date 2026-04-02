@@ -217,7 +217,7 @@
 <div class="section">
   <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA COURSE SKILLS</div>
   <div class="cmd"><div class="cmd-name">/think</div><div class="cmd-desc">CCT analysis workflow. Structured critical thinking before building.<br><span class="tip">Reads: CLAUDE.md (CCT framework). Writes: conversation only.</span></div></div>
-  <div class="cmd"><div class="cmd-name">/spec</div><div class="cmd-desc">Generate spec package from idea or /think output. Component manifests, model selection, swarm configs.<br><span class="tip">Reads: references/approach-selection.md. Writes: plans/SPEC-{name}.md</span></div></div>
+  <div class="cmd"><div class="cmd-name">/build-spec</div><div class="cmd-desc">Generate spec package from idea or /think output. Component manifests, model selection, swarm configs.<br><span class="tip">Reads: references/approach-selection.md. Writes: plans/SPEC-{name}.md</span></div></div>
   <div class="cmd"><div class="cmd-name">/tool-select</div><div class="cmd-desc">Engineering Assessment Stack decision. Chat/Cowork/Code recommendation.<br><span class="tip">Reads: Engineering Assessment Stack. Writes: conversation only.</span></div></div>
   <div class="cmd"><div class="cmd-name">/audit-aiuc1</div><div class="cmd-desc">AIUC-1 compliance audit against 6 domains (A–F).<br><span class="tip">Reads: working tool. Writes: reports/AUDIT-{name}.md</span></div></div>
   <div class="cmd"><div class="cmd-name">/harness</div><div class="cmd-desc">Security Minion harness builder. Blueprint YAML + fixed/flexible steps.<br><span class="tip">Reads: plans/SPEC-*.md. Writes: harnesses/{type}/blueprint.yaml</span></div></div>
@@ -293,7 +293,7 @@
   <div class="mono-block">/think ─→ structured analysis (conversation)
   │
   ▼
-/spec ──→ plans/SPEC-{name}.md (spec package artifact)
+/build-spec ──→ plans/SPEC-{name}.md (spec package artifact)
   │       reads: references/approach-selection.md, swarm-patterns.md
   │
   ▼

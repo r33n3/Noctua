@@ -20,19 +20,19 @@
   <p>Each skill enforces one phase — and each phase has harness engineering baked in:</p>
   <ul>
     <li><strong>/think</strong> — Forces you to understand the real problem before committing to an approach. Ends with a Harness Audit: what guardrails does this work need, what constraints already exist, what's the verification strategy?</li>
-    <li><strong>/spec</strong> — Translates your thinking into a contract the agent builds from. Includes anti-requirements (things the agent must NOT do), verifiable acceptance criteria, explicit file scope, and lessons from past retros encoded directly into the spec.</li>
+    <li><strong>/build-spec</strong> — Translates your thinking into a contract the agent builds from. Includes anti-requirements (things the agent must NOT do), verifiable acceptance criteria, explicit file scope, and lessons from past retros encoded directly into the spec.</li>
     <li><strong>/worktree-setup</strong> — Isolates parallel work into separate branches. Configures pre-commit hooks and output suppression (silence passing tests, surface only failures) so the agent hits constraints during execution, not after you review.</li>
     <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
-    <li><strong>/harness</strong> — The meta-skill. Orients you when sessions lose direction, audits whether your workflow is self-correcting, and checks whether /retro output is actually changing your /spec and /think.</li>
+    <li><strong>/harness</strong> — The meta-skill. Orients you when sessions lose direction, audits whether your workflow is self-correcting, and checks whether /retro output is actually changing your /build-spec and /think.</li>
     <li><strong>/audit-aiuc1</strong> — Audit your tool or agent system against the six AIUC-1 domains before elevation to a higher autonomy mode. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates.</li>
   </ul>
-  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /spec, /spec constrains /worktree, /worktree produces the evidence for /retro. Run all six and your system gets better every cycle.</p>
+  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /build-spec, /build-spec constrains /worktree, /worktree produces the evidence for /retro. Run all six and your system gets better every cycle.</p>
 </div>
 
 <div class="callout callout-key">
   <strong>How Skills Accelerate Ideation to Delivery</strong>
   <p>Without skills, every Claude Code session starts from zero. You re-explain the context, re-establish the format, re-define what "done" means. Skills eliminate that overhead.</p>
-  <p>When you type <code>/think</code>, Claude already knows the output structure you need, the risk categories to check, and the confidence scale you use. When you type <code>/spec</code>, Claude already knows your architecture template, your AIUC-1 control table, and your definition of done. You spend the session on the problem — not on setup.</p>
+  <p>When you type <code>/think</code>, Claude already knows the output structure you need, the risk categories to check, and the confidence scale you use. When you type <code>/build-spec</code>, Claude already knows your architecture template, your AIUC-1 control table, and your definition of done. You spend the session on the problem — not on setup.</p>
   <p>Over time, your modified skills become institutional memory. A new team member installs your skills and immediately works at your standard — not because you trained them, but because the workflow is encoded.</p>
 </div>
 
@@ -55,7 +55,7 @@
 
 # Download all six skills at once (run from your terminal)
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
-curl -o ~/.claude/commands/spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md
+curl -o ~/.claude/commands/build-spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
 curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
@@ -75,7 +75,7 @@ ls ~/.claude/commands/</code></pre>
   <strong>Why /think exists</strong>
   <p>The most expensive mistake in a sprint is confidently building the wrong thing. <code>/think</code> is a forcing function — it makes you restate the problem in your own words, list the assumptions you're making, and identify what you don't know before you commit to an approach.</p>
   <p>In security work this matters more than most domains. A threat model built on a wrong assumption doesn't just waste time — it creates false confidence. An incident response tool designed for the wrong attacker profile misses the actual threat. <code>/think</code> makes the assumptions visible so you can challenge them before they're baked into code.</p>
-  <p>The updated skill ends with a <strong>Harness Audit</strong>: three questions you answer before moving to /spec. What guardrails does this work need? What constraints already exist (tests, linters, CI gates)? What is the verification strategy — and if you can't name a specific check, you can't delegate this work to an agent yet. Think of this phase as the manager handing off to a capable but context-less contractor.</p>
+  <p>The updated skill ends with a <strong>Harness Audit</strong>: three questions you answer before moving to /build-spec. What guardrails does this work need? What constraints already exist (tests, linters, CI gates)? What is the verification strategy — and if you can't name a specific check, you can't delegate this work to an agent yet. Think of this phase as the manager handing off to a capable but context-less contractor.</p>
 </div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
@@ -94,18 +94,18 @@ ls ~/.claude/commands/</code></pre>
     <li>Add a "MITRE ATLAS relevance" section that always checks if a threat is in ATLAS</li>
     <li>Add "AIUC-1 domain requirements check" for ethical AI decisions</li>
     <li>Create <code>/think-incident</code> that pre-populates CCT 5-pillar headings</li>
-    <li>Add a confidence-to-action rule: "If confidence is Low, always run /spec before any build"</li>
+    <li>Add a confidence-to-action rule: "If confidence is Low, always run /build-spec before any build"</li>
   </ul>
 </div>
 
 <hr>
 
-<h2 id="spec">/spec — Specification Before Building</h2>
+<h2 id="spec">/build-spec — Specification Before Building</h2>
 <p>Write a formal spec before writing a line of code. Defines agents, tools, data flow, success criteria, and scope. The shared contract for every build.</p>
 <p><strong>Best used in:</strong> Unit 2 (MCP server design), Unit 4 (sprint planning), Unit 5 (multi-agent architecture), Unit 8 (capstone architecture document).</p>
 
 <div class="callout callout-reading">
-  <strong>Why /spec exists</strong>
+  <strong>Why /build-spec exists</strong>
   <p>Claude is an exceptional builder — but it builds what you describe, not what you meant. Without a spec, "build a vulnerability scanner" produces something. With a spec, it produces the right something: the right agents, the right tools, the right data flow, with security controls defined before the first line of code.</p>
   <p>The updated skill now requires two things that most specs omit. First: <strong>anti-requirements</strong> — an explicit list of what the agent must NOT do (don't touch this module, don't add dependencies, don't refactor outside scope). Every ambiguity you leave in the spec is a decision the agent makes without you. Anti-requirements shrink that space. Second: <strong>verifiable acceptance criteria</strong> — observable checks, not prose. "The API returns 200 with a valid token" is a criterion. "Authentication should work" is a wish.</p>
   <p>The spec is also your scope enforcer. Sprint labs give you 60 minutes to build. Without a written scope, every new idea that surfaces during the build phase looks reasonable to add. The spec gives you something to point to: "That's not in scope — deferred to next sprint." This is not a constraint — it's what lets you finish.</p>
@@ -119,7 +119,7 @@ ls ~/.claude/commands/</code></pre>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/commands/spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/spec.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/build-spec.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md</code></pre>
 </div>
 
 <div class="callout callout-tip">
@@ -211,7 +211,7 @@ ls ~/.claude/commands/</code></pre>
 
 <div class="callout callout-reading">
   <strong>Why /harness exists</strong>
-  <p>The Think → Spec → Build → Retro cycle is only self-correcting if the connections between phases are working. /retro must feed /think. /think must shape /spec. /spec must constrain /worktree. /worktree must produce the evidence /retro needs. If any connection is broken, you're not improving — you're running the same mistakes in a faster loop.</p>
+  <p>The Think → Spec → Build → Retro cycle is only self-correcting if the connections between phases are working. /retro must feed /think. /think must shape /build-spec. /build-spec must constrain /worktree. /worktree must produce the evidence /retro needs. If any connection is broken, you're not improving — you're running the same mistakes in a faster loop.</p>
   <p><code>/harness</code> audits those connections. It has three layers to examine. The <strong>spec layer</strong>: does your spec template include anti-requirements, verifiable criteria, and lessons from past retros? The <strong>runtime layer</strong>: do pre-commit hooks run during agent execution, is test output suppressed to failures only, would at least one gate catch your most common mistake? The <strong>context layer</strong>: does the agent have access to patterns it needs, is a scoped TASK.md dropped into each worktree, have retro findings been encoded into AGENTS.md or skills?</p>
   <p>The diagnostic question is simple: <em>"What did my last retro actually change?"</em> If the answer is "nothing," the loop is broken and /harness shows you exactly where.</p>
   <p>Use /harness at the start of a session when you're not sure which phase applies. Use it periodically as a system health check. Use it before a capstone sprint to make sure all five skills are connected and each phase produces inputs the next phase can use.</p>

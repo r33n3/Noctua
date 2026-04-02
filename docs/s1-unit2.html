@@ -196,7 +196,7 @@
 <li>Agent stops exploring alternatives and commits to the first approach</li>
 <li>Output quality degrades noticeably in the last 20% of a long session</li>
 </ul>
-<p><strong>Compaction vs. Context Reset:</strong> <code>/compact</code> helps but doesn't fully resolve context anxiety — the agent knows it was compacted and may still feel "late in session." A context <em>reset</em> (start a fresh agent with a structured handoff artifact) provides a clean slate. This is why <code>/spec</code> writes output to <code>plans/</code> — the spec package survives context resets. A new agent reads <code>plans/SPEC-*.md</code> and picks up where the previous agent left off, without inheriting any context fatigue.</p>
+<p><strong>Compaction vs. Context Reset:</strong> <code>/compact</code> helps but doesn't fully resolve context anxiety — the agent knows it was compacted and may still feel "late in session." A context <em>reset</em> (start a fresh agent with a structured handoff artifact) provides a clean slate. This is why <code>/build-spec</code> writes output to <code>plans/</code> — the spec package survives context resets. A new agent reads <code>plans/SPEC-*.md</code> and picks up where the previous agent left off, without inheriting any context fatigue.</p>
 <p>For long sessions: write important state to files (scratchpad pattern), then <code>/clear</code> and start fresh with the files as input. The new session has full context budget and no anxiety. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
 <div class="callout callout-warn"><p><strong>Memory Surfaces — Where Agent Data Actually Lands</strong></p>
 <p>Before building data governance or retention policies, map every surface where your agent writes data. Most agents have more write paths than their builders realize:</p>
@@ -784,10 +784,10 @@ def y(self):
 <div class="callout callout-reading"><p><strong>Further Reading:</strong> Anthropic, "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign," Full Report, November 2025. This is the GTG-1002 primary source document. See also the June 2025 "vibe hacking" findings that documented the earlier, less autonomous precursor to this operation. Both are available in the <a href="reading.html">Reading List</a>.</p>
 </div>
 <hr/>
-<div class="callout callout-key"><p><strong>Design before you build: the /think → /spec → build workflow.</strong></p>
+<div class="callout callout-key"><p><strong>Design before you build: the /think → /build-spec → build workflow.</strong></p>
 <ol>
 <li><strong><code>/think</code></strong> — use Claude Code's /think skill to surface your design reasoning: "What are the security implications of each tool I'm adding? What could go wrong?"</li>
-<li><strong><code>/spec</code></strong> — use <code>/spec</code> to capture your decisions in a spec document: interface contracts, error handling strategy, PoLP decisions, known gaps</li>
+<li><strong><code>/build-spec</code></strong> — use <code>/build-spec</code> to capture your decisions in a spec document: interface contracts, error handling strategy, PoLP decisions, known gaps</li>
 <li><strong>Build</strong> — with the spec written, build to the spec; decisions already made don't slow you down</li>
 </ol>
 <p>The spec is not bureaucracy — it's the record of your security design choices. When you audit your own system in Unit 3, your spec is Exhibit A.</p>
@@ -797,7 +797,7 @@ def y(self):
 <p><strong>Setup:</strong> Meta's research found something unexpected: structured templates changed what the agent DOES, not just how it reports. Agents given semi-formal templates took 2.8x more steps — they read more files, traced more function definitions, and explored more code paths — because the template required evidence they could only get by doing more work.</p>
 <p><strong>Discussion prompt:</strong> What's the difference between asking someone to "write a security report" and asking them to: (1) state what each component does, (2) trace how data flows through the system, (3) identify where untrusted input reaches sensitive operations, (4) conclude with a finding for each gap, citing file and line. Is the second one just a format specification? Or does it change what work the person actually does?</p>
 <p><strong>Key insight:</strong> The person doing the second task HAS to read more code, trace more paths, and think more carefully — because the template requires evidence they can only produce through deeper investigation. This is why SKILL.md templates matter more than most people realize. The template structure determines the quality of the agent's REASONING, not just the quality of its output. A skill that says "analyze this code" produces surface-level work. A skill that says "state premises, trace execution, identify divergences, conclude with evidence" produces deep work — because the agent has to actually DO those things to fill in the template.</p>
-<p><strong>Course connection:</strong> Walk through the /spec SKILL.md structure. Each section requires the agent to do specific investigation work (evaluate approaches, select with justification, define components). The template isn't formatting — it's a work specification.</p>
+<p><strong>Course connection:</strong> Walk through the /build-spec SKILL.md structure. Each section requires the agent to do specific investigation work (evaluate approaches, select with justification, define components). The template isn't formatting — it's a work specification.</p>
 <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
 <div class="callout callout-tip"><p><strong>/code-review — The Post-Build Step Before You Commit</strong></p>
@@ -808,7 +808,7 @@ def y(self):
 </code></pre></div>
 <p><strong>Security framing:</strong> You are building security tools — tools that find vulnerabilities in other systems. <code>/code-review</code> checks for vulnerabilities <em>you introduced</em> while building the vulnerability-finder. The meta-security step that most developers skip.</p>
 <p><strong>Updated workflow for Week 6+:</strong></p>
-<div class="codehilite"><pre><span></span><code>/think → /spec → Build → /code-review → [ASSISTIVE gate ✓] → commit → /audit-aiuc1 (Week 9)
+<div class="codehilite"><pre><span></span><code>/think → /build-spec → Build → /code-review → [ASSISTIVE gate ✓] → commit → /audit-aiuc1 (Week 9)
 </code></pre></div>
 <p>The confidence threshold (80) is configurable in the plugin's command file. Lower = more findings and more noise. Higher = fewer findings and potential misses. 80 is the course default — adjust after you understand your system's noise profile.</p>
 </div>
@@ -2474,11 +2474,11 @@ This ensures consistency and alignment with my standards.
     {t:"Prompt Injection",d:"Attacker-controlled input that redirects agent behavior. Direct (user input) and indirect (tool output / retrieved content).",tags:["prompt injection","attack","unit6"],url:"s2-unit6.html"},
     {t:"NeMo Guardrails",d:"NVIDIA framework for adding safety rails to LLM outputs. Colang rules, topical/safety/jailbreak rails.",tags:["nemo","guardrails","safety","nvidia"],url:"s2-unit6.html"},
     {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
-    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
+    {t:"Secure Dark Factory",d:"Governed agentic pipeline: /think → /build-spec → worktree → Orchestrator → Workers → MASS 2.0 → PeaRL → Production.",tags:["dark factory","pipeline","architecture","secure"],url:"resources/dark-factory-architecture.html"},
     {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
     {t:"Architecture Diagram",d:"Interactive diagram of the full Secure Dark Factory — all layers: pipeline, security, governance, identity, observability, network.",tags:["diagram","architecture","dark factory"],url:"resources/dark-factory-architecture.html"},
     {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
-    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /build-spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
     {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
     {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
     {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},

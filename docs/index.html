@@ -52,7 +52,7 @@
 <p>But prototyping is only half the story. This course teaches the <strong>full delivery pipeline</strong>: rapid prototype → leadership evaluation → production hardening → deployment. When leadership selects a prototype for delivery, students learn to accelerate that prototype into production-ready code — adding observability, security controls, CI/CD, governance gates, and operational runbooks. The goal is not just "build fast" but "build fast, then ship."</p>
 <p>This pipeline follows the <strong>Think → Spec → Build → Retro</strong> cycle as its delivery framework: think critically about the architecture before writing any spec, produce a formal spec before building, build rapidly using Claude Code and agentic workflows, and run a structured retrospective — then repeat at production scale when a prototype is selected for delivery.</p>
 <h3 id="4-agentic-engineering">4. Agentic Engineering</h3>
-<p>The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course applies the <strong>Think → Spec → Build → Retro</strong> development cycle as its delivery framework, powered by five Claude Code skills — <code>/think</code>, <code>/spec</code>, <code>/worktree-setup</code>, <code>/retro</code>, and <code>/harness</code> — and built on the <strong>Core Four Pillars</strong> — Prompt, Model, Context, and Tools — operationalized through patterns that accelerate both prototyping and production delivery:</p>
+<p>The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course applies the <strong>Think → Spec → Build → Retro</strong> development cycle as its delivery framework, powered by five Claude Code skills — <code>/think</code>, <code>/build-spec</code>, <code>/worktree-setup</code>, <code>/retro</code>, and <code>/harness</code> — and built on the <strong>Core Four Pillars</strong> — Prompt, Model, Context, and Tools — operationalized through patterns that accelerate both prototyping and production delivery:</p>
 <ul>
 <li><strong>Context Engineering</strong> — Managing context windows, system prompts, memory, and retrieval. Students build personal context libraries that compound across projects.</li>
 <li><strong>Tool Design</strong> — Defining agent capabilities through MCP servers, structured tool definitions, and the "Pit of Success" principle (make the right thing easy, the wrong thing hard).</li>
@@ -251,7 +251,7 @@
 │   ├── lab-s2-unit[5-8].html   # Semester 2 interactive lab guides
 │   ├── reading.html / frameworks.html / lab-setup.html / assessment.html
 │   ├── labs.css / labs.js       # Shared stylesheet and interactive system
-│   ├── skills/                  # Course skill files (/think, /spec, /retro, etc.)
+│   ├── skills/                  # Course skill files (/think, /build-spec, /retro, etc.)
 │   ├── resources/               # Reference pages (cheatsheet, command ref, etc.)
 │   └── data/                    # Downloadable lab data files
 │
@@ -466,14 +466,14 @@
     {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
     {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
     {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
-    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /worktree-setup, /retro, /harness), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /build-spec, /worktree-setup, /retro, /harness), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
     {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
     {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
     {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},
     {t:"Lab Setup Guide",d:"Environment setup: Claude Code install, API keys, MCP servers, Python environment, git config.",tags:["setup","lab","install","environment"],url:"lab-setup.html"},
     {t:"Reading List",d:"Week-by-week assigned readings: OWASP docs, Claude docs, research papers, dark factory reference.",tags:["reading","resources","papers"],url:"reading.html"},
     {t:"Frameworks & Protocols",d:"Full reference: OWASP Top 10 LLM, OWASP NHI, Agentic Apps, MCP spec, A2A spec, AIUC-1.",tags:["frameworks","protocols","reference","owasp"],url:"frameworks.html"},
-    {t:"Course Skills",d:"Six course skills: /think, /spec, /worktree-setup, /retro, /harness. Install to ~/.claude/commands/.",tags:["skills","claude","think","spec","retro","worktree","harness"],url:"skills/index.html"},
+    {t:"Course Skills",d:"Six course skills: /think, /build-spec, /worktree-setup, /retro, /harness. Install to ~/.claude/commands/.",tags:["skills","claude","think","spec","retro","worktree","harness"],url:"skills/index.html"},
     {t:"Course Cheatsheet",d:"Two-sided SANS-style reference: sprint cycle, Assessment Stack, model selection, metrics, AIUC-1, OWASP LLM Top 10, V&V, Dark Factory maturity.",tags:["cheatsheet","reference","metrics","sprint","aiuc","owasp"],url:"resources/course-cheatsheet.html"},
     {t:"CCT — Collaborative Critical Thinking",d:"5-pillar framework: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance. Adapted from Seth Jaeger's 5 Habits of Mind.",tags:["cct","critical thinking","jaeger","habits","pillars"],url:"s1-unit1.html"},
     {t:"Semi-Formal Reasoning",d:"Structured evidence chains (premises → trace → divergence → conclusion) improving AI accuracy from 78% to 88–93%. Ugare & Chandra, arXiv:2603.01896v2.",tags:["semi-formal","reasoning","accuracy","evidence chains","meta"],url:"s1-unit2.html"},
