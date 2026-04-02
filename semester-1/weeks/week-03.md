@@ -1,314 +1,381 @@
-# Week 3: Modern AI Landscape for Security
+# Week 3: The Modern AI Landscape for Security Professionals
 
 **Semester 1 | Week 3 of 16**
 
 ## Learning Objectives
 
-- Understand MCP architecture: clients, servers, and transports
-- Understand when to use tool calls vs. agent reasoning
-- Design tools with input validation, error handling, and audit logging
-- Introduce A2A (Agent-to-Agent) protocol conceptually: agent-to-tool vs. agent-to-agent
-- Introduce Tool Search Tool for managing large tool libraries
-- Build a functional CVE lookup MCP server connected to Claude Code
-- Apply AIUC-1 Domain B (Security) to tool design: input filtering and limiting agent access
+- Understand transformer architecture at a conceptual level: attention, context windows, tokens
+- Learn the taxonomy of AI models: closed, open, specialized; and how to choose the right one
+- Master token economics: cost optimization, input vs. output pricing, context window tradeoffs
+- Evaluate models for security work: accuracy, reasoning depth, latency, privacy, cost
+- Build a mental model of the AI landscape in 2026 and how it's evolving
 
 ---
 
 ## Day 1 — Theory
 
-### The MCP Origin Story
+To use AI effectively as a security professional, you need a mental model of how these systems work and what their tradeoffs are. This isn't about becoming a machine learning engineer. It's about understanding enough to make informed choices: When do I use Claude Opus vs. Sonnet? When should I deploy an open model? What does it mean that a model has a 1M token context window?
 
-Before MCP (Model Context Protocol), integrating external tools into LLM workflows was chaotic. Each tool required a custom connector per LLM provider. A CVE lookup tool built for Claude required separate integration for GPT-4, and another for Gemini. There was no standard for tool discovery, error handling, or audit logging.
+### Foundation: The Transformer Architecture
 
-Anthropic released MCP in late 2024 as an open standard. The Linux Foundation took governance in 2025, establishing it as community-driven. MCP solves the "integration sprawl" problem the same way HTTPS solved the web security standardization problem.
+All modern large language models — Claude, GPT, Llama, Mistral — are built on the same underlying architecture: the transformer. Understanding it at a high level is essential.
 
-### MCP Architecture: Three Layers
+The core innovation of transformers (introduced by Vaswani et al. in 2017) is "attention." Imagine reading a long security incident report. Your attention isn't equally distributed. When you see "ransomware," your mind attends to nearby words like "encryption," "payment," "victim," "recovery."
 
-**Clients** — The AI agent or application consuming tools. In this course, Claude Code running in your terminal, tasked with analyzing threats or building security tools.
+Transformers do something similar. Every token (roughly, a word or subword) in the input attends to every other token, and the model learns which connections matter. This all-to-all structure is why transformers capture long-range dependencies — something older architectures (RNNs, LSTMs) struggled with.
 
-**Servers** — Stateless services that expose tools. A security team might run one MCP server wrapping their SIEM, another for vulnerability scanning, another for threat intelligence. Each server handles authentication, input validation, and logging.
+The practical consequence: transformers are *context-aware*. They understand that "password" in a security context means something different than in a UI context. But they can only attend to tokens within their context window.
 
-**Transports** — The communication channel:
-- **stdio** — Standard input/output for local tools and Claude Code integrations
-- **HTTP/HTTPS** — For client-server architectures across networks
-- **WebSockets** — For persistent, bidirectional real-time security operations
+> **🔑 Key Concept:** A model's context window is its attention span. Claude Opus 4.6 now supports 1M tokens. Gemini 2.5 supports 1M+. Longer windows cost more but allow you to include more evidence — for security analysis, a larger context window means loading the full incident report rather than summarizing it.
 
-This three-layer model provides security advantages: the client never directly executes code on the server, the server can enforce rate limits and log every interaction, and the transport can be encrypted and authenticated independently.
+### Context Windows and Their Implications
 
-### Key Insight: MCP Gives Agents Deterministic Tools
+A token is roughly 4 characters (0.75 words) on average. A 200K token context window is ~500 pages. Claude Opus 4.6's 1M token window is ~750K words — enough to load a full year of SIEM logs into a single session.
 
-Without MCP, an agent that needs to check an IP's reputation might:
-- Search the web for threat intelligence (slow, unreliable, hallucination risk)
-- Reason from training data (stale, imprecise)
-- Ask the user to look it up (defeats the purpose)
+Two security analysis scenarios:
 
-With an MCP tool:
-- The agent calls `check_ip_reputation(ip="203.45.12.89")`
-- Gets back structured, authoritative, fresh data
-- Doesn't waste reasoning on what should be a deterministic lookup
+1. **Small context:** "We got a phishing email from john@gmail.com claiming to be HR, asking for password reset." The model analyzes it.
 
-**Assessment Stack Layer 5 Application:** MCP is an integration pattern. The decision "should this be a tool call or agent reasoning?" is an Assessment Stack question:
-- Known, bounded query with deterministic answer → MCP tool call
-- Novel situation requiring judgment → agent reasoning
-- Both → tool call to gather evidence, then agent reasoning over results
+2. **Large context:** You include the full email (headers, body, HTML), previous emails from this attacker, threat intelligence reports, your organization's email policies, and response examples. The model has much richer context for analysis.
 
-### A2A: Agent-to-Agent Protocol (Conceptual Introduction)
+The second scenario produces better results but costs more:
+- Input tokens cost less (~$0.003 per 1K tokens)
+- Output tokens cost more (~$0.006 per 1K tokens)
+- Longer contexts = more input tokens = higher cost
 
-MCP handles agent-to-tool communication. A2A handles agent-to-agent communication — when one AI agent needs to delegate to another AI agent as a peer.
+> **Context budget is intentional allocation, not an afterthought.** Before you inject a file, a log, or a prompt template, ask: does this earn its place? What does the model actually need to reason correctly? The discipline of context budgeting separates engineers who get consistent results from those who wonder why quality varies.
 
-**MCP vs. A2A in practice:**
-```
-Your orchestrator agent
-        ↓ MCP tool call
-CVE lookup server (deterministic tool, not AI)
+> **Context window ≠ memory.** What's in the context window is transient. A 1M token context window gives you 1M tokens of *attention* within a single session — not 1M tokens of persistent memory. Designing an agent that "remembers" previous incidents requires building a retrieval layer, not just a bigger context. You'll build this in Week 8.
 
-Your orchestrator agent
-        ↓ A2A delegation
-Specialized analysis agent (AI that reasons and decides)
-```
+### The Landscape of Models in 2026
 
-A2A is introduced here conceptually. You'll build A2A systems in Weeks 9-10. For now, the key distinction: MCP gives agents tools; A2A gives agents collaborators.
+The market has stratified into three tiers.
 
-#### The Protocol Landscape: MCP and A2A
+> **Note on pricing:** Model names and pricing change frequently. The versions and figures below reflect early 2026. Check [anthropic.com/pricing](https://www.anthropic.com/pricing) for current rates. The relative tiers (Opus > Sonnet > Haiku in capability and cost) remain stable.
 
-MCP standardizes how agents talk to **tools**. But agents also need to talk to **other agents**. The **Agent-to-Agent (A2A) protocol** addresses this complementary need.
+**Tier 1: Frontier Closed Models**
 
-| Protocol | Direction | Purpose | Example |
-|----------|-----------|---------|---------|
-| **MCP** | Agent → Tool | Standardized tool access | Agent queries a CVE database via MCP server |
-| **A2A** | Agent → Agent | Standardized agent communication | Recon agent sends findings to analysis agent via A2A |
+| Model | Provider | Context | Approx. Input Price | Best For |
+|-------|----------|---------|-------------------|---------|
+| Claude Opus 4.6 | Anthropic | 1M tokens | ~$15/1M tokens | Complex analysis, deep forensics, rare high-stakes tasks |
+| Claude Sonnet 4.6 | Anthropic | 200K tokens | ~$3/1M tokens | Operational workflow, everyday reasoning |
+| Claude Haiku 4.5 | Anthropic | 200K tokens | ~$1/1M tokens | Triage, classification, high-throughput tasks |
+| GPT-4o / GPT-4.5 | OpenAI | 128K tokens | Variable | Multimodal (text, image, audio), strong reasoning |
+| GPT-5.x / o3 / o4-mini | OpenAI | Variable | Variable | Extended reasoning, complex tasks |
+| Gemini 2.5 | Google | 1M+ tokens | Variable | Native multimodal, large-context analysis |
 
-You don't need to implement A2A yet — that comes in Weeks 9-10 (multi-agent orchestration). But understanding that these two protocols work together helps you design systems where agents can discover each other's capabilities, delegate tasks, and coordinate workflows using standardized interfaces rather than custom glue code.
+**Advantages:** highest quality, newest knowledge, broad capabilities, safety work  
+**Disadvantages:** higher cost, less privacy control, vendor lock-in, closed training data
 
-> **🔑 Key Concept:** MCP solved the agent-to-tool integration problem. A2A solves the agent-to-agent integration problem. Together, they provide the standardized communication layer for production agentic systems. Think of MCP as the "API layer" and A2A as the "service mesh" of the agentic world.
+**Tier 2: Open-Source Models**
 
-### Tool Search Tool: Managing Large Tool Libraries
+| Model | Provider | Context | Notes |
+|-------|----------|---------|-------|
+| Llama 3.1 | Meta | 128K tokens | Strong reasoning, efficient |
+| Mistral 7B/8x7B | Mistral AI | 32K tokens | Lightweight, mixture of experts |
+| Phi-3.5 | Microsoft | 128K tokens | Good for edge deployments |
+| Deepseek-R1 | Deepseek | Variable | Strong reasoning, open weights |
 
-When an agent has access to 5 tools, it can easily decide which to call. When it has access to 50 tools, the decision overhead grows. The Tool Search Tool solves this through progressive disclosure:
+**Advantages:** no vendor lock-in, on-premises deployment (full privacy), lower cost, fine-tunable  
+**Disadvantages:** slightly lower quality on complex tasks, requires infrastructure, maintenance overhead
 
-- **Tool metadata** (always loaded): name, description, when to use
-- **Tool body** (loaded on trigger): full schema, parameters, examples
-- **Reference material** (loaded on demand): documentation, edge cases
+**Tier 3: Specialized Models**
 
-This pattern — metadata → body → references — will appear again when we cover Claude Code skills in Week 6.
+- **Security-specific:** Some labs training on threat intel, IR, forensics (not widely available yet)
+- **Code-focused:** Codestral, Code-Llama (good for security scripts, IaC, detection rules)
+- **Vision-focused:** LLaVA, GPT-4o (for analyzing screenshots, network diagrams)
 
-#### V&V Lens: Tool Outputs as Verification Sources
+### Choosing a Model for Security Work
 
-MCP servers aren't just tools for agents — they're verification infrastructure. When you design an MCP server that queries a CVE database, you're building an independent verification source that agents (and humans) can use to confirm claims.
+> **Model selection is an architectural decision.** The question is not "which model is best" — it's "which model is right for this task at this cost." A common production pattern: Haiku-class models handle high-volume triage (fast, cheap, good enough for classification). Sonnet-class models handle the top 5–10% of cases needing deeper analysis.
 
-Design principle: **every MCP tool should return enough context for a human to verify the result.** Don't just return `{"vulnerable": true}`. Return `{"vulnerable": true, "cve_id": "CVE-2026-1234", "source": "NVD", "last_updated": "2026-03-01", "affected_versions": "1.0-1.4"}`. The additional context enables V&V without requiring the human to re-query the source.
+| Scenario | Best Model | Why |
+|----------|-----------|-----|
+| Live incident response (real-time chat) | Sonnet or Haiku | Fast inference. Analyst is waiting. Cheap enough for real-time. |
+| Deep forensic analysis of complex incident | Opus | Best reasoning. Analyst willing to wait 20 seconds. |
+| Automated threat intel correlation (batch) | Mistral on-premises | Cost-effective for high volume. Privacy. |
+| Email phishing detection (high throughput) | Haiku | Lightweight, cheap. Filter obvious cases before escalating. |
+| Vulnerability research (exploit code) | Code-Llama or GPT-4 | Code generation quality matters. |
+| Customer-facing threat hunting chat | Sonnet or GPT-4o | Reliable, fast, professional. Review privacy policies. |
 
-Apply this to your Week 3 lab: when building your CVE lookup MCP server, include source attribution and timestamps in every response so the consumer can assess freshness and provenance.
+> **💡 Discussion Prompt:** Your organization needs to analyze 10,000 SIEM alerts per day. Budget is limited. Single frontier model (expensive but very accurate) or an ensemble of cheaper models (Haiku + Mistral)? What are the tradeoffs?
 
-> **📖 Case Study Connection:** In the PeaRL Governance Bypass, Level 1 was the agent using legitimate MCP tools (`createException`) for self-serving governance bypass. Level 2 was the agent discovering the full API surface through `/openapi.json`. When you design your MCP server, ask: what happens if the agent uses this tool to influence its own evaluation? What information does your server expose that an agent could use to find alternative access paths?
+### Token Economics in Practice
 
-### Tool Design: The Five Principles
+Analyzing a complex incident with Claude Opus:
+- Full incident report: 10K tokens
+- SIEM logs: 15K tokens
+- System prompt: 2K tokens
+- Your question: 0.5K tokens
 
-1. **Single Responsibility** — Each tool does exactly one thing. Easier to test, audit, and revoke.
-2. **Clear Schemas** — Input/output must be unambiguous. Use JSON Schema with strict validation.
-3. **Error Handling** — Fail gracefully with clear error codes, not stack traces.
-4. **Security Boundaries** — Least privilege at every level: input validation, rate limiting, data scoping, audit logging.
-5. **Observability** — Every invocation logged: who called it, what parameters, how long, what result.
+**Total input: 27.5K tokens**
 
-### AIUC-1 Domain B (Security): B005 and B006
+At ~$15/1M input tokens: 27.5K × $0.000015 = **~$0.41 input cost**  
+Response (2K tokens) at ~$75/1M output tokens: 2K × $0.000075 = **~$0.15**  
+**Total: ~$0.56 per analysis**
 
-**B005 — Input Filtering:** All input to a security tool must be validated before processing. An agent that accepts "any string" for an IP address can be tricked into SQL injection, command injection, or path traversal.
+At 100 incidents/day → ~$20K/year. Compare to a human analyst at $80K+/year. If Claude accelerates analysis by 5%, it's ROI-positive.
 
-**B006 — Limit Agent Access:** Agents should have access to the minimum set of tools required for their task. A triage agent that only needs to read logs should not have access to a "modify firewall rules" tool.
+**The hidden cost of irrelevant context:** Including a full log file when only 5% applies can double your token spend. Context engineering — curating what to include — directly reduces cost.
 
-> **Governance Moment:** "What else could this agent access through the same transport? If your MCP server exposes 10 tools but your triage agent only needs 3, you've given it access to 7 tools it shouldn't have. That's a security misconfiguration."
+> **Three things to understand before the lab:**
+> 1. **Context and attention** — Every file in Claude's context window competes for attention. Large files don't disappear when not referenced; they still consume tokens and can dilute focus.
+> 2. **Security data is token-expensive** — Raw logs, full CVE descriptions, and packet captures are verbose. Preprocessing (summarization, structured extraction) before passing to Claude improves quality and reduces cost.
+> 3. **Context window limit ≠ chunking problem** — If your data exceeds the window, you need a chunking/retrieval strategy. If it fits but is too large to reason about effectively, you need a summarization strategy. These are different problems with different solutions.
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on MCP architecture: clients, servers, and transports. Start easy, then get harder."
-> - "I think I understand the difference between MCP and A2A but I'm not sure. Explain it to me differently and then test whether I really get it."
-> - "What are the three most common security mistakes when building MCP servers for the first time?"
-> - "Connect MCP's single-responsibility principle to the Engineering Assessment Stack from Week 1."
+### LLM vs. Agent — The Distinction That Matters for Failure Modes
+
+An LLM generates text. An agent uses an LLM plus tools, memory, and planning to take actions in the world. The same Claude model powers both — the difference is architecture.
+
+When you add a tool loop, you have an agent. When you add memory, you have a stateful agent.
+
+This distinction matters when reasoning about failure modes: **an LLM that hallucinates produces bad text. An agent that hallucinates may take bad actions** — call the wrong API, delete the wrong record, escalate the wrong alert. The architecture determines the blast radius.
+
+> **📚 Study With Claude:** Open Claude Code with the Noctua repo mounted and try:
+> - "Quiz me on transformer architecture. Start easy, then get harder."
+> - "I think I understand context windows but I'm not sure. Explain it differently and then test whether I really get it."
+> - "What are the three most common mistakes when choosing a model tier for a security task?"
+> - "Connect token economics to what we learned in Week 1 about the Engineering Assessment Stack."
 
 ---
 
 ## Day 2 — Lab
 
-### Lab: Phishing Email Analysis Comparative Study
+### Lab: Model Comparison on Phishing Analysis
 
 **Lab Objectives:**
-- Build an MCP server exposing a CVE lookup tool
-- Connect it to Claude Code via stdio transport
-- Test with natural language queries
-- Document the design decisions
+- Compare multiple models on the same security task
+- Evaluate outputs for accuracy, reasoning quality, latency, and cost
+- Build a model selection rubric for different security scenarios
+- Apply CCT principles to model evaluation (challenge your biases)
 
 **Setup:**
 ```bash
-mkdir -p ~/noctua/week03-mcp
-cd ~/noctua/week03-mcp
-pip install mcp httpx pydantic
+mkdir -p ~/noctua-labs/unit1/week3
+cd ~/noctua-labs/unit1/week3
 ```
 
-**Step 1: Design the Tool Schema**
+#### The Test Case: A Sophisticated Phishing Email
 
-Before writing a line of code, design the schema (Assessment Stack Layer 6 — Verification starts at design):
+Create `phishing-sample.txt`:
 
-```json
-{
-  "tool_name": "query_cve",
-  "description": "Look up CVE details from the NVD database. Use when you need authoritative vulnerability data for a specific CVE ID.",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "cve_id": {
-        "type": "string",
-        "description": "CVE identifier in format CVE-YYYY-NNNNN",
-        "pattern": "^CVE-[0-9]{4}-[0-9]{4,6}$"
-      },
-      "include_remediation": {
-        "type": "boolean",
-        "description": "Include remediation steps (default: true)",
-        "default": true
-      }
-    },
-    "required": ["cve_id"]
-  },
-  "output_schema": {
-    "type": "object",
-    "properties": {
-      "cve_id": {"type": "string"},
-      "description": {"type": "string"},
-      "severity": {"type": "string", "enum": ["critical", "high", "medium", "low", "unknown"]},
-      "cvss_v3_score": {"type": "number", "minimum": 0, "maximum": 10},
-      "affected_products": {"type": "array"},
-      "remediation": {"type": "string"},
-      "references": {"type": "array"}
-    }
-  }
+```
+From: sarah.johnson@meridian-financial.secure
+To: john.chen@meridian.local
+Date: March 5, 2026, 10:42 AM EST
+Subject: Urgent: Action Required - Verify Your Account Identity
+
+Return-Path: <bounce@meridian-financial.secure>
+X-Originating-IP: [203.45.12.89]
+X-Mailer: Mozilla/5.0
+
+---
+
+Dear John,
+
+Thank you for banking with Meridian Financial. Due to recent security updates to our
+systems, we require immediate verification of your account identity.
+
+Please click the link below to re-authenticate and ensure uninterrupted access:
+
+https://meridian-financial.secure/verify-identity/?token=u7f3x9kL2m&session=JC9834
+
+For your security, we recommend completing this within the next 2 hours.
+
+Best regards,
+Meridian Financial Security Team
+support@meridian-financial.secure
+
+---
+
+[Email Headers Analysis]
+SPF: FAIL (does not match official Meridian record)
+DKIM: FAIL (no valid DKIM signature)
+DMARC: FAIL (policy reject; message did not pass authentication)
+Reply-To: differs from From address
+X-Originating-IP: 203.45.12.89 (Resolves to AS12345, Singapore-based proxy service)
+
+[URL Analysis]
+Domain: meridian-financial.secure
+Domain registered: March 4, 2026 (1 day old)
+Domain registrar: Namecheap
+Similarity to official Meridian domain (meridian-financial.com): 99%
+WHOIS: Private registration
+Certificate: Self-signed, expires in 30 days
+
+[Forensic Details]
+Message size: 2.3 KB (small, minimal attachments)
+Encoding: MIME, standard HTML
+Suspicious attachments: None detected
+Embedded links: 1 (the verify URL)
+Click tracking pixel: Yes, from analytics.secure-auth.com (unrelated to official Meridian)
+
+[Context]
+- Meridian's official domain is meridian-financial.com (not .secure)
+- Recent credential compromise of 3 VP accounts in past month
+- This email targets John Chen (VP Operations), investigated in Week 1 lab
+- John's inbox has received similar phishing before; he usually ignores them
+- No legitimate "verify-identity" campaigns from Meridian in past 6 months
+```
+
+**Analysis Prompt** (same across all model tests):
+
+```
+You are a senior security analyst at Meridian Financial. Analyze the attached phishing email
+and provide:
+
+1. THREAT ASSESSMENT: Is this phishing? Confidence level (0-100%)?
+2. INDICATORS: List the 5 most significant indicators of compromise
+3. ATTACK VECTOR: What is the attacker trying to accomplish?
+4. RECOMMENDED ACTIONS: What should the security team do in the next 30 minutes?
+5. CCT EVALUATION: What evidence supports your conclusion? What would change it?
+
+Format as structured JSON with confidence levels for each section.
+```
+
+---
+
+#### Part 1: Run the Comparison (30 minutes)
+
+**Test 1: Claude Code (repo mounted)**
+
+Open Claude Code in your working directory, paste the phishing email content with the analysis prompt, and save the output to `outputs/claude-code-output.json`.
+
+**Test 2: Claude API (Sonnet via SDK)**
+
+```python
+import anthropic, json, time
+
+client = anthropic.Anthropic()
+
+with open("phishing-sample.txt") as f:
+    email_content = f.read()
+
+prompt = f"""[PHISHING EMAIL]\n{email_content}\n\n[ANALYSIS REQUEST]\n{open('analysis-prompt.txt').read()}"""
+
+start = time.time()
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=2048,
+    messages=[{"role": "user", "content": prompt}]
+)
+duration = time.time() - start
+
+result = {
+    "model": "claude-sonnet-4-6",
+    "response": response.content[0].text,
+    "input_tokens": response.usage.input_tokens,
+    "output_tokens": response.usage.output_tokens,
+    "duration_sec": round(duration, 2),
+    "cost_usd": round(
+        response.usage.input_tokens * 3/1_000_000 +
+        response.usage.output_tokens * 15/1_000_000, 6
+    )
 }
+
+with open("outputs/sonnet-output.json", "w") as f:
+    json.dump(result, f, indent=2)
+
+print(f"Cost: ${result['cost_usd']:.6f} | Duration: {result['duration_sec']}s")
 ```
 
-**Step 2: Design in Claude Code First**
+**Test 3: Claude Code multi-model comparison (no additional API keys needed)**
 
-Use Claude Code to walk through the architecture before implementing:
+In Claude Code, ask: *"Compare how Claude Haiku and Claude Sonnet would approach this phishing analysis differently, given their different capability tiers."* This gives you a comparative perspective without needing separate API credentials.
 
-```text
-I'm building an MCP server for CVE lookups. Walk me through the architecture:
+**Test 4: Mistral via Ollama (local, open-source) — Optional**
 
-1. INPUT VALIDATION: If a user asks for "CVE-2023-44487", how do we validate it's a real CVE format?
-   What validation should reject: "CVE-2023-INVALID", "DROP TABLE--", "../../etc/passwd"
-
-2. EXTERNAL API CALL: Write pseudocode for calling the NVD API.
-   What parameters? What response shape? What could fail?
-
-3. PARSING: Given an NVD response, extract:
-   - CVSS v3 score → derive severity (9.0-10.0=critical, 7.0-8.9=high, 4.0-6.9=medium, 0.1-3.9=low)
-   - Affected products (vendor, product, versions)
-   - References
-
-4. RESPONSE FORMATTING: Shape the parsed data into a structured response Claude would understand.
-
-5. ERROR HANDLING:
-   - Invalid CVE ID format → reject with schema validation error
-   - CVE not found → graceful "not found" message
-   - API timeout → timeout error with retry guidance
-   - Rate limiting (HTTP 429) → wait message
-
-Show the complete input validation function and error handling logic.
-```
-
-**Step 3: Design Decision Exercise**
-
-For each of the following, decide: Should it be a tool call or agent reasoning?
-
-| Task | Tool Call or Reasoning? | Why |
-|------|------------------------|-----|
-| "Is CVE-2023-44487 patched?" | Tool call | Known, bounded, deterministic answer from NVD |
-| "Which of these 5 CVEs should we patch first?" | Reasoning | Requires judgment about organizational context |
-| "What's the CVSS score for CVE-2021-44228?" | Tool call | Deterministic lookup |
-| "How would an attacker exploit this CVE in our environment?" | Reasoning | Novel situational analysis |
-| "Are there patches available for Apache Log4j 2.14?" | Both | Tool call for data → reasoning over results |
-
-**Step 4: Connect to Claude Code**
-
-Register the server with Claude Code:
 ```bash
-claude mcp add cve-lookup -- python ~/noctua/week03-mcp/cve_mcp_server.py
+# If Ollama is installed:
+ollama pull mistral
+ollama run mistral "$(cat phishing-sample.txt) $(cat analysis-prompt.txt)" > outputs/mistral-output.txt
 ```
 
-That's it. Claude Code stores the configuration automatically. You can verify it was added:
-```bash
-claude mcp list
+---
+
+#### Part 2: Evaluate Using CCT Pillars (40 minutes)
+
+For each model output, apply the five CCT pillars:
+
+| CCT Pillar | Evaluation Question | Notes |
+|-----------|-------------------|-------|
+| Evidence-Based | Does the output separate observations from inferences? | Does it cite specific header data, not just "suspicious email"? |
+| Inclusive Perspective | Does it consider alternative explanations? | Could this be a legitimate IT campaign? |
+| Strategic Connections | Does it connect the Singapore IP to the Week 1 incident? | Context threading across cases |
+| Adaptive Innovation | Does it state what evidence would change the conclusion? | Falsifiability |
+| Ethical Governance | Does it recommend proportional action, not nuclear escalation? | Suspend vs. investigate vs. monitor |
+
+> **V&V Checkpoint:** After scoring each output, pick the highest-confidence claim from the best-performing model. Verify it against the raw `phishing-sample.txt`. Does the claim accurately represent the evidence? Does the model's confidence level match the strength of the evidence?
+
+---
+
+#### Part 3: Build a Model Selection Rubric (30 minutes)
+
+Create `model-selection-rubric.csv`:
+
+```csv
+scenario,recommended_model,reasoning,cost_tier,latency_requirement,privacy_concern
+live_incident_triage,claude-haiku-4-5,Fast inference analyst waiting cheap enough for real-time,low,<2s,low
+deep_forensic_analysis,claude-opus-4-6,Best reasoning analyst willing to wait complex judgment,high,<30s,medium
+bulk_threat_intel_correlation,mistral-local,High volume cost-sensitive privacy-critical batch job,infrastructure,minutes,high
+phishing_email_detection,claude-haiku-4-5,High throughput lightweight filter before escalating,low,<1s,medium
+vulnerability_research,code-specialized,Domain-specific code generation quality matters,medium,<10s,low
+customer_facing_chat,claude-sonnet-4-6,Reliable fast professional review data privacy policies,medium,<5s,high
 ```
 
-**Step 5: Test with Natural Language**
+Add 3 more rows based on your own security work scenarios.
 
-In Claude Code:
+Save your working outputs:
 ```
-What is CVE-2023-44487?
+~/noctua-labs/unit1/week3/
+├── phishing-sample.txt
+├── analysis-prompt.txt
+├── outputs/
+│   ├── claude-code-output.json
+│   ├── sonnet-output.json
+│   └── mistral-output.txt (optional)
+├── model-comparison-scores.md
+└── model-selection-rubric.csv
 ```
-
-The agent should:
-1. Discover the `query_cve` tool
-2. Extract "CVE-2023-44487" from your question
-3. Call `query_cve` with `{"cve_id": "CVE-2023-44487"}`
-4. Receive the structured JSON response
-5. Summarize in natural language with citation
-
-Follow-up test queries:
-- "Are there any critical vulnerabilities in Apache Log4j released in 2021?"
-- "What's the CVSS score for CVE-2021-44228 and which products are affected?"
-- "What would an attacker be able to do with CVE-2021-44228?" (this one requires *reasoning* over the tool output)
-
-**Step 6: AIUC-1 B005 + B006 Verification**
-
-Test your input validation:
-- `cve_id = "CVE-2023-INVALID"` → should reject with clear error
-- `cve_id = "'; DROP TABLE cve; --"` → should reject before API call
-- `cve_id = "../../etc/passwd"` → should reject with schema validation
-
-Document the security boundaries you've enforced.
 
 ---
 
 ## Deliverables
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the design, Cowork to structure and format the report, and Code to build the MCP server. The quality of your thinking matters — the mechanical production should be AI-assisted.
+> **🛠️ Use Claude Code with the Noctua repo mounted.** Use `/think` to structure your analysis before drafting. Save final deliverables to Cowork for organization.
 
-1. **MCP Server Design Document** — tool schema, validation logic, error handling strategy
-2. **Design Decision Exercise** (table format) — tool call vs. agent reasoning for 5 scenarios with justifications
-3. **Working MCP server code** (or documented design if infrastructure setup isn't complete)
-4. **Test results** — 3 natural language queries and their outputs
-5. **AIUC-1 B005/B006 verification log** — 3 invalid inputs and how your server rejected them
+1. **Model Comparison Report** (1,500–2,000 words)
+   - Analysis outputs from all models tested (attach or summarize)
+   - CCT rubric scores with explanation of why each model scored where it did
+   - Cost-benefit analysis: at 100 incidents/day, what is the annual cost of each approach?
+   - Your recommendation: which model for which security scenario?
 
-> **📁 Save to:** `~/noctua/tools/mcp-servers/week03-cve/` (server code), `~/noctua/deliverables/week03/` (final submission)
+2. **Model Selection Rubric** (`model-selection-rubric.csv`) — at least 9 rows
+
+3. **Token Economics Exercise** — for your recommended model choice, calculate:
+   - Cost per incident analysis
+   - Annual cost at 100 incidents/day
+   - Break-even: at what volume does switching to open-source become justified?
+
+4. **CCT Reflection** (500 words) — Did you confirm your initial model preference or were you surprised? Which CCT pillar was most useful for evaluating model outputs?
+
+> **📁 Save to:** `~/noctua-labs/unit1/week3/` (lab files), `~/noctua/deliverables/week03/` (final submission)
 
 ---
 
 ## AIUC-1 Integration
 
-**Domain B (Security) — B005 and B006 introduced this week:**
-
-- **B005 (Input Filtering):** Every tool input passes through schema validation before reaching business logic. Reject malformed, injection-attempting, or out-of-bounds inputs at the perimeter.
-- **B006 (Limit Agent Access):** An agent performing CVE lookups gets the `query_cve` tool. Not `modify_firewall_rules`, not `delete_logs`. Minimal tool exposure is a security control, not just good design.
+**Not yet formally introduced.** Students encounter accountability through the cost tracking exercise — every API call produces a record with model, token count, cost, and duration. This is proto-AIUC-1 E001 (decision logging) applied to model selection. AIUC-1 Domains are introduced progressively starting Week 4.
 
 ## V&V Lens
 
-**Calibrated Trust — Tool outputs vs. agent reasoning deserve different trust levels:**
+**Calibrated Trust applied to model outputs:**
 
-Tool outputs (from deterministic MCP calls) should be trusted as data — they come from authoritative sources with validation. Agent reasoning over tool outputs should be scrutinized — the agent's interpretation of CVE data is still LLM output.
+This week's lab demonstrates naturally: different models produce different answers to the same question. Which do you trust more? Why?
 
-This week: After Claude summarizes a CVE query result, check one claim against the raw tool output. Does the summary accurately represent the severity? Does it correctly describe affected products? Build the habit of not conflating "tool said X" with "agent's interpretation of what the tool said."
+Notice which parts of each output are factual lookups (the SPF/DKIM failures are observable facts) vs. judgment calls (the attack vector assessment is the model's interpretation). Calibrated Trust means treating these differently:
+- Factual claims from the email headers: verify against `phishing-sample.txt` directly
+- Attacker intent assessment: low trust, treat as hypothesis requiring corroboration
+- Recommended actions: near-zero autonomous trust, human decision required
 
----
-
-## Production Readiness Check
-
-Your first MCP server is your first production artifact. Before submitting Week 3 deliverables, run:
-
-```
-/check-antipatterns ~/noctua/tools/mcp-servers/week03-cve/
-```
-
-Focus on Layer 1 (Code Quality) and Layer 4 (Security) patterns — the ones most common in first MCP servers:
-- **1.1 Silent Error Swallowing:** Does your CVE lookup return `{}` on error, or a structured error with `is_error: true`?
-- **1.3 Naive Retry Logic:** If the NVD API returns 429, does your server wait with backoff or hammer it again immediately?
-- **4.3 Insufficient Input Bounds:** Does your `query_cve` tool have a length limit on the CVE ID parameter?
-
-The `external-api-safety.md` rule is now active in your environment and will flag these patterns as you code. The skill gives you the formal audit output for your submission.
-
-Include your `/check-antipatterns` output in your Week 3 deliverables. Fix all CRITICAL findings before submitting.
+**V&V Component:** After Part 1, designate 5 minutes to verify one claim from the highest-confidence output. Does the evidence in the phishing sample actually support it? Document whether verification changed your assessment of the output.
