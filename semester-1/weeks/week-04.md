@@ -1,341 +1,651 @@
-# Week 4: Context Engineering
+# Week 4: From Prompt Engineering to Context Engineering
 
 **Semester 1 | Week 4 of 16**
 
 ## Learning Objectives
 
-- Design multi-tool MCP servers with coordinated tools that compose
-- Apply input validation, rate limiting, and audit logging at scale
-- Understand the four data architecture options and when to use each
-- Apply Assessment Stack Layer 4 (Data Architecture) to security system design
-- Understand why "throw everything in a vector database" is wrong
-- Introduce AIUC-1 Domains D (Reliability) and E (Accountability) through audit logs
+- Understand the evolution from naive prompting to sophisticated context engineering
+- Master context window design: what to include, what to exclude, how to format
+- Learn system prompts, tool definitions, and memory architectures
+- Understand structured outputs (JSON schemas) for deterministic results
+- Master Retrieval-Augmented Generation (RAG) for integrating domain-specific knowledge
+- Apply context engineering to build reliable security analysis systems
 
 ---
 
 ## Day 1 — Theory
 
-### Multi-Tool MCP Server Design
+### From Prompt Engineering to Context Engineering
 
-Single-tool MCP servers are prototypes. Production systems compose multiple tools. Your Week 3 CVE lookup tool becomes one tool among many in a security analyst agent toolkit:
+For the past decade, the default way to use an AI system was: user writes a prompt, system responds, user reads response, end of story. This was fine when the system was ChatGPT and the goal was casual question-answering.
+
+But in 2024–2026, the nature of AI use changed. Organizations began building *systems* on top of AI — not just asking questions, but automating decision-making, integrating with production infrastructure, and relying on outputs for critical judgments. Suddenly, "write a good prompt" became insufficient. You needed to engineer the entire *context* in which the model operates.
+
+**What Changed**
+
+In 2023, prompt engineering meant: "How do I phrase my question so ChatGPT gives a good answer?"
+
+Examples of prompt engineering advice from that era:
+- "Add 'Let's think step by step' to the end of your prompt to improve reasoning"
+- "Use role-play: 'You are an expert security analyst...'"
+- "Include examples in your prompt (few-shot learning)"
+
+These were helpful micro-optimizations. But they assumed a single turn: one prompt, one response.
+
+In 2025–2026, context engineering means: "How do I design the entire information environment in which the model operates to produce reliable, integrated, auditable outputs?"
+
+This includes:
+1. **System prompts** that define role and constraints
+2. **Tool definitions** that declare what the model can invoke
+3. **Memory architectures** that let the model maintain state across turns
+4. **Structured output schemas** that force deterministic, machine-readable results
+5. **Retrieval-augmented generation** that injects fresh, domain-specific knowledge
+6. **Monitoring and feedback loops** that detect when the model is wrong and flag it
+
+---
+
+### Component 1: System Prompts
+
+A system prompt is a set of instructions that shapes how the model behaves, separate from the user's question.
+
+Example system prompt for a security analyst agent:
 
 ```
-Security Analysis Agent
-    ↓ query_cve           → NVD database
-    ↓ check_ip_reputation → threat intelligence feeds
-    ↓ enrich_alert        → correlation engine
-    ↓ query_logs          → SIEM
+You are an expert Security Operations Center (SOC) lead with 15 years of experience in threat
+hunting, incident response, and forensics. Your goal is to analyze security incidents with rigor
+and accuracy.
+
+**Constraints:**
+1. Base all conclusions on observable evidence. Do not speculate beyond what the data supports.
+2. When you are uncertain, say so explicitly. Use probability language:
+   "I am 70% confident that..." NOT "This is definitely..."
+3. Always consider alternative hypotheses. For each conclusion, state one way you could be wrong.
+4. Flag assumptions clearly: "I'm assuming X; if that's false, my analysis changes."
+5. Recommend further investigation before escalating to incident status.
+
+**Output format:**
+Always structure your analysis as JSON with fields: threat_level, evidence_summary,
+alternative_hypotheses, recommended_actions, confidence_score, assumptions_flagged.
+
+**Do not:**
+- Blame individuals without evidence
+- Recommend actions outside your authority (e.g., "fire this employee")
+- Provide legal advice
+- Assume intent (e.g., "the attacker wanted to...")
 ```
 
-The agent decides which tools to call and in what order, based on the task. The orchestration happens in the agent's reasoning — not in the tool code.
+This system prompt accomplishes several things:
+1. **Sets role and expertise:** The model understands its responsibilities
+2. **Defines constraints:** It knows when to be cautious
+3. **Specifies output format:** You get consistent, machine-readable results
+4. **Establishes guardrails:** It won't make unauthorized recommendations
 
-**The Value of Composition:** An agent receives a raw alert → calls `query_logs` for context → calls `check_ip_reputation` on the source IP → calls `enrich_alert` to synthesize → returns a complete assessment. Each tool is simple. The composition creates capability.
+Without a good system prompt, the model operates in a vacuum. It doesn't know if you want verbose prose or terse bullet points. It doesn't know when to be cautious. It doesn't know your risk tolerance.
 
-### Five Principles of Secure Multi-Tool Design
+> **Key Concept:** A system prompt is how you embed organizational culture and risk tolerance into an AI system. It's also how you make the system auditable: if something goes wrong, you can point to the system prompt and ask "Did the model violate its own constraints?"
 
-**1. Single Responsibility:** Each tool does exactly one thing. No "security operations mega-tool."
+---
 
-**2. Clear Schemas with Validation:** Input parameters use whitelists for categorical values, range checks for numerics, and parameterized queries (never string interpolation):
+### Component 2: Tool Definitions
+
+Context engineering includes declaring what tools the model can use. A tool is a function the model can invoke: query the SIEM, check email logs, look up threat intelligence, scan a system.
+
+Tool definition example:
+
+```json
+{
+  "name": "query_siem",
+  "description": "Query the SIEM (Splunk) for events matching a filter",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "filter": {
+        "type": "string",
+        "description": "Splunk query filter (e.g., 'host=prod-db-01 AND action=login')"
+      },
+      "time_range": {
+        "type": "string",
+        "description": "Time range: '1h', '24h', '7d', etc."
+      },
+      "max_results": {
+        "type": "integer",
+        "description": "Maximum number of results to return (default 1000)"
+      }
+    }
+  }
+}
+```
+
+When you provide tool definitions, the model knows it can query the SIEM. It understands the parameters. Crucially, it won't hallucinate data — it will actually call the SIEM and wait for results.
+
+**Tool Description Quality — Before and After**
+
+The model uses your description to decide *when* to call a tool and how to use it correctly. Vague descriptions produce unpredictable behavior:
+
+| | Vague (problematic) | Precise (effective) |
+|---|---|---|
+| `description` | `"Gets log data"` | `"Query Splunk SIEM for events in the specified time window. Returns up to max_results JSON objects. Use for authentication events, network flows, and process execution logs. Do NOT use for threat intelligence lookups — use query_ti instead."` |
+| Result | Model calls it for everything, or misses it when needed | Model calls it precisely when appropriate, avoids tool confusion |
+
+Descriptions are instructions to the model. Include: what it does, when to use it, when *not* to use it, and what it returns.
+
+**API Patterns: `tool_choice` and `is_error`**
+
+Two API-level controls that affect how agents behave at runtime:
+
+**`tool_choice`** — override whether the model can skip tool calling:
 
 ```python
-# DANGEROUS:
-def query_logs(query: str):
-    return execute_sql(f"SELECT * FROM logs WHERE {query}")
-    # An agent can be tricked into: "source='app' OR 1=1 --"
-
-# SECURE:
-def query_logs(source_type: str, time_range: str, event_type: str = None, limit: int = 100):
-    allowed_sources = ["app", "network", "database", "authentication"]
-    if source_type not in allowed_sources:
-        raise ValueError(f"Invalid source: {source_type}")
-    # Use parameterized queries...
+response = client.messages.create(
+    model="claude-opus-4-6",
+    tools=[log_tool, siem_tool],
+    # Options: {"type": "auto"} (default), {"type": "any"}, {"type": "tool", "name": "query_siem"}
+    tool_choice={"type": "tool", "name": "query_siem"},  # Force this tool
+    messages=[{"role": "user", "content": "Investigate this subnet."}]
+)
 ```
 
-**3. Error Handling:** Clear error codes, no stack traces, no sensitive data in errors.
+Use `{"type": "any"}` to require *some* tool call; `{"type": "tool", "name": "..."}` to force a specific one. Useful in audit pipelines where every decision must be logged before responding.
 
-**4. Security Boundaries:** Rate limiting per agent, data scoping by role, temporal scoping for sensitive operations.
+**`is_error: true`** — signal failed tool calls without breaking the loop:
 
-**5. Audit Logging:** Every call logged with: agent identity, parameters passed, timestamp, duration, result. This is non-negotiable for compliance.
-
-### Assessment Stack Layer 4: Data Architecture
-
-The choice of database is an Assessment Stack decision, not a technology preference. Match the query type to the store:
-
-| Data Store | Query Type | Security Use Case |
-|-----------|-----------|------------------|
-| **Relational DB** | Exact lookup, structured filtering, joins | "Find all logins from this user in the last 30 days" |
-| **Vector DB** | Semantic similarity, conceptual search | "Find incidents similar to this attack pattern" |
-| **Graph DB** | Relationship traversal, path analysis | "Trace the lateral movement path from initial compromise" |
-| **Time Series DB** | Trends, anomaly detection over time | "Show alert frequency over 90 days — identify spikes" |
-| **Search Index** | Full-text search across documents | "Find all incidents mentioning CVE-2021-44228" |
-| **Context Window** | Ephemeral, per-request | "Synthesize these 5 findings into a summary" |
-
-#### V&V Lens: Cross-Tool Verification
-
-When you have multiple tools available, you have a natural verification architecture. If your recon tool says an IP is malicious and your threat intel tool says the same IP is clean, that disagreement is a V&V signal — investigate further before acting.
-
-Design your multi-tool systems with verification in mind:
-- Can Tool A's output be cross-checked by Tool B?
-- Do your tools provide overlapping coverage that enables independent verification?
-- When tools disagree, does your system flag the conflict or silently pick one?
-
-Add to your audit logging: when tools provide conflicting information, log the conflict and how it was resolved. This creates an audit trail for V&V decisions.
-
-#### V&V Lens: Verification-Ready Report Design
-
-Your report generator should produce outputs that are *auditable by design*. Every claim in a security report should be traceable to a source. Every recommendation should include the evidence that supports it.
-
-Add these fields to your report schema:
-- `evidence_sources`: Array of sources that support each finding
-- `verification_status`: Has this finding been independently verified? By what method?
-- `confidence_basis`: What specific evidence drives the confidence score?
-- `unverified_claims`: Explicit list of claims the system could not independently verify
-
-A report that says "Critical vulnerability found (unverified)" is more trustworthy than one that says "Critical vulnerability found" with no verification status. Transparency about verification gaps builds trust.
-
-> **📖 Case Study Connection:** Level 4 of the PeaRL Governance Bypass was evidence poisoning — the agent marked its own findings as false positives to pass the gate. When you design data modification tools, consider: can the agent modify the data used to evaluate the agent? Separation of the evaluation data path from the agent's write path is a critical architectural decision.
-
-### Why "Throw Everything in a Vector DB" Is Wrong
-
-Vector databases excel at semantic similarity. But they are **wrong** for:
-
-- **Exact IP lookup:** "Is 203.45.12.89 in our blocklist?" — Use a hash set or relational DB. Vector similarity will return *near matches* of IP addresses, which is meaningless for an exact blocklist check.
-
-- **Time-series trending:** "Alert count by hour for the last 30 days" — Use a time-series DB with proper aggregation functions. Embedding time-series data in vectors loses the temporal structure.
-
-- **Relational queries:** "Find all incidents involving user X and IP Y" — Use SQL with proper indexes. Trying to express relational joins through vector similarity is expensive and inaccurate.
-
-**The right architecture is hybrid:** Use the right store for each query type, and let your agent orchestrate across stores.
-
-**Example: Hybrid Security Data Architecture**
-
-```
-CVE vulnerability data          → Relational DB (exact CVE ID lookup, version matching)
-Threat intelligence reports     → Vector DB (semantic: "find intel similar to this attack")
-Attack graph, network topology  → Graph DB (path: "how did attacker reach this system?")
-SIEM alert stream               → Time Series DB (trend: "is alert rate increasing?")
-Incident summaries              → Vector DB (semantic: "find past incidents like this")
-Per-request analysis context    → Context window (ephemeral synthesis)
+```python
+# In your tool execution handler:
+if query_failed:
+    # Signal the error — model stays in loop and can reason about it
+    tool_result = {
+        "type": "tool_result",
+        "tool_use_id": tool_use_id,
+        "is_error": True,
+        "content": "SIEM query failed: connection timeout after 30s on host prod-splunk-01"
+    }
+else:
+    tool_result = {"type": "tool_result", "tool_use_id": tool_use_id, "content": results}
 ```
 
-### AIUC-1 Domains D and E: Reliability and Accountability
+If you raise a Python exception instead of returning `is_error: true`, the model exits the agentic loop and you lose the chance for graceful recovery. With `is_error`, the model can decide to retry, fall back to a different tool, or surface the error to the operator.
 
-**Domain D (Reliability):**
-- **D001 — Graceful degradation:** When the `check_ip_reputation` tool fails, your system should continue with available data, not crash. The agent should note "IP reputation unavailable — proceeding with log analysis only."
-- **D002 — Error handling transparency:** Return structured errors, not silent failures. The agent and downstream systems should know what succeeded and what didn't.
+> **PostToolUse Hooks for Data Minimization**
+>
+> Every tool result enters your agent's conversation history — including verbose API responses with 40+ fields the agent will never need. Over a multi-turn session, this accumulates silently into a data governance liability.
+>
+> **PostToolUse hook pattern:** The hook fires immediately after a tool call completes, before the result enters context. Use it to strip fields the agent doesn't need for reasoning, redact sensitive values in-place (e.g., `SSN → ***-**-1234`), and normalize inconsistent field names across tool sources.
+>
+> Why hooks beat prompts here: "don't include sensitive fields" in a system prompt has a non-zero failure rate that is unacceptable for compliance. A PostToolUse hook that strips fields before they reach the model is deterministic — it cannot be reasoned around. This is the same principle as `permissions.deny` vs. asking nicely.
+>
+> **Reference:** [Claude Code Hooks documentation](https://docs.anthropic.com/en/docs/claude-code/hooks) — PostToolUse lifecycle, exit codes, and block patterns.
 
-**Domain E (Accountability) — The Audit Log Exercise:**
-- **E001 — Decision logging:** Every tool call is logged with full context
-- **E002 — Non-repudiation:** Logs should be immutable and include enough to reconstruct the decision chain
+---
 
-> **Governance Moment:** "Delete the logs. Now reconstruct what your agent did. You can't? That's exactly why AIUC-1 E exists. Your audit log is not overhead — it's your defense when a decision is questioned."
+### Component 3: Memory Architectures
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on the four data architecture types (Relational, Vector, Graph, Time Series). When should I use each?"
-> - "I think I understand why vector DBs are wrong for exact lookups but I'm not sure. Explain it to me differently."
-> - "What are the three most common data architecture mistakes when building security tools for the first time?"
-> - "Connect this week's multi-tool composition patterns to the MCP design principles from Week 3."
+An agent that operates for hours might need to remember earlier findings. Memory architectures are how you implement that.
 
-> **💡 Tool Pattern:** Use **Chat** for design phase thinking (what tools, what data architecture, what composition pattern). Switch to **Code** for the build phase. This is the Think → Build handoff.
+Types of memory:
+1. **Conversation memory:** Context from earlier messages in the same thread (limited by context window size)
+2. **Persistent memory:** External store (database, file) of facts learned from previous incidents
+3. **Episodic memory:** Recording of this specific incident's investigation steps for later review
+
+Example: An agent investigating a data breach might:
+1. Start with the alert (memory: "potential exfiltration from prod-db-01")
+2. Query SIEM; learn new fact (memory: "also unusual S3 access from same account")
+3. Connect to previous incidents (memory: "Similar pattern to March 2024 breach by APT-X")
+4. Retrieve threat intel (memory: "APT-X indicators: these IP ranges, these tools, these TTPs")
+5. Generate assessment (memory: "Confidence in APT-X attribution: 75%, based on...")
+
+Each step builds on the previous. The model doesn't forget. At the end, it can review its reasoning and cite its own earlier conclusions.
+
+Implementing this requires:
+- A vector database (Pinecone, Weaviate) or traditional database (PostgreSQL)
+- Structured logging of the agent's reasoning
+- A retrieval mechanism to fetch relevant past incidents
+- A summary mechanism to compress long conversation histories
+
+---
+
+### Component 4: Structured Outputs
+
+In early AI use, "reliability" meant "the model usually gives reasonable answers." In 2026, it means "the model's output integrates seamlessly with systems downstream."
+
+Structured outputs force the model to return data in a format you can parse and act on programmatically.
+
+Example — instead of asking an agent "Analyze this incident," you ask it to return:
+
+```json
+{
+  "incident_id": "MF-2026-0342",
+  "threat_level": "CRITICAL",
+  "threat_level_confidence": 0.87,
+  "attack_vector": "lateral_movement",
+  "affected_assets": ["prod-db-01", "customer-configs-s3-bucket"],
+  "recommended_actions": [
+    {
+      "action": "isolate_instance",
+      "target": "prod-db-01",
+      "urgency": "immediate",
+      "rationale": "Prevent further exfiltration"
+    },
+    {
+      "action": "audit_iam_role_usage",
+      "target": "prod-db-01-role",
+      "urgency": "high",
+      "rationale": "Determine if role was compromised or abused"
+    }
+  ],
+  "evidence_summary": "Observable indicators include unauthorized S3 access, RDS queries on sensitive tables, and directory enumeration. No evidence of OS-level persistence.",
+  "alternative_hypotheses": [
+    "Compromised IAM credentials (vs. OS compromise)",
+    "Buggy application code (vs. malicious exfiltration)"
+  ],
+  "assumptions": [
+    "Logs are trustworthy and unaltered",
+    "IAM role is isolated to this instance",
+    "No insider involvement"
+  ]
+}
+```
+
+Now your response is:
+- **Machine-readable:** You can parse it in code
+- **Deterministic:** The schema enforces structure
+- **Auditable:** Every field is documented
+- **Composable:** You can feed this into downstream systems (ticketing, SOAR playbooks, etc.)
+
+> **Discussion Prompt:** Think about your current security tools (SIEM, EDR, ticketing system). What structured output format would let Claude best integrate with them? What fields are essential? What's optional?
+
+---
+
+### Component 5: Retrieval-Augmented Generation (RAG)
+
+Training data has a cutoff date. Claude's knowledge was current as of early 2026. For security work, you often need:
+- Today's threat intelligence (APT-XYZ detected new malware 2 hours ago)
+- Your organization's policies (approval matrix for emergency access)
+- Industry-specific knowledge (financial sector regulations, healthcare incident response standards)
+
+RAG is the solution. You retrieve relevant documents from your knowledge base, inject them into the prompt, and let the model incorporate them.
+
+RAG workflow:
+1. **User submits a question:** "Is the IP 203.45.12.89 in any known threat intel feeds?"
+2. **System retrieves relevant documents:** Query vector database for IPs, APT profiles, threat feeds
+3. **System injects them into context:** "Here is the latest threat intelligence available to our organization: [docs]"
+4. **Model responds:** Incorporates the retrieved knowledge
+
+A concrete security example:
+
+```
+User: "Analyze if 203.45.12.89 is likely an attacker IP"
+
+[System retrieves from knowledge base]
+- Recent threat intel feed: "Singapore-based proxy provider used by APT-X starting Feb 2026"
+- Organization's IP blocklist: "203.45.12.89 flagged as C2 infrastructure on Feb 28"
+- Historical incidents: "APT-X targeted finance sector in similar way in March 2024"
+
+[Model responds with knowledge]
+"I found 203.45.12.89 in three knowledge sources:
+1. Threat intel: Known APT-X proxy (Feb 2026)
+2. Our blocklist: Flagged Feb 28, 2026
+3. Historical incident: Similar pattern in March 2024 attack
+
+This strongly suggests the IP is malicious, confidence 92%."
+```
+
+---
+
+### Putting It Together: Context Engineering in Practice
+
+Here's how a production security analysis system works in 2026:
+
+1. **User submits an incident:** "Unusual data access from user account jchen@meridian.local"
+
+2. **System engineer sets context:**
+   - System prompt: Role (SOC analyst), constraints (evidence-based, flag assumptions)
+   - Tool definitions: Can query SIEM, RDS, S3 logs, threat intel
+   - Memory: Retrieve past incidents involving this user, this asset, similar attack patterns
+
+3. **System retrieves relevant knowledge (RAG):**
+   - Threat intel: "IPs from Singapore flagged in past 72 hours"
+   - Organizational policy: "Sensitive data access requires approval; jchen has authority level 4/5"
+   - Historical incidents: "Similar incident on March 3 involving jchen (false alarm)"
+
+4. **System invokes tools (agent):**
+   - Query SIEM: "Show all activity by jchen, past 7 days"
+   - Query IAM: "Show all role assumptions by jchen, past 7 days"
+   - Threat intel lookup: "Correlate detected IPs with known APT infrastructure"
+
+5. **System structures response:**
+   ```json
+   {
+     "incident_id": "MF-2026-0359",
+     "threat_level": "MEDIUM",
+     "confidence": 0.68,
+     "recommendation": "Investigate further; do not escalate to breach unless additional evidence emerges",
+     "rationale": "Indicators present (unusual geography, sensitive data access), but context suggests possible legitimate access. Key question: Was jchen traveling?"
+   }
+   ```
+
+6. **Human reviews and acts:** SOC analyst reads recommendation, calls jchen's manager, manager confirms: "Yes, jchen is in Singapore on business trip." Analyst closes incident with resolution: "Legitimate business travel."
 
 ---
 
 ## Day 2 — Lab
 
-### Lab: Engineering a Security Analyst System Prompt
+**Lab Goal:** Apply context engineering principles to build a reusable, high-quality system prompt for a security analyst agent. Empirically measure how engineering the context improves output quality versus a naive approach.
 
-**Architecture: Three Composed Tools**
+### Part 1: Naive Prompting Baseline
 
-1. **`query_logs`** — Structured, parameterized log queries with input validation
-2. **`check_ip_reputation`** — Query threat intelligence for IP addresses
-3. **`enrich_alert`** — Compose data from tools 1 and 2 into a final assessment
+There are two ways to use Claude for incident analysis:
 
-**Step 1: Design in Claude Code**
+**Naive Approach (Risky):**
+- Send incident data + question directly to Claude
+- No system prompt defining constraints
+- No structured output schema
+- Model makes its own assumptions about what matters
+- Confidence and reasoning may not be trustworthy
 
-Walk through the composition pattern before building:
+**Context-Engineered Approach (Recommended):**
+- Define system prompt with role, constraints, output format
+- Specify structured JSON output
+- Include tool definitions (what can the model query?)
+- Provide organizational context (policies, previous incidents)
+- Request reasoning at each step
 
-```text
-I'm building a security alert enrichment system with three tools:
+**Claude Code Workflow — Naive Baseline:**
 
-1. query_logs(source_type, time_range, event_type, limit) → array of log entries
-   - source_type: ["app", "network", "database", "auth"]
-   - time_range: ["last_hour", "last_day", "last_week"]
-   - Validation: reject anything outside these enums
+```
+Analyze this security incident:
 
-2. check_ip_reputation(ip_address) → {threat_level, reputation_score, known_attacks, false_positive_risk}
-   - Input: valid IPv4 or IPv6 address
-   - Validation: reject non-IP-format strings
+User: jchen@meridian.local (John Chen, VP Operations)
+Source IP: 203.45.12.89 (Singapore proxy)
+Action: Downloaded 47 CSV files from data warehouse
+Time: March 4, 2026, 14:22 UTC
+Files: Revenue reports, client balances, transaction histories
+Authentication: Valid credentials + successful MFA
+Duration: 8 minutes, 34 seconds
+Recent context: Account had 3 failed login attempts this week
 
-3. enrich_alert(alert_id, logs, ip_threat) → {incident_severity, recommended_action, reasoning, aiuc1_domains_applied}
-   - Synthesizes the results of tools 1 and 2
-
-Walk me through how an agent would analyze this alert:
-
-ALERT:
-- Source IP: 203.45.12.89
-- User: admin@company.local
-- Action: Downloaded 10 GB from customer database
-- Time: 2026-03-05 14:22 UTC
-
-Steps:
-1. What logs should the agent query first?
-2. What should the IP reputation check return for 203.45.12.89?
-3. How does enrich_alert combine the results?
-4. What if the tools return conflicting signals (logs say suspicious, IP reputation says clean)?
+Is this a breach? What should we do?
 ```
 
-**Step 2: Implement the Multi-Tool Server**
+Then ask Claude directly: "Now redo that analysis with these constraints: (1) Always state confidence levels (0-100%), (2) List 2 alternative hypotheses, (3) Flag assumptions, (4) Recommend investigation, not escalation, when uncertain. How does the analysis change?"
 
-Use Claude Code to implement the server with proper validation, rate limiting, and audit logging. Key patterns to verify after generation:
+> **Common Pitfall:** Teams often write Python scripts to wrap Claude calls, thinking they're adding structure. But if the system prompt is weak, the Python doesn't help. The structure comes from the prompt, not the code. Claude Code lets you experiment with prompts directly before building Python infrastructure.
+
+---
+
+### Part 2: Engineering the Context — V1 to V2
+
+**Step 1: Create a minimal V1 system prompt**
+
+Create `v1-system-prompt.md`:
+```
+You are a security analyst. Analyze security incidents and provide recommendations.
+```
+
+Test this against the Meridian Financial incident above:
+
+```bash
+mkdir -p ~/noctua-labs/unit1/week4
+# Test in Claude Code:
+claude
+# Then: "Using system prompt: [v1 text]. Now analyze: [incident data]"
+```
+
+Document V1 output quality (rate each 1-5):
+- Does V1 use CCT structure?
+- Does it separate observations from inferences?
+- Does it ask clarifying questions?
+- Does it flag ethical considerations?
+- Does it produce structured output?
+
+**Step 2: Build V2 — Full Context Engineering**
+
+Create `v2-system-prompt.md`:
+
+```
+## Role
+You are a senior security analyst and incident responder with 10+ years of experience.
+You specialize in threat hunting, digital forensics, and AI-augmented security operations.
+
+## Operating Principles
+- ALWAYS separate observations (Layer 1) from inferences (Layer 2)
+  from hypotheses (Layer 3) from conclusions (Layer 4)
+- NEVER attribute malicious intent without supporting evidence
+- ALWAYS list what information is missing before concluding
+- ALWAYS provide alternative innocent explanations
+- ALWAYS address ethical implications of your recommendations
+
+## Required Output Format
+{
+  "observations": [],
+  "inferences": [],
+  "top_3_hypotheses": [{"narrative": "", "probability": 0, "supporting_evidence": []}],
+  "missing_information": [],
+  "next_steps": [],
+  "ethical_considerations": "",
+  "recommendation": "",
+  "confidence": 0
+}
+
+## Escalation Criteria
+Escalate to incident commander if: evidence suggests active exfiltration in progress,
+evidence of lateral movement, or data volume exceeds 1GB.
+```
+
+**Step 3: Test V2 against the same incident**
+
+Apply V2 in Claude Code with the same Meridian Financial incident. Re-rate across the same dimensions (1-5). Calculate the V1 → V2 improvement delta.
+
+**Step 4: Add tool definition stubs**
+
+Add an "Available Tools" section to V2:
+
+```
+## Available Tools
+- query_siem(time_range, account) — search SIEM logs
+- lookup_ip(ip_address) — check threat intelligence feeds
+- get_user_profile(username) — retrieve user role and history
+- query_dlp_logs(account, date_range) — review data loss prevention logs
+```
+
+Retest — does Claude now reference these tools in its recommendations?
+
+**Step 5: Save your context-engineered template**
+
+Save `security-analyst-context-v2.md` as your reusable template. This becomes the foundation for your MCP server system prompt in Unit 2.
+
+Compare naive vs. engineered outputs:
+
+| Aspect | Naive | Context-Engineered |
+|---|---|---|
+| Format | Prose | Structured JSON |
+| Confidence | Not explicit | Numerical + reasoning |
+| Alternative hypotheses | Maybe mentioned | Explicitly listed |
+| Assumptions | Implicit | Explicit list |
+| Actionability | Narrative | Parseable for automation |
+
+---
+
+### Part 3: Implement a Simple RAG Pipeline
+
+Create `rag-pipeline.py`:
 
 ```python
-# Rate limiting pattern
-from collections import defaultdict
-from time import time
+#!/usr/bin/env python3
+"""
+Simple RAG: Retrieve threat intel and org knowledge, inject into context.
+"""
 
-call_history = defaultdict(list)
-
-def rate_limit_check(agent_id: str, max_calls_per_minute: int = 20):
-    now = time()
-    call_history[agent_id] = [t for t in call_history[agent_id] if now - t < 60]
-    if len(call_history[agent_id]) >= max_calls_per_minute:
-        raise RateLimitError(f"Rate limit exceeded. Try again in {60 - (now - call_history[agent_id][0]):.0f}s")
-    call_history[agent_id].append(now)
-
-# Audit logging pattern
 import json
-from datetime import datetime
+from anthropic import Anthropic
 
-def audit_log(tool_name: str, agent_id: str, params: dict, result: dict, duration_ms: float):
-    entry = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "tool": tool_name,
-        "agent_id": agent_id,
-        "parameters": params,
-        "result_summary": {k: v for k, v in result.items() if k != "raw_data"},
-        "duration_ms": duration_ms,
-        "aiuc1_domain": "E001"  # Accountability - decision logging
-    }
-    with open("audit.log", "a") as f:
-        f.write(json.dumps(entry) + "\n")
+client = Anthropic()
+
+# Simulate a knowledge base (in production, this would be a vector database)
+knowledge_base = {
+    "threat_intel": [
+        {
+            "id": "TI-2026-001",
+            "date": "2026-03-02",
+            "content": "APT-X actively targeting financial services. Known indicators: RDP compromise leads to lateral movement. Primary goal: customer data exfiltration.",
+            "relevance_keywords": ["APT-X", "financial", "exfiltration"]
+        },
+        {
+            "id": "TI-2026-002",
+            "date": "2026-02-28",
+            "content": "Singapore proxies: 203.45.x.x range commonly used by legitimate business travelers. No malicious activity associated.",
+            "relevance_keywords": ["Singapore", "proxy", "203.45"]
+        }
+    ],
+    "org_policy": [
+        {
+            "id": "POL-001",
+            "name": "Data Access Control",
+            "content": "VPs are authorized to access customer data for financial reporting. Access must be logged and audited.",
+            "relevance_keywords": ["VP", "data access", "authorization"]
+        }
+    ],
+    "incident_history": [
+        {
+            "id": "INC-2026-005",
+            "date": "2026-02-14",
+            "content": "John Chen accessed data warehouse from London hotel. Confirmed legitimate — business trip verified with travel calendar.",
+            "relevance_keywords": ["John Chen", "jchen", "London", "hotel", "false alarm"]
+        }
+    ]
+}
+
+def retrieve(query: str, top_k: int = 3) -> list:
+    """
+    Keyword-based retrieval (production would use vector similarity).
+    Returns top_k documents most relevant to the query.
+    """
+    query_lower = query.lower()
+    scored = []
+    for category, docs in knowledge_base.items():
+        for doc in docs:
+            score = sum(
+                1 for kw in doc["relevance_keywords"]
+                if kw.lower() in query_lower
+            )
+            if score > 0:
+                scored.append({"category": category, "doc": doc, "score": score})
+    scored.sort(key=lambda x: x["score"], reverse=True)
+    return scored[:top_k]
+
+def build_rag_context(query: str) -> str:
+    """Retrieve relevant documents and format them as injected context."""
+    retrieved = retrieve(query)
+    if not retrieved:
+        return "No relevant documents found in knowledge base."
+
+    context_parts = []
+    for item in retrieved:
+        doc = item["doc"]
+        category = item["category"].replace("_", " ").title()
+        context_parts.append(
+            f"[{category} | {doc['id']} | {doc['date']}]\n{doc['content']}"
+        )
+    return "\n\n".join(context_parts)
+
+def analyze_incident(incident_description: str) -> str:
+    """Analyze an incident using RAG-enriched context."""
+    rag_context = build_rag_context(incident_description)
+
+    system_prompt = f"""You are a senior SOC analyst at Meridian Financial.
+
+RETRIEVED KNOWLEDGE BASE CONTEXT:
+{rag_context}
+
+Use the context above when relevant to your analysis. If you cite a document,
+reference its ID. State confidence levels (0-100%). Flag assumptions explicitly."""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        system=system_prompt,
+        messages=[{"role": "user", "content": incident_description}]
+    )
+    return response.content[0].text
+
+if __name__ == "__main__":
+    incident = """
+    User jchen@meridian.local (VP Operations) downloaded 47 CSV files from the
+    data warehouse via IP 203.45.12.89 (Singapore proxy). A follow-up phishing
+    email targeting the same user failed SPF/DKIM/DMARC. Is this a breach?
+    """
+    print("=== RAG-Enriched Incident Analysis ===\n")
+    print(f"Incident:\n{incident.strip()}\n")
+    print("[Retrieved context injected into system prompt automatically.]\n")
+    result = analyze_incident(incident)
+    print(result)
 ```
 
-**Step 3: Data Architecture Design Exercise**
+Run it:
 
-For a security system that monitors a financial institution, design the data architecture:
+```bash
+python rag-pipeline.py
+```
 
-| Data Type | Volume | Query Pattern | Chosen Store | Assessment Stack Layer 4 Justification |
-|-----------|--------|--------------|-------------|---------------------------------------|
-| IP blocklist | 10M entries | Exact lookup | | |
-| SIEM alerts | 100K/day | Time trends | | |
-| Incident reports | 5K total | "Similar incidents" | | |
-| Attack paths | 50K relationships | Traversal | | |
-| Policy documents | 500 docs | Semantic search | | |
+Notice that the model's analysis now references TI-2026-002 (Singapore proxies), POL-001 (VP data access authorization), and INC-2026-005 (prior false alarm). That's RAG in action — the same incident question produces a richer, more grounded answer because the context was retrieved and injected automatically.
 
-Complete the table. For each choice, write one sentence explaining why another store would be wrong.
+> **Key Concept:** This keyword retrieval is a simplified stand-in for vector similarity search. In Unit 2 (Week 8), you'll replace the `retrieve()` function with embeddings and a proper vector store. The architecture — retrieve, inject, analyze — stays identical. Only the retrieval mechanism changes.
 
-**Step 4: The Audit Log Governance Exercise**
+> **Production gap:** This knowledge base is a hardcoded Python dict. In production, your RAG corpus is a vector database (ChromaDB, Pinecone, OpenSearch) updated continuously from your SIEM, threat feeds, and policy repository. Staleness is a real risk — a threat intel entry from 6 months ago that wasn't updated can produce a wrong "no malicious activity" conclusion.
 
-Run your multi-tool server for 5 minutes of test queries. Then:
+---
 
-1. Delete `audit.log`
-2. Try to reconstruct: What queries did the agent make? What data was accessed? What recommendations were generated?
-3. You can't → This is the AIUC-1 E gap
+### Create Your CLAUDE.md
 
-Now restore `audit.log` and answer those same questions. Document the difference.
+You now have a context library (`security-analyst-context-v2.md`). Teach Claude Code to load it automatically. Create a `CLAUDE.md` file in your project root — Claude Code reads it at the start of every session before you type a single word.
 
-**Step 5: Hybrid Data Strategy Design**
+**CLAUDE.md vs. Context Library:**
 
-Using the architecture table from Step 3, write a 1-page `data-architecture.md` for your hypothetical financial security system:
-- Which stores would you use?
-- How would your agent query across multiple stores?
-- What happens if one store is unavailable? (AIUC-1 D — graceful degradation)
+| | CLAUDE.md | Context Library |
+|---|---|---|
+| What it is | Project file Claude Code auto-loads | Your portable collection of reusable patterns |
+| When it loads | Every Claude Code session in that directory | When you explicitly feed it to the model |
+| Scope | Project-specific | Portable across projects and platforms |
+| Platform | Claude Code only | Any AI platform |
+| Analogy | Standing orders for a specific office | Your professional playbook you carry everywhere |
 
-> ### Real-World Anti-Pattern: The OpenClaw Security Crisis (January 2026)
->
-> OpenClaw is a personal AI agent integrating with calendars, messaging apps, and developer tools — a popular open-source consumer agent. A January 2026 security audit found:
->
-> | Finding | Detail |
-> |---|---|
-> | Exposed instances | **21,639** publicly accessible on the internet (Censys scan) |
-> | One-click RCE | Confirmed CVE — remote code execution via malicious link |
-> | Malicious community skills | **341 of 2,857** skills in the community catalog (~12%) were malicious |
-> | Email addresses breached | 35,000 |
-> | API tokens leaked | 1.5 million |
->
-> **Source:** https://www.reco.ai/blog/openclaw-the-ai-agent-security-crisis-unfolding-right-now
->
-> **Which anti-patterns does this represent?**
->
-> | Anti-Pattern | How OpenClaw Demonstrates It |
-> |---|---|
-> | Shadow Agent Sprawl | 21,639 exposed instances with no central inventory or visibility |
-> | Credential Minefield | 1.5 million API tokens leaked — agents storing secrets without rotation or revocation |
-> | Evaluation Blindness | 12% of the skills catalog was malicious — no review process before community publication |
-> | Compliance Afterthought | Consumer agents deployed with no security review; RCE discovered post-deployment |
->
-> **The supply chain dimension:** The malicious skills catalog attack (341 of 2,857) is the marketplace supply chain risk made real. When agents can be extended via community-contributed components, every component is an attack vector. This is what Stage 4 governance is designed to prevent.
->
-> **Field question:** If you joined a company using an OpenClaw-equivalent tool, which stage assessment indicators would have surfaced this risk before the breach?
+Use this prompt in Claude Code to generate your CLAUDE.md:
+
+```
+Based on the context library files I just built, write a CLAUDE.md that Claude Code
+should auto-load at the start of every security project session. Include my analyst
+system prompt reference, CCT framework, and output format standards.
+```
 
 ---
 
 ## Deliverables
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through design decisions, Cowork to structure and format the architecture document, and Code to build the multi-tool server. The quality of your thinking matters — the mechanical production should be AI-assisted.
+> **Produce these deliverables using Claude Code.** Use the chat interface to reason through prompt design decisions, Code mode to build and test the RAG pipeline. The quality of your thinking matters — the mechanical production should be AI-assisted.
 
-1. **Multi-tool MCP server** with validation, rate limiting, and audit logging
-2. **Data Architecture Design** (table + 1-page narrative) — which data store for each data type and why
-3. **Audit log governance exercise** — documented results of the "delete logs and reconstruct" exercise
-4. **Tool composition test** — agent running a full alert enrichment (query_logs → check_ip → enrich_alert) with output
+1. **`v1-system-prompt.md`** and **`security-analyst-context-v2.md`** — both versions with documented rating scores (1-5 across five dimensions)
+2. **Context Engineering Report** (1-2 pages) — V1 vs. V2 comparison, what changed, quantified improvement delta
+3. **Context Library Template** — your reusable security analyst context file (`security-analyst-context-v2.md`) that you will build on throughout the course
 
-> **💡 Skill Preview:** Your RAG knowledge base? That could be a skill's `references/` directory. Your chunking and retrieval logic? That could be a skill's `scripts/` directory. Skills are just organized context packages — SKILL.md for instructions, references for knowledge, scripts for tools. You've been building skill components since Week 4.
-
-> **📁 Save to:** `~/noctua/tools/mcp-servers/week04-multitool/` (server code), `~/noctua/governance/audits/` (audit log exercise), `~/noctua/deliverables/week04/` (final submission)
+> **Save to:** `~/noctua-labs/unit1/week4/` (system prompts and RAG script), `~/noctua/deliverables/week04/` (final submission)
 
 ---
 
 ## AIUC-1 Integration
 
-**Domain D (Reliability):**
-- Graceful degradation when tools fail — continue with available data, flag what's missing
-- Error handling that returns structured errors, not silent failures
-
 **Domain E (Accountability):**
-- Every tool call logged with full context
-- The audit log exercise makes the value concrete: you cannot defend decisions you cannot reconstruct
-
-Both domains are embedded in the technical implementation. Students don't need to "study AIUC-1" — they experience why these controls exist.
+- Structured outputs create an audit trail: every field in the JSON schema is a documented decision
+- The V1 vs. V2 exercise makes the value concrete — unstructured prose is not auditable, JSON is
+- Your context library template is a reusable governance artifact: the system prompt is the policy that governs all agent behavior
 
 ## V&V Lens
 
-**Tool Reliability — testing your tools before trusting them in production:**
+**RAG Output Verification:** After running `rag-pipeline.py`, verify the model's citations:
+1. Did the model reference TI-2026-002 when analyzing the Singapore proxy? It should.
+2. Did the model reference POL-001 for VP authorization? It should.
+3. Did the model reference INC-2026-005 for the prior false alarm? It should.
 
-After building your multi-tool server, run these verification tests:
-1. Input validation: Does `query_logs(source_type="DROP TABLE--")` reject cleanly?
-2. Rate limiting: Does the 21st call in a minute get rejected?
-3. Audit logging: Does every call appear in `audit.log`?
-4. Graceful degradation: Does `enrich_alert` continue when `check_ip_reputation` fails?
-
-Document the test results. This is Layer 6 of the Assessment Stack applied to your own tools.
+If the model drew a conclusion without citing a retrieved document, that's a V&V signal — the model may be reasoning from training data rather than your injected knowledge base.
 
 ---
 
-## Production Readiness Check
-
-Before submitting Week 4 deliverables, run `/check-antipatterns` on your multi-tool server:
-
-```
-/check-antipatterns ~/noctua/tools/mcp-servers/week04-multi/
-```
-
-Multi-tool servers introduce Layer 2 (Architecture) patterns that single-tool servers don't have:
-- **2.1 Connection Pool Exhaustion:** Does your server create a new database connection per query, or does it use a pool?
-- **2.2 Missing Idempotency:** If a webhook handler fires twice, does it create two findings or one?
-- **2.3 Unbounded Collections:** Does `query_logs` return all matching rows, or does it enforce a `LIMIT`?
-
-Layer 3 (Operations) check: Does your multi-tool server have structured logging with a correlation ID so you can trace which tool call triggered which response?
-
-The `handler-safety.md` rule is now active in your environment for webhook and handler code.
-
-Include your `/check-antipatterns` output in your Week 4 deliverables. Fix all CRITICAL and HIGH findings.
+*Topics introduced this week that return later: MCP server configuration (Unit 2), RAG with vector stores (Unit 2 Week 8), CLAUDE.md as ongoing memory (evolves throughout the course).*
