@@ -809,7 +809,7 @@ trivy image --format json --output trivy-report.json capstone:latest
 
 # Generate SBOM in CycloneDX format
 pip install cyclonedx-bom
-cyclonedx-py requirements requirements.txt --format json -o sbom.json
+cyclonedx-py requirements requirements.txt > sbom.json
 
 # Validate SBOM
 python -c "import json; sbom = json.load(open('sbom.json')); print(f'SBOM: {len(sbom.get(\"components\", []))} components')"
@@ -900,7 +900,7 @@ jobs:
       - name: Generate SBOM
         run: |
           pip install cyclonedx-bom
-          cyclonedx-py requirements requirements.txt --format json -o sbom.json
+          cyclonedx-py requirements requirements.txt > sbom.json
       - uses: actions/upload-artifact@v4
         with:
           name: security-artifacts

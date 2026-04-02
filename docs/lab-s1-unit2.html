@@ -360,7 +360,7 @@ claude mcp list
 <div class="callout callout-reading">
   <strong>Build a Skill — Shortcut This Workflow Forever</strong>
   <p>You just built your first reusable MCP tool. This is exactly what <strong>course skills</strong> are designed for. A skill is a custom <code>/command</code> you create once and reuse in any project. Create a <code>/register-cve-server</code> skill so any future session can spin up and connect your MCP server in one command — no re-explaining, no copy-pasting setup steps.</p>
-  <p>Skills live in <code>~/.claude/skills/</code> or your project's <code>.claude/skills/</code> directory. Use this prompt:</p>
+  <p>Custom slash commands live in <code>~/.claude/commands/</code> (user-global) or your project's <code>.claude/skills/</code> directory. Use this prompt:</p>
   <div class="conversation-starter">Write a Claude Code skill file called register-cve-server.md that spins up my CVE lookup MCP server, registers it in Claude Code, and confirms it's responding to tool calls.<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
   <p>Then <code>/register-cve-server</code> becomes a one-liner for every future session.</p>
 </div>
@@ -545,7 +545,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-title">Step 8: Run production readiness audit on your multi-tool server</div>
         <div class="step-desc">Audit your expanded multi-tool server. Multi-tool servers introduce Layer 2 patterns: 2.1 (new DB connection per request vs. pool?), 2.2 (idempotency — if a handler fires twice, does it create duplicate records?), 2.3 (do response collections have size limits?). Also check Layer 3: does your server emit structured logs with a correlation ID so you can trace which tool call triggered each log entry? Include the production readiness report in your Week 6 deliverables alongside your threat model.</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua/tools/mcp-servers/week06-multi/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit2/week6/multi-tool-server/
 
 # Target: CONDITIONAL or READY before submitting
 # BLOCKED = fix CRITICAL findings first
