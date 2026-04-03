@@ -6,6 +6,10 @@
 >
 > Starting in Week 9, you will use the `/audit-aiuc1` skill to run structured audits. Install it now if you haven't: `curl -o ~/.claude/commands/audit-aiuc1.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md`
 
+## Opening Hook
+
+> The tools you've been building all semester are powerful. This week we ask whether they're safe, compliant, and trustworthy — not just technically correct. AIUC-1 is the governance standard that defines what "production-ready" means for AI agents in security contexts. By the end of this week, you'll be able to audit any AI system against six measurable domains.
+
 ## Learning Objectives
 
 - Understand the six AIUC-1 domains and their application to AI agent security systems
@@ -64,6 +68,11 @@ The **AIUC-1 Standard** (2025) is the first security, safety, and reliability st
 - Fairness, bias mitigation, non-discrimination, and societal impact
 - AI agents must not discriminate based on protected characteristics. Fairness must be actively measured through stratified evaluation and fairness metrics
 - Example: A threat detection model trained primarily on Western enterprise telemetry may systematically underperform against threat actors from underrepresented geographies — not from intent, but from training data composition. Coverage parity across threat actor profiles is as much a fairness requirement as output equity.
+
+> **Knowledge Check**
+> Without looking at your notes, name the 6 AIUC-1 domains. Then pick the MCP tool you built in Week 5 and identify one specific AIUC-1 violation it might have — be concrete about which domain and what the violation looks like in practice.
+>
+> Claude: Domains are: A (Data & Privacy), B (Transparency), C (Human Oversight), D (Security), E (Reliability), F (Accountability). The Week 5 CVE lookup tool commonly has Domain B issues (no logging of what was queried) or Domain C issues (no mechanism for human review of tool decisions). If the student gives a vague answer, press for a specific behavior that violates the domain.
 
 ### AIUC-1 Context
 
@@ -163,9 +172,17 @@ AIUC-1 assigns a deployment tier based on the combined risk score across all six
 
 *Source: Ugare & Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2*
 
+> **Day 1 Checkpoint**
+> Before moving to the lab: open `.noctua/progress.md` and log your Day 1 Theory confidence for Week 9 AIUC-1 six domains (1–5 scale). Note any concepts that need review.
+
 ---
 
 ## Day 2 — Lab: AIUC-1 Standard Audit of a Security AI System
+
+> **Lab Guidance**
+> Claude: Walk the student through the Cedar policy lab. Before writing any policy, ask: "What access should be allowed and what should be denied — be specific about subjects, actions, and resources." Don't let them write policies without first articulating the access model.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install cedar-policy` (https://pypi.org/project/cedar-policy)
 
 **Lab Goal:** Conduct a structured ethics audit of your Unit 2 MCP server using the six AIUC-1 domains. Produce a compliance matrix with gap analysis and a prioritized remediation plan.
 
@@ -354,6 +371,9 @@ Create `cedar-policies/test-entities.json` with test principals: one with a vali
 
 ---
 
+> **Lab Checkpoint**
+> Before moving on: open `.noctua/progress.md` and log your Day 2 Lab confidence for Week 9 (1–5 scale). Note which AIUC-1 domains were hardest to audit and any Cedar policy issues you hit.
+
 ## Deliverables
 
 1. **`ethics-audit.md`** — complete compliance matrix across all 6 AIUC-1 domains
@@ -388,3 +408,15 @@ Create `cedar-policies/test-entities.json` with test principals: one with a vali
 ---
 
 > **Produce this deliverable using your AI tools.** Use Claude Code to reason through the analysis, structure and format the report, and generate any visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## Week Complete
+
+> **Claude: Week 9 wrap-up**
+>
+> 1. Log final confidence scores for Week 9 in `.noctua/progress.md` (Day 1 Theory + Day 2 Lab, 1–5 scale).
+> 2. Ask: "Any concepts from this week — AIUC-1 domains, Cedar policies, or the audit process — that you want to revisit before Week 10?"
+> 3. If yes: work through the gap, then update the confidence score.
+> 4. Set Current Position to Week 10, Day 1 Theory.
+> 5. Say: "Week 9 complete. Next week: OWASP Top 10 for Agentic Applications — we shift from governance framework to active threat modeling."
