@@ -277,6 +277,11 @@ Status: [Draft | Reviewed | Approved]
 - **Evaluation dataset:** [location or "needs creation"]
 - **Cost target:** [budget per task/invocation]
 
+### Lessons from Past Retros
+<!-- Encoding what went wrong in previous cycles so the agent doesn't repeat it -->
+- [retro gap 1 → constraint added here]
+- [retro gap 2 → anti-requirement added here]
+
 ## 9. Open Questions
 [Anything unresolved — each with a recommendation]
 [Components rated ★☆☆☆☆ that need Stage 0 work]
