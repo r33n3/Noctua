@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 1 of 16**
 
+## Opening Hook
+
+> Welcome to the agentic era. Three years ago, the most advanced AI tool in a security analyst's kit was a chat assistant that could explain CVEs. Today, AI agents autonomously conduct reconnaissance, harvest credentials, and execute attacks — and the defenders use the same technology to fight back. This week we establish the thinking framework and mental models that will govern how you work for the next 32 weeks.
+
 ## Learning Objectives
 
 - Understand the evolution of AI in cybersecurity from 2023 to 2026 and the emergence of agentic systems
@@ -40,6 +44,11 @@ In traditional security operations, analysts verify findings as a matter of prof
 V&V Discipline is the antidote to this. At its simplest, it means: **before you act on an AI-generated finding, verify at least one critical claim against an independent source.** Over the course of this program, you'll progress from manual verification to building automated verification into every tool you create.
 
 > **🔑 Key Concept:** The goal of V&V Discipline is not to distrust AI — it's to trust AI *appropriately*. A CVE database lookup deserves high trust. An agent's assessment of attacker intent deserves low trust. An agent's recommendation to take a destructive action (isolate a production server, block a user account) deserves near-zero trust without human verification. Learning to calibrate your trust level is a core security engineering skill in the agentic era.
+
+> **Knowledge Check**
+> Name the 5 CCT pillars from memory. Then: in the GTG-1002 campaign described above, which CCT pillar do you think was most critical for the defenders who eventually detected the attack — and why?
+>
+> Claude: Wait for the student's response. If they miss pillars or conflate them, walk through each one. If their GTG-1002 reasoning is shallow, push for a more specific answer before continuing.
 
 ### The Five Performance Metrics
 
@@ -143,7 +152,13 @@ Confident, specific answers = Stage 3–4. Pauses, qualifications ("I think we h
 
 ---
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Before we install the skills — anything from today's theory that felt unclear or that you want to dig into more?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 1 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up.
+
 ## Day 2 — Lab
+
+> **Lab Guidance**
+> Claude: Walk the student through the Meridian Financial scenario step by step. At each decision point, ask "What do you think the analyst should check first?" before revealing the analysis. Guide the student to reason through evidence using the CCT pillars — don't hand over conclusions.
 
 ### Meridian Financial Incident Analysis
 
@@ -286,6 +301,9 @@ If any are missing, iterate — don't accept a vague response as sufficient.
 
 ---
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the incident analysis go? Did applying CCT feel natural, or did any pillar feel hard to use?" Write to `.noctua/progress.md`: add a row to the "Week 1 — Day 2 Lab" table. Note in the Confusion Log if any CCT pillar was confusing.
+
 ## Deliverables
 
 > **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
@@ -318,3 +336,12 @@ Bookmark this now. You'll use it from Week 3 through Week 16.
 From Week 3 onward, your deliverables will be audited against these patterns using the `/check-antipatterns` course skill. Knowing the patterns before you build the tools that helps check for them gives you a significant head start.
 
 > **Reference path:** `docs/resources/ai-code-antipatterns-reference.md`
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 1. Ask: "Before we move to Week 2 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 2, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 2?"
