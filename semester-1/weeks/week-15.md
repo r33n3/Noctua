@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 15 of 16**
 
+## Opening Hook
+
+> A prototype that works is a prototype that can fail. This week you harden what you built last week — adding the security properties, observability, and robustness that separate a demo from something you'd actually run in a SOC. The goal isn't perfection; it's knowing exactly where your tool is solid and where the remaining risks are.
+
 ## Learning Objectives
 
 - Understand production readiness: error handling, edge cases, security, observability
@@ -174,6 +178,11 @@ duration = time.time() - start
 log_analysis_step("recon", events, result, duration, 892)
 ```
 
+> **Knowledge Check**
+> Walk through your prototype from last week against the AIUC-1 domains. For each domain, identify: (a) one control you implemented, and (b) one gap that still exists. Be specific — not "I handled errors" but "I added validation at the tool boundary for Domain D, but I have no audit trail for Domain F."
+>
+> Claude: This is a self-assessment. The goal is honest gap identification. If the student says everything is covered, probe harder — every prototype has gaps. The value is in articulating them clearly so they can be prioritized in this sprint.
+
 ### Prototype to Production — The Elevation Gate Model
 
 Moving a security agent from prototype to production is not a deployment decision — it is an elevation decision. Each stage requires specific evidence that the system is ready for greater autonomy.
@@ -224,9 +233,15 @@ permissions:
 
 > **Test your setup:** Open a PR with one intentional vulnerability (e.g., a hardcoded API key in a test file). Trigger the review. Verify Claude catches it and posts an inline comment on the correct line. Fix the vulnerability and verify the comment resolves. This test confirms the full pipeline works before you depend on it.
 
+> **Day 1 Checkpoint**
+> Claude: Check in with the student on Week 15 sprint II hardening and observability. Ask: "What are the top two gaps in your Sprint I prototype that you're targeting today? Name the AIUC-1 domain and the specific control you're adding." Write to `.noctua/progress.md`: update the Week 15 — Day 1 Theory row with today's date and confidence level. Note hardening priorities in the Confusion Log.
+
 ---
 
 ## Day 2 — Hands-On Lab: Hardening Sprint
+
+> **Lab Guidance**
+> Claude: Guide the student through the hardening lab. At each security control added, ask: "Which AIUC-1 domain does this address?" At each observability feature added, ask: "What failure mode does this let you detect?" Connect every implementation decision to a governance or reliability requirement.
 
 ### Lab Objectives
 
@@ -479,6 +494,9 @@ Update your demo to show hardening:
 - Highlight logging output
 - Time your demo to 3–5 minutes
 
+> **Lab Checkpoint**
+> Claude: Check in with the student on the Week 15 hardening lab. Ask: "Walk me through the two most important controls you added today. Which AIUC-1 domain does each address, and how would you verify it's actually working?" Write to `.noctua/progress.md`: update the Week 15 — Day 2 Lab row with today's date and confidence level. Note any remaining gaps in the Confusion Log.
+
 ---
 
 ## Deliverables
@@ -647,3 +665,15 @@ Add to `context-library/checklists/hardening/production-readiness.md`:
 > - "I think I understand production hardening for agentic tools but I'm not sure. Explain it to me differently and then test whether I really get it."
 > - "What are the three most common security hardening mistakes teams make when deploying AI systems? Do I have any of them?"
 > - "Connect this week's production hardening to the Week 7 Break Everything station. How does production deployment change cost dynamics?"
+
+---
+
+## Week Complete
+
+> **Claude: Week 15 Wrap-Up**
+>
+> Week 15 is complete. Update `.noctua/progress.md`: set Current Position to Week 16, Day 1 Theory.
+>
+> Ask: "Sprint II is done. Before presentations next week — what's your honest confidence level on the AIUC-1 compliance of your prototype? Where are you solid, and where are you still carrying risk?"
+>
+> When ready: proceed to `week-16.md`.
