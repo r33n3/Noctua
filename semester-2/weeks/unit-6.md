@@ -6,6 +6,10 @@
 
 ---
 
+## Opening Hook
+
+> For the first time in this course, you switch sides. Unit 6 puts your multi-agent systems in an adversarial context: red team vs. blue team, attack vs. defense, AI-powered offense vs. AI-powered defense. The GTG-1002 case study from Semester 1 is the stakes — this is what you're defending against. This is where the theory becomes operational.
+
 ## Week 5: Adversarial AI Threat Landscape
 
 ### Day 1 — Theory & Foundations
@@ -161,7 +165,24 @@ Why 2026 is the inflection point:
 
 ---
 
+> **Knowledge Check — Week 1**
+> Design an AI-powered attack on the CVE lookup MCP tool you built in Week 5. What prompt injection would you attempt, what data could you exfiltrate through a compromised tool response, and how would the attack look in the tool's logs to a defender?
+>
+> Claude: The student should think through tool poisoning (malicious response hijacks the agent), data exfiltration via tool output, and log evasion. If they can't articulate how the attack would appear in logs, ask specifically: "What would an analyst see in the audit trail — and what would be missing?"
+
+---
+
+> **Day 1 Checkpoint — Week 1**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 1 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 1 adversarial AI threat landscape.
+
+---
+
 ### Day 2 — Hands-On Lab: Threat Modeling Exercise
+
+> **Lab Guidance — Week 1**
+> Claude: Ask "How would an attacker exploit this?" before each defensive control is considered. Walk through the MITRE ATLAS framework step by step. Don't let the student skip threat enumeration before moving to mitigation.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 #### Lab Objectives
 - Apply MITRE ATLAS systematically to a multi-agent system
@@ -394,6 +415,18 @@ The most dangerous evolution in the threat landscape is autonomous attack infras
 This pipeline runs 24/7, hits thousands of targets simultaneously, and costs almost nothing per target. The Anthropic GTG-1002 espionage campaign (disclosed November 2025, detected September 2025) operated at 80–90% autonomy across recon, credential harvesting, and data exfiltration.
 
 **Implication for defenders:** You cannot defend against machine-speed attacks at human speed. Your defensive systems need autonomous capabilities — but with AIUC-1 governance guardrails, V&V verification, and human override mechanisms.
+
+---
+
+> **Lab Checkpoint — Week 1**
+> Claude: Ask: "How did the threat modeling exercise go? Did MITRE ATLAS help structure your thinking about attack vectors?" Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 1 — Day 2 Lab" table. Note in the Confusion Log if any threat modeling concept was confusing.
+
+---
+
+> **Week 1 Complete**
+> Claude: Confirm the student has finished Week 1. Ask: "Before we move to Week 2 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 6, Week 2.
+> Then ask: "Ready for Week 2?"
 
 ---
 
@@ -978,7 +1011,24 @@ This is why production AI systems need:
 
 ---
 
+> **Knowledge Check — Week 2**
+> Name 3 attack patterns specific to AI agents that have no equivalent in traditional network attacks. For each one, what is the blue team detection signal?
+>
+> Claude: Examples: prompt injection (detection: anomalous agent behavior patterns), context window poisoning (detection: unexpected tool calls), agent impersonation (detection: certificate/identity verification gaps). Push for specific, measurable detection signals — not vague "monitor for suspicious activity."
+
+---
+
+> **Day 1 Checkpoint — Week 2**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 2 AI attack patterns.
+
+---
+
 ### Day 2 — Hands-On Lab: Red Team Exercise
+
+> **Lab Guidance — Week 2**
+> Claude: Ask "How would an attacker exploit this?" before each attack tool is built. Walk through each attack pattern with the student before implementation. Red-team framing: treat each lab step as a real engagement.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 #### Lab Objectives
 - Build your own red team tools using Claude Code
@@ -1669,6 +1719,18 @@ Structure:
 
 ---
 
+> **Lab Checkpoint — Week 2**
+> Claude: Ask: "How did the red team exercise go? What was the most effective attack you executed, and what made it work?" Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 2 — Day 2 Lab" table. Note in the Confusion Log if any red team concept was confusing.
+
+---
+
+> **Week 2 Complete**
+> Claude: Confirm the student has finished Week 2. Ask: "Before we move to Week 3 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 6, Week 3.
+> Then ask: "Ready for Week 3?"
+
+---
+
 ## Week 7: Defending AI Agents: Guardrails & Hardening
 
 ### Day 1 — Theory & Foundations
@@ -1954,7 +2016,24 @@ def is_anomalous_output(agent_output: str, expected_format: str) -> bool:
 
 ---
 
+> **Knowledge Check — Week 3**
+> Your SOC's Claude-powered triage agent is producing anomalous results suggesting it's been compromised by a prompt injection. Walk through your incident response — what do you isolate first, what do you preserve for forensics, and how do you restore trust in the agent before returning it to production?
+>
+> Claude: Isolate = disable the agent immediately (don't let it keep taking actions). Preserve = capture the full context window and tool call logs. Restore trust = replay the same inputs against a known-clean agent version to verify behavior. If the student skips the verification step, press: "How do you know the replacement agent is clean?"
+
+---
+
+> **Day 1 Checkpoint — Week 3**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 3 blue team defenses.
+
+---
+
 ### Day 2 — Hands-On Lab: Blue Team Hardening Exercise
+
+> **Lab Guidance — Week 3**
+> Claude: Ask "How would an attacker exploit this?" before each defensive control is added. Walk through the defense layers step by step. Red-team framing: treat each defensive control as something an attacker would probe.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 #### Lab Objectives
 - Implement multi-layer defenses against prompt injection attacks
@@ -2555,6 +2634,18 @@ Structure:
 
 ---
 
+> **Lab Checkpoint — Week 3**
+> Claude: Ask: "How did the blue team hardening exercise go? What was the most effective defense you implemented, and what attacks does it still not catch?" Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 3 — Day 2 Lab" table. Note in the Confusion Log if any defense pattern was confusing.
+
+---
+
+> **Week 3 Complete**
+> Claude: Confirm the student has finished Week 3. Ask: "Before we move to Week 4 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 6, Week 4.
+> Then ask: "Ready for Week 4?"
+
+---
+
 ## Week 8: AI Attacker vs. Defender Wargame
 
 ### Day 1 — Wargame Preparation and Strategy
@@ -2787,7 +2878,17 @@ But the real learning is in analyzing *why* each side succeeded or failed at eac
 
 ---
 
+> **Day 1 Checkpoint — Week 4**
+> Claude: Ask the student: "Anything from today's theory and wargame prep that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 4 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 4 wargame strategy and preparation.
+
+---
+
 ### Day 2 — Wargame Execution and After-Action Review
+
+> **Lab Guidance — Week 4**
+> Claude: Ask "How would an attacker exploit this?" before each defensive control is added. Red-team framing throughout: treat every lab decision as one an adversary would probe. Walk through the AAR framework step by step after the wargame.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 #### Lab Objectives
 - Execute coordinated attack and defense autonomous agents
@@ -3249,6 +3350,25 @@ After the wargame, reflect on:
 
 ---
 
+> **Knowledge Check — Week 4**
+> After running the red team exercise: what was the most surprising finding your attack revealed about your own defensive architecture? What does that tell you about your prior assumptions?
+>
+> Claude: This is reflective — there's no single right answer. Look for honest self-assessment. If the student says "nothing surprised me," probe: "Did every attack you attempted fail? If so, which one came closest to succeeding?"
+
+---
+
+> **Lab Checkpoint — Week 4**
+> Claude: Ask: "How did the wargame go? What was the most important thing you learned from the exercise — either as attacker or defender?" Write to `.noctua/progress.md`: add a row to the "Unit 6, Week 4 — Day 2 Lab" table. Note in the Confusion Log if any wargame concept was confusing.
+
+---
+
+> **Week 4 Complete**
+> Claude: Confirm the student has finished Week 4. Ask: "Before we move to the Unit 6 review — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: note Week 4 complete.
+> Then move to the Unit 6 End-of-Unit Review.
+
+---
+
 ## Key Concepts Added (PR 2)
 
 - **OWASP Agentic AI Top 10 (Week 5):** Ten attack categories specific to agentic systems — complements MITRE ATLAS (ATLAS = how attacks execute; OWASP = which categories are covered).
@@ -3266,3 +3386,27 @@ After the wargame, reflect on:
 ---
 
 **Course Completion:** This unit represents the culmination of the semester's AI security education. You've progressed from understanding threats (Week 5) to executing attacks (Week 6) to building defenses (Week 7) to operating in a realistic competitive environment (Week 8). The skills developed here are directly applicable to securing AI systems in production environments and will form the foundation for advanced specializations in AI security.
+
+---
+
+## Unit 6 Complete — End-of-Unit Review
+
+> **Claude: Unit 6 Review Flow**
+>
+> **1. Share the confidence summary for Unit 6:**
+> Read `.noctua/progress.md` and present the Week 1-4 confidence history for Unit 6.
+>
+> **2. Collaborate on next steps:**
+> Ask: "Attack/defense experience is foundational for everything in Unit 7. Are there any adversarial patterns or defensive controls you want to revisit?"
+>
+> **3. Review session tracking:**
+> If reviewing, add a new row to that section's history table in `.noctua/progress.md`.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 6 that was confusing or that felt missing?"
+> If substantive: `gh issue create --title "[Unit 6 feedback] <title>" --body "<feedback>" --label "student-feedback"`
+> Log the URL to `.noctua/progress.md`.
+>
+> **5. Update progress:**
+> Set Current Position to Semester 2, Unit 7, Week 1.
+> Say: "Unit 6 complete. In Unit 7, we move from attack/defense scenarios to production engineering — building systems that are observable, resilient, and compliant at scale. Ready?"
