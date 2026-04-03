@@ -127,7 +127,7 @@ Here are concrete, achievable project ideas suitable for a 4-week capstone:
 
 > **🔑 Key Concept:** Both PeaRL and MASS are open source because their creator believes **security should always be open to anyone to use**. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?
 
-> **🧠 Domain Assist:** Presenting and defending technical architecture to reviewers is a professional skill that takes practice. If you've never presented an architecture review, ask Claude Chat:
+> **🧠 Domain Assist:** Presenting and defending technical architecture to reviewers is a professional skill that takes practice. If you've never presented an architecture review, ask Claude Code:
 >
 > "I'm presenting a multi-agent security system architecture to faculty reviewers. Help me prepare: 1) What do architecture reviewers typically look for — what impresses them and what concerns them? 2) How do I structure a 15-minute architecture presentation — what goes in and what stays out? 3) What are the common questions reviewers ask about multi-agent systems? 4) How do I defend a design trade-off? What's the right framing for 'I chose X instead of Y because...'? 5) What are the red flags that make reviewers lose confidence in a design?"
 >
@@ -563,7 +563,7 @@ By Thursday, you'll receive the red team report. **Action plan:**
 
 > **🧠 Domain Assist:** Your capstone presentation targets a mixed audience — technical peers, faculty, and potentially industry practitioners. Tailoring technical content for different audiences is a skill most engineers need to develop deliberately.
 >
-> Before your final presentation, ask Claude Chat:
+> Before your final presentation, ask Claude Code:
 >
 > "I built a [describe your capstone system]. I need to present it in 20 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present threat model findings and AIUC-1 compliance to a mixed audience? 4) How do I demonstrate impact — what metrics or demonstrations are most compelling? 5) What questions should I expect and how should I prepare for them?"
 

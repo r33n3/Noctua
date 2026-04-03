@@ -1123,7 +1123,7 @@ Workload Registry (governance dashboard):
 
 > **🧠 Domain Assist:** Non-Human Identity governance requires understanding cloud IAM, OAuth flows, API key lifecycle, and credential management — topics that live in the infrastructure/identity engineering space. Most security students have used API keys but haven't managed identity infrastructure.
 >
-> Before building your NHI governance system, ask Claude Chat:
+> Before building your NHI governance system, ask Claude Code:
 >
 > "I'm building a governance system for AI agent identities. Help me understand: 1) What types of credentials do AI agents typically use? (API keys, OAuth tokens, service accounts, IAM roles) 2) What's the lifecycle of each — creation, rotation, revocation? 3) What does 'least privilege' look like for an AI agent that needs to query a database, read from S3, and call external APIs? 4) What goes wrong when NHI governance is weak? Give me real-world examples. 5) How do NHIs differ from human identities in terms of governance challenges?"
 

@@ -278,7 +278,7 @@ Choose your V&V architecture based on consequence severity:
 
 ---
 
-> **🧠 Domain Assist:** When designing agent personas for your SOC team, you need to understand what each role actually does day-to-day. Most of you haven't worked in every SOC role. Use Claude Chat to build realistic personas:
+> **🧠 Domain Assist:** When designing agent personas for your SOC team, you need to understand what each role actually does day-to-day. Most of you haven't worked in every SOC role. Use Claude Code to build realistic personas:
 >
 > "I'm designing an AI agent that acts as a Threat Intelligence Researcher in a SOC. Help me understand: 1) What does a real Threat Intel Researcher do on a typical day? 2) What tools do they use? What data sources do they consult? 3) What's their mental model when they see a new IOC? What's their workflow? 4) What expertise do they have that other SOC roles don't? 5) What frustrates them? What do they wish other teams understood about their work?"
 >

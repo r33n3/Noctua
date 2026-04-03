@@ -375,7 +375,7 @@ Red teaming isn't just about finding vulnerabilities in agents — it's about fi
 
 ---
 
-> **🧠 Domain Assist:** MITRE ATLAS threat modeling requires adversarial thinking that doesn't come naturally if you come from a defensive background. Before starting your threat model, ask Claude Chat:
+> **🧠 Domain Assist:** MITRE ATLAS threat modeling requires adversarial thinking that doesn't come naturally if you come from a defensive background. Before starting your threat model, ask Claude Code:
 >
 > "I have a multi-agent SOC system. I need to think like an attacker. Help me: 1) Where would I start? What's the easiest entry point? 2) How would I move from compromising one agent to compromising the whole system? 3) What MITRE ATLAS techniques apply here? 4) What's the attack the defenders are least likely to anticipate?"
 
@@ -989,7 +989,7 @@ This is why production AI systems need:
 
 #### Lab Structure: Red Team Offensive Campaign
 
-> **🧠 Domain Assist:** Building red team tools requires understanding attack patterns you may have only read about. Before building your attack tools, ask Claude Chat to walk you through the attacker's perspective:
+> **🧠 Domain Assist:** Building red team tools requires understanding attack patterns you may have only read about. Before building your attack tools, ask Claude Code to walk you through the attacker's perspective:
 >
 > "I'm building a prompt injection attack tool. Help me think like a red teamer: 1) What makes a prompt injection attack succeed vs. fail? What's the attacker's mental model? 2) What are the most effective injection patterns — not just the obvious ones, but the subtle ones that defenders miss? 3) How would I chain multiple techniques together into a multi-stage attack? 4) What does a sophisticated attacker do differently from a script kiddie when targeting AI agents?"
 
