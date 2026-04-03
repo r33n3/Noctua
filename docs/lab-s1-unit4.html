@@ -14,7 +14,7 @@
 
 <h1>Lab Guide: Unit 4 — Rapid Prototyping with Agentic Tools</h1>
 <p><strong>CSEC 601 | Weeks 13–16 | Semester 1</strong></p>
-<p>Two sprint-based labs building production-ready security prototypes, culminating in a demo and midyear project presentation. This is where everything comes together.</p>
+<p>Four weeks of agentic engineering: multi-agent architecture (Week 13), Sprint I build (Week 14), Sprint II hardening (Week 15), and midyear presentations (Week 16). This is where everything from Semester 1 comes together.</p>
 
 <div class="callout callout-tip">
   <strong>Claude for velocity, not shortcuts:</strong> Use Claude for velocity, not shortcuts. The goal is to learn production thinking fast — not to avoid thinking. Ask Claude to review your architecture decisions, not to make them for you.
@@ -30,7 +30,7 @@
 <h2 id="week-13">Week 13 — Multi-Agent Architecture Deep Dive</h2>
 <div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Multi-Agent SOC System with Worktrees</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a three-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a four-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
 <div class="callout callout-key">
   <strong>Tool-agnostic framing: worktrees and multi-agent patterns</strong>
   <p><strong>Worktrees</strong> are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.</p>
@@ -275,7 +275,7 @@ claude
 </div>
 <div class="callout callout-tip">
   <strong>Finding the skill</strong>
-  <p>The <code>/audit-aiuc1</code> skill was built in Unit 2 Week 6. If you haven't configured it yet, the skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
+  <p>The <code>/audit-aiuc1</code> skill is included in the course skills bundle. The skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
 </div>
 
     <div class="lab-step" id="step-w14-1">
@@ -503,7 +503,7 @@ class JSONFormatter(logging.Formatter):
   <h5>Week 15 Deliverables</h5>
   <ul>
     <li><strong>Hardened Prototype</strong> — complete code with error handling, validation, logging, and README</li>
-    <li><strong>Sprint II Ethics Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
+    <li><strong>Sprint II AIUC-1 Governance Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
     <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
   </ul>
 </div>

@@ -204,7 +204,7 @@ def load_verified_model<span class="o">(</span>model_path, pub_key<span class="o
 <li><strong>Level 3:</strong> Tamper-resistant builds, audit logging</li>
 <li><strong>Level 4:</strong> Cryptographic isolation, two-person review</li>
 </ul>
-<p>For AI systems: Implement <strong>at least Level 2</strong> (automated builds with SBOMs) before production deployment.</p>
+<p>For AI systems: Implement <strong>at least Level 2</strong> (automated builds with SBOMs) before production deployment; target <strong>Level 3</strong> for production maturity.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Supply chain security is not "install a scanner." It's <strong>continuous verification</strong>: every input (data, model, dependency) must be validated against known-good sources before use. <em>Agentic Engineering</em> (Ch. 5: Tool Restrictions and Security) and (Ch. 7: Practices) emphasize this principle: your deployment pipeline should automatically reject unverified artifacts, not trust humans to remember to verify them.</p>
 </div>
 <h4 id="secure-development-lifecycle-for-ai">Secure Development Lifecycle for AI</h4>

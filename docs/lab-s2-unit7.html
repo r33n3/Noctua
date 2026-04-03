@@ -48,7 +48,7 @@
     <button class="quiz-check-btn" onclick="checkQuestion('u7w9q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="u7w9q2" data-answer="b" data-explain="The SLSA (Supply chain Levels for Software Artifacts) framework has 4 levels of supply chain security. Level 3 is recommended for production: requires signed provenance with metadata about how the artifact was built, using a hosted build service with separate build/sign infrastructure, verified by the consumer. Level 4 adds two-party review requirements.">
+  <div class="quiz-question" data-qid="u7w9q2" data-answer="b" data-explain="The SLSA (Supply chain Levels for Software Artifacts) framework has 4 levels of supply chain security. Level 2 is the production minimum; Level 3 is the production maturity target. Level 3 requires signed provenance with metadata about how the artifact was built, using a hosted build service with separate build/sign infrastructure, verified by the consumer. Level 4 adds two-party review requirements.">
     <p class="q-text">2. What does SLSA Level 3 require for production AI system deployment?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="u7w9q2" value="a"> A) Only that the code is stored in a version control system</label>
@@ -83,7 +83,7 @@
 mkdir -p ~/noctua-labs/unit7/week9 && cd ~/noctua-labs/unit7/week9
 
 # Generate SBOM for your SOC agent system (cyclonedx-bom v4+ syntax)
-cyclonedx-py requirements ~/noctua-labs/unit5/requirements.txt > sbom.json
+cyclonedx-py requirements ~/noctua-labs/unit4/soc-agent-team/requirements.txt > sbom.json
 
 # Inspect: how many components? Any with known vulnerabilities?
 cat sbom.json | python3 -m json.tool | grep -c '"type"'
@@ -96,7 +96,7 @@ cat sbom.json | python3 -m json.tool | grep -c '"type"'
         <div class="step-title">Step 2: Scan dependencies for CVEs with pip-audit</div>
       </div></label>
       <div class="code-block"><pre><code>pip install pip-audit
-pip-audit --requirement ~/noctua-labs/unit5/requirements.txt \
+pip-audit --requirement ~/noctua-labs/unit4/soc-agent-team/requirements.txt \
   --format json -o audit-results.json
 
 # Review findings
@@ -157,7 +157,10 @@ models:
       <div class="code-block"><pre><code># Install pip-tools if not already installed
 pip install pip-tools
 
-# Generate hash-pinned requirements from your project's requirements.in
+# Copy your Unit 4 SOC agent dependencies as the source requirements.in
+cp ~/noctua-labs/unit4/soc-agent-team/requirements.txt requirements.in
+
+# Generate hash-pinned requirements
 pip-compile --generate-hashes requirements.in -o requirements-pinned.txt
 
 # Verify the output — each package should have sha256 hashes
