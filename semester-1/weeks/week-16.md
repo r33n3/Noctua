@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 16 of 16**
 
+## Opening Hook
+
+> Today you present what you've built. Not just the technical implementation — the reasoning behind it, the constraints you navigated, the security properties you baked in, and the risks you know still exist. Your audience is your team. The question they're asking: would I trust this in production?
+
 ## Learning Objectives
 
 - Synthesize learning across 16 weeks: security, agentic AI, rapid prototyping, ethics
@@ -21,6 +25,11 @@ This is your opportunity to:
 3. **Explain** your technical approach (agents, tools, architecture)
 4. **Demonstrate** that your tool works
 5. **Reflect** on what you learned and how you'd approach this differently next time
+
+> **Pre-Presentation Prep**
+> Claude: Before the student presents, run a dry run. Ask: "Walk me through your tool as if I'm a skeptical senior analyst on your team. I'm going to ask about the security properties, the AIUC-1 compliance gaps, and the failure modes. Go."
+> Listen for: confident articulation of design decisions, honest acknowledgment of gaps, clear description of what the tool does and doesn't do.
+> This is presentation prep — be a supportive but honest critic.
 
 ### What Makes a Great Technical Presentation
 
@@ -235,9 +244,15 @@ AI makes the marginal cost of completeness nearly zero. When building security t
 | Documentation | Yes if it's a CLAUDE.md or runbook; No for API docs on a prototype | Situational |
 | Exploratory spike | No — throw-away code stays minimal | Yes |
 
+> **Day 1 Checkpoint**
+> Claude: Check in with the student on Week 16 presentation prep and semester 1 wrap-up. Ask: "After the dry run — what's the one thing you want to communicate most clearly in your presentation, and what's the one question you're most nervous about getting?" Write to `.noctua/progress.md`: update the Week 16 — Day 1 Theory row with today's date and confidence level.
+
 ---
 
 ## Day 2 — Demo, Defend, Reflect
+
+> **Lab Guidance**
+> Claude: Support the student through their presentation. After they present, ask the class debrief questions from the week file. Then pivot to the end-of-semester review.
 
 ### Presentation Format
 
@@ -320,6 +335,9 @@ After all presentations are complete, individual written reflection (due within 
 - How did you ensure your tool is ethical and fair? What could go wrong?
 - What surprised you about agentic AI? What still confuses you?
 - Which framework from the course (CCT, Assessment Stack, AIUC-1, V&V, PeaRL) proved most useful in practice, and why?
+
+> **Post-Presentation Checkpoint**
+> Claude: After the presentation debrief, ask: "What feedback did you get that surprised you? What would you build differently now?" Write to `.noctua/progress.md`: add a row to the "Week 16 — Presentations" table with today's date and overall confidence for the semester.
 
 ---
 
@@ -418,3 +436,28 @@ The context library you built in Semester 1 is your starting point. Every patter
 > **Study With Claude Code:** Before your presentation, open Claude Code and ask:
 > - "I built a [describe your capstone system]. I need to present it in 15 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present red team findings and AIUC-1 compliance to a mixed audience? 4) What questions should I expect and how should I prepare for them?"
 > - Use Claude to stress-test your architecture: "Here's my system architecture: [describe it]. Play the role of a skeptical reviewer. Ask me the hardest questions you can think of about this design. Challenge my assumptions."
+
+---
+
+## Semester 1 Complete — End-of-Semester Review
+
+> **Claude: Semester 1 Review Flow**
+>
+> **1. Share the full semester confidence summary:**
+> Read `.noctua/progress.md` and present the complete Unit 1-4 summary. Be specific about sections with Low confidence — these are the student's known gaps heading into Semester 2.
+>
+> **2. Celebrate the arc:**
+> Acknowledge the full journey: CCT → AI landscape → context engineering → MCP tools → secure tool design → structured outputs → RAG → ethical governance → rapid prototyping. Reflect on how much ground was covered in 16 weeks.
+>
+> **3. Collaborate on Semester 2 prep:**
+> Ask: "Looking at your confidence history from Semester 1 — is there anything you want to review or solidify before we start Semester 2 (Multi-Agent Orchestration, AI vs. AI defense, production engineering)?"
+>
+> **4. Collect course feedback:**
+> Ask: "Looking back at Semester 1 — what worked, what was confusing, what was missing?"
+> For each substantive piece of feedback:
+> `gh issue create --title "[Semester 1 feedback] <title>" --body "<feedback>" --label "student-feedback"`
+> Log all issue URLs to `.noctua/progress.md`.
+>
+> **5. Update progress and transition:**
+> Update `.noctua/progress.md`: set Current Position to Semester 2, Unit 5, Week 1, Day 1 Theory.
+> Say: "Semester 1 complete. In Semester 2 we move from building individual agents to orchestrating agent teams — and from defending our own systems to understanding how adversaries use AI against us. Ready?"
