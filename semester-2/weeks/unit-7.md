@@ -6,6 +6,10 @@
 
 ---
 
+## Opening Hook
+
+> A security tool that works in a lab is a demo. A security tool that works in production — at scale, under adversarial conditions, with compliance requirements, measurable SLAs, and an on-call rotation — is engineering. This unit is the bridge. Everything you've built gets the production treatment: observability, resilience, compliance automation, and operational runbooks.
+
 ## Unit 7 Overview: Taking Agentic Systems to Production
 
 This unit transforms security concepts into **production-ready systems**. You'll move from building AI agents in isolation to deploying them at scale with enterprise controls: supply chain verification, identity governance, operational observability, and deployment automation. Every component you build integrates into a cohesive security posture.
@@ -239,6 +243,18 @@ Production V&V is the engineering realization of the discipline you've been prac
 
 ---
 
+> **Knowledge Check — Week 1**
+> You're on call and your AI triage agent starts producing high false-positive rates at 2am. Walk through your observability stack — what dashboard do you look at first, what metric tells you it's a model issue vs. a data issue vs. an infrastructure issue?
+>
+> Claude: The student should describe a layered diagnosis: infrastructure metrics first (is the service up?), then data quality (is the input distribution normal?), then model behavior (are confidence scores degraded?). If they can't distinguish a model issue from a data issue, walk through the difference with a concrete example.
+
+---
+
+> **Day 1 Checkpoint — Week 1**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 1 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 1 AI supply chain security.
+
+---
+
 > **🧠 Domain Assist:** Supply chain security, SBOMs, and the SLSA framework come from the DevOps/platform engineering world. If you've never built a CI/CD pipeline or generated an SBOM, the concepts can feel foreign. Get oriented first:
 >
 > "I'm a security engineer about to build a supply chain audit scanner. I need to understand: 1) What is an SBOM and why would I care about one for an AI project specifically? 2) What does a dependency scanner actually do — what's it checking and against what? 3) What is model provenance and why does it matter if I can't verify where a model came from? 4) What does SLSA Level 2 mean practically — what do I need to implement? 5) What are the real-world supply chain attacks on AI/ML systems that I should understand?"
@@ -246,6 +262,11 @@ Production V&V is the engineering realization of the discipline you've been prac
 ---
 
 ### Day 2 — Hands-On Lab: AI Supply Chain Audit Tool
+
+> **Lab Guidance — Week 1**
+> Claude: Walk through the supply chain audit step by step. At each verification step, ask "What would you miss if you skipped this check?" Production framing: treat every dependency as a potential attack surface.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install safety syft anthropic` (https://pyup.io/safety / https://github.com/anchore/syft)
 
 **Lab Objectives:**
 - Build an automated supply chain audit scanner for AI projects
@@ -576,6 +597,18 @@ If recommendations are too generic, ask: "For a CRITICAL dependency vulnerabilit
 ---
 
 > **🛠️ Skill Opportunity:** Your supply chain audit scanner wraps three tools (Safety, Syft, model provenance). Package it as a `/supply-chain-audit` skill with the scanner scripts and a reference doc mapping findings to AIUC-1 controls. This is the kind of skill your future employer would value.
+
+---
+
+> **Lab Checkpoint — Week 1**
+> Claude: Ask: "How did the supply chain audit lab go? What did the scanner find in the sample project, and what would you do differently in a real CI/CD pipeline?" Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 1 — Day 2 Lab" table. Note in the Confusion Log if any supply chain concept was confusing.
+
+---
+
+> **Week 1 Complete**
+> Claude: Confirm the student has finished Week 1. Ask: "Before we move to Week 2 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 7, Week 2.
+> Then ask: "Ready for Week 2?"
 
 ---
 
@@ -1121,6 +1154,18 @@ Workload Registry (governance dashboard):
 
 ---
 
+> **Knowledge Check — Week 2**
+> Your RAG knowledge base becomes stale — the most recent threat intel document is 6 months old but the system had no staleness alert. Design the monitoring that would have caught this before it caused a wrong recommendation.
+>
+> Claude: The student should describe: a freshness check per document source (last_updated timestamp), an alert threshold (e.g., flag if any critical source is >30 days old), and a circuit breaker (don't use stale data for high-confidence recommendations without flagging it). If they only describe logging, press: "How does the analyst get notified before a bad recommendation is made?"
+
+---
+
+> **Day 1 Checkpoint — Week 2**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 2 non-human identity governance.
+
+---
+
 > **🧠 Domain Assist:** Non-Human Identity governance requires understanding cloud IAM, OAuth flows, API key lifecycle, and credential management — topics that live in the infrastructure/identity engineering space. Most security students have used API keys but haven't managed identity infrastructure.
 >
 > Before building your NHI governance system, ask Claude Code:
@@ -1130,6 +1175,11 @@ Workload Registry (governance dashboard):
 ---
 
 ### Day 2 — Hands-On Lab: NHI Governance Implementation
+
+> **Lab Guidance — Week 2**
+> Claude: Walk through the NHI governance implementation step by step. At each identity decision point, ask "What happens if this credential is compromised?" Production framing: treat every agent identity as a potential attack surface.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic pydantic` (https://docs.anthropic.com)
 
 **Lab Objectives:**
 - Design and implement identity registry for multi-agent system
@@ -1570,6 +1620,18 @@ Include example showing dashboard being generated and printed.
 - MASS (Model & Application Security Suite): https://github.com/r33n3/MASS — Open-source security assessment tool; study the 12 analyzers and compliance mapping approach
 - AIUC-1 Standard: https://www.aiuc-1.com/ — First AI agent certification standard
 - OWASP AIVSS: https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system — AI-specific vulnerability scoring
+
+---
+
+> **Lab Checkpoint — Week 2**
+> Claude: Ask: "How did the NHI governance lab go? Did the credential rotation and JIT access work as designed? What identity risk did the implementation reveal that you hadn't anticipated?" Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 2 — Day 2 Lab" table. Note in the Confusion Log if any NHI concept was confusing.
+
+---
+
+> **Week 2 Complete**
+> Claude: Confirm the student has finished Week 2. Ask: "Before we move to Week 3 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 7, Week 3.
+> Then ask: "Ready for Week 3?"
 
 ---
 
@@ -2087,6 +2149,18 @@ if result["status"] == "escalated":
 
 ---
 
+> **Knowledge Check — Week 3**
+> Your CISO asks for an audit report showing that all AI-generated security decisions in the past 90 days had a human review step. Does your current architecture support producing this report? If not, what's the minimum addition that would make it possible?
+>
+> Claude: The student should identify whether their system logs: (a) which decisions were made by AI vs. human, (b) the human reviewer identity and timestamp, (c) the final decision vs. AI recommendation. If any of these are missing, that's the gap. "Add logging" is not enough — push for the specific schema: what fields, where stored, retention period.
+
+---
+
+> **Day 1 Checkpoint — Week 3**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 3 observability and cost management.
+
+---
+
 > **🧠 Domain Assist:** Observability — metrics, dashboards, alerting, cost management — is the SRE/platform engineering domain. If you've never set up OpenTelemetry or built a Prometheus dashboard, get oriented first:
 >
 > "I'm a security engineer about to implement observability for a multi-agent AI system. I need to understand: 1) What is OpenTelemetry and how does it differ from traditional logging? 2) What's the difference between traces, metrics, and logs — and when do I need each? 3) What does a useful dashboard for an AI agent system look like — what metrics would an operator actually check? 4) What are SLOs and how do I write ones that are useful vs. ones that are just checkbox compliance? 5) What are the common mistakes engineers make when instrumenting AI systems for the first time?"
@@ -2094,6 +2168,11 @@ if result["status"] == "escalated":
 ---
 
 ### Day 2 — Hands-On Lab: Observability and Cost Management
+
+> **Lab Guidance — Week 3**
+> Claude: Walk through the observability implementation step by step. At each instrumentation point, ask "What production failure would this catch?" Production framing: treat every metric as something an on-call engineer needs to diagnose an incident at 2am.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install opentelemetry-sdk anthropic` (https://opentelemetry.io)
 
 **Lab Objectives:**
 - Instrument multi-agent system with OpenTelemetry (traces, metrics, logs)
@@ -2393,6 +2472,18 @@ If escalation tracking is incomplete, ask: "We're counting escalations from the 
 - OpenTelemetry: https://opentelemetry.io/
 - Grafana Tempo (distributed tracing): https://grafana.com/oss/tempo/
 - Prometheus (metrics): https://prometheus.io/
+
+---
+
+> **Lab Checkpoint — Week 3**
+> Claude: Ask: "How did the observability lab go? Did the dashboards surface anything unexpected in the test scenarios? What metric would you add that you couldn't implement in the time available?" Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 3 — Day 2 Lab" table. Note in the Confusion Log if any observability concept was confusing.
+
+---
+
+> **Week 3 Complete**
+> Claude: Confirm the student has finished Week 3. Ask: "Before we move to Week 4 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 7, Week 4.
+> Then ask: "Ready for Week 4?"
 
 ---
 
@@ -3631,6 +3722,18 @@ kubectl get hpa agent-system -w
 
 ---
 
+> **Knowledge Check — Week 4**
+> Write the first 5 steps of the incident response runbook for: "AI triage agent is making systematically wrong severity classifications." Be specific — step 1 is not "investigate the issue."
+>
+> Claude: Steps should be actionable and ordered: (1) Disable automated actions triggered by the agent (prevent further damage), (2) Capture current state (logs, context windows, recent decisions), (3) Compare against known-good baseline (what changed since it last worked?), (4) Identify root cause category (model, data, infrastructure, adversarial), (5) Communicate to stakeholders (who needs to know and what?). If the student starts with "investigate," ask: "What specifically do you do in the first 60 seconds?"
+
+---
+
+> **Day 1 Checkpoint — Week 4**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 4 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 4 deploying agentic security systems.
+
+---
+
 > **🧠 Domain Assist:** Infrastructure as Code (Terraform, CloudFormation), container orchestration (ECS, Kubernetes), and CI/CD pipeline design are specialized skills. If you've never written a Dockerfile or a Terraform template, you're not alone — most security professionals haven't.
 >
 > Get oriented before building:
@@ -3640,6 +3743,11 @@ kubectl get hpa agent-system -w
 ---
 
 ### Day 2 — Hands-On Lab: Deployment and Operations
+
+> **Lab Guidance — Week 4**
+> Claude: Walk through the deployment lab step by step. At each step, ask "What could go wrong in production here?" Production framing: treat every deployment decision as one that will be on-call at 2am.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic docker` and install Docker Desktop (https://www.docker.com/products/docker-desktop/)
 
 **Lab Objectives:**
 - Build production Dockerfile with security best practices
@@ -4218,6 +4326,18 @@ Your capstone should explicitly document where on this spectrum each agent decis
 
 ---
 
+> **Lab Checkpoint — Week 4**
+> Claude: Ask: "How did the deployment lab go? Did the CI/CD pipeline run end-to-end? What was the hardest production engineering decision you had to make during the lab?" Write to `.noctua/progress.md`: add a row to the "Unit 7, Week 4 — Day 2 Lab" table. Note in the Confusion Log if any deployment concept was confusing.
+
+---
+
+> **Week 4 Complete**
+> Claude: Confirm the student has finished Week 4. Ask: "Before we move to the Unit 7 review — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: note Week 4 complete.
+> Then move to the Unit 7 End-of-Unit Review.
+
+---
+
 ## Week 12 Addendum: The DevSecOps Promotion Pipeline
 
 ### The Path from Prototype to Production
@@ -4571,3 +4691,27 @@ Based on the pre-join signals and the likely answers at Meridian, assign scores 
 ---
 
 **End of Unit 7: Production Security Engineering**
+
+---
+
+## Unit 7 Complete — End-of-Unit Review
+
+> **Claude: Unit 7 Review Flow**
+>
+> **1. Share the confidence summary for Unit 7:**
+> Read `.noctua/progress.md` and present the Week 1-4 confidence history for Unit 7.
+>
+> **2. Collaborate on next steps:**
+> Ask: "Production engineering is the foundation for the Capstone. Are there any supply chain, identity, observability, or deployment patterns you want to revisit before moving on?"
+>
+> **3. Review session tracking:**
+> If reviewing, add a new row to that section's history table in `.noctua/progress.md`.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 7 that was confusing or that felt missing?"
+> If substantive: `gh issue create --title "[Unit 7 feedback] <title>" --body "<feedback>" --label "student-feedback"`
+> Log the URL to `.noctua/progress.md`.
+>
+> **5. Update progress:**
+> Set Current Position to Semester 2, Unit 8, Week 1.
+> Say: "Unit 7 complete. One unit left — Capstone. You'll take everything from both semesters and build something production-grade, end-to-end, from your own security problem. Ready?"
