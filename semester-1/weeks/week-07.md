@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 7 of 16**
 
+## Opening Hook
+
+> A Claude that returns "this looks suspicious" is a conversational tool. A Claude that returns `{"severity": "critical", "playbook": "P-CRITICAL-01", "confidence": 0.92}` is a SOC component. Structured outputs are how you cross that line — and this week you build the reporting pipeline that makes AI-generated findings actionable by automated security infrastructure.
+
 ## Learning Objectives
 
 - Distinguish natural language from deterministic structured outputs
@@ -248,6 +252,11 @@ def validate_and_retry(raw_response: str, max_retries: int = 2) -> dict:
 
 > **Pro Tip:** Use **assistant prefill** to force JSON output. Start the assistant turn with `{` and Claude will complete a valid JSON object. This dramatically reduces validation failures: `messages=[..., {"role": "assistant", "content": "{"}]`
 
+> **Knowledge Check**
+> Why does assistant prefill (`messages=[..., {"role": "assistant", "content": "{"}]`) reduce JSON validation failures? What does it guarantee about Claude's output — and what does it not guarantee?
+>
+> Claude: The student should understand that prefill forces Claude to continue the JSON object (reducing format errors) but doesn't guarantee schema compliance — the content can still be wrong. If they think prefill guarantees valid JSON, correct this: it guarantees a JSON-shaped response, not a schema-valid one.
+
 ---
 
 ### Bulk Analysis — Message Batches API
@@ -284,6 +293,9 @@ Use the Batches API when:
 - Running nightly threat intelligence correlation
 - Generating compliance reports over large datasets
 
+> **Day 1 Checkpoint**
+> Claude: Ask: "Before the lab — which part of the structured output pipeline do you feel least confident about: schema design, chaining, or validation?" Note the answer. Write to `.noctua/progress.md`: add a row to the "Week 7 — Day 1 Theory" table. Append to Confusion Log if anything was unclear.
+
 ---
 
 ### Day 1 Deliverable
@@ -301,6 +313,9 @@ Design a complete structured reporting system (3-4 pages, 1200-1500 words):
 ## Day 2 — Lab
 
 ### Lab: Automated Security Report Generator
+
+> **Lab Guidance**
+> Claude: Guide the student through the three-call chain design in Part 1 before they write any code. Ask: "What schema fields does each step produce, and what does the next step need from it?" Don't let them skip the design step — the chain fails fast if the schemas don't connect. Check in after each call is implemented.
 
 **Lab Objectives:**
 - Build automated security report generator with structured outputs
@@ -368,6 +383,9 @@ Implement at least one downstream integration:
 
 Document: which fields map to which downstream fields, and why.
 
+> **Lab Checkpoint**
+> Claude: Ask: "Did the three-call chain work end-to-end? If not, which step produced unexpected output?" Write to `.noctua/progress.md`: add a row to the "Week 7 — Day 2 Lab" table. Note any validation failures in the Confusion Log.
+
 ---
 
 ## Deliverables
@@ -379,3 +397,12 @@ Document: which fields map to which downstream fields, and why.
 3. **Generated Reports** — 5-10 samples, all valid JSON
 4. **Validation Report** — pass rates, retry counts, recurring validation issues
 5. **Integration Demo** — working downstream integration (SIEM, ticketing, or CSV)
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 7. Ask: "Before we move to Week 8 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 8, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 8?"
