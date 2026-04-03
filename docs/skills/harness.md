@@ -1,156 +1,256 @@
-# /harness — Agent Harness Engineering
+# /harness-assess - Assess an Agent Harness
 
-The harness is not a separate phase. It lives in the connections between
-your phases. This skill helps you navigate where you are, what harness
-thinking applies at this moment, and whether your system is becoming
-self-correcting or just running in circles.
+Use this skill to assess whether an agent environment is actually
+harnessed, not merely described well.
 
-Trigger this skill when you're not sure which phase you're in, when
-something keeps going wrong in the same way, or when you want to audit
-whether your workflow is actually building institutional knowledge.
+This skill reviews the real control surface of a repo or workflow:
+entrypoints, prompts, tools, permissions, state, policies, gates,
+logging, secrets, and misuse resistance. It is not the harness itself.
+It is the method for diagnosing whether a harness exists, how strong it
+is, and what should be improved next.
 
----
-
-## What is a Harness?
-
-A harness is the set of constraints, checks, and context that surrounds
-an agent while it works — making correct behavior the easy path and
-incorrect behavior detectable before it costs you.
-
-A harness has three layers:
-
-**1. Spec constraints** — what you told the agent (requirements, anti-requirements,
-boundaries, acceptance criteria). These live in your /spec.
-
-**2. Runtime constraints** — what prevents mistakes automatically (pre-commit
-hooks, linters, type checks, tests, CI gates). These live in your worktrees.
-
-**3. Context** — what the agent can see (AGENTS.md, CLAUDE.md, TASK.md,
-referenced example files, MCP tools). These live in your project setup.
-
-A gap in any layer is a gap in your harness.
+Trigger this skill when you need to review a course setup, agent repo,
+multi-agent workflow, or production environment and determine what
+controls are implemented versus only implied.
 
 ---
 
-## Phase Navigation
+## What a Harness Is
 
-Use this to orient yourself when a session loses direction:
+A harness is the system that shapes and constrains agent behavior.
 
-```
-Where am I?
-├── Understand the problem → /think
-│   └── Run Harness Audit: guardrails? existing constraints? verification strategy?
-│
-├── Define what to build → /spec
-│   └── Include: anti-requirements, verifiable criteria, file scope, boundaries, retro lessons
-│
-├── Build it → /worktree-setup + build
-│   └── Configure: pre-commit hooks, output suppression, TASK.md in worktree
-│   └── Sub-agent check: one context or split?
-│
-└── Learn from it → /retro
-    └── Classify every problem: spec gap / constraint gap / context gap / process gap
-    └── Three Strikes: same gap 3x → build a permanent harness component
-```
+It includes:
+- entrypoints and orchestration flow
+- tool access and restrictions
+- permission and approval controls
+- context, memory, and session state
+- system instructions and prompt construction
+- logging, auditability, and recovery behavior
+- environment separation, secrets boundaries, and policy gates
+
+If these controls are only described in prose, they are not fully
+implemented. Treat non-enforceable guidance as weaker than runtime
+control.
 
 ---
 
-## Harness Health Check
+## Assessment Principles
 
-Run this periodically to assess whether your workflow is self-correcting:
+Assess from evidence, not intent.
 
-**Spec layer**
-- [ ] Your /spec template includes anti-requirements (not just requirements)
-- [ ] Success criteria are verifiable checks, not prose descriptions
-- [ ] Lessons from past retros are encoded in the spec template
+For every claim, determine whether it is:
+- **Implemented** - enforced in code, config, or deterministic runtime logic
+- **Partial** - present, but incomplete, inconsistent, or easy to bypass
+- **Implied** - described in docs or prompts, but not clearly enforced
+- **Missing** - no meaningful evidence found
 
-**Runtime layer**
-- [ ] Pre-commit hooks run in worktrees during agent execution
-- [ ] Test output is suppressed to failures only (not thousands of passing lines)
-- [ ] At least one automated gate would catch the most common mistake you make
+Always distinguish:
+- prompt guidance vs runtime enforcement
+- human process vs machine-checked control
+- recommended behavior vs required behavior
 
-**Context layer**
-- [ ] AGENTS.md or CLAUDE.md captures patterns the agent needs to see
-- [ ] AGENTS.md is human-written and surgical — only what the agent can't infer from reading the code (LLM-generated context files reduce task success; human-curated increases it)
-- [ ] TASK.md (scoped spec) is dropped into each worktree before the agent starts
-- [ ] Retro findings that were "context gaps" have been added to AGENTS.md or skills
-- [ ] Tier 2 (database handoff) is configured for tasks that span sessions or require pre-computed analysis too large for the context window
-
-**Feedback loop**
-- [ ] /retro output actually changes your /spec template or /think checklist
-- [ ] You have a running log of gap types across retros
-- [ ] Any gap category that appeared 3+ times has been addressed permanently
+Missing controls are meaningful findings, not neutral absences.
 
 ---
 
-## Self-Correcting System Check
+## What to Inspect
 
-The harness compounds when:
-- /retro → identifies gaps → feeds /think (Harness Audit)
-- /think → surfaces constraint needs → shapes /spec (anti-requirements)
-- /spec → constrains /worktree (TASK.md, hooks, boundaries)
-- /worktree → produces evidence → /retro (gap classification)
+Review the environment across these areas:
 
-If any of these connections is broken, you're not building a self-correcting
-system — you're just running the same mistakes in a faster loop.
+1. **Entrypoint / orchestration**
+   How sessions start, what loads first, and how control flows.
 
-Ask: "What did my last retro actually change?"
-If the answer is "nothing," the loop is broken.
+2. **Tool control**
+   Which tools exist, who can call them, and what restrictions apply.
+
+3. **Permission / approval model**
+   Human approval, allowlists, deny rules, escalation behavior, and
+   default fail-open vs fail-closed behavior.
+
+4. **Context / memory handling**
+   Student state, session files, memory injection, persistence, and
+   single source of truth.
+
+5. **Prompt / instruction management**
+   System prompts, root instructions, policy files, and whether critical
+   controls are immutable or replaceable.
+
+6. **Multi-agent coordination**
+   Subagents, delegation, isolation, shared context, and handoff rules.
+
+7. **Recovery / resilience**
+   Error handling, retries, rollback assumptions, and restart behavior.
+
+8. **Logging / auditing**
+   Decision logs, progression logs, approval logs, and traceability.
+
+9. **Secrets / identity handling**
+   Tokens, env vars, credential access, and exposure in logs or prompts.
+
+10. **Policy / environment gating**
+   Sandbox boundaries, environment separation, progression gates,
+   deployment gates, and policy checks.
+
+11. **Human-in-the-loop controls**
+   Required approvals, reviewer checkpoints, and blocked actions.
+
+12. **Injection / misuse resistance**
+   Prompt injection handling, malicious inputs, unsafe tool abuse,
+   untrusted artifacts, and adversarial student or user content.
+
+---
+
+## How to Judge Quality
+
+Ask:
+- What is actually enforced?
+- What depends on the model "doing the right thing"?
+- What can drift because it only lives in markdown?
+- What state is canonical, and what state is duplicated?
+- What action is blocked automatically if the agent is wrong?
+- What evidence exists for why a progression or approval decision was made?
+
+Strong harnesses make unsafe behavior difficult. Weak harnesses explain
+safe behavior but do not reliably enforce it.
 
 ---
 
 ## Output Format
 
-```
-## Harness Audit: [Session / Project]
+Use this structure:
 
-**Current phase:** [Think / Spec / Build / Retro]
+```markdown
+# Harness Assessment
 
-**Spec layer gaps:**
-- [what's missing from your spec template]
+## 1. Executive Summary
+- [3 to 7 bullets summarizing maturity and major gaps]
+- Overall maturity: [Minimal / Emerging / Functional / Strong / Advanced]
 
-**Runtime layer gaps:**
-- [checks that don't exist but should]
+## 2. Harness Component Review
 
-**Context layer gaps:**
-- [information the agent can't see but needs]
+### Entrypoint / orchestration
+- Status: [Implemented / Partial / Implied / Missing / Unclear]
+- Evidence: [files, functions, configs, patterns]
+- Risk: [why this matters]
+- Recommendation: [what to improve]
 
-**Last retro findings applied:** [Yes / No / Partially]
-- [what changed in the spec, hooks, or context as a result]
+### Tool control
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
 
-**Three Strikes candidates:**
-- [gap patterns appearing 3+ times]
-- [permanent harness component to build]
+### Permission / approval model
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
 
-**Next action:**
-[Single most important harness improvement right now]
+### Context / memory handling
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Prompt / instruction management
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Multi-agent coordination
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Recovery / resilience
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Logging / auditing
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Secrets / identity handling
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Policy / environment gating
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Human-in-the-loop controls
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+### Injection / misuse resistance
+- Status: ...
+- Evidence: ...
+- Risk: ...
+- Recommendation: ...
+
+## 3. Highest-Risk Gaps
+1. [gap]
+2. [gap]
+3. [gap]
+4. [gap]
+5. [gap]
+
+## 4. Fast Wins
+1. [improvement]
+2. [improvement]
+3. [improvement]
+4. [improvement]
+5. [improvement]
+
+## 5. Evidence Table
+| Area | Status | Evidence | Confidence |
+|------|--------|----------|------------|
+| [area] | [status] | [evidence] | [High / Medium / Low] |
+
+## 6. Final Verdict
+- Harness maturity score: [1-10]
+- Confidence score: [1-10]
+- [One paragraph on readiness for higher-risk use]
 ```
 
 ---
 
 ## When to Use
 
-- When a session loses direction and you're not sure which phase applies
-- When the same type of mistake keeps happening across sprints
-- At the start of a new project to assess your current harness state
-- As a periodic audit: "Is my workflow actually getting better?"
-- Before a capstone sprint — verify the full loop is connected
+- When reviewing an agent repo, toolchain, or runtime environment
+- When deciding whether a course or workflow teaches good harness design
+- Before deploying an agent system into higher-risk environments
+- After a retro, to convert lessons into concrete control improvements
+- When comparing two environments to see which is more enforceable
 
 ---
 
 ## Modify This Skill
 
-- Add your team's most common failure patterns to the Health Check
-- Customize the Phase Navigation for your specific workflow variants
-- Add a "Harness maturity level" rating (1–4) to track improvement over time
-- Create a `/harness-security` variant with security-specific constraint checks
-  (prompt injection boundaries, LLM trust surfaces, credential handling rules)
+- Add domain-specific sections for security, compliance, or education
+- Add a maturity rubric tailored to course harnesses
+- Add explicit checks for progression gates and student-state schemas
+- Add environment-specific forbidden patterns and high-risk defaults
+- Create a `/harness-assess-course` variant for teaching environments
 
 ---
 
 ## Installation
 
-Save as `~/.claude/commands/harness.md` (global) or
-`.claude/commands/harness.md` (project-local).
+Save as `~/.claude/commands/harness-assess.md` (global) or
+`.claude/commands/harness-assess.md` (project-local).
 
-Use `/harness` when you need to orient, audit, or course-correct your cycle.
+Use `/harness-assess` to inspect whether an environment is genuinely
+harnessed, where it is weak, and what should be improved next.

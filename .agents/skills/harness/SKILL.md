@@ -258,8 +258,8 @@ Use this structure:
 
 ## Installation
 
-Save as `~/.claude/commands/harness-assess.md` (global) or
-`.claude/commands/harness-assess.md` (project-local).
+Save as `~/.Codex/commands/harness-assess.md` (global) or
+`.Codex/commands/harness-assess.md` (project-local).
 
 Use `/harness-assess` to inspect whether an environment is genuinely
 harnessed, where it is weak, and what should be improved next.

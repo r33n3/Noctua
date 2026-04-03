@@ -463,7 +463,7 @@ Provide a structured analysis that's audit-able and defensible.
 <span class="na">- And the commands were very basic - a real attacker would be more sophisticated</span><span class="w"></span>
 
 <span class="k">[Finance/Legal perspective]</span><span class="w"></span>
-<span class="na">- If this is a real breach of customer data, we have 72 hours to notify customers under CCPA</span><span class="w"></span>
+<span class="na">- If this is a real breach of customer data, California requires notification in the most expedient time possible and without unreasonable delay</span><span class="w"></span>
 <span class="na">- The S3 bucket "customer-configs" contains customer connection strings and API keys (not good)</span><span class="w"></span>
 <span class="na">- Even if not a breach, the unauthorized data access is a compliance violation</span><span class="w"></span>
 <span class="na">- We need clarity fast before we have to make notification decisions</span><span class="w"></span>
@@ -601,8 +601,7 @@ a bug in our own code? I should check the application logs and code review from 
 <span class="k">-</span> Regulatory and customer notification requirements
 
 <span class="gs">**Question to others:**</span> "Assuming this IS a real breach, what's the blast radius? Who can access
-the customer data in S3? And for legal: do we have 72 hours to notify, or is there a shorter
-window for a live active incident?"
+the customer data in S3? And for legal: what notification timeline applies here, and what counts as unreasonable delay?"
 
 <span class="gs">**Assumption to challenge:**</span> "The absence of persistence mechanisms is unusual. Real attackers want
 to stay in the system. This being so 'clean' suggests either: (a) a very sophisticated attacker
@@ -2176,5 +2175,6 @@ if __name__ == "__main__":
 <script src="mermaid-init.js" type="module"></script>
 </body>
 </html>
+
 
 

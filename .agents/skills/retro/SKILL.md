@@ -1,3 +1,12 @@
+---
+name: retro
+description: >
+  Structured retrospective on completed work. Final step of the
+  Think -> Spec -> Build -> Retro cycle. Classifies every gap found
+  (spec/constraint/context/process), captures feedback for next cycle.
+  Three of the same gap type triggers a permanent harness component.
+---
+
 # /retro - Structured Retrospective
 
 Run a structured retrospective on the work just completed. Capture what
@@ -109,7 +118,7 @@ If we ran this cycle again, we would:
 
 ## Carry Forward to Next Sprint
 [ ] [Decision or pattern to use next time]
-[ ] [Thing to add to CLAUDE.md, AGENTS.md, or context library]
+[ ] [Thing to add to AGENTS.md, AGENTS.md, or context library]
 [ ] [Spec anti-requirement to add based on what the agent did wrong]
 [ ] [Hook or linter to add based on constraint gap found]
 
@@ -166,8 +175,8 @@ library entry capturing the reusable pattern from [specific thing]."
 
 ## Installation
 
-Save as `~/.claude/commands/retro.md` (global) or
-`.claude/commands/retro.md` (project-local).
+Save as `~/.Codex/commands/retro.md` (global) or
+`.Codex/commands/retro.md` (project-local).
 
 Use `/retro` at the end of every build session, sprint, or cycle.
 The gap analysis output feeds directly into the next `/think` harness audit,

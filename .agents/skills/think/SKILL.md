@@ -1,3 +1,12 @@
+---
+name: think
+description: >
+  Stop and perform deep critical analysis before proceeding with any
+  implementation, decision, or recommendation. First step of the
+  Think -> Spec -> Build -> Retro cycle. Ends with a harness audit:
+  guardrails needed, existing constraints, verification strategy.
+---
+
 # /think - Critical Analysis Before Acting
 
 Stop and perform deep critical analysis before proceeding with any
@@ -8,7 +17,7 @@ It forces structured reasoning before any code or commitment.
 
 Think of this phase as the manager handing off work to a capable but
 context-less contractor. Your job is to make the problem so clear that
-the contractor (Claude) cannot build the wrong thing.
+the contractor (Codex) cannot build the wrong thing.
 
 ---
 
@@ -45,7 +54,7 @@ to get right. Where is the solution space largest? Where could a plausible
 but incorrect output do the most damage?
 
 **What constraints already exist?**
-Map the existing harness: tests, linters, type system, CI gates, CLAUDE.md
+Map the existing harness: tests, linters, type system, CI gates, AGENTS.md
 rules, architectural patterns, approval steps, and environment limits.
 Which of these already constrain this work? Which gaps exist that the
 agent could exploit by accident?
@@ -99,7 +108,7 @@ Write the check criteria now; they become acceptance criteria in /spec.
 - [Where incorrect output would cause most harm]
 
 **Existing constraints that apply:**
-- [tests / linters / CI gates / CLAUDE.md rules already in place]
+- [tests / linters / CI gates / AGENTS.md rules already in place]
 
 **Gaps - no constraint covers these yet:**
 - [gap 1 -> will address in spec as anti-requirement or acceptance criterion]
@@ -137,7 +146,7 @@ Write the check criteria now; they become acceptance criteria in /spec.
 
 ## Installation
 
-Save this file as `~/.claude/commands/think.md` (global - available in all
-projects) or `.claude/commands/think.md` (project-local).
+Save this file as `~/.Codex/commands/think.md` (global - available in all
+projects) or `.Codex/commands/think.md` (project-local).
 
-Then use `/think [topic or paste your task]` in any Claude Code session.
+Then use `/think [topic or paste your task]` in any Codex session.

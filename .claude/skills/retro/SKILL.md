@@ -2,18 +2,18 @@
 name: retro
 description: >
   Structured retrospective on completed work. Final step of the
-  Think → Spec → Build → Retro cycle. Classifies every gap found
+  Think -> Spec -> Build -> Retro cycle. Classifies every gap found
   (spec/constraint/context/process), captures feedback for next cycle.
   Three of the same gap type triggers a permanent harness component.
 ---
 
-# /retro — Structured Retrospective
+# /retro - Structured Retrospective
 
 Run a structured retrospective on the work just completed. Capture what
 was built, how it compared to the spec, what worked, what didn't, and
-what to carry forward — into your context library and into the next cycle.
+what to carry forward - into your context library and into the next cycle.
 
-This skill is the final step of the Think → Spec → Build → Retro cycle.
+This skill is the final step of the Think -> Spec -> Build -> Retro cycle.
 It closes the loop and makes each cycle better than the last.
 
 Without this step feeding back into /think and /spec, you're running
@@ -41,22 +41,22 @@ Each category maps to a specific fix location:
 | **Spec gap** | You didn't tell the agent something it needed | Update your /spec template or the Lessons section |
 | **Constraint gap** | Nothing prevented the agent from making the mistake | Add a linter rule, pre-commit hook, architectural boundary, or test |
 | **Context gap** | The agent couldn't see what it needed to see | Update AGENTS.md, add a skill, or build an MCP that surfaces the info |
-| **Process gap** | The workflow itself is wrong — a phase was skipped or out of order | Update your /harness or phase sequence |
+| **Process gap** | The workflow itself is wrong - a phase was skipped or out of order | Update your phase sequence, review checkpoints, or harness controls |
 
 **The Three Strikes Rule:** When the same gap category appears three times
 across retros, that's your signal to build a permanent harness component
-rather than just noting it. Three spec gaps of the same type → update the
-spec template. Three constraint gaps → add the rule to CI. Three context
-gaps → build the MCP or update AGENTS.md permanently.
+rather than just noting it. Three spec gaps of the same type -> update the
+spec template. Three constraint gaps -> add the rule to CI. Three context
+gaps -> build the MCP or update AGENTS.md permanently.
 
 ---
 
 ## Output Format
 
-```
+```md
 # Retro: [Project / Sprint Name]
 **Date:** [date]
-**Cycle:** [Think → Spec → Build → Retro #N]
+**Cycle:** [Think -> Spec -> Build -> Retro #N]
 
 ---
 
@@ -77,14 +77,14 @@ gaps → build the MCP or update AGENTS.md permanently.
 ---
 
 ## What Worked Well
-[Be specific — "the worktree approach" is vague; "worktrees let us build
+[Be specific - "the worktree approach" is vague; "worktrees let us build
 agent1 and agent2 simultaneously, saving ~45 min of context switching" is useful]
 - [Thing 1]
 - [Thing 2]
 
 ## What Didn't Work
-[Be honest — the retro is only useful if it's accurate]
-- [Problem 1 — what happened and why]
+[Be honest - the retro is only useful if it's accurate]
+- [Problem 1 - what happened and why]
 - [Problem 2]
 
 ## What Slowed Us Down
@@ -99,20 +99,20 @@ For each problem above, classify it and assign a fix:
 
 | Problem | Gap Type | Fix Location | Action |
 |---------|----------|--------------|--------|
-| [problem 1] | Spec / Constraint / Context / Process | /spec template / CI / AGENTS.md / harness | [specific change] |
+| [problem 1] | Spec / Constraint / Context / Process | /spec template / CI / AGENTS.md / workflow or harness control | [specific change] |
 | [problem 2] | ... | ... | ... |
 
 ## Three Strikes Check
 [List any gap category that has appeared 3+ times across retros.
 These require a permanent harness component, not just a note.]
-- [Gap pattern] → [permanent fix to build]
+- [Gap pattern] -> [permanent fix to build]
 
 ---
 
 ## Next Cycle Improvements
 
 If we ran this cycle again, we would:
-1. [Change 1 — specific and actionable, maps to a gap type]
+1. [Change 1 - specific and actionable, maps to a gap type]
 2. [Change 2]
 3. [Change 3]
 
@@ -146,7 +146,7 @@ library entry capturing the reusable pattern from [specific thing]."
 | Time: Retro | ~15% | [actual %] |
 | Tests passing | X | Y |
 | Success criteria met | X / N | Y / N |
-| Gap types found | — | Spec: N, Constraint: N, Context: N, Process: N |
+| Gap types found | - | Spec: N, Constraint: N, Context: N, Process: N |
 ```
 
 ---
@@ -154,16 +154,16 @@ library entry capturing the reusable pattern from [specific thing]."
 ## When to Use
 
 - At the end of every sprint (Weeks 14, 15 in Unit 4; each capstone sprint)
-- After any significant build session — even a solo one
+- After any significant build session - even a solo one
 - When something went unexpectedly wrong and you need to understand why
-- Before starting the next cycle — the retro output feeds directly into the next `/think`
+- Before starting the next cycle - the retro output feeds directly into the next `/think`
 
 ---
 
 ## Modify This Skill
 
 - Add team-specific metrics (MTTI, MTTR, cost per run, etc.)
-- Build a running retro log file that accumulates gap patterns across sprints —
+- Build a running retro log file that accumulates gap patterns across sprints -
   this becomes the input to your Three Strikes checks
 - Add a "Share with the community" section for open-source work
 - Create a `/retro-light` 5-minute version for quick end-of-session capture
@@ -179,4 +179,5 @@ Save as `~/.claude/commands/retro.md` (global) or
 `.claude/commands/retro.md` (project-local).
 
 Use `/retro` at the end of every build session, sprint, or cycle.
-The gap analysis output feeds directly into the next `/think` Harness Audit.
+The gap analysis output feeds directly into the next `/think` harness audit,
+and repeated environment-level issues should trigger `/harness-assess`.
