@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 12 of 16**
 
+## Opening Hook
+
+> Every RAG pipeline you build ingests documents. Every agent you deploy touches systems with real user data. Privacy governance isn't a compliance checkbox — it's a design discipline that prevents the incidents you'll spend the rest of your career responding to. This week you build Cedar policies that enforce access control at the data layer.
+
 ## Learning Objectives
 
 - Understand privacy risks in AI security systems
@@ -206,6 +210,11 @@ While the EU AI Act and NIST frameworks address AI systems broadly, **AIUC-1** (
 | Measure | Reliability, Safety | Testing agent performance, behavioral boundaries, failure modes |
 | Manage | Security, Safety, Accountability | Implementing controls, monitoring, incident response |
 
+> **Knowledge Check**
+> You're designing a RAG knowledge base for your SOC. A colleague wants to include full incident reports containing victim names, personal email addresses, and IP addresses linked to individuals. Walk through the AIUC-1 A001/A002/A003 analysis of that decision — what do you do, and why?
+>
+> Claude: The student should identify data minimization (A001), PII handling requirements (A002), and retrieval-time redaction (A003). The answer is not "just don't include it" — it's "anonymize what you can, define retention policy, and mask PII before retrieval." If they say "just exclude it," ask: what if the incident data is operationally necessary for correlation?
+
 **OWASP AI Vulnerability Scoring System (AIVSS)**
 
 Complementing AIUC-1's control framework, the **OWASP AI Vulnerability Scoring System (AIVSS)** extends CVSS for AI-specific vulnerabilities. While CVSS works well for traditional software vulnerabilities, it cannot capture risks unique to AI agents: prompt injection severity, context poisoning impact, tool misuse potential, or autonomous decision-making failures.
@@ -252,9 +261,15 @@ An AI Security Policy should address:
 
 > **Key Concept:** Governance policies should be **Specs as Source Code** — not prose documents gathering dust on a server. From Agentic Engineering practice, "Specs as Source Code" means that policy requirements are executable, testable, and machine-readable. Policies written this way can be integrated into deployment pipelines: "Deploy this agent only if the policy checklist passes." This transforms governance from a compliance checkbox into a design requirement that shapes how agents are built.
 
+> **Day 1 Checkpoint**
+> Before moving to the lab: open `.noctua/progress.md` and log your Day 1 Theory confidence for Week 12 privacy, data governance, Cedar (1–5 scale). Note any regulatory requirements (GDPR, EU AI Act, NIST) that feel unclear.
+
 ---
 
 ## Day 2 — Lab: Write Your Organization's AI Security Policy
+
+> **Lab Guidance**
+> Claude: Walk the student through the full Cedar policy lab. Before writing each policy, ask: "What is the principal, what is the action, what is the resource — and what conditions restrict access?" Cedar policies are declarative — the clarity of that three-part question determines whether the policy is correct.
 
 **Lab Goal:** Produce a complete, deployable AI Security Policy document covering scope, approved uses, governance, data handling, audit requirements, and incident response. This policy will govern the agent systems you build in Units 3-8.
 
@@ -638,6 +653,9 @@ Add to `context-library/governance/audit-checklists/ai-system-audit.md`:
 
 ---
 
+> **Lab Checkpoint**
+> Before moving on: open `.noctua/progress.md` and log your Day 2 Lab confidence for Week 12 (1–5 scale). Note which Cedar policy sections were hardest to write and any gaps between your prose policy and what Cedar can enforce.
+
 ## Deliverables
 
 1. **`ai-security-policy.md`** — complete, peer-reviewed AI Security Policy for Noctua Labs
@@ -676,3 +694,33 @@ Unit 4 applies everything you've built under the ethical constraints you just de
 ---
 
 > **Produce this deliverable using your AI tools.** Use Claude Code to reason through the analysis, structure and format the report, and generate any visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## Unit 3 Complete — End-of-Unit Review
+
+> **Claude: Unit 3 Review Flow**
+>
+> **1. Share the confidence summary openly:**
+> Read `.noctua/progress.md` and present the confidence table for Unit 3 (weeks 9-12):
+> | Week | Day 1 Theory | Day 2 Lab | Notes |
+> |---|---|---|---|
+> | Week 9: AIUC-1 Standard | [confidence] | [confidence] | [notes] |
+> | Week 10: OWASP Agentic Top 10 | [confidence] | [confidence] | [notes] |
+> | Week 11: Bias & Fairness | [confidence] | [confidence] | [notes] |
+> | Week 12: Privacy & Governance | [confidence] | [confidence] | [notes] |
+>
+> **2. Collaborate on next steps:**
+> Ask: "Unit 3 was the governance unit — AIUC-1, OWASP, bias, privacy. Are there any pieces you want to revisit before we move to Unit 4 (rapid prototyping with Claude Code)?"
+>
+> **3. Review session tracking:**
+> If reviewing, add a new row to that section's history table in `.noctua/progress.md`.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 3 that was confusing, missing, or that felt off?"
+> If substantive: `gh issue create --title "[Unit 3 feedback] <short title>" --body "<feedback>" --label "student-feedback"`
+> Log the URL to `.noctua/progress.md`.
+>
+> **5. Update progress:**
+> Set Current Position to Week 13, Day 1 Theory (Unit 4: Rapid Prototyping).
+> Say: "Unit 3 complete. In Unit 4, we shift from governance to execution — rapid prototyping with Claude Code, worktrees, and subagents. Ready?"
