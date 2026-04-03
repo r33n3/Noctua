@@ -10,6 +10,29 @@ A year-long graduate-level program where students forge their own agentic securi
 
 ---
 
+## Getting Started
+
+**Step 1 — Open the course site (your reading layer)**
+👉 [https://r33n3.github.io/Noctua/](https://r33n3.github.io/Noctua/) — keep this open throughout the course.
+
+**Step 2 — Clone and mount this repo in Claude Code**
+```bash
+git clone https://github.com/r33n3/Noctua.git
+cd Noctua
+claude
+```
+
+**Step 3 — Two-screen setup (recommended)**
+Course site on one screen, Claude Code on the other. You'll move between them constantly — reading on the site, working through exercises in Claude Code.
+
+**Step 4 — First session**
+CLAUDE.md auto-loads when you open the repo in Claude Code. Claude will greet you, ask you to choose an instructor persona and learning style, and orient you to Week 1.
+
+**Step 5 — Returning sessions**
+Claude reads your saved progress and picks up exactly where you left off.
+
+---
+
 ## Course Philosophy
 
 Noctua is built on four foundational pillars that shape how we teach and practice cybersecurity in the age of AI agents:
