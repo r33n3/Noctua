@@ -27,10 +27,10 @@
 <hr>
 
 <!-- ======== WEEK 9 ======== -->
-<h2 id="week-9">Week 9 — Responsible AI Principles: Ethics Audit</h2>
+<h2 id="week-9">Week 9 — AIUC-1 Governance Audit</h2>
 <div class="week-header"><span class="week-badge">WEEK 9</span><span class="week-sub">Lab: AIUC-1 Standard Audit of a Security AI System</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Conduct a structured ethics audit of your Unit 2 MCP server using the six AIUC-1 domains. Produce a compliance matrix with gap analysis and a prioritized remediation plan.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Conduct a structured AIUC-1 governance audit of your Unit 2 MCP server using the six AIUC-1 domains. Produce a compliance matrix with gap analysis and a prioritized remediation plan.</p></div>
 
 <div class="quiz-block" id="quiz-w9">
   <h4> Knowledge Check — Week 9</h4>
@@ -74,7 +74,7 @@
 
 <div class="callout callout-tip">
   <strong>Try the <code>/think</code> Skill for Ethics Work</strong>
-  <p><code>/think</code> is built for exactly this type of analysis — surfacing assumptions, identifying what you don't know, and considering alternatives before committing to a position. Run it before writing your ethics audit. Ask it to surface blind spots in your initial assessment.</p>
+  <p><code>/think</code> is built for exactly this type of analysis — surfacing assumptions, identifying what you don't know, and considering alternatives before committing to a position. Run it before writing your governance audit. Ask it to surface blind spots in your initial assessment.</p>
   <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
     <a href="skills/think.md" download="think.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download think.md</a>
     <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
@@ -91,31 +91,31 @@
       <label><input type="checkbox" onchange="toggleStep('w9-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Create the Audit Compliance Matrix</div>
-        <div class="step-desc">Create <code>ethics-audit.md</code> with a table: Principle | Requirement | Current Implementation | Compliance (Full/Partial/Gap) | Evidence | Remediation Priority. You will fill this in across steps 2-7.</div>
+        <div class="step-desc">Create <code>aiuc1-audit.md</code> with a table: Domain | Requirement | Current Implementation | Compliance (Full/Partial/Gap) | Evidence | Remediation Priority. You will fill this in across steps 2-7.</div>
       </div></label>
     </div>
 
     <div class="lab-step" id="step-w9-2">
       <label><input type="checkbox" onchange="toggleStep('w9-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Audit Principle 1 — Safe, Secure, Resilient</div>
-        <div class="step-desc">Evaluate: Does your server fail gracefully when the NVD API is down? Does it prevent an agent loop from exhausting rate limits? Does it have input sanitization preventing injection? Score each: PASS / PARTIAL / FAIL. For each FAIL, write one remediation action.</div>
+        <div class="step-title">Step 2: Audit Domain B — Security</div>
+        <div class="step-desc">Evaluate the Security domain first: Does your server fail gracefully when the NVD API is down? Does it prevent an agent loop from exhausting rate limits? Does it have input sanitization preventing injection? Score each: PASS / PARTIAL / FAIL. For each FAIL, write one remediation action.</div>
       </div></label>
     </div>
 
     <div class="lab-step" id="step-w9-3">
       <label><input type="checkbox" onchange="toggleStep('w9-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Audit Principle 2 — Explainable &amp; Interpretable</div>
-        <div class="step-desc">Run an explainability audit on your Unit 2 tools. In Claude Code, ask Claude to explain how <code>generate_incident_report</code> produces its output and what data it relies on: "Explain how the generate_incident_report tool works. What inputs does it use? What decisions does it make internally? Can a non-technical stakeholder understand why a report was generated the way it was? Are confidence levels visible?" Repeat for <code>search_security_kb</code>: "How does search_security_kb decide which documents to retrieve? Is the reasoning traceable? Is there an appeal path if a retrieved document is wrong or stale?" Score each: PASS / PARTIAL / FAIL. For each FAIL, write one remediation action.</div>
+        <div class="step-title">Step 3: Audit Domains D and E — Reliability and Accountability</div>
+        <div class="step-desc">Run a reliability and accountability audit on the tools you actually built in Unit 2. In Claude Code, ask Claude to explain how one of your implemented tools works, what inputs it uses, what decisions it makes internally, what can fail, and how a reviewer could reconstruct a bad outcome from logs. If you built <code>search_security_kb</code> or <code>generate_incident_report</code>, include them. If not, audit the tools you do have. Score each: PASS / PARTIAL / FAIL. For each FAIL, write one remediation action.</div>
       </div></label>
     </div>
 
     <div class="lab-step" id="step-w9-4">
       <label><input type="checkbox" onchange="toggleStep('w9-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Audit Principles 3–6 (Privacy, Fair, Valid, Accountable)</div>
-        <div class="step-desc">Complete the remaining four principle audits. Key questions — Privacy: Are you logging PII from incident data? Fair: Could your tools produce systematically different results for certain demographics? Valid: Is CVE data validated before use? Accountable: Who is responsible when a tool produces a wrong output?</div>
+        <div class="step-title">Step 4: Audit the Remaining Domains — A, C, and F</div>
+        <div class="step-desc">Complete the remaining domain audits. Key questions — Data &amp; Privacy: Are you logging PII from incident data? Safety: Could a tool output trigger harmful action without review? Society: Could your tools produce systematically different results for certain users, teams, or contexts? Add any remaining Reliability or Accountability gaps you discovered while reviewing real tool behavior.</div>
       </div></label>
     </div>
 
@@ -123,7 +123,7 @@
       <label><input type="checkbox" onchange="toggleStep('w9-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Use Claude Code to review your audit for blind spots</div>
-        <div class="step-desc">In Claude Code, run Claude from the directory containing your <code>ethics-audit.md</code> file. Use the Read tool or reference the file by path — for example: 'Read ethics-audit.md and review it against the AIUC-1 checklist.' There is no upload step in Claude Code.</div>
+        <div class="step-desc">In Claude Code, run Claude from the directory containing your <code>aiuc1-audit.md</code> file. Use the Read tool or reference the file by path — for example: 'Read aiuc1-audit.md and review it against the AIUC-1 checklist.' There is no upload step in Claude Code.</div>
       </div></label>
     </div>
 
@@ -144,20 +144,20 @@
     <li>Add injection filtering (block or sanitize tool inputs that contain instruction-like patterns)</li>
     <li>Switch audit logging from stdout to an append-only file log</li>
   </ul>
-  <p>Document your remediation in <code>ethics-audit-v2.md</code>: what you found, what you changed, and how you verified the fix. Your Week 10 OWASP assessment should reference this document.</p>
+  <p>Document your remediation in <code>aiuc1-audit-v2.md</code>: what you found, what you changed, and how you verified the fix. Your Week 10 OWASP assessment should reference this document.</p>
 </div>
 
 <div class="deliverables">
   <h5>Week 9 Deliverables</h5>
   <ul>
-    <li><strong>ethics-audit.md</strong> — complete compliance matrix across all 6 AIUC-1 domains</li>
-    <li><strong>Ethics Audit Report</strong> (1000-1500 words) — findings narrative with NIST RMF mapping and prioritized remediation plan</li>
-    <li><strong>CCT Journal</strong> — reflect: how does building an ethics audit change how you design systems? What would you do differently if starting Unit 2 over?</li>
+    <li><strong>aiuc1-audit.md</strong> — complete compliance matrix across all 6 AIUC-1 domains</li>
+    <li><strong>AIUC-1 Governance Audit Report</strong> (1000-1500 words) — findings narrative with NIST RMF mapping and prioritized remediation plan</li>
+    <li><strong>CCT Journal</strong> — reflect: how does building a governance audit change how you design systems? What would you do differently if starting Unit 2 over?</li>
   </ul>
 </div>
 <div class="callout callout-warn">
   <strong>Audits produce fixes, not just documents</strong>
-  <p>Before moving to Week 10: implement at least one P1 remediation from your ethics audit. Common P1 items in this lab: missing API key validation, ephemeral-only logs (no persistent audit trail), no injection pattern scanning on KB ingestion.</p>
+  <p>Before moving to Week 10: implement at least one P1 remediation from your AIUC-1 audit. Common P1 items in this lab: missing API key validation, ephemeral-only logs (no persistent audit trail), no injection pattern scanning on KB ingestion.</p>
   <p>A security audit that produces only documentation teaches that documentation is the deliverable. The deliverable is a more secure system. Document the fix, not just the gap.</p>
 </div>
 

@@ -204,40 +204,7 @@
 </table>
 <div class="callout callout-key"><p>Classify your system before starting the audit. Higher tiers require more rigorous AIUC-1 coverage. <em>In Week 12, you will express these tier boundaries as Cedar policies — executable enforcement rather than documentation.</em></p>
 </div>
-<h4 id="aiuc1-deployment-tiers">AIUC-1 Deployment Tiers</h4>
-<p>AIUC-1 assigns a deployment tier based on the combined risk score across all six domains. The tier determines what governance artifacts must be produced and reviewed before a system can be released to production.</p>
-<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
-<thead>
-<tr style="background: #1a2035;">
-<th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Tier</th>
-<th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Risk Profile</th>
-<th style="padding: 0.75rem; text-align: left; border: 1px solid #2d3748; color: #d4a017;">Required Before Deployment</th>
-</tr>
-</thead>
-<tbody>
-<tr style="background: #0d1117;">
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 1</strong></td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Low risk — informational output, no autonomous action, no sensitive data</td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Documentation + self-attestation</td>
-</tr>
-<tr style="background: #111827;">
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 2</strong></td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Moderate risk — limited tool use, non-sensitive data, human-in-the-loop</td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Documentation + peer review + <code>/audit-aiuc1</code> output filed</td>
-</tr>
-<tr style="background: #0d1117;">
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 3</strong></td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">High risk — autonomous action, sensitive data, real-world consequences</td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">All Tier 2 + independent security review + incident response plan</td>
-</tr>
-<tr style="background: #111827;">
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;"><strong>Tier 4</strong></td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">Critical risk — regulated data, high blast radius, or safety-critical systems</td>
-<td style="padding: 0.75rem; border: 1px solid #2d3748; color: #c5cae9;">All Tier 3 + legal/compliance sign-off + staged rollout with monitoring gate</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-tip"><p>Run <code>/audit-aiuc1</code> on your system design before writing a line of production code. The domain scores determine your tier. A Tier 3 or Tier 4 result means you need an incident response plan and an independent review — start that process early, not the day before you ship.</p>
+<div class="callout callout-tip"><p>Run <code>/audit-aiuc1</code> on your system design before writing a line of production code. Use the deployment classification above to determine how much governance rigor you need before release. Higher classifications require stronger review, clearer boundaries, and more operational evidence — start that process early, not the day before you ship.</p>
 </div>
 <div class="callout callout-discuss">
 <strong>Discussion (~13 min): Is 88% Accurate Good Enough?</strong>
