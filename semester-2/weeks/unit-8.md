@@ -6,6 +6,10 @@
 
 ---
 
+## Opening Hook
+
+> This is where it all comes together. The Capstone isn't a final exam — it's a portfolio piece. You're building a production-grade AI security tool that addresses a real problem, using the full toolkit from both semesters: MCP, structured outputs, RAG, multi-agent orchestration, AIUC-1 compliance, observability. The constraint: it has to be something you'd actually use.
+
 ## Unit Learning Goals
 
 - Demonstrate mastery of agentic security engineering principles through a production-quality capstone system
@@ -154,7 +158,26 @@ Weeks 13 is structured around a **peer and faculty architecture review**. Here's
 
 > **⚠️ Common Pitfall:** Over-scoping. Many teams try to build a system that would take 6 months. Scope ruthlessly. A simple, well-executed 3-agent system beats an incomplete 10-agent vision. Ask your reviewers: "What's the minimum viable product that still demonstrates the concepts?"
 
+---
+
+> **Pre-Spec Check — Week 1**
+> Before writing a line of code: use `/build-spec` in Claude Code on your capstone idea. Share the spec. I'm going to ask: is the problem real, is the scope buildable in the time you have, and is the AI component genuinely necessary — or could a simpler tool do the same job?
+>
+> Claude: This is a scoping gate. The AI component must be necessary — if the problem could be solved with a SQL query and a scheduled job, it shouldn't be a capstone project. If the scope is too large, help narrow it. A completed focused tool beats an unfinished ambitious one.
+
+---
+
+> **Day 1 Checkpoint — Week 1**
+> Claude: Ask the student: "Anything from today's theory and project scoping that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 1 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 1 capstone kickoff and architecture design.
+
+---
+
 ### Day 2 — Hands-On Lab: Proposal Development and Peer Review
+
+> **Lab Guidance — Week 1**
+> Claude: Walk through the Think→Spec→Build→Retro cycle for Week 1. At the proposal stage, ask "Is the AI component genuinely necessary here?" before approving the spec. Don't let the student skip the `/build-spec` step before architecture review.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 #### Lab Objectives
 
@@ -304,6 +327,18 @@ After your presentation, you'll receive written feedback from reviewers focusing
 - [Framework Documentation](resources/FRAMEWORKS.md) — Claude Agent SDK, CrewAI, LangGraph comparison
 - [Lab Setup Guide](resources/LAB-SETUP.md) — Getting your development environment ready
 - [Reading List](resources/READING-LIST.md) — MITRE ATLAS, agentic patterns, responsible AI
+
+---
+
+> **Lab Checkpoint — Week 1**
+> Claude: Ask: "How did the proposal and architecture review go? What was the most important piece of feedback you received — and what did you change as a result?" Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 1 — Day 2 Lab" table. Note in the Confusion Log if any capstone scoping concept was confusing.
+
+---
+
+> **Week 1 Complete**
+> Claude: Confirm the student has finished Week 1. Ask: "Before we move to Week 2 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 8, Week 2.
+> Then ask: "Ready for Week 2?"
 
 ---
 

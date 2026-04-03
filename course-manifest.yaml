@@ -1,0 +1,68 @@
+program: AgentForge — AI Security Engineering
+version: "2026"
+semesters:
+  - id: s1
+    name: "CSEC 601 — Foundations"
+    modules:
+      - id: s1-unit-1
+        title: "Collaborative Cognitive Tooling (CCT)"
+        weeks: [1, 2, 3, 4]
+        site: docs/lab-s1-unit1.html
+        flow: course-flow/modules/s1-unit-1/flow.md
+        content: semester-1/weeks/
+        requires: []
+
+      - id: s1-unit-2
+        title: "MCP and Context Engineering"
+        weeks: [5, 6, 7, 8]
+        site: docs/lab-s1-unit2.html
+        flow: course-flow/modules/s1-unit-2/flow.md
+        content: semester-1/weeks/
+        requires: [s1-unit-1]
+
+      - id: s1-unit-3
+        title: "Ethical AI and Governance"
+        weeks: [9, 10, 11, 12]
+        site: docs/lab-s1-unit3.html
+        flow: course-flow/modules/s1-unit-3/flow.md
+        content: semester-1/weeks/
+        requires: [s1-unit-2]
+
+      - id: s1-unit-4
+        title: "Rapid Prototyping"
+        weeks: [13, 14, 15, 16]
+        site: docs/lab-s1-unit4.html
+        flow: course-flow/modules/s1-unit-4/flow.md
+        content: semester-1/weeks/
+        requires: [s1-unit-3]
+
+  - id: s2
+    name: "CSEC 602 — Advanced Engineering"
+    modules:
+      - id: unit-5
+        title: "Multi-Agent Orchestration"
+        site: docs/lab-s2-unit5.html
+        flow: course-flow/modules/unit-5/flow.md
+        content: semester-2/weeks/unit-5.md
+        requires: [s1-unit-4]
+
+      - id: unit-6
+        title: "AI Attacker vs. AI Defender"
+        site: docs/lab-s2-unit6.html
+        flow: course-flow/modules/unit-6/flow.md
+        content: semester-2/weeks/unit-6.md
+        requires: [unit-5]
+
+      - id: unit-7
+        title: "Production Security Engineering"
+        site: docs/lab-s2-unit7.html
+        flow: course-flow/modules/unit-7/flow.md
+        content: semester-2/weeks/unit-7.md
+        requires: [unit-6]
+
+      - id: unit-8
+        title: "Capstone"
+        site: docs/lab-s2-unit8.html
+        flow: course-flow/modules/unit-8/flow.md
+        content: semester-2/weeks/unit-8.md
+        requires: [unit-7]
