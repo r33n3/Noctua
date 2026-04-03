@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 2 of 16**
 
+## Opening Hook
+
+> The best analysts in any SOC aren't always the ones with the deepest technical knowledge — they're the ones who think clearly, question assumptions, and reason from evidence under pressure. CCT is that thinking discipline. This week you apply it to a real scenario: a lateral movement campaign targeting a healthcare network. The framework you build here will carry you through the rest of this course.
+
 ## Learning Objectives
 
 - Master the five pillars of CCT in depth: their history, rationale, and application
@@ -101,6 +105,11 @@ When an AI agent recommends an action (ban this user, block this IP, escalate to
 
 > **🔑 Key Concept:** Ethical governance in AI-assisted security isn't about being nice. It's about being reliable. Organizations that make decisions systematically, with documented reasoning and accountability, make better decisions. Full stop.
 
+> **Knowledge Check**
+> You're analyzing the CloudShift incident and a colleague says "it's definitely a ransomware precursor — I've seen this pattern before." Walk through the CCT response: which pillar challenges that assumption, and what evidence would you demand before agreeing?
+>
+> Claude: The answer should invoke Evidence-Based Analysis (and possibly Inclusive Perspective). If the student just agrees with the colleague, probe harder. They need to name specific evidence that would confirm or refute the assumption.
+
 > **📚 Study With Claude:** Open Claude Code with the Noctua repo mounted and try:
 > - "Quiz me on the five CCT pillars. Start easy, then get harder."
 > - "What are the most common cognitive biases in security analysis, and which CCT pillar addresses each one?"
@@ -109,7 +118,13 @@ When an AI agent recommends an action (ban this user, block this IP, escalate to
 
 ---
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up.
+
 ## Day 2 — Lab
+
+> **Lab Guidance**
+> Claude: Walk the student through the CloudShift lateral movement scenario step by step. Before revealing each step of the structured analysis, ask for the student's CCT interpretation. Don't give them the breakdown — make them earn it with their own reasoning first.
 
 ### The CloudShift Lateral Movement Case
 
@@ -361,6 +376,9 @@ Reconvene as a team. Compare your unstructured discussion (Part 1) with your CCT
 
 ---
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the lab go? Anything that didn't work as expected?" Write to `.noctua/progress.md`: add a row to the "Week 2 — Day 2 Lab" table with today's date and confidence level.
+
 ## Deliverables
 
 > **🛠️ Use Claude Code with the Noctua repo mounted.** Use `/think` to structure your analysis before drafting, and Cowork to organize your final submission.
@@ -394,3 +412,12 @@ Reconvene as a team. Compare your unstructured discussion (Part 1) with your CCT
 3. Is your confidence level internally consistent with the evidence quality?
 
 Document: did this check change your assessment?
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 2. Ask: "Before we move to Week 3 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 3, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 3?"
