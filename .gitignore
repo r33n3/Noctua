@@ -35,5 +35,8 @@ node_modules/
 *.jpeg
 .playwright-mcp/
 
+# Student profiles — local only, never commit
+.noctua/
+
 # Internal planning docs (not student-facing)
 docs/superpowers/
