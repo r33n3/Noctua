@@ -74,7 +74,7 @@
 <thead><tr><th>Claude-specific</th><th>Cross-platform (transferable)</th></tr></thead>
 <tbody>
 <tr><td>CLAUDE.md context file</td><td>System prompt and agent configuration design — any platform</td></tr>
-<tr><td>Claude Code slash commands (/think, /build-spec, /retro, /harness)</td><td>Think → Spec → Build → Retro cycle — workflow-agnostic, runs on any agentic framework</td></tr>
+<tr><td>Claude Code slash commands (/think, /build-spec, /retro, /harness-assess)</td><td>Think → Spec → Build → Retro cycle — workflow-agnostic, runs on any agentic framework</td></tr>
 <tr><td>Claude Agent SDK orchestration patterns</td><td>MCP tool-calling — open protocol, adopted by OpenAI, Google, and open-source stacks</td></tr>
 <tr><td>Claude model tiers (Haiku / Sonnet / Opus)</td><td>Model selection by capability/cost tradeoff — every vendor has equivalent tiering</td></tr>
 <tr><td>Claude Code hooks and session management</td><td>System prompt governance, JSON output schemas, RAG architecture — cross-vendor by definition</td></tr>
@@ -101,13 +101,13 @@
 <li>Access to an API key for Claude (Opus recommended for this unit)</li>
 </ul>
 <p>See <a href="lab-setup.html">Lab Setup Guide</a> for detailed environment configuration.</p>
-<div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the six slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/build-spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, <code>/harness</code> to audit whether your workflows are improving, and <code>/audit-aiuc1</code> starting in Unit 3 (Week 9) for the first formal AIUC-1 audit — install it now.</p>
+<div class="callout callout-tip"><p><strong>Install the Course Skills Now</strong> — While you're in the terminal, install the six slash commands used throughout this course. These turn Claude Code sessions into structured thinking and building workflows. You'll use <code>/think</code> starting in Unit 2, <code>/build-spec</code> and <code>/worktree-setup</code> in Unit 4, <code>/retro</code> at every sprint, <code>/harness-assess</code> to audit whether your workflows are improving, and <code>/audit-aiuc1</code> starting in Unit 3 (Week 9) for the first formal AIUC-1 audit — install it now.</p>
 <div class="codehilite"><pre><span></span><code>mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
 curl -o ~/.claude/commands/build-spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
-curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+curl -o ~/.claude/commands/harness-assess.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
 curl -o ~/.claude/commands/audit-aiuc1.md   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md</code></pre></div>
 <p>Full documentation for each skill: <a href="skills/index.html">Course Skills →</a></p>
 </div>

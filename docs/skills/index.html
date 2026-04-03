@@ -12,7 +12,7 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>Six course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Install them on Day 1. Modify them as you go.</p>
+<p>Six course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Five drive the delivery cycle; <code>/harness-assess</code> reviews whether the surrounding harness is actually implemented and enforceable. Install them on Day 1. Modify them as you go.</p>
 
 <div class="callout callout-key">
   <strong>Why This Cycle Exists</strong>
@@ -23,10 +23,11 @@
     <li><strong>/build-spec</strong> — Translates your thinking into a contract the agent builds from. Includes anti-requirements (things the agent must NOT do), verifiable acceptance criteria, explicit file scope, and lessons from past retros encoded directly into the spec.</li>
     <li><strong>/worktree-setup</strong> — Isolates parallel work into separate branches. Configures pre-commit hooks and output suppression (silence passing tests, surface only failures) so the agent hits constraints during execution, not after you review.</li>
     <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
-    <li><strong>/harness</strong> — The meta-skill. Orients you when sessions lose direction, audits whether your workflow is self-correcting, and checks whether /retro output is actually changing your /build-spec and /think.</li>
+    <li><strong>/harness-assess</strong> — The diagnostic skill. Reviews whether your environment's harness is actually implemented: prompts, tools, permissions, state, gates, logging, and misuse resistance. Use it to inspect the harness, not to replace it.</li>
     <li><strong>/audit-aiuc1</strong> — Audit your tool or agent system against the six AIUC-1 domains before elevation to a higher autonomy mode. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates.</li>
   </ul>
-  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /build-spec, /build-spec constrains /worktree, /worktree produces the evidence for /retro. Run all six and your system gets better every cycle.</p>
+  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /build-spec, /build-spec constrains /worktree, /worktree produces the evidence for /retro. <code>/harness-assess</code> is separate: it evaluates whether those connections are actually enforced in the environment rather than merely described in docs.</p>
+  <p><strong>Distinction:</strong> Harness engineering is the discipline, <code>/harness-assess</code> is the review skill, and evaluation harnesses are test artifacts.</p>
 </div>
 
 <div class="callout callout-key">
@@ -58,7 +59,7 @@ curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r3
 curl -o ~/.claude/commands/build-spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
 curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
 curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
-curl -o ~/.claude/commands/harness.md       https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+curl -o ~/.claude/commands/harness-assess.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
 curl -o ~/.claude/commands/audit-aiuc1.md   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md
 
 # Verify
@@ -205,37 +206,37 @@ ls ~/.claude/commands/</code></pre>
 
 <hr>
 
-<h2 id="harness">/harness — Agent Harness Engineering</h2>
-<p>The meta-skill. Use it when a session loses direction, when the same mistake keeps recurring, or when you want to audit whether your workflow is actually getting better — or just running the same errors faster.</p>
-<p><strong>Best used in:</strong> Start of any new project (assess harness state), between sprints (check the feedback loop is connected), when something goes wrong in the same way twice, before a capstone sprint to verify the full cycle is wired up.</p>
+<h2 id="harness">/harness-assess — Assess an Agent Harness</h2>
+<p>The diagnostic skill. Use it to inspect whether an environment's harness is real, enforceable, and appropriate for the risk level — not just well described in markdown.</p>
+<p><strong>Best used in:</strong> Start of any new project (assess harness state), before production hardening, when reviewing a course or repo setup, after repeated failures, and before a capstone sprint to verify the environment's controls are actually in place.</p>
 
 <div class="callout callout-reading">
-  <strong>Why /harness exists</strong>
-  <p>The Think → Spec → Build → Retro cycle is only self-correcting if the connections between phases are working. /retro must feed /think. /think must shape /build-spec. /build-spec must constrain /worktree. /worktree must produce the evidence /retro needs. If any connection is broken, you're not improving — you're running the same mistakes in a faster loop.</p>
-  <p><code>/harness</code> audits those connections. It has three layers to examine. The <strong>spec layer</strong>: does your spec template include anti-requirements, verifiable criteria, and lessons from past retros? The <strong>runtime layer</strong>: do pre-commit hooks run during agent execution, is test output suppressed to failures only, would at least one gate catch your most common mistake? The <strong>context layer</strong>: does the agent have access to patterns it needs, is a scoped TASK.md dropped into each worktree, have retro findings been encoded into AGENTS.md or skills?</p>
-  <p>The diagnostic question is simple: <em>"What did my last retro actually change?"</em> If the answer is "nothing," the loop is broken and /harness shows you exactly where.</p>
-  <p>Use /harness at the start of a session when you're not sure which phase applies. Use it periodically as a system health check. Use it before a capstone sprint to make sure all five skills are connected and each phase produces inputs the next phase can use.</p>
+  <strong>Why /harness-assess exists</strong>
+  <p>The course teaches harness fundamentals, which means students need a way to inspect whether a harness actually exists. A repo can have polished prompts and good docs while still being weak on permissions, state control, auditability, or misuse resistance. <code>/harness-assess</code> makes those gaps visible.</p>
+  <p><code>/harness-assess</code> reviews the real control surface: <strong>entrypoints and orchestration</strong>, <strong>tool control</strong>, <strong>permissions and approval gates</strong>, <strong>state and memory handling</strong>, <strong>prompt and instruction control</strong>, <strong>logging and auditability</strong>, <strong>policy and environment separation</strong>, and <strong>resistance to prompt injection or tool abuse</strong>. It distinguishes what is implemented in code or config from what is only implied in prose.</p>
+  <p>The key diagnostic question is: <em>"What is actually enforced here?"</em> If a safeguard only lives in markdown, it is guidance, not control. That distinction is central to good harness engineering.</p>
+  <p>Use <code>/harness-assess</code> to review a course setup, repo, multi-agent workflow, or deployment environment. Use the Think → Spec → Build → Retro cycle to do the work; use <code>/harness-assess</code> to judge whether the surrounding environment makes safe, correct behavior easier and more auditable.</p>
 </div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
-  <a href="harness.md" download="harness.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download harness.md</a>
+  <a href="harness.md" download="harness-assess.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download harness-assess.md</a>
   <a href="harness.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
 </div>
 
 <div class="code-block">
   <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <pre><code>curl -o ~/.claude/commands/harness.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md</code></pre>
+  <pre><code>curl -o ~/.claude/commands/harness-assess.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md</code></pre>
 </div>
 
 <div class="callout callout-tip">
   <strong>Suggested modifications:</strong>
   <ul>
-    <li>Add your team's most common failure patterns to the Health Check checklist</li>
-    <li>Add a "Harness maturity level" rating (1–4) to track improvement over time across sprints</li>
-    <li>Create <code>/harness-security</code> — a variant with security-specific constraint checks (prompt injection boundaries, LLM trust surfaces, credential handling rules)</li>
-    <li>Build a running gap log file that accumulates gap type counts across retros — this becomes your Three Strikes tracker</li>
-    <li>Add the Phase Navigation tree to your AGENTS.md so agents can orient themselves without invoking the skill</li>
-    <li>Add a three-tier context audit: "Is Tier 1 (AGENTS.md) human-written and surgical? Is Tier 2 (database handoffs) configured for multi-session tasks? Is Tier 3 (session context) scoped to only what this task needs?"</li>
+    <li>Add a maturity rubric tailored to your environment type: course, internal tool, or production system</li>
+    <li>Create <code>/harness-assess-security</code> for prompt injection, tool abuse, identity, and secret-boundary reviews</li>
+    <li>Add explicit checks for single-source-of-truth state and machine-readable progression gates</li>
+    <li>Add a comparison mode that scores two environments side by side</li>
+    <li>Pair findings with a remediation backlog so each assessment produces concrete control upgrades</li>
+    <li>Keep a running assessment log across sprints so repeated soft controls get promoted into real runtime constraints</li>
   </ul>
 </div>
 

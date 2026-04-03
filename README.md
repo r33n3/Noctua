@@ -33,6 +33,22 @@ Claude reads your saved progress and picks up exactly where you left off.
 
 ---
 
+## Repository Structure
+
+```
+docs/              — Student-facing site (GitHub Pages)
+course-flow/       — Agent-driven instructional layer (sequencing, hints, gates)
+agent/             — Agent behavior: profiles, review modes, policies
+student-state/     — Per-student preferences and progress (from templates)
+semester-1/weeks/  — Semester 1 content (weeks 1–16)
+semester-2/weeks/  — Semester 2 content (units 5–8)
+```
+
+See [COURSE-ARCHITECTURE.md](COURSE-ARCHITECTURE.md) for the full two-layer design.
+See [course-manifest.yaml](course-manifest.yaml) for the module map.
+
+---
+
 ## Course Philosophy
 
 Noctua is built on four foundational pillars that shape how we teach and practice cybersecurity in the age of AI agents:
@@ -94,7 +110,7 @@ This pipeline follows the **Think → Spec → Build → Retro** cycle as its de
 
 ### 4. Agentic Engineering
 
-The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course applies the **Think → Spec → Build → Retro** development cycle as its delivery framework, powered by four Claude Code skills — `/think`, `/spec`, `/worktree-setup`, and `/retro` — and built on the **Core Four Pillars** — Prompt, Model, Context, and Tools — operationalized through patterns that accelerate both prototyping and production delivery:
+The emerging discipline of designing, building, orchestrating, and securing AI agent systems. This course applies the **Think → Spec → Build → Retro** development cycle as its delivery framework, powered by four core Claude Code build skills — `/think`, `/spec`, `/worktree-setup`, and `/retro` — plus `/harness-assess` to evaluate whether an environment's controls are actually implemented and enforceable. Harness engineering is the discipline, `/harness-assess` is the review skill, and evaluation harnesses are test artifacts. It is built on the **Core Four Pillars** — Prompt, Model, Context, and Tools — operationalized through patterns that accelerate both prototyping and production delivery:
 
 - **Context Engineering** — Managing context windows, system prompts, memory, and retrieval. Students build personal context libraries that compound across projects.
 - **Tool Design** — Defining agent capabilities through MCP servers, structured tool definitions, and the "Pit of Success" principle (make the right thing easy, the wrong thing hard).
