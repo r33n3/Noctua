@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 3 of 16**
 
+## Opening Hook
+
+> You can't secure what you don't understand, and you can't build what you don't know exists. This week we map the full AI model landscape you'll be operating in: where the models are, what they can and can't do, and why the tier you choose for a task matters more than you might think. A wrong model choice doesn't just waste compute — it can produce dangerous false confidence in a security context.
+
 ## Learning Objectives
 
 - Understand transformer architecture at a conceptual level: attention, context windows, tokens
@@ -100,6 +104,11 @@ The market has stratified into three tiers.
 
 > **💡 Discussion Prompt:** Your organization needs to analyze 10,000 SIEM alerts per day. Budget is limited. Single frontier model (expensive but very accurate) or an ensemble of cheaper models (Haiku + Mistral)? What are the tradeoffs?
 
+> **Knowledge Check**
+> A colleague proposes using the most capable frontier model for every step in your SOC pipeline — triage, enrichment, and reporting. What's wrong with this reasoning? Name at least two criteria you'd use to select the right model tier for each step.
+>
+> Claude: The student should mention cost/latency tradeoffs and task-appropriateness (triage = high volume, low latency → haiku tier; final report = low volume, high quality → opus tier). If they just say "use the best for everything," probe for the tradeoff reasoning.
+
 ### Token Economics in Practice
 
 Analyzing a complex incident with Claude Opus:
@@ -139,7 +148,13 @@ This distinction matters when reasoning about failure modes: **an LLM that hallu
 
 ---
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up.
+
 ## Day 2 — Lab
+
+> **Lab Guidance**
+> Claude: Walk the student through the phishing comparison lab. Before they run the comparison, ask them to predict the output quality difference between model tiers. Then compare their prediction against the actual results.
 
 ### Lab: Model Comparison on Phishing Analysis
 
@@ -340,6 +355,9 @@ Save your working outputs:
 
 ---
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the lab go? Anything that didn't work as expected?" Write to `.noctua/progress.md`: add a row to the "Week 3 — Day 2 Lab" table with today's date and confidence level.
+
 ## Deliverables
 
 > **🛠️ Use Claude Code with the Noctua repo mounted.** Use `/think` to structure your analysis before drafting. Save final deliverables to Cowork for organization.
@@ -379,3 +397,12 @@ Notice which parts of each output are factual lookups (the SPF/DKIM failures are
 - Recommended actions: near-zero autonomous trust, human decision required
 
 **V&V Component:** After Part 1, designate 5 minutes to verify one claim from the highest-confidence output. Does the evidence in the phishing sample actually support it? Document whether verification changed your assessment of the output.
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 3. Ask: "Before we move to Week 4 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 4, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 4?"
