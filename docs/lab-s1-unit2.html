@@ -1018,6 +1018,8 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
             <li><strong>No-match query:</strong> Ask a question your corpus has no answer for. Does the system say "I don't know" or does it hallucinate?</li>
             <li><strong>Outdated document query:</strong> If your corpus has a dated document, ask a question where the answer has changed. Does the system acknowledge staleness?</li>
             <li><strong>Partial match:</strong> Ask a question where only part of the answer is in the corpus. Does the system correctly acknowledge the partial coverage?</li>
+            <li><strong>Unauthorized retrieval boundary:</strong> Tag one chunk as if it belonged to a different team or trust domain. Can your retrieval layer exclude it using metadata filters, or does semantic similarity return it anyway?</li>
+            <li><strong>Poisoned chunk retrieval:</strong> Add one chunk with plausible security language but a malicious instruction or false policy statement. Does the system retrieve it? If so, do your citations and answer logic expose the conflict?</li>
           </ol>
           Document what you observe. These failure modes are why RAG evaluation matters more than RAG implementation. <em>(Theory: Week 8 Day 2 — RAG Failure Modes &amp; Hallucination Risk)</em>
         </div>
@@ -1027,6 +1029,8 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="callout callout-tip"><p><strong>Test your RAG failure modes before you trust your RAG success modes.</strong> Run three tests: (1) Query for something that does NOT exist in your index — does the agent hallucinate an answer or say it doesn't know? (2) Query with a typo or paraphrase — does retrieval still find the right chunks? (3) Query with an ambiguous question — does the agent ask for clarification or guess? A RAG system that doesn't fail gracefully is not production-ready. Document each test result in your RAG Failure Mode Report. The goal is not a RAG system that only works on expected queries — the goal is a system with predictable, safe behavior when inputs go outside expected bounds.</p>
+</div>
+<div class="callout callout-warn"><p><strong>Vector store security check:</strong> Before trusting your ChromaDB prototype, answer four questions: (1) can you restrict retrieval by metadata such as source, owner, or classification? (2) do retrieved chunks include enough provenance for a human to judge trustworthiness? (3) can you remove or re-index stale documents cleanly? (4) if a poisoned chunk enters the corpus, do you have a way to identify and delete every derived entry? If the answer is "no" to any of these, the system is a useful prototype but not a secure retrieval service.</p>
 </div>
 
 <div class="deliverables">

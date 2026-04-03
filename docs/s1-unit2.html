@@ -1971,6 +1971,8 @@ For each integration, show me: What data goes in? What format? What could go wro
 <li><strong>Milvus</strong> — Open-source, high-performance, suitable for large deployments</li>
 </ul>
 <p>A vector database stores millions of embeddings and can retrieve the 10 most similar to a query embedding in milliseconds.</p>
+<div class="callout callout-warn"><p><strong>Vector databases are a security boundary, not just a retrieval optimization.</strong> In production, the vector store becomes a hidden authority source for the agent: whatever is retrieved shapes what the model treats as relevant evidence. Four controls matter immediately: <strong>collection isolation</strong> (one tenant or trust domain must not semantically retrieve another's data), <strong>metadata enforcement</strong> (filters such as classification, region, and document owner must be applied before results are returned), <strong>ingestion provenance</strong> (every chunk should retain source, ingest time, and integrity context), and <strong>retention/deletion discipline</strong> (sensitive content embedded into vectors still counts as stored data). If you secure the prompt but not the vector store, your agent can still be steered by poisoned or unauthorized retrieval.</p>
+</div>
 <p><strong>5. Retrieval &amp; Augmentation</strong></p>
 <p>When an agent or user asks a question:</p>
 <ol>
@@ -1992,6 +1994,8 @@ For each integration, show me: What data goes in? What format? What could go wro
 <span class="nv">INSTRUCTIONS</span>: <span class="k">If</span> <span class="nv">the</span> <span class="nv">answer</span> <span class="nv">is</span> <span class="nv">in</span> <span class="nv">the</span> <span class="nv">documents</span>, <span class="nv">cite</span> <span class="nv">the</span> <span class="nv">source</span>. <span class="k">If</span> <span class="nv">not</span>, <span class="nv">say</span> <span class="s2">"</span><span class="s">This is not covered in our policy documents.</span><span class="s2">"</span>
 </code></pre></div>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> Your organization uses RAG to answer questions about security policies. A user asks, "Is it OK to share passwords with contractors?" RAG retrieves a document saying "Passwords may never be shared" but that document is from 2020 and your company updated this policy in 2024. How would you prevent this stale information from being used?</p>
+</div>
+<div class="callout callout-key"><p><strong>Securing retrieval means securing ranking, filtering, and freshness together.</strong> A secure RAG pipeline does not stop at "top-K similarity search." It should enforce metadata filters before ranking, prefer authoritative and current sources over merely similar ones, log which chunks were returned for every answer, and fail safely when the retrieved evidence is weak or contradictory. Retrieval quality is a security property when the agent's output can influence operational decisions.</p>
 </div>
 <h4 id="chunking-strategies-for-security-documents">Chunking Strategies for Security Documents</h4>
 <p>Naive chunking (breaking documents into equal-sized pieces) often fails for security content because context matters. A CVSS score of 9.5 is meaningless without knowing which vulnerability it describes.</p>

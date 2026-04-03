@@ -233,6 +233,14 @@ from pyrit.common import default_values
       </div></label>
     </div>
 
+    <div class="lab-step" id="step-u6w6-4b">
+      <label><input type="checkbox" onchange="toggleStep('u6w6-4b',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4b: Test vector retrieval boundary failure</div>
+        <div class="step-desc">Add two nearly identical chunks to your RAG store: one authoritative and one malicious or unauthorized. Vary metadata such as <code>source</code>, <code>owner</code>, or <code>classification</code>. Test whether your retrieval logic returns the wrong chunk, mixes both without warning, or ignores metadata constraints entirely. Document whether the failure is caused by poisoning, weak ranking, or missing isolation.</div>
+      </div></label>
+    </div>
+
     <div class="lab-step" id="step-u6w6-5">
       <label><input type="checkbox" onchange="toggleStep('u6w6-5',this.checked)">
       <div class="step-content">
@@ -398,11 +406,19 @@ define bot require evidence before clearing
       </div></label>
     </div>
 
+    <div class="lab-step" id="step-u6w7-5b">
+      <label><input type="checkbox" onchange="toggleStep('u6w7-5b',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5b: Add retrieval-layer defenses</div>
+        <div class="step-desc">Harden the vector-backed knowledge base itself: enforce metadata filters before similarity ranking, require source/provenance fields in returned chunks, and exclude stale or untrusted documents from high-confidence answers. Rerun the Week 6 vector retrieval boundary test and document whether the defense came from semantic guardrails, retrieval filtering, or corpus governance.</div>
+      </div></label>
+    </div>
+
     <div class="lab-step" id="step-u6w7-6">
       <label><input type="checkbox" onchange="toggleStep('u6w7-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Write the Blue Team Report (7% deliverable)</div>
-        <div class="step-desc">Document: Defenses implemented (NeMo config, system prompt changes, tool validation), Before/After comparison (which Week 6 attacks now fail?), False positive analysis (did defenses block legitimate use?), Defense-in-depth diagram, Residual risk (what attacks still work?).</div>
+        <div class="step-desc">Document: Defenses implemented (NeMo config, system prompt changes, tool validation, retrieval-layer controls), Before/After comparison (which Week 6 attacks now fail?), False positive analysis (did defenses block legitimate use?), Defense-in-depth diagram, Residual risk (what attacks still work?).</div>
       </div></label>
     </div>
   </div>

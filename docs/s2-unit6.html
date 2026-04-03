@@ -109,6 +109,8 @@
 </ul>
 </li>
 </ol>
+<div class="callout callout-warn"><p><strong>Vector database attacks are a special case of data poisoning.</strong> In agent systems, poisoning the retrieval layer is often more reliable than attacking the prompt directly. An attacker may upload malicious chunks, tamper with metadata so restricted content becomes retrievable, exploit weak tenant isolation, or seed highly similar false documents that outrank the authoritative source. The model then behaves "correctly" relative to poisoned evidence. Defenders must treat the vector store as a controlled system boundary: secure ingestion, enforce metadata filters, log retrieved chunk IDs, and validate provenance before high-impact actions.</p>
+</div>
 <div class="callout callout-key"><p><strong>Case Study: LiteLLM Supply Chain Attack (March 24, 2026)</strong><br/>
 TeamPCP compromised Trivy (a security scanner used in LiteLLM's CI/CD), extracted PyPI publishing credentials, and published malicious LiteLLM versions 1.82.7/1.82.8 containing a credential stealer. The attack was discovered when an MCP plugin in Cursor pulled the package as a <em>transitive dependency</em> — the developer never installed it directly. Three attack vectors for this course: PeaRL (agent attacks its governance from inside), GTG-1002 (adversary weaponizes agent architecture), LiteLLM (supply chain compromise of the foundation agents run on). Full analysis: LiteLLM supply chain case study.</p></div>
 <ol>
