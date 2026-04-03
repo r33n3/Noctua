@@ -308,13 +308,13 @@ define flow handle off-topic
 <div class="quiz-block" id="quiz-u6w7">
   <h4> Knowledge Check — Week 7</h4>
 
-  <div class="quiz-question" data-qid="u6w7q1" data-answer="b" data-explain="NeMo Guardrails uses Colang — a custom domain-specific language — to define conversation flows (what the agent does and doesn't do), output rails (what the agent will and won't say), and input rails (what inputs will be processed or blocked). Colang is human-readable and security-auditable.">
-    <p class="q-text">1. What language does NeMo Guardrails use to define conversation rails?</p>
+  <div class="quiz-question" data-qid="u6w7q1" data-answer="d" data-explain="Egress restrictions are the only control that operates at the infrastructure layer — below the agent process. Input validation, semantic guardrails, and tool permission checks all run within the agent's trust boundary. If the agent is compromised (e.g., via code execution in a tool output), those controls can be bypassed. Egress restrictions enforced via network namespace or firewall rules block exfiltration even when all application-layer defenses have failed.">
+    <p class="q-text">1. Your behavior monitoring fires: the agent just called an unrecognized external URL. Which control would have prevented the call from completing even if all application-layer defenses had already failed?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u6w7q1" value="a"> A) Python — standard configuration via function decorators</label>
-      <label><input type="radio" name="u6w7q1" value="b"> B) Colang — a domain-specific language for defining conversation flows and safety rails</label>
-      <label><input type="radio" name="u6w7q1" value="c"> C) YAML — declarative rules syntax</label>
-      <label><input type="radio" name="u6w7q1" value="d"> D) SQL — query-based pattern matching</label>
+      <label><input type="radio" name="u6w7q1" value="a"> A) Input validation — reject any user request containing a URL</label>
+      <label><input type="radio" name="u6w7q1" value="b"> B) Semantic guardrails — NeMo rails blocking off-topic requests</label>
+      <label><input type="radio" name="u6w7q1" value="c"> C) Tool permission boundaries — the tool allowlist blocks the call</label>
+      <label><input type="radio" name="u6w7q1" value="d"> D) Egress restrictions — default-deny outbound enforced at the network layer, below the agent process</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u6w7q1')">Check Answer</button>
@@ -453,8 +453,8 @@ define bot require evidence before clearing
     <div class="lab-step" id="step-u6w8-3">
       <label><input type="checkbox" onchange="toggleStep('u6w8-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Blue Phase (30 min): Review logs, identify what was attacked</div>
-        <div class="step-desc">While being attacked, monitor your guardrails logs. How many attacks triggered rails? How many got through? Which inputs looked suspicious? Triage in real-time — which attacks require immediate response vs. logging for review?</div>
+        <div class="step-title">Blue Phase (30 min): Review logs, triage, and execute containment</div>
+        <div class="step-desc">While being attacked, monitor your guardrails logs. How many attacks triggered rails? How many got through? Triage in real-time and execute pre-committed containment if warranted. Your containment options: (1) <strong>rate-limit</strong> the suspicious session to slow attacker iteration; (2) <strong>block and hold</strong> — reject requests from the attack source, queue for review; (3) <strong>tool revocation</strong> — disable the specific abused tool without taking the whole agent offline; (4) <strong>session termination</strong> — kill the session on high-confidence active compromise. Document each containment action taken, the signal that triggered it, and the time — this is your incident timeline.</div>
       </div></label>
     </div>
 
@@ -506,6 +506,18 @@ define bot require evidence before clearing
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u6w8q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u6w8q3" data-answer="b" data-explain="Partial containment — disabling the specific abused tool — is the right balance here. Full session termination disrupts legitimate users and destroys forensic state before you fully understand the attack. Doing nothing allows exfiltration to continue. Increasing logging without action is passive. Disabling only the abused tool stops the immediate harm, preserves the session for investigation, and leaves other agent capabilities available. This is least-disruptive effective containment: stop the bleeding without burning down the system.">
+    <p class="q-text">During the Blue Phase, you detect the attacker is abusing a specific tool to exfiltrate data. Full session termination would disrupt legitimate users. What is the right containment action?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u6w8q3" value="a"> A) Do nothing — wait until the wargame ends, then document it</label>
+      <label><input type="radio" name="u6w8q3" value="b"> B) Disable the specific abused tool only — stop the exfiltration without terminating the whole session</label>
+      <label><input type="radio" name="u6w8q3" value="c"> C) Terminate the entire session immediately regardless of impact</label>
+      <label><input type="radio" name="u6w8q3" value="d"> D) Increase logging verbosity and continue monitoring without taking action</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u6w8q3')">Check Answer</button>
   </div>
 </div>
 

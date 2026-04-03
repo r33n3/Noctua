@@ -1863,6 +1863,35 @@ Assertion: "Offers assistance AND mentions standard procedures"
 
     <span class="k">return</span> <span class="kc">False</span>
 </code></pre></div>
+<p><strong>Structural Controls: Tool Scoping, Memory Integrity, Schema Validation, and Egress</strong></p>
+<p>Input/output filtering catches attacks at the boundary. Structural controls limit what a compromised agent can do once it's past the boundary. These are design-time decisions — set them before deployment, enforce them at the framework level.</p>
+<p><strong>Tool Scoping</strong> — Explicit per-agent allowlists</p>
+<p>Each agent role defines exactly which tools it can call. A <code>SocAnalystAgent</code> needs <code>read_logs</code> and <code>query_database</code>, not <code>reset_credentials</code> or <code>delete_database</code>. Granting only the minimum tool set means a compromised analyst cannot pivot to remediation actions — any attempt triggers a permission violation before the model executes anything. See the ToolBoundary pattern in Day 2, and the Allowance Profile specification in Unit 7.</p>
+<p><strong>Memory Controls</strong> — Protecting agent state from poisoning</p>
+<p>Agent conversation history is a write surface. An attacker who can inject content into memory (via tool outputs, retrieved documents, or prior conversation turns) can modify the agent's operating context across future turns without triggering input validation.</p>
+<ul>
+<li><strong>Source provenance</strong>: Record the origin of every memory write (user input, tool result, retrieved chunk). Apply higher scrutiny to lower-trust sources.</li>
+<li><strong>Namespace segregation</strong>: User-provided content should not share a memory namespace with system facts. Trust boundaries must be explicit.</li>
+<li><strong>Pre-injection scanning</strong>: Before a retrieved chunk is inserted into context, run the same injection-detection pipeline used for user input. A poisoned document is an attack vector.</li>
+</ul>
+<p><strong>Schema Validation</strong> — Output structure as a behavioral constraint</p>
+<p>Requiring typed, validated JSON output does two things: it enforces data quality, and it constrains agent behavior. An agent that must produce a fixed schema cannot easily embed exfiltration payloads in free-text fields or deviate from its expected behavioral contract. Enforce this at the API level with <code>response_format={"type": "json_object"}</code> or Pydantic — not just at post-processing.</p>
+<div class="callout callout-key"><p><strong>Key Concept:</strong> A schema is a contract. If the agent's output doesn't conform, reject it before it reaches any downstream system. Schema violations are security signals — an agent producing unexpected output structure may be under attack.</p>
+</div>
+<p><strong>Egress Restrictions</strong> — Default-deny outbound</p>
+<p>Block all outbound network calls from agent processes except an explicit allowlist of approved destinations (your vector DB, logging endpoint, approved APIs). Linux network namespaces enforce this locally; VPC + firewall rules enforce it in cloud. Even if an attacker achieves arbitrary code execution inside your agent process, they cannot reach a C2 server if outbound is default-deny at the OS or network layer.</p>
+<p><strong>Containment Decision Framework</strong> — What to do when you detect an attack</p>
+<p>Detection is not enough. Blue teams need a pre-committed response playbook before any live exercise begins:</p>
+<ul>
+<li><strong>Alert only</strong>: Log and notify, continue processing. Use when confidence is low or operation is low-risk.</li>
+<li><strong>Rate-limit</strong>: Slow the attacker's iteration speed. Buys investigation time without disrupting legitimate users.</li>
+<li><strong>Block and hold</strong>: Reject the suspicious request, quarantine the session for review. Use at medium-high confidence.</li>
+<li><strong>Tool revocation</strong>: Disable the specific abused tool without taking the whole agent offline. Stops the bleeding while preserving forensic state.</li>
+<li><strong>Session termination</strong>: Kill the session entirely. Reserve for high-confidence active compromise where tool revocation isn't sufficient.</li>
+<li><strong>Human escalation</strong>: Page a human. Containment decisions with broad blast radius require human approval.</li>
+</ul>
+<div class="callout callout-key"><p><strong>Key Concept:</strong> Pre-commit to decision thresholds before the exercise. "We isolate on 3+ high-confidence signals within 5 minutes" is a policy. "We'll decide when we see it" is not.</p>
+</div>
 <hr/>
 <h3 id="day-2-hands-on-lab-blue-team-hardening-exercise">Day 2 — Hands-On Lab: Blue Team Hardening Exercise</h3>
 <h4 id="lab-objectives_2">Lab Objectives</h4>
