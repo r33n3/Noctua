@@ -75,7 +75,7 @@
 </li>
 </ol>
 <div class="callout callout-key"><p><strong>Real Case: LiteLLM Supply Chain Attack (March 24, 2026)</strong><br/>
-LiteLLM — 97M monthly downloads, used in MCP servers and AI agent frameworks — was compromised via a cascading supply chain attack. Attackers first compromised Trivy (LiteLLM's security scanner), extracted CI/CD credentials, then published malicious packages directly to PyPI. Discovery was accidental: an MCP plugin in Cursor triggered a fork bomb bug in the malware. <strong>Key lesson:</strong> the attack was discovered through a Noctua-relevant entry point (MCP plugins) and version pinning failed completely — only hash pinning (<code>--require-hashes</code>) would have caught it. See: <a href="../resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Full case study</a></p></div>
+LiteLLM — 97M monthly downloads, used in MCP servers and AI agent frameworks — was compromised via a cascading supply chain attack. Attackers first compromised Trivy (LiteLLM's security scanner), extracted CI/CD credentials, then published malicious packages directly to PyPI. Discovery was accidental: an MCP plugin in Cursor triggered a fork bomb bug in the malware. <strong>Key lesson:</strong> the attack was discovered through a Noctua-relevant entry point (MCP plugins) and version pinning failed completely — only hash pinning (<code>--require-hashes</code>) would have caught it. See the LiteLLM supply chain case study.</p></div>
 <ol>
 <li>
 <p><strong>Evaluation and Benchmark Manipulation</strong></p>
@@ -4000,7 +4000,7 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 </code></pre></div>
 <hr/>
 <h2 id="release-engineering-governance">Release Engineering Governance: The gstack Pattern</h2>
-<p>In Unit 4, you used gstack's <strong>/ship pipeline</strong> and pre-landing AI checklist to ship your prototype safely. This section extends those practices to production agentic systems — where the stakes are higher, the review gates are broader, and the audit trail becomes a compliance requirement. If you need a refresher on the /ship pipeline or the Boil the Lake principle, revisit <a href="s1-unit4.html#shipping-discipline">Unit 4: Shipping Discipline</a>.</p>
+<p>In Unit 4, you used gstack's <strong>/ship pipeline</strong> and pre-landing AI checklist to ship your prototype safely. This section extends those practices to production agentic systems — where the stakes are higher, the review gates are broader, and the audit trail becomes a compliance requirement. If you need a refresher on the /ship pipeline or the Boil the Lake principle, revisit <a href="s1-unit4.html#shipping-discipline-the-gstack-pattern">Unit 4: Shipping Discipline</a>.</p>
 <p>Production security systems don't just need working code — they need release discipline. This section draws from Garry Tan's <strong>gstack</strong> project to introduce three governance practices that complement the DevSecOps pipeline you've built in this unit.</p>
 <h3 id="role-based-review-gates">Role-Based Review Gates</h3>
 <p>gstack models the engineering organization as a set of review personas, each asking a different class of questions before code ships. In a security engineering context, these map directly to the stakeholders who must sign off on a production agentic system:</p>

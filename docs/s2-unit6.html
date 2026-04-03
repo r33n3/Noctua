@@ -110,7 +110,7 @@
 </li>
 </ol>
 <div class="callout callout-key"><p><strong>Case Study: LiteLLM Supply Chain Attack (March 24, 2026)</strong><br/>
-TeamPCP compromised Trivy (a security scanner used in LiteLLM's CI/CD), extracted PyPI publishing credentials, and published malicious LiteLLM versions 1.82.7/1.82.8 containing a credential stealer. The attack was discovered when an MCP plugin in Cursor pulled the package as a <em>transitive dependency</em> — the developer never installed it directly. Three attack vectors for this course: PeaRL (agent attacks its governance from inside), GTG-1002 (adversary weaponizes agent architecture), LiteLLM (supply chain compromise of the foundation agents run on). Full analysis: <a href="../resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study document</a>.</p></div>
+TeamPCP compromised Trivy (a security scanner used in LiteLLM's CI/CD), extracted PyPI publishing credentials, and published malicious LiteLLM versions 1.82.7/1.82.8 containing a credential stealer. The attack was discovered when an MCP plugin in Cursor pulled the package as a <em>transitive dependency</em> — the developer never installed it directly. Three attack vectors for this course: PeaRL (agent attacks its governance from inside), GTG-1002 (adversary weaponizes agent architecture), LiteLLM (supply chain compromise of the foundation agents run on). Full analysis: LiteLLM supply chain case study.</p></div>
 <ol>
 <li><strong>Model Extraction</strong> — Stealing the model itself or reverse-engineering its capabilities.
 <ul>
