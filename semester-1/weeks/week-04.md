@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 4 of 16**
 
+## Opening Hook
+
+> Most developers think "prompting" means writing clever instructions. It doesn't — it means engineering the context that shapes what a model can reason about. By the end of this week, you'll be able to look at any LLM interaction and immediately diagnose why it's working or failing. This skill underpins everything you'll build for the rest of the year.
+
 ## Learning Objectives
 
 - Understand the evolution from naive prompting to sophisticated context engineering
@@ -325,9 +329,20 @@ Here's how a production security analysis system works in 2026:
 
 6. **Human reviews and acts:** SOC analyst reads recommendation, calls jchen's manager, manager confirms: "Yes, jchen is in Singapore on business trip." Analyst closes incident with resolution: "Legitimate business travel."
 
+> **Knowledge Check**
+> Name the 5 components of context without looking at your notes. Then: you're building a SOC triage agent and the prompt is producing inconsistent severity classifications. Walk through each context component and identify which one is most likely to be the root cause.
+>
+> Claude: Wait for the student's answer. If they miss components, walk through each one. For the triage scenario, the most common root cause is insufficient system prompt structure or poor examples — push the student to reason through this rather than guessing.
+
 ---
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 4 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up.
+
 ## Day 2 — Lab
+
+> **Lab Guidance**
+> Claude: Walk the student through the context engineering lab. Before they run V1 vs. V2, ask them to predict which dimensions will show the biggest improvement. After each part, check in on what they're observing before moving to the next step.
 
 **Lab Goal:** Apply context engineering principles to build a reusable, high-quality system prompt for a security analyst agent. Empirically measure how engineering the context improves output quality versus a naive approach.
 
@@ -618,6 +633,9 @@ system prompt reference, CCT framework, and output format standards.
 
 ---
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the lab go? Anything that didn't work as expected?" Write to `.noctua/progress.md`: add a row to the "Week 4 — Day 2 Lab" table with today's date and confidence level.
+
 ## Deliverables
 
 > **Produce these deliverables using Claude Code.** Use the chat interface to reason through prompt design decisions, Code mode to build and test the RAG pipeline. The quality of your thinking matters — the mechanical production should be AI-assisted.
@@ -649,3 +667,35 @@ If the model drew a conclusion without citing a retrieved document, that's a V&V
 ---
 
 *Topics introduced this week that return later: MCP server configuration (Unit 2), RAG with vector stores (Unit 2 Week 8), CLAUDE.md as ongoing memory (evolves throughout the course).*
+
+---
+
+## Unit 1 Complete — End-of-Unit Review
+
+> **Claude: Unit 1 Review Flow**
+>
+> **1. Share the confidence summary openly:**
+> Read `.noctua/progress.md` and present the confidence table for all 4 weeks of Unit 1:
+> | Week | Day 1 Theory | Day 2 Lab | Notes |
+> |---|---|---|---|
+> | Week 1: CCT & First Agent | [confidence] | [confidence] | [notes] |
+> | Week 2: CCT Deep Dive | [confidence] | [confidence] | [notes] |
+> | Week 3: AI Landscape | [confidence] | [confidence] | [notes] |
+> | Week 4: Context Engineering | [confidence] | [confidence] | [notes] |
+>
+> **2. Collaborate on next steps:**
+> Ask: "Looking at this — are there any sections where you'd like to go deeper before we move to Unit 2 (MCP and tool design)?"
+> If confidence is Low anywhere, offer to revisit that section. If all High/Medium, recommend moving forward.
+>
+> **3. Review session tracking:**
+> If the student chooses to review any section, add a new row to that section's history table in `.noctua/progress.md` when the review session completes.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 1 that was confusing, missing, or that felt off? This is your chance to improve the course for the next cohort."
+> If substantive feedback: draft a GitHub issue together, then run:
+> `gh issue create --title "[Unit 1 feedback] <short title>" --body "<student feedback>" --label "student-feedback"`
+> Log the issue URL to `.noctua/progress.md` under GitHub Issues Created.
+>
+> **5. Update progress and move on:**
+> Update `.noctua/progress.md`: set Current Position to Week 5, Day 1 Theory (Semester 1, Unit 2).
+> Say: "Unit 1 complete. In Unit 2, we move into MCP — the integration layer that turns Claude from a chat tool into an active participant in your security infrastructure. Ready?"
