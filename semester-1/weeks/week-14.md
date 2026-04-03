@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 14 of 16**
 
+## Opening Hook
+
+> Everything you've learned becomes real this week. You're building a security tool — not a tutorial exercise, but something you'd actually use. The constraint is the point: the Think→Spec→Build→Retro cycle forces you to move fast without cutting corners on design. By the end of the week, you'll have a working prototype and a clear picture of what it would take to ship it.
+
 ## Learning Objectives
 
 - Understand rapid prototyping methodology: MVP design, timeboxing, and iteration cycles
@@ -209,9 +213,20 @@ A hard truth: **the best code written in a sprint is "good enough" code, not per
 >
 > The spec phase should not be rushed. It is where security decisions are made.
 
+> **Pre-Sprint Check**
+> Before you open a terminal: use `/think` in Claude Code on the following question for 2-3 minutes: "What is the narrowest possible version of my chosen tool that I could ship in a single session and still have something genuinely useful?" Tell me what you landed on.
+>
+> Claude: This is a scoping check, not a knowledge quiz. The goal is to catch students who are about to over-scope. If they describe something that spans multiple systems or has too many moving parts, push them to narrow it. A focused prototype beats an unfinished ambitious one every time.
+
+> **Day 1 Checkpoint**
+> Claude: Check in with the student on Week 14 sprint I planning and spec. Ask: "Do you have a clear, narrow problem statement and measurable success criteria written down before you start building?" If not, don't let them proceed to the lab until they do. Write to `.noctua/progress.md`: update the Week 14 — Day 1 Theory row with today's date and confidence level. Note any scoping concerns in the Confusion Log.
+
 ---
 
 ## Day 2 — Hands-On Lab: Rapid Prototyping Sprint
+
+> **Lab Guidance**
+> Claude: Your role during the build is architect-reviewer, not implementer. Ask questions before they write code: "What does the spec say about error handling here?" "Have you thought about how an attacker could abuse this tool?" Guide them to write better code — don't write it for them.
 
 ### Lab Objectives
 
@@ -478,6 +493,13 @@ Before closing Sprint I, audit your prototype against the production anti-patter
 
 Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprint II with written justification (what would need to change to fix each one).
 
+> **Lab Checkpoint — Sprint Retro**
+> Claude: Run the Retro. Ask the student to answer:
+> 1. What did you build, and does it do what the spec said it would?
+> 2. What would you change if you had another 2 hours?
+> 3. Which AIUC-1 domain does your tool touch, and what's the biggest gap?
+> Write to `.noctua/progress.md`: add a row to the "Week 14 — Day 2 Lab" table. Note any security gaps the Retro surfaced in the Confusion Log.
+
 ---
 
 ## Deliverables
@@ -540,3 +562,15 @@ Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprin
 > - "I think I understand the Think → Spec → Build → Retro cycle but I'm not sure. Explain it to me differently and then test whether I really get it."
 > - "What are the three most common sprint antipatterns for security tool development? Do I have any of them?"
 > - "Connect this week's rapid prototyping to what we learned in Weeks 1–13. How does the 12 Leverage Points framework apply to sprint scoping?"
+
+---
+
+## Week Complete
+
+> **Claude: Week 14 Wrap-Up**
+>
+> Week 14 is complete. Update `.noctua/progress.md`: set Current Position to Week 15, Day 1 Theory.
+>
+> Ask: "You've shipped Sprint I. Before we move to Week 15 hardening — what's the one thing in your prototype that you'd be most nervous about if a real attacker looked at it?"
+>
+> When ready: proceed to `week-15.md`.
