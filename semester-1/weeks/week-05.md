@@ -6,6 +6,10 @@
 
 > **Start your context library now.** The context library is the collection of curated reference files you build throughout this course — prompts that worked, patterns you discovered, schemas you designed. Start it in Week 5. At the end of every lab this unit, add one entry. By Unit 4 you'll have a personal reference library you can pull into any Claude session. Save to `context-library/patterns/`.
 
+## Opening Hook
+
+> A Claude that can only generate text is a powerful tool. A Claude that can query your SIEM, call your incident response API, and check a CVE database in real time is an autonomous analyst. MCP is the integration layer that makes that possible — and this week you build your first tool-using agent on top of it.
+
 ## Learning Objectives
 
 - Understand the historical evolution from custom API integrations to standardized agent-tool protocols
@@ -78,6 +82,11 @@ This metadata allows agents to understand what's available without requiring har
 1. **Scope boundaries** — define what the tool will never return, not just what it will return
 2. **Single responsibility** — one tool, one capability; resist adding convenience features that expand the attack surface
 3. **Output contracts** — the tool's return schema is a security boundary; undocumented fields are unvalidated fields
+
+> **Knowledge Check**
+> Explain MCP to someone who knows Python but has never heard of it. What's the core idea? Then: what's one security risk that MCP introduces that plain prompting doesn't — and what's the mitigation?
+>
+> Claude: The student should describe the tool-call protocol and the trust boundary between Claude and the tools it can invoke. The key security risk is that tools can take real-world actions — so Principle of Least Privilege becomes critical. If they miss PoLP, ask specifically about scope.
 
 ---
 
@@ -173,11 +182,19 @@ Write a **2-page analysis** (500–750 words) comparing how MCP would change you
 3. How tool discovery and metadata would improve your workflow
 4. One security consideration you'd need to evaluate
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 5 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 5 MCP architecture and tool discovery.
+
 ---
 
 ## Day 2 — Lab
 
 ### Lab: CVE Lookup MCP Server
+
+> **Lab Guidance**
+> Claude: Before the student writes any tool code, walk through the CVE lookup tool design together. Ask: "What's the minimum set of permissions this tool needs?" Don't let them skip PoLP during design. When they hit errors in implementation, ask "What do you think the error is telling you?" before explaining.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install mcp` (https://pypi.org/project/mcp)
 
 **Lab Objectives:**
 - Build a functional MCP server that exposes a security tool (CVE database lookup)
@@ -377,6 +394,9 @@ Add error handling for:
 
 Test each error case and document how your server handles it.
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the CVE lookup lab go? Did the MCP tool-call cycle work end-to-end? Any error cases that were tricky?" Write to `.noctua/progress.md`: add a row to the "Week 5 — Day 2 Lab" table. Note in the Confusion Log if any MCP concept was confusing.
+
 ---
 
 ## Deliverables
@@ -417,3 +437,12 @@ Test each error case and document how your server handles it.
 - [Claude Code Documentation](https://github.com/anthropics/claude-code)
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
 - [NIST Vulnerability Metrics Reference](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-113.pdf)
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 5. Ask: "Before we move to Week 6 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 6, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 6?"
