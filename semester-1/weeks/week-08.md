@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 8 of 16**
 
+## Opening Hook
+
+> Claude's training cutoff is a hard wall — your organization's runbooks, security policies, and incident history don't exist on the other side of it. RAG is how you bring proprietary knowledge into every Claude interaction, and this week you build the full pipeline: ingest, chunk, embed, retrieve, and generate with source attribution. By the end, you'll have a security knowledge assistant that cites exactly where every answer came from.
+
 ## Learning Objectives
 
 - Understand RAG architecture and why it improves LLM accuracy for domain-specific questions
@@ -45,6 +49,11 @@ Example decision matrix for Meridian Financial SOC:
 - "What does our IR policy say about breach notification timelines?" → RAG (policy document)
 - "What alerts fired in the last hour?" → MCP tool (live SIEM query)
 - "Is this log format from our custom auth system?" → Fine-tuning (internal format recognition)
+
+> **Knowledge Check**
+> Your SOC needs to answer two types of questions: "What does our IR policy say about breach notification?" and "What alerts fired in the last hour?" Which approach (RAG, MCP tool, or fine-tuning) do you use for each — and why? What's the main failure mode of the approach you didn't choose for question 1?
+>
+> Claude: RAG for the policy question (static document, needs citation), MCP tool for the live alerts (requires real-time query). The main failure mode for RAG on question 1 is staleness — an IR policy not updated in 6 months can produce wrong guidance. If the student conflates the approaches, walk through the decision criteria from the table.
 
 ---
 
@@ -183,6 +192,9 @@ Instructions:
 
 > **Production gap warning:** This knowledge base is easy to make stale. A threat intel entry from 6 months ago that wasn't updated can produce a wrong "no malicious activity" conclusion. Build freshness monitoring into your RAG pipeline: alert when sources haven't been updated on their expected schedule.
 
+> **Day 1 Checkpoint**
+> Claude: Ask: "Which stage of the RAG pipeline do you feel least confident designing — ingestion, chunking, retrieval, or source attribution?" Note the answer. Write to `.noctua/progress.md`: add a row to the "Week 8 — Day 1 Theory" table. Append to Confusion Log if a specific stage was unclear.
+
 ---
 
 ### AIUC-1 Domain A: Data & Privacy in RAG Systems
@@ -215,6 +227,11 @@ Design a RAG system for a security use case (3-4 pages, 1200-1500 words):
 ## Day 2 — Lab
 
 ### Lab: RAG-Powered Security Knowledge Assistant
+
+> **Lab Guidance**
+> Claude: Before the student writes Part 3 code, work through Part 2 design questions together. Ask: "What chunking strategy would you use for the IR policy vs. the threat intel profile — and why?" Don't skip the design step. In Part 4, make sure they compare RAG vs. unaugmented outputs before moving to metrics.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install chromadb sentence-transformers` (https://www.trychroma.com / https://sbert.net)
 
 **Lab Objectives:**
 - Build a working RAG system with a security knowledge base
@@ -376,6 +393,9 @@ For each question you asked:
 
 Track citation fidelity manually: read 2-3 citations from each answer. Does the source text actually say what the model claims?
 
+> **Lab Checkpoint**
+> Claude: Ask: "What retrieval precision did you get on the top-5 results? Did any citation claim something the source text didn't actually say?" Write to `.noctua/progress.md`: add a row to the "Week 8 — Day 2 Lab" table. Note any citation fidelity issues in the Confusion Log.
+
 ---
 
 ## Deliverables
@@ -400,3 +420,33 @@ By now you should have patterns in `context-library/patterns/` from all four wee
 4. **`patterns/rag-pipeline/retrieval-pattern.md`** — your chunking strategy and retrieval config
 
 These patterns are your professional playbook. In Unit 3, you'll audit the security properties of everything you built in Unit 2.
+
+---
+
+## Unit 2 Complete — End-of-Unit Review
+
+> **Claude: Unit 2 Review Flow**
+>
+> **1. Share the confidence summary openly:**
+> Read `.noctua/progress.md` and present the confidence table for Unit 2 (weeks 5-8):
+> | Week | Day 1 Theory | Day 2 Lab | Notes |
+> |---|---|---|---|
+> | Week 5: MCP Architecture | [confidence] | [confidence] | [notes] |
+> | Week 6: Secure Tool Design | [confidence] | [confidence] | [notes] |
+> | Week 7: Structured Outputs | [confidence] | [confidence] | [notes] |
+> | Week 8: RAG | [confidence] | [confidence] | [notes] |
+>
+> **2. Collaborate on next steps:**
+> Ask: "Unit 2 covered a lot of infrastructure — MCP, structured outputs, RAG. Are there any pieces you want to revisit before we move to Unit 3 (ethical AI and security governance)?"
+>
+> **3. Review session tracking:**
+> If reviewing, add a new row to that section's history table in `.noctua/progress.md`.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 2 that was confusing, missing, or that felt off?"
+> If substantive: `gh issue create --title "[Unit 2 feedback] <short title>" --body "<feedback>" --label "student-feedback"`
+> Log the URL to `.noctua/progress.md`.
+>
+> **5. Update progress:**
+> Set Current Position to Week 9, Day 1 Theory (Unit 3: Ethical AI & Security Governance).
+> Say: "Unit 2 complete. In Unit 3, we audit the security and ethical properties of everything you just built. Ready?"
