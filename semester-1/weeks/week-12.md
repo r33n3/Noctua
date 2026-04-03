@@ -723,4 +723,6 @@ Unit 4 applies everything you've built under the ethical constraints you just de
 >
 > **5. Update progress:**
 > Set Current Position to Week 13, Day 1 Theory (Unit 4: Rapid Prototyping).
+> Mark `student-state/progress.md`: check all completed stages for "S1 Unit 3" row.
+> Prompt: "Write a reflection entry in `student-state/reflection-log.md` using this prompt: *How has building governance artifacts (audit, policy, bias report) changed how you design systems? Cite one specific design decision you would make differently now.*"
 > Say: "Unit 3 complete. In Unit 4, we shift from governance to execution — rapid prototyping with Claude Code, worktrees, and subagents. Ready?"

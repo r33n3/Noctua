@@ -449,4 +449,6 @@ These patterns are your professional playbook. In Unit 3, you'll audit the secur
 >
 > **5. Update progress:**
 > Set Current Position to Week 9, Day 1 Theory (Unit 3: Ethical AI & Security Governance).
+> Mark `student-state/progress.md`: check all completed stages for "S1 Unit 2" row.
+> Prompt: "Write a reflection entry in `student-state/reflection-log.md` using this prompt: *What changed about how you think about tool definitions after building and attacking your own MCP server? What would you do differently in Week 5 if you started over?*"
 > Say: "Unit 2 complete. In Unit 3, we audit the security and ethical properties of everything you just built. Ready?"

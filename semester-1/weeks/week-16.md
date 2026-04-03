@@ -460,4 +460,6 @@ The context library you built in Semester 1 is your starting point. Every patter
 >
 > **5. Update progress and transition:**
 > Update `.noctua/progress.md`: set Current Position to Semester 2, Unit 5, Week 1, Day 1 Theory.
+> Mark `student-state/progress.md`: check all completed stages for "S1 Unit 4" row.
+> Prompt: "Write a final Semester 1 reflection entry in `student-state/reflection-log.md` using this prompt: *Looking back at Unit 1 Week 1 — what did you think agentic systems could do? What do you know now that you didn't know then? What's one thing you'd tell yourself at the start of the semester?*"
 > Say: "Semester 1 complete. In Semester 2 we move from building individual agents to orchestrating agent teams — and from defending our own systems to understanding how adversaries use AI against us. Ready?"

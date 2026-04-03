@@ -698,4 +698,6 @@ If the model drew a conclusion without citing a retrieved document, that's a V&V
 >
 > **5. Update progress and move on:**
 > Update `.noctua/progress.md`: set Current Position to Week 5, Day 1 Theory (Semester 1, Unit 2).
+> Mark `student-state/progress.md`: check all completed stages for "S1 Unit 1" row (Read, Explained, Implemented, Tested, Reviewed, Reflected, Completed).
+> Prompt: "Write a reflection entry in `student-state/reflection-log.md` using this prompt: *What's the difference between using AI as a tool and using AI as a thinking partner? Give a specific example from Unit 1 where the distinction mattered.*"
 > Say: "Unit 1 complete. In Unit 2, we move into MCP — the integration layer that turns Claude from a chat tool into an active participant in your security infrastructure. Ready?"
