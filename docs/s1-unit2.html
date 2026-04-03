@@ -39,19 +39,6 @@
 <p>Anthropic, in collaboration with community partners, recognized this fragmentation as a critical blocker for enterprise AI adoption. In late 2024, they released the <strong>Model Context Protocol (MCP)</strong>, an open standard that fundamentally changed how agents discover, access, and use external tools. Rather than building LLM-specific integrations, teams now build once and connect to any LLM that supports MCP.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> MCP solves the "integration sprawl" problem by establishing a standardized, transport-agnostic interface for agent-tool communication. This is analogous to how HTTPS became the standard for web security rather than requiring bespoke encryption for every web application.</p>
 </div>
-<div class="callout callout-key"><p><strong>MCP through an OOP lens.</strong></p>
-<table>
-<thead><tr><th>OOP concept</th><th>MCP equivalent</th></tr></thead>
-<tbody>
-<tr><td>Class</td><td>MCP Server</td></tr>
-<tr><td>Method</td><td>Tool</td></tr>
-<tr><td>Instance</td><td>Active session</td></tr>
-<tr><td>Interface/contract</td><td>Tool schema</td></tr>
-<tr><td>Access modifier</td><td>Permission scope</td></tr>
-</tbody>
-</table>
-<p>If you've built object-oriented systems, MCP follows the same patterns — with one critical difference: <strong>the agent controls the call graph.</strong> In OOP, you write the code that calls methods. In an agent system, Claude decides which tools to call and in what order. Your tool implementations are deterministic; the orchestration layer is not. Design tools as if the calling sequence is adversarial.</p>
-</div>
 <h4 id="the-mcp-architecture-three-layers-of-control">The MCP Architecture: Three Layers of Control</h4>
 <p>MCP defines three architectural components:</p>
 <ol>
@@ -321,8 +308,8 @@ npm install axios  <span class="c1"># for API requests</span>
 <p>This is non-trivial infrastructure. In production, you'd deploy it. But for learning?</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Building a real MCP server teaches you infrastructure thinking. But the <em>logic</em> of the server (fetch CVE from NVD, parse CVSS, extract affected products) is the same whether you use MCP, FastAPI, or direct API calls.</p>
 </div>
-<p><strong>Claude Code Workflow: Query External APIs Through Claude</strong></p>
-<p>Rather than building and deploying an MCP server, use Claude Code to teach the concept:</p>
+<p><strong>Claude Code Workflow: Design the Server Before You Finish the Build</strong></p>
+<p>You are still building a real MCP server in the lab. Use Claude Code here to reason through the server architecture before or during implementation, not instead of implementation:</p>
 <p>Claude Code Prompt:</p>
 <div class="codehilite"><pre><span></span><code>Teach me how an MCP server would work for CVE lookups. Walk through the architecture:
 
@@ -352,15 +339,15 @@ Then show me: If Claude asked for CVE-2023-44487, what would the MCP server retu
 <li>"How would you implement error handling for timeouts?"</li>
 <li>"What JSON schema would Claude see so it knows what parameters to pass?"</li>
 </ul>
-<p><strong>Why Claude Code instead of deploying a real MCP server:</strong></p>
+<p><strong>Why use Claude Code during the build:</strong></p>
 <ul>
-<li>Learn the <em>logic</em> without infrastructure overhead</li>
-<li>See the entire flow (validation → API call → parsing → response) in minutes</li>
-<li>No deployment, no async debugging, no SDK dependencies</li>
-<li>Easy to iterate: "What if we also needed to fetch exploit PoCs?"</li>
-<li>Quick path to understanding before building production code</li>
+<li>Design the <em>logic</em> before you write infrastructure code</li>
+<li>See the entire flow (validation → API call → parsing → response) clearly before debugging implementation details</li>
+<li>Iterate on schemas, parsing rules, and failure handling faster</li>
+<li>Use the prompt outputs as scaffolding for the real server you are building in the Week 5 lab</li>
+<li>Reduce blind trial-and-error when you move into async code and MCP registration</li>
 </ul>
-<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Once you understand the logic in Claude Code, building the actual Python/MCP server is straightforward. You've already designed it. You're just translating your design into infrastructure code.</p>
+<div class="callout callout-tip"><p><strong>Pro Tip:</strong> Treat Claude Code as your design and debugging partner. First design the tool flow in natural language, then translate it into the real Python/MCP server from the lab. The implementation is still required.</p>
 </div>
 <p><strong>When to Build a Real MCP Server:</strong></p>
 <p>Build an actual MCP server when:</p>

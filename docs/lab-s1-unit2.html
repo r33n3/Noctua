@@ -91,11 +91,20 @@
         <div class="step-title">Step 1: Set up MCP Python development environment</div>
         <div class="step-desc"><em>(Theory: Week 5 Day 1 — MCP Architecture)</em></div>
       </div></label>
-      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit2/week5/cve-mcp
+      <div class="code-block"><pre><code># macOS / Linux
+mkdir -p ~/noctua-labs/unit2/week5/cve-mcp
 cd ~/noctua-labs/unit2/week5/cve-mcp
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+pip install mcp httpx pydantic
+
+# Windows PowerShell
+mkdir $HOME\noctua-labs\unit2\week5\cve-mcp -Force
+cd $HOME\noctua-labs\unit2\week5\cve-mcp
+python -m venv .venv
+.venv\Scripts\Activate.ps1
 pip install mcp httpx pydantic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>Get an NVD API key before Step 6.</strong> Without one, the NVD API rate-limits at 5 requests per 30 seconds — easy to hit during testing. Registration is free and instant: <a href="https://nvd.nist.gov/developers/request-an-api-key" style="color:#d4a017;">nvd.nist.gov/developers/request-an-api-key</a>. Store the key as an environment variable: <code>export NVD_API_KEY=your-key-here</code> and add it to your <code>.venv/bin/activate</code> or a <code>.env</code> file. Your server reads it with <code>os.environ.get("NVD_API_KEY")</code> and passes it as the <code>apiKey</code> query parameter.</p></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>Get an NVD API key before Step 6.</strong> Without one, the NVD API rate-limits at 5 requests per 30 seconds — easy to hit during testing. Registration is free and instant: <a href="https://nvd.nist.gov/developers/request-an-api-key" style="color:#d4a017;">nvd.nist.gov/developers/request-an-api-key</a>. Store the key as an environment variable: <code>export NVD_API_KEY=your-key-here</code> (macOS/Linux) or <code>$env:NVD_API_KEY="your-key-here"</code> (PowerShell), or place it in a <code>.env</code> file. Your server reads it with <code>os.environ.get("NVD_API_KEY")</code> and passes it as the <code>apiKey</code> query parameter.</p></div>
     </div>
 
     <div class="lab-step" id="step-w5-2">
@@ -386,8 +395,8 @@ claude mcp list
 
 <div class="callout callout-tip">
   <strong>Parallel Lab — Week 6 Day 2: Claude Code Skill Building</strong>
-  <p>This lab covers the MCP tool design track for Week 6. The theory file (<code>semester-1/weeks/week-06.md</code> Day 2) covers a parallel skills-building lab: creating the <code>/tool-select</code> and <code>/audit-aiuc1</code> Claude Code skills that you will use throughout the rest of the course.</p>
-  <p>Both labs are part of Week 6 — complete the multi-tool MCP server lab here first, then follow the Day 2 skill-building lab in <code>week-06.md</code>. The <code>/audit-aiuc1</code> skill reappears as a required deliverable in Sprint I (Week 14), so build it this week.</p>
+  <p>This lab covers the MCP tool design track for Week 6. Week 6 also includes a parallel skills-building track focused on creating the <code>/tool-select</code> and <code>/audit-aiuc1</code> Claude Code skills that you will use throughout the rest of the course.</p>
+  <p>Both tracks are part of Week 6 — complete the multi-tool MCP server lab here first, then follow the Week 6 skill-building instructions in the course materials. The <code>/audit-aiuc1</code> skill reappears as a required deliverable in Sprint I (Week 14), so build it this week.</p>
 </div>
 
 <div class="quiz-block" id="quiz-w6">
@@ -436,9 +445,20 @@ claude mcp list
 <div class="callout callout-tip">
   <strong>Quick connectivity check before Week 6:</strong> Run your Week 5 server verification before writing any Week 6 code. If your <code>query_cve</code> tool does not respond, fix it before the Week 6 steps — Week 6 builds on a working Week 5 server, not a broken one.
   <div class="code-block" style="margin-top:10px;"><pre><code># Verify Week 5 server is alive before starting Week 6
+# macOS / Linux
 cd ~/noctua-labs/unit2/week5/cve-mcp
 source .venv/bin/activate
 python3 -c "
+import asyncio
+from server import query_cve
+result = asyncio.run(query_cve('CVE-2021-44228'))
+print('Week 5 server OK:', 'error' not in result or result.get('code') == 'rate_limited')
+"
+
+# Windows PowerShell
+cd $HOME\noctua-labs\unit2\week5\cve-mcp
+.venv\Scripts\Activate.ps1
+python -c "
 import asyncio
 from server import query_cve
 result = asyncio.run(query_cve('CVE-2021-44228'))
