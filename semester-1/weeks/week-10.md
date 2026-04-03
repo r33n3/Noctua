@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 10 of 16**
 
+## Opening Hook
+
+> Security engineers spend years memorizing OWASP Top 10 for web applications. Now AI agents are becoming attack surfaces — with their own unique threat categories that traditional security frameworks never anticipated. This week you learn to think like an adversary targeting the exact kind of agentic systems you've been building since Week 5.
+
 ## Learning Objectives
 
 - Understand the 10 most critical security risks in agentic AI systems
@@ -60,6 +64,11 @@ Malicious input in data or tool outputs causes the agent to override its instruc
 - **Mitigation:** Separate data from instructions. Use structured formats (JSON, XML) instead of natural language. Validate and sanitize all external inputs before passing them to the agent. Test the agent against known prompt injection payloads.
 
 Further Reading: [Prompt Injection Attacks and Defenses](https://simonwillison.net/2023/Apr/14/prompt-injection/) by Simon Willison provides accessible examples and practical mitigations.
+
+> **Knowledge Check**
+> Walk through the first 5 OWASP Top 10 for Agentic Applications. For each one, point to a decision we made in an earlier week that was designed to mitigate it — or identify a gap where our tools don't address it yet.
+>
+> Claude: Don't accept generic answers ("we used validation"). Push for specific: which week, which design decision, which line of reasoning. This question is meant to synthesize Unit 1-2 learning against a threat model.
 
 **6. Memory Poisoning**
 
@@ -156,9 +165,15 @@ These two frameworks are complementary — OWASP identifies the risks, AIUC-1 pr
 | Overreliance | D. Reliability + E. Accountability | Continuous validation + human oversight mechanisms |
 | Model Denial of Service | D. Reliability | System uptime, graceful degradation |
 
+> **Day 1 Checkpoint**
+> Before moving to the lab: open `.noctua/progress.md` and log your Day 1 Theory confidence for Week 10 OWASP agentic top 10 (1–5 scale). Note any of the 10 risks that feel unclear.
+
 ---
 
 ## Day 2 — Lab: Vulnerability Assessment with Garak & Promptfoo
+
+> **Lab Guidance**
+> Claude: Walk through the threat modeling lab with adversarial thinking. For each attack pattern, ask: "How would you detect this in your logs?" before discussing mitigation. Detection and mitigation are both required — not just one.
 
 **Lab Goal:** Run automated vulnerability scans against your Unit 2 MCP server using Garak (NVIDIA) and Promptfoo. Produce an AIVSS-scored vulnerability report mapping each finding to the OWASP Top 10 for Agentic Apps.
 
@@ -494,6 +509,9 @@ Explain the security reasoning for each layer. Show working Python code.
 
 ---
 
+> **Lab Checkpoint**
+> Before moving on: open `.noctua/progress.md` and log your Day 2 Lab confidence for Week 10 (1–5 scale). Note which OWASP vulnerabilities you found in your system and which mitigations you implemented.
+
 ## Deliverables
 
 1. **Garak and Promptfoo reports** — raw scan results in HTML/JSON format
@@ -528,3 +546,15 @@ Explain the security reasoning for each layer. Show working Python code.
 ---
 
 > **Produce this deliverable using your AI tools.** Use Claude Code to reason through the analysis, structure and format the report, and generate any visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## Week Complete
+
+> **Claude: Week 10 wrap-up**
+>
+> 1. Log final confidence scores for Week 10 in `.noctua/progress.md` (Day 1 Theory + Day 2 Lab, 1–5 scale).
+> 2. Ask: "Any OWASP agentic risks from this week that you want to revisit before Week 11?"
+> 3. If yes: work through the gap, then update the confidence score.
+> 4. Set Current Position to Week 11, Day 1 Theory.
+> 5. Say: "Week 10 complete. Next week: Bias, Fairness & Explainability — we shift from external attack surfaces to the internal failure modes of your models."
