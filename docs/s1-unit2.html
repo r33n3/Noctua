@@ -163,8 +163,6 @@
 <li><strong>Long-term stability</strong> — LF governance ensures MCP won't be abandoned or pivoted by a commercial entity</li>
 <li><strong>Extensibility process</strong> — New security features can be proposed and standardized across the ecosystem</li>
 </ol>
-<div class="callout callout-key"><p><strong>OPA, Cedar, and PeaRL — three layers, not three alternatives.</strong> OPA (Open Policy Agent) is the policy engine: it evaluates Cedar or Rego policy documents against a request and returns allow/deny. PeaRL is the governance framework built on top of OPA: it defines the structure of Allowance Profiles, the lifecycle of agent identities, and the audit trail that feeds your compliance reports. You write Cedar policy. OPA enforces it. PeaRL orchestrates the whole system. These are three layers, not three alternatives. Treating them as interchangeable — or skipping one — produces an agent deployment with governance gaps that only appear under adversarial conditions.</p>
-</div>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> How would your organization's AI governance policies change if your agent infrastructure depended on a proprietary tool protocol vs. an open standard like MCP?</p>
 </div>
 <div class="callout"><p><strong>The service layer pattern.</strong> Your MCP server is not the business logic — it's a translation layer. The pattern: your REST API or Python service holds the core logic; the MCP server is a thin wrapper that translates between Claude's tool call format and your service's interface. This separation matters for security: you can add rate limiting, authentication, and audit logging at the MCP layer without touching the core logic, and you can test the core logic independently.</p>
