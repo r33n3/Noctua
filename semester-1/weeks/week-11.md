@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 11 of 16**
 
+## Opening Hook
+
+> A triage model that fires 40% more often on traffic from certain geographic regions isn't a technical problem — it's a legal and ethical crisis waiting to happen. Bias in security AI is real, measurable, and preventable. This week you learn to detect it, quantify it, and mitigate it using tools your SOC can actually deploy.
+
 ## Learning Objectives
 
 - Understand how bias manifests in security AI systems and causes real harm
@@ -107,6 +111,11 @@ If the model predicts "80% chance of threat" for Group A instances and
 "80% chance of threat" for Group B instances, both should have similar
 true positive rates (~80%).
 ```
+
+> **Knowledge Check**
+> Define "disparate impact" in the context of an AI-driven security triage system. Describe what a test for it would look like — what data would you collect, what metric would you compute, and what threshold would you set to flag a problem?
+>
+> Claude: The student should describe running the same alert type through the triage system for inputs from different geographic/demographic contexts and measuring false positive rates across groups. The threshold question is genuinely debatable — accept any defensible answer but push for a specific number or criteria, not "it depends."
 
 ### Explainability Techniques
 
@@ -231,9 +240,17 @@ for group_B: threshold = 0.6 (higher threshold means fewer positives)
 
 The most robust defense: require human review for high-stakes decisions and provide appeals mechanisms. Humans can catch unfair patterns and correct them.
 
+> **Day 1 Checkpoint**
+> Before moving to the lab: open `.noctua/progress.md` and log your Day 1 Theory confidence for Week 11 bias, fairness, explainability (1–5 scale). Note which fairness metric — disparate impact, equalized odds, or calibration — felt least intuitive.
+
 ---
 
 ## Day 2 — Lab: Bias Detection with IBM AI Fairness 360
+
+> **Lab Guidance**
+> Claude: Before running the AIF360 lab, ask the student: "In your hypothetical SOC triage system, which demographic or geographic attribute are you most worried about bias on — and why?" Their answer should shape which fairness metrics they prioritize in the lab.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install aif360` (https://pypi.org/project/aif360)
 
 **Lab Goal:** Apply IBM AI Fairness 360 to analyze a simulated security threat-scoring dataset for demographic bias. Produce fairness metrics, visualizations, and a bias remediation plan.
 
@@ -388,6 +405,9 @@ For Week 11, start with LIME: it's easier to understand and explains the one pre
 
 ---
 
+> **Lab Checkpoint**
+> Before moving on: open `.noctua/progress.md` and log your Day 2 Lab confidence for Week 11 (1–5 scale). Note which bias mitigation technique you applied and whether the fairness metrics improved.
+
 ## Deliverables
 
 1. **`bias_analysis.py`** + **`threat_scores.csv`** — analysis code and synthetic dataset
@@ -429,3 +449,15 @@ For Week 11, start with LIME: it's easier to understand and explains the one pre
 ---
 
 > **Produce this deliverable using your AI tools.** Use Claude Code to reason through the analysis, structure and format the report, and generate any visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+
+---
+
+## Week Complete
+
+> **Claude: Week 11 wrap-up**
+>
+> 1. Log final confidence scores for Week 11 in `.noctua/progress.md` (Day 1 Theory + Day 2 Lab, 1–5 scale).
+> 2. Ask: "Any fairness metrics, LIME/SHAP concepts, or bias mitigation techniques you want to revisit before Week 12?"
+> 3. If yes: work through the gap, then update the confidence score.
+> 4. Set Current Position to Week 12, Day 1 Theory.
+> 5. Say: "Week 11 complete. Next week: Privacy, Data Governance & Cedar — Unit 3's final week, where we turn governance concepts into executable policy."
