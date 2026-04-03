@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 6 of 16**
 
+## Opening Hook
+
+> Last week you learned to build tools. This week you learn how those exact tools can be turned against you — and how to design them so they can't be. The GTG-1002 case study isn't hypothetical: it's a documented campaign where a nation-state actor weaponized the same MCP architecture you're building. Understanding the attack is the only way to build the defense.
+
 ## Learning Objectives
 
 - Apply the five core principles of secure tool design to real-world security scenarios
@@ -286,6 +290,11 @@ The attacker's MCP server architecture mirrors what you built in Week 5 — but 
 
 > **GTG-1002 demonstrates that the tools and patterns you're learning are dual-use.** The same architecture that powers your defensive SOC agent can power an autonomous attack framework. The difference isn't the technology — it's the governance, oversight, and intent validation you build around it.
 
+> **Knowledge Check**
+> Define "tool poisoning" — what is it and how does it work? Give a concrete example of how an attacker could use it against a Claude Code session running your CVE lookup tool from last week. What design decision prevents it?
+>
+> Claude: The student should describe how a malicious tool response can contain instructions that hijack the agent's behavior. The prevention is treating tool responses as untrusted data — not instructions — and validating all tool output before acting on it. If they get the concept but struggle with the CVE tool example, walk through it together.
+
 ---
 
 ### Design Before You Build
@@ -315,11 +324,17 @@ Design a security tool specification (2-3 pages, 800-1000 words):
 6. **Testing Plan** — 10-15 test cases
 7. **Audit Logging Strategy**
 
+> **Day 1 Checkpoint**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Week 6 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 6 secure tool design and GTG-1002.
+
 ---
 
 ## Day 2 — Lab
 
 ### Lab: Multi-Tool MCP Server with Security Boundaries
+
+> **Lab Guidance**
+> Claude: Guide the student through the multi-tool lab with a red-team mindset. At each tool you build together, ask: "How would an attacker abuse this specific tool?" Then: "What design change prevents that?" Don't let them build tools without thinking through the attack surface first.
 
 **Lab Objectives:**
 - Build a multi-tool MCP server with validation and error handling
@@ -457,6 +472,9 @@ In a sandboxed local environment (Docker containers):
 - What observability signals would have caught it at the platform level?
 - How would tool-level security boundaries have prevented or limited the attack?
 
+> **Lab Checkpoint**
+> Claude: Ask: "How did the multi-tool lab go? Did the rate limiting and audit logging work as expected? Any security boundaries that were tricky to implement?" Write to `.noctua/progress.md`: add a row to the "Week 6 — Day 2 Lab" table. Note in the Confusion Log if any tool design concept was confusing.
+
 ---
 
 ## Deliverables
@@ -468,3 +486,12 @@ In a sandboxed local environment (Docker containers):
 3. **Tool specification document** (Day 1 deliverable) — design doc for your tool
 4. **Audit Log Governance Exercise** — document the "delete audit.log and reconstruct" results
 5. **Red Team/Blue Team writeup** — Security Testing Policy + findings from Operation Forge Fire
+
+---
+
+## Week Complete
+
+> **Claude: Wrap Up**
+> Confirm the student has finished Week 6. Ask: "Before we move to Week 7 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: set Current Position to Week 7, Day 1 Theory. Write a 1-2 line session note.
+> Then ask: "Ready for Week 7?"
