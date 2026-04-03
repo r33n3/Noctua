@@ -1,309 +1,542 @@
-# Week 14: Rapid Prototyping Sprint I
+# Week 14: Rapid Prototyping Sprint I — From Concept to Demo in 3 Hours
 
 **Semester 1 | Week 14 of 16**
 
 ## Learning Objectives
 
-- Apply defense strategies from Week 8 theory to Week 13 empirical findings
-- Experience cross-team red teaming: attack another team's prototype while defending your own
-- Implement a four-layer defense model based on the PeaRL case study
-- Measure attack reduction rate before and after defense improvements
-- Report findings using AA-TTP codes
-- Experience the full attacker/defender cycle that Semester 2 will build on
+- Understand rapid prototyping methodology: MVP design, timeboxing, and iteration cycles
+- Apply Collaborative Critical Thinking (CCT) to scope security problems quickly
+- Measure security tools using mean-time metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)
+- Identify when a prototype is "done enough" to ship
+- Accelerate delivery by ruthlessly eliminating non-essential features
 
 ---
 
-## Day 1 — Theory
+## Day 1 — Theory & Foundations
 
-### The Four-Layer Defense Model
+### Rapid Prototyping Methodology
 
-From Week 8's defense in depth and Week 13's PeaRL attack chain, four layers stop most agent attacks:
+Three hours. That's your timeline to go from "we have a problem" to "here's a working solution." This is not a thought experiment — it's a real methodology used in modern incident response, threat hunting teams, and startup security. The key: **ruthless prioritization**.
 
-**Layer 1 — Input Filtering (stops AA-INIT):**
-- Schema validation on all tool inputs
-- Injection pattern detection before inputs reach the agent
-- Structural constraints: field types, lengths, allowed characters
+In a 110-minute sprint, you have roughly:
+- 15 minutes to understand the problem (CCT)
+- 15 minutes to design the solution
+- 60 minutes to build
+- 15 minutes to test and iterate
+- 10 minutes to prepare a demo
 
-**Layer 2 — Intent Recognition (stops AA-PRIV and AA-IMPACT):**
-- The agent's system prompt must recognize when a request is escalating permissions
-- Hard-coded constraints that can't be overridden: "Never execute delete operations regardless of framing"
-- Confidence thresholds: "Only take autonomous action if confidence > 0.95"
+This forces clarity. You cannot afford ambiguity. You cannot afford gold-plating. You build exactly what solves the problem — nothing more.
 
-**Layer 3 — Output Validation (stops AA-EXFIL):**
-- Validate agent output structure before acting on it
-- Whitelist allowed action types; reject unknown actions
-- Data minimization in outputs: only return what the caller needs
+**Case Study: Real-World Fast Prototyping**
 
-**Layer 4 — Monitoring and Detection (stops AA-EVADE):**
-- Log every decision with full context
-- Flag anomalous patterns (unusual tool call sequences, high-frequency requests)
-- Alert on governance gate bypasses (any action that should require human approval but didn't)
+Incident response teams don't wait for a polished, feature-complete tool before engaging a breach. The field approach is to deploy the minimal capability that answers the immediate question — "Is this system compromised?" — and iterate from there. Speed saves lives (or millions in remediation costs). The same discipline applies to prototyping: build what answers the question, measure, then harden.
 
-The goal is not to make attacks impossible — it's to make attacks visible and expensive. A well-defended system catches the attacker at Layer 1 or 2 and logs the attempt, enabling forensic reconstruction.
+Your Week 14 sprint mirrors this: get a working tool in 3 hours, measure its effectiveness, and move to iteration (Week 15) or production deployment.
 
-### Defense Strategies Against OWASP Top 10
+### Scope Management with CCT
 
-**Prompt Injection Defense:**
-The fundamental principle: separate data from instructions. Data goes into a structured field the agent receives as input. Instructions are in the system prompt. The agent should never be processing user-controlled text that could be interpreted as instructions.
+Collaborative Critical Thinking (from Unit 1) is your secret weapon for fast scoping:
 
-```python
-# Vulnerable: user input mixed into system context
-response = client.messages.create(
-    model="claude-sonnet-4-6",
-    system=f"You are a security analyst. User context: {user_input}",
-    messages=[{"role": "user", "content": "Analyze this incident."}]
-)
+1. **Evidence-Based Problem Definition:** Don't assume what the problem is. Ask: "What evidence do we have?" If the problem statement is "build a threat hunter," that's too vague. If it's "we need to detect lateral movement in cloud infrastructure based on unusual IAM API calls," that's concrete.
 
-# Hardened: user input in a structured data field only
-response = client.messages.create(
-    model="claude-sonnet-4-6",
-    system="You are a security analyst. Analyze the incident in the 'data' field.",
-    messages=[{"role": "user", "content": json.dumps({"data": user_input})}]
-)
+2. **Diverse Perspectives:** In a 3-hour sprint, get input from 2–3 perspectives quickly. DevOps person: "What data do you have access to?" Analyst: "What would we act on?" This prevents building a cool tool that nobody can actually use.
+
+3. **Success Criteria:** Before designing, write down 3–5 measurable criteria:
+   - Detects 80% of test cases (coverage)
+   - Runs in under 5 seconds per query (performance)
+   - Zero false positives on clean data (precision)
+   - Integrates with Splunk API (integration)
+
+Once you have criteria, design and build toward them.
+
+> **Key Concept:** The best prototype is the one that runs and answers the question, not the most architecturally elegant one. A tool that works in 3 hours and gets 80% accuracy is infinitely better than a beautiful design that's 60% complete.
+
+### Finding Your Leverage Points
+
+When scoping your 3-hour sprint, don't waste time optimizing every part equally. The **12 Leverage Points** framework from Agentic Engineering practice identifies where small changes produce outsized improvements. In a security context:
+
+- **High Leverage:** Improving the system prompt (how clearly you specify the agent's role), choosing the right model size for the task, adding one critical tool that was missing
+- **Medium Leverage:** Fine-tuning parameters, optimizing data flow between subagents
+- **Low Leverage:** Code style, UI polish, comprehensive error messages (defer to Week 15)
+
+In your 60-minute build window, spend 50 minutes on high-leverage improvements and 10 minutes on essentials. This is how you get 80% of the value in 20% of the time.
+
+> **Further Reading:** See the Agentic Engineering additional reading on foundations and the 12 Leverage Points for how to systematically identify where to focus effort in any agentic system. Understanding leverage is what separates fast prototypers from those who get stuck.
+
+### MVP Design Thinking
+
+MVP = Minimum Viable Product. It's the smallest, simplest version that solves the core problem.
+
+Example: "Build a vulnerability scanner for cloud infrastructure."
+
+What's the MVP?
+- Query a single cloud provider (AWS, not AWS + Azure + GCP)
+- Check one vulnerability class (unencrypted storage, not all OWASP categories)
+- Output a simple list (IP, finding, severity), not a full report
+- No authentication hardening yet (that's Week 15)
+
+The MVP is 10x faster to build and gets 80% of the value.
+
+### The Think → Spec → Build → Retro Cycle
+
+This 3-hour sprint implements the **Think → Spec → Build → Retro** cycle, powered by four Claude Code skills:
+
+1. **Think (~15 min):** Use `/think` to critically analyze the problem, surface assumptions, identify risks, and consider alternatives before writing any spec.
+2. **Spec (~20 min):** Use `/build-spec` to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.
+3. **Build (~50 min):** Use Claude Code and `/worktree-setup` to implement the agent and tools rapidly in an isolated git worktree. Cut anything that doesn't directly serve the specification.
+4. **Retro (~15 min):** Use `/retro` to review what was built against the spec, capture what worked, what didn't, and what to carry into the next cycle.
+
+This cycle repeats every sprint. Week 14 is your first Think → Spec → Build → Retro cycle. Week 15 iterates on failures. By the capstone (Unit 8), you're running multiple cycles per week.
+
+> **Further Reading:** See the Agentic Engineering additional reading on rapid iteration patterns for coverage of orchestration patterns that compress development timelines.
+
+> **The Generator/Evaluator Loop — Build Is Not One Pass**
+>
+> Your sprint cycle is an iterative loop, not a single pass. Anthropic's engineering team formalizes this as a **generator/evaluator pattern**: a generator agent produces output, a separate evaluator agent grades it against explicit criteria, and feedback flows back to the generator for refinement.
+>
+> 1. **Generate:** Build the tool (`/build-spec` → plan → build)
+> 2. **Evaluate:** Run the evaluator (`/code-review` + `/audit-aiuc1`) against explicit criteria
+> 3. **Decide:** Based on evaluation feedback — if scores are trending up, refine the current approach; if scores are plateauing or declining, pivot to a different approach entirely
+> 4. **Iterate:** Return to step 1 with evaluation feedback as input
+> 5. **Converge:** Stop when evaluation criteria are met OR iteration cap reached (failure cap pattern)
+>
+> Anthropic's team runs 5–15 iterations for frontend design and 2–3 QA rounds for full-stack applications. Each iteration costs tokens — track with `/cost` and set an iteration cap as a governance guardrail. *Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.*
+
+> **Harness Complexity Is a Snapshot, Not a Constant**
+>
+> Every component in your harness encodes an assumption about what the model can't do on its own. Those assumptions expire as models improve. Anthropic found that Opus 4.5 needed sprint decomposition — breaking work into small chunks — to maintain coherence across long sessions. Opus 4.6 handles multi-hour sessions natively, making that scaffolding unnecessary overhead.
+>
+> **Practical rule — after each model upgrade, review your harness:**
+> 1. List every scaffolding component (sprint contracts, context resets, forced tool selection, explicit step ordering)
+> 2. For each component: "Does the new model still need this?"
+> 3. Test by removing one component and comparing output quality
+> 4. Remove components the model now handles natively; keep components where removal degrades output
+>
+> This applies to your course skills too: does `/build-spec` need to be as prescriptive with Opus 4.6? Do your failure caps need to be as tight? The goal is the minimum harness that produces required quality. *Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.*
+
+### The Prototype-to-Production Delivery Pipeline
+
+As you move through Unit 4 and into Units 7–8, understand the full delivery pipeline:
+
+1. **Rapid Prototype (Week 14):** Build fast, validate the concept. Success = "does it answer the core question?" And containerize from Day 1.
+2. **Leadership Evaluation (Week 14 demo):** Present to instructors/stakeholders. They decide: "Is this worth hardening?"
+3. **Production Hardening (Week 15):** If selected, immediately accelerate into production-ready code: error handling, security validation, observability, deployment docs.
+4. **Deployment/Delivery (Units 7–8):** The hardened tool goes into production security operations with security gates and IaC.
+
+The key insight: **Don't waste time hardening prototypes that won't be used.** Rapid prototyping identifies which ideas have merit. Only prototypes that leadership selects move to hardening.
+
+> **Key Concept:** **Containerize from Day 1.** The moment you write your first line of code, wrap it in a Dockerfile and docker-compose.yml. This means the path from your laptop to production is already paved. When leadership selects your prototype for delivery, you're not rewriting for containers — you're adding security gates (pre-commit hooks, build scanning), IaC (CloudFormation/Terraform for ECS), and observability. Containerization from Day 1 eliminates the "containerize for production" bottleneck that derails most projects.
+
+### Prototyping vs. Production Architecture: The API-First Pattern
+
+When rapidly prototyping (Week 14), it's OK to build the MCP server directly — speed matters more than architectural elegance. Your goal is to answer "Does this approach work?"
+
+But here's the critical insight: **when your prototype is selected for production (Week 15+), immediately refactor to the API-first pattern.**
+
+**Week 14 Prototype (Fast):**
+
+```
+Claude Agent → MCP Server → Direct database access
+(Tightly coupled, but answers the question quickly)
 ```
 
-**Insecure Tool Integration Defense:**
+**Week 15+ Production (Hardened):**
 
-Input validation for every parameter that touches a filesystem or database:
-
-```python
-import pathlib
-
-ALLOWED_DIRS = [pathlib.Path("/app/data"), pathlib.Path("/app/reports")]
-
-def read_file_secure(filename: str) -> str:
-    # Resolve to canonical path (eliminates ../)
-    path = pathlib.Path(filename).resolve()
-
-    # Check against whitelist
-    if not any(path.is_relative_to(d) for d in ALLOWED_DIRS):
-        raise PermissionError(f"Access denied: {filename} is outside allowed directories")
-
-    # Resource limit
-    if path.stat().st_size > 1_000_000:  # 1MB limit
-        raise ValueError(f"File too large: {path.stat().st_size} bytes")
-
-    return path.read_text()
+```
+Claude Agent → MCP Server → FastAPI Backend → Database
+(Properly decoupled, ready for ECS deployment)
 ```
 
-**Memory Poisoning Defense:**
-- Access controls on knowledge base writes: only trusted, validated sources can add entries
-- Checksums or version hashes on entries to detect tampering
-- Provenance tracking: every entry records where it came from, when, and who added it
+**Why the refactor matters:** A prototype might call a database directly from the MCP server. That works for testing. But when you containerize for production, you need:
+- **Authentication at the API boundary** (not in the MCP server)
+- **Rate limiting** on the service (not in the agent)
+- **Audit logging** on the REST endpoints
+- **Multiple consumers** (same API serves dashboard, CLI tools, CI/CD pipelines)
+- **Testability** (hit the API directly without needing an agent)
 
-**Insufficient Logging Defense:**
-```python
-import structlog
+### The Five Metrics for Security Tools
 
-log = structlog.get_logger()
+When you build a security tool, measure yourself against these:
 
-def log_agent_decision(agent_name, input_hash, action_taken, confidence, reasoning_summary):
-    log.info(
-        "agent_decision",
-        agent=agent_name,
-        input_hash=input_hash,  # Hash, not full input — privacy
-        action=action_taken,
-        confidence=confidence,
-        reasoning=reasoning_summary,
-        timestamp=datetime.utcnow().isoformat(),
-        version=AGENT_VERSION,
-    )
-```
+1. **MTTS — Mean Time To Spot/Triage:** How long from alert to "we understand what this is?"
+   - Example: Recon subagent identifies malicious IP in 4.2 seconds
+   - In a sprint: Can your prototype identify the threat in < 10 sec?
 
-Note: log the input *hash*, not the raw input, for privacy. Log enough to reconstruct the decision, not enough to exfiltrate sensitive data through log aggregation.
+2. **MTTP — Mean Time To Protect:** How long from understanding to taking protective action?
+   - Example: Isolate compromised server, revoke credentials, block IP
+   - In a sprint: Can your prototype suggest a remediation? (Even if it's not automated)
 
-### Measuring Defense Effectiveness
+3. **MTTSol — Mean Time To Solve:** Full resolution
+   - Example: Threat removed, system hardened, new monitoring in place
+   - In a sprint: Not always achievable; aim for MTTS + MTTP
 
-**Attack Reduction Rate (ARR):**
-```
-ARR = (attacks_blocked / attacks_attempted) × 100%
-```
+4. **MTTI — Mean Time To Isolate:** How long to stop lateral movement?
+   - Critical metric for ransomware, APTs
+   - In a sprint: Does your tool enable rapid isolation?
 
-Measure this separately for each PeaRL level and each OWASP risk. A 90% ARR means 10% of attacks succeed — is that acceptable for your threat model?
+5. **aMTTR — Augmented Mean Time To Respond:** Overall metric including human review
+   - Realistic: MTTS + time for analyst review + MTTP
+   - Target for sprint: Under 15 minutes for a basic alert
 
-**Mean Time to Detect (MTTD):**
-```
-MTTD = average time from attack initiation to detection in logs
-```
+### Time-Waster Antipatterns
 
-An attack that succeeds but is detected immediately (MTTD < 1 min) is less dangerous than one that succeeds silently for hours.
+Avoid these common sprint killers:
 
-**Defense Coverage:**
-```
-Coverage = PeaRL_levels_with_controls / 7
-```
+| Antipattern | Cost | Fix |
+|---|---|---|
+| **Perfectionism** | "Let's make the UI gorgeous" | UI comes Week 15. CLI is fine now. |
+| **Over-generalization** | "Let's make it work for 10 use cases" | Pick one use case. Iterate later. |
+| **Scope creep** | "While we're at it, add authentication" | Note it, defer to Week 15. |
+| **Architecture paralysis** | "Let's debate frameworks for 20 min" | Pick one framework, move on. |
+| **Testing obsession** | "We need 100 unit tests" | One happy path + one failure case. Ship it. |
 
-A system with controls at all 7 PeaRL levels has 100% coverage. Week 13 likely found some levels unprotected — Week 14 closes those gaps.
+A hard truth: **the best code written in a sprint is "good enough" code, not perfect code.** Iterate from there.
+
+> **Evaluation methodology matters as much as evaluation results.** A 5/5 pass rate means nothing if:
+> - The test set was designed by the same person who wrote the spec
+> - All 5 test cases were obvious, expected inputs (no adversarial cases)
+> - No one else reviewed the test design before running it
+>
+> Minimum standards for sprint evaluation:
+> 1. **Ground truth independence:** the evaluator should not be the sole spec author
+> 2. **Adversarial test cases:** at least 2 of your test inputs should be designed to challenge the system, not confirm it works on expected inputs
+> 3. **Declared methodology:** your evaluation section must state what you tested and, critically, what you did NOT test
+
+> **Track two metrics, not one.** Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:
+> - MTTP tells you how fast you execute
+> - MTTS tells you how fast you make design decisions
+> - If MTTP improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed
+>
+> The spec phase should not be rushed. It is where security decisions are made.
 
 ---
 
-## Day 2 — Lab: Concept to Working Demo in 3 Hours (Sprint I)
+## Day 2 — Hands-On Lab: Rapid Prototyping Sprint
 
-### Setup (10 min)
+### Lab Objectives
 
-Teams pair with another team. Team A attacks Team B's prototype; Team B attacks Team A's prototype. Each team has already:
-- Built their prototype (Weeks 11-12)
-- Built attack tools against their own prototype (Week 13)
-- Identified their gaps (Week 13 findings report)
+- Execute a complete 110-minute sprint: analysis → design → build → test → demo
+- Deliver a working prototype (functional, not polished)
+- Measure performance using security metrics
+- Document process in a retrospective
 
-Share your Week 13 threat model (attack surface, not the attacks) with the opposing team so they can mount a realistic red team.
+### Sprint Format
 
-### Round 1: Attack (30 min)
+Teams of 2–3 students, 110 minutes total. Each sprint is grounded in a real company context — not an abstract tool spec, but a specific organization with constraints, a user, and a measurable problem. Before you write a line of code, you need to understand who you're building for and what success looks like in their environment.
 
-Each team attacks the opposing team's prototype using the attack tools built in Week 13.
+> **Practitioner framing:** In a real engagement, the sprint starts with a customer conversation, not a tool idea. "Build a threat hunter" is not a spec. "A mid-market retail company is seeing 300+ alerts per day with a 2-person SOC and a 4-hour MTTI — what's the one thing you'd build to move that number?" is a spec. Practice framing problems this way from Week 14 forward.
 
-**Rules of engagement:**
-- Use only the attack techniques from Week 13 (no system-level attacks, no brute force on APIs)
-- Document every attempt: input, expected behavior, actual behavior
-- Record which AA-TTP level each successful attack reaches
-- Do not modify the opposing team's code
+Example sprint problems (each comes with organizational context your instructor will brief):
+- "Build an automated threat hunter that detects suspicious user behavior in cloud infrastructure" — *Context: 50-person fintech, cloud-native, no dedicated threat intel team*
+- "Create a vulnerability assessment tool that correlates multiple sources of intelligence" — *Context: healthcare provider, HIPAA-scoped, slow change management, needs explainable output for compliance team*
+- "Design a security policy compliance checker that audits infrastructure against NIST standards" — *Context: federal contractor, existing NIST CSF implementation, needs gap analysis against SP 800-53 Rev. 5*
 
-**Attack log format:**
+### Step 0: AIUC-1 Pre-Check (Before Writing Code)
+
+Run `/audit-aiuc1` on your planned system architecture. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save the output as `sprint1/aiuc1-precheck.md` — this is a graded deliverable.
+
+Before writing a single line of code, answer these four questions and document them in `sprint1/aiuc1-precheck.md`:
+
+1. **What data does this system process?** (Email content? Does it contain PII? Attachments?)
+2. **Who is affected by a wrong decision?** (False positive = missed real threat reported to nobody. False negative = analyst alerted on legitimate email.)
+3. **Which AIUC-1 domains are in scope?** (B: Security — does the system have access to security-sensitive data? D: Reliability — what happens when it's wrong? E: Accountability — who reviews its decisions?)
+4. **What human oversight exists for high-severity outputs?** (Does a P1 classification auto-escalate, or does a human review first?)
+
+> **Finding the skill:** The `/audit-aiuc1` skill was built in Unit 2 Week 6. If you haven't configured it yet, the skill file is at `.claude/skills/audit-aiuc1/SKILL.md`.
+
+### Phase 1: Analysis (15 min) — What's the Real Problem?
+
+Use CCT:
+
+1. **Evidence-Based Definition** (5 min):
+   - What's the concrete problem statement?
+   - What data/signals are available?
+   - Who is the user (analyst, DevOps, compliance officer)?
+
+2. **Diverse Input** (5 min):
+   - Talk to a teammate from a different background
+   - What's missing from the problem statement?
+   - What could go wrong?
+
+3. **Success Criteria** (5 min):
+   - Write down 3–5 measurable outcomes
+   - Example: "Detects 80% of anomalies with < 5% false positives"
+   - Example: "Runs in < 30 seconds per scan"
+
+Record MTTS (Mean Time to Spec) when you have a validated strategy. Record: MTTS = ___ minutes from start.
+
+**Output:** One-page problem analysis (shared document, all team members add notes)
+
+### Phase 2: Design (15 min) — Sketch the Solution
+
+Don't code yet. Outline:
+
+1. **Architecture** (5 min):
+   - Will you use Claude agents? Simple scripts? Existing APIs?
+   - What data goes in? What comes out?
+   - What's the critical path (what *must* work)?
+
+2. **Tools/APIs** (3 min):
+   - What external services will you use? (AWS API, threat intelligence DB, etc.)
+   - Can you mock them if real APIs are slow?
+
+3. **MVP Scope** (7 min):
+   - What features are **required** for the MVP?
+   - What's a "nice-to-have" for Week 15?
+   - What's out of scope?
+
+Write a one-page design document. Include a simple ASCII diagram.
+
+**Example Design Document:**
+
+```
+# Threat Hunter MVP Design (15 min)
+
+## Problem
+Detect lateral movement in cloud infrastructure using IAM logs.
+
+## Solution
+Build a CLI tool that:
+1. Reads IAM event logs (mocked: JSON file)
+2. Identifies unusual API patterns (more than 10 unique APIs in 5 min window)
+3. Flags suspicious behavior
+4. Outputs: JSON list of anomalies
+
+## Architecture
+User
+  ↓
+CLI (Python, argparse)
+  ↓
+CloudAnalyzer (Claude Agent)
+  ↓
+JSON output → write to file
+
+## Tools
+- Python anthropic SDK
+- Claude Opus 4.5 (reasoning)
+- Mocked IAM data: data/iam_events.json
+
+## MVP Scope
+REQUIRED:
+- Read IAM logs
+- Detect anomalies (rule: >10 APIs in 5 min)
+- Output JSON
+
+DEFER TO WEEK 15:
+- Integration with real AWS API
+- Visualization
+- Alert routing
+- Performance optimization
+
+## Success Criteria
+- Run in < 10 seconds on 1000 events
+- Detect injected anomalies (test case)
+- Output valid JSON
+```
+
+> **Remember:** Your design doesn't need to be perfect. It needs to be *clear enough to code to*. You can change it during implementation.
+
+### Phase 3: Implementation (60 min) — Build the MVP
+
+> **Key Concept:** Use Claude Code as your pair programmer. You describe the architecture and requirements; Claude Code generates the scaffolding and implementation. Your job is to refine, test, and iterate — not to write perfect code from scratch.
+
+**Containerizing Your Prototype: Docker from Day 1**
+
+Create a `Dockerfile` in your project root:
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy your code
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Run your tool (adjust entrypoint as needed)
+ENTRYPOINT ["python", "-m", "threat_hunter"]
+```
+
+And a `docker-compose.yml` for local testing:
+
+```yaml
+version: '3.8'
+services:
+  threat-hunter:
+    build: .
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    command: >
+      python -m threat_hunter
+      --input /data/iam_events.json
+      --output /output/report.json
+```
+
+**Local Testing:** `docker-compose up` — your prototype runs in a container exactly as it will in production.
+
+**Claude Code Prompt for Threat Hunter MVP:**
+
+```
+I'm building a threat hunter tool for detecting lateral movement in cloud IAM logs.
+
+Requirements:
+1. CLI tool: `python threat_hunter.py <path_to_iam_events.json>`
+2. Load IAM events from JSON file
+3. Use Claude Opus 4.6 to analyze events for suspicious patterns:
+   - Spike: >10 unique APIs in 5 minutes
+   - Unusual access: security tools accessing data storage
+   - Brute force: failed attempts followed by success
+4. Return a JSON report with anomalies (each has type, severity, description, affected_principal, confidence)
+5. Save report to threat_report.json
+6. Handle errors: missing file, invalid JSON, API failures
+
+Show me working Python code with:
+- Proper argparse CLI
+- File loading with error handling
+- Claude API integration
+- JSON parsing from agent response (with fallback if parsing fails)
+- Output to file and stdout
+```
+
+**Review Checklist After Implementation:**
+
+After Claude Code generates the tool, test it:
+- [ ] `python threat_hunter.py missing.json` → Graceful error message
+- [ ] `python threat_hunter.py bad_data.json` (invalid JSON) → Error handling works
+- [ ] `python threat_hunter.py normal_events.json` → Completes in < 10 seconds
+- [ ] Output JSON is valid and has required fields
+- [ ] Report file is written to threat_report.json
+
+**During Implementation:**
+- Use Claude Code to write and test incrementally
+- Test your code as you go: do you have mock data? Run it!
+- If something breaks, fix it quickly or skip it for Week 15
+- Keep a list of deferred items (they become Week 15 tasks)
+
+### Phase 4: Test & Iterate (15 min)
+
+1. **Happy Path Test** (5 min): Run your tool on normal data. Does it complete?
+2. **Failure Case** (5 min): Feed it bad data (malformed JSON, missing fields). Does it handle errors?
+3. **Metrics** (5 min): How fast does it run? How many tokens? Does it meet success criteria from Phase 1?
+
+Record timings:
+
 ```json
 {
-  "timestamp": "2026-03-XX T##:##:##Z",
-  "target_team": "Team B",
-  "attack_type": "prompt_injection",
-  "aa_ttp": "AA-INIT",
-  "payload": "[what was sent]",
-  "expected_behavior": "Input rejected",
-  "actual_behavior": "Agent followed injected instruction",
-  "severity": "high",
-  "aiuc1_control_bypassed": "B005"
+  "phase": "test",
+  "test_case": "100 normal IAM events",
+  "execution_time_sec": 3.4,
+  "tokens_used": 892,
+  "estimated_cost_usd": 0.018,
+  "output_valid": true,
+  "notes": "Detected 2 anomalies correctly"
 }
 ```
 
-### Round 2: Defend (30 min)
+Record MTTP when you have a working plan (the system does SOMETHING end-to-end). Record: MTTP = ___ minutes from start.
 
-Each team receives the opposing team's attack log. Implement fixes for the highest-severity findings:
+Record MTTSol when you have a working tested prototype. Create Sprint I metrics summary: MTTS / MTTP / MTTSol / Token Cost / Completion %.
 
-**Triage your findings:**
-- Critical/High AIVSS + easy to fix → fix immediately (20 min)
-- Critical/High AIVSS + complex → implement partial mitigation + document residual risk
-- Medium/Low → document, defer to Week 15
+> **Pro Tip:** If you're failing a success criterion by a small margin, don't spend 10 minutes optimizing. Note it and move to Week 15. The demo is next.
 
-Use Claude Code to generate fixes:
+### Phase 5: Prepare Demo (10 min)
+
+You have 2–3 minutes to show your prototype. Practice:
+
+1. **Setup** (30 sec): Show your project structure (`ls -la`)
+2. **Input** (30 sec): Show the test data/scenario
+3. **Execution** (1 min): Run the tool, show output
+4. **Results** (1 min): Highlight what it detected, explain the finding
+5. **Closing** (10 sec): "In Week 15, we'll add [defer items]. Questions?"
+
+Write a 5-minute demo script:
+1. Problem statement (30s)
+2. Live demo (3 min)
+3. Value delivered and what's missing (1 min)
+4. What you'd build in Sprint II (30s)
+
+Record a video OR practice a live demo. Either way, time yourself.
+
+> **Remember:** A working 3-hour prototype with an honest demo ("it works on the happy path, needs edge case handling") is better than a beautiful demo of incomplete work.
+
+### Sprint I Exit Gate: Run `/check-antipatterns`
+
+Before closing Sprint I, audit your prototype against the production anti-patterns. This is a required Sprint I deliverable — include the report output alongside your Sprint I metrics.
+
+```bash
+/check-antipatterns ~/noctua-labs/unit4/sprint1/
+
+# Required: Zero CRITICAL findings to pass Sprint I
+# Document: HIGH findings → deferred to Sprint II with justification
+# Include: report output in Sprint I deliverables package
 ```
-I received this red team finding:
 
-Attack: [describe attack from log]
-What succeeded: [describe what the attacker accomplished]
-Control that failed: [which AIUC-1 control was bypassed?]
-AIUC-1 domain: [B, C, D, etc.]
-
-Implement a fix that stops this specific attack. Use the four-layer defense model.
-Explain which layer the fix operates at and why it stops the attack.
-```
-
-### Round 3: Retest and Measure (20 min)
-
-Teams retest the fixed defenses with their attack tools.
-
-**Measure improvement:**
-```
-| Attack Type | Before Defense | After Defense | Status |
-|---|---|---|---|
-| Prompt injection | AA-INIT reached | Blocked at Layer 1 | Fixed |
-| Tool enumeration | AA-RECON reached | Blocked + logged | Fixed |
-| Path traversal | AA-PRIV reached | Blocked at Layer 1 | Fixed |
-```
-
-Calculate Attack Reduction Rate (ARR):
-- Before: X attacks succeeded out of Y attempted
-- After: A attacks succeeded out of Y attempted
-- ARR = (1 - A/X) × 100%
-
-### Findings Debrief (20 min)
-
-Both teams share findings with each other. Discuss:
-- What surprised you about the other team's defenses?
-- Which attacks worked that you didn't expect to work?
-- Which defenses stopped attacks that seemed likely to succeed?
-- What would you do differently if you were building the prototype from scratch with today's threat model knowledge?
-
-This debrief is the core CCT exercise for the week: diverse perspectives on the same security problem surfacing what each team couldn't see about its own prototype.
+Requirement: zero CRITICAL findings. Document HIGH findings as deferred to Sprint II with written justification (what would need to change to fix each one).
 
 ---
 
 ## Deliverables
 
-1. **Attack log** — all attacks attempted against the opposing team's prototype with AA-TTP codes and severity
-2. **Defense implementation** — code changes made in response to red team findings
-3. **Metrics report** — ARR before and after defense, MTTD measurement, Defense Coverage percentage
-4. **Findings report using AA-TTP codes** (1,000 words):
-   - Findings organized by PeaRL level reached
-   - AIUC-1 control bypassed at each level
-   - Defense implemented and its effectiveness
-   - Residual risks not fixed in lab time
+1. **Sprint I Prototype** — code repository with README, working end-to-end (even if incomplete):
+   - Source code (all files, requirements.txt)
+   - Dockerfile and docker-compose.yml
+   - README with setup instructions (include: "To run locally: `docker-compose up`")
+   - Example input data
+   - Example output
 
----
+2. **Submitted via GitHub PR:** Use `gh pr create --title "Prototype: Threat Hunter" --body "..."` to submit your prototype for leadership review. This mirrors the real DevSecOps workflow: code goes through PR review before evaluation.
 
-## AIUC-1 Integration
+3. **Sprint Retrospective** (1,000–1,500 words):
+   - Problem statement (as refined after CCT)
+   - MVP design choices (what you kept, what you deferred)
+   - Build challenges (what was harder than expected?)
+   - Performance metrics (time, tokens, accuracy against success criteria)
+   - What went well
+   - What would you do differently?
+   - Deferred items for Week 15
 
-**Domain B001 (Adversarial Robustness Testing) completed:** Running the attack tools and measuring the results is the empirical implementation of B001. Document your test methodology and results as evidence of B001 compliance.
+4. **Demo** (video or live, 2–3 min):
+   - Record your screen or practice live delivery
+   - Show: problem → input → execution → output
+   - Narrate as you go
 
-**Domain C (Safety) under pressure:** If any attack reached AA-IMPACT (causing harm through tool execution), the safety gate should have stopped it. If it didn't, that's a C failure — address it before Week 15.
+5. **Sprint I Metrics** — MTTS, MTTP, MTTSol, token cost, and completion percentage:
 
-## V&V Lens
-
-**Red Team as V&V Completion:** Week 11 built the tool. Week 12 hardened it. Week 13 found gaps. Week 14 closes them. The full V&V cycle for a security tool includes adversarial testing — functional correctness is necessary but not sufficient.
-
-**V&V Documentation for Week 16:** Your Week 14 attack log, defense implementation, and ARR measurements are V&V documentation that Week 16 presentations must include. "We tested it and nothing broke" is not V&V documentation. "We attempted 12 attacks, 9 were blocked, 3 succeeded, 3 were fixed, 0 remain as accepted risk" is.
-
----
-
-> **🧠 Domain Assist:** Building effective defenses requires understanding the offensive mindset. If you come from a defensive or compliance background, red team thinking doesn't come naturally. Before building your defenses, ask Claude Chat:
->
-> "I'm building a red team attack tool for prompt injection. Help me think like a red teamer: 1) What makes a prompt injection attack succeed vs. fail? What's the attacker's mental model? 2) What are the most effective injection patterns — not just the obvious ones, but the subtle ones defenders miss? 3) How would I chain multiple techniques into a multi-stage attack? 4) What does a sophisticated attacker do differently from a script kiddie when targeting AI agents?"
-
----
-
-**Defense iteration exercise: Map PeaRL seven-level attack chain**
-
-For each of the seven PeaRL levels (AA-RECON through AA-EXFIL), map your defense:
-- Level 1 (AA-RECON): Which control prevents tool enumeration?
-- Level 2 (AA-INIT): Which control stops prompt injection?
-- Level 3 (AA-PRIV): Which control prevents privilege escalation?
-- Level 4 (AA-EVADE): Which control ensures logging coverage?
-- Level 5 (AA-IMPACT): Which control enforces safety gates?
-- Level 6 (AA-PERSIST): Which control limits session persistence?
-- Level 7 (AA-EXFIL): Which control minimizes data in outputs?
-
-Document which PeaRL levels your defense covers and which remain exposed. This becomes a core section of your Week 16 presentation.
-
----
-
-## Blue Team Defense Artifact: Production Readiness Report
-
-Your Week 14 defense package includes a `/check-antipatterns` report as evidence of production security posture.
-
-```
-/check-antipatterns ~/noctua/tools/sprint-ii/
+```json
+{
+  "sprint_duration_min": 110,
+  "problem": "Detect lateral movement in cloud logs",
+  "success_criteria_met": "3 of 3",
+  "execution_time_sec": 4.2,
+  "tokens_used": 892,
+  "estimated_cost_usd": 0.018,
+  "lines_of_code": 120,
+  "deferred_items": ["AWS API integration", "alert routing", "UI dashboard"]
+}
 ```
 
-The report documents your defense in three categories:
-- **Fixed:** Patterns found and remediated before this week
-- **Accepted Risk:** Patterns found, documented, with mitigation rationale
-- **Gaps:** Patterns not found by the skill that the red team exploited
+6. **AIUC-1 Pre-Check** (`sprint1/aiuc1-precheck.md`) — the pre-check document from Step 0
 
-Present this alongside your ARR (Attack Reduction Rate). If the red team found Pattern 2.2 (Missing Idempotency) and your Sprint II report flagged it, you have a documented process failure — you knew about it and didn't fix it. If your report missed it, that's a calibration gap for the skill.
-
-> The three-evaluator pipeline isn't just sequential — it's a feedback loop. Red team findings that `/check-antipatterns` missed become calibration improvements for the next sprint.
+7. **AI Methodology Note** — 100-word description of how Claude Code was used in the sprint
 
 ---
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on the key concepts from this reading. Start easy, then get harder."
-> - "I think I understand the four-layer defense model but I'm not sure. Explain it to me differently and then test whether I really get it."
-> - "What are the three most common defense failures when hardening AI security tools? Do I have any of them?"
-> - "Connect this week's defense work to Week 13's attack findings. What does our ARR tell us about our defense coverage?"
+## Sources & Tools
+
+- [Anthropic API Reference](https://docs.anthropic.com/en/api/messages)
+- Rapid Prototyping Guide (see `frameworks.html`)
+- *Sprint: How to Solve Big Problems and Test New Ideas in Just Five Days* by Jake Knapp (reference)
+- Cloud IAM Security Patterns (see `reading.html`)
 
 ---
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
-
----
-
-## Lab Update (PR 4)
-
-`docs/lab-s1-unit4.html` Week 14 (Sprint I) now includes **Step 0: AIUC-1 pre-check** as the first lab step (id: `step-w14-0`). Run `/audit-aiuc1` on your planned system architecture before writing code. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save output as `sprint1/aiuc1-precheck.md` — this is a graded deliverable. The skill was built in Unit 2 Week 6; the file is at `.claude/skills/audit-aiuc1/SKILL.md`. Progress bar updated from 26 to 27 steps.
+> **Study With Claude Code:** Open Claude Code and try:
+> - "Quiz me on the key concepts from this week's material. Start easy, then get harder."
+> - "I think I understand the Think → Spec → Build → Retro cycle but I'm not sure. Explain it to me differently and then test whether I really get it."
+> - "What are the three most common sprint antipatterns for security tool development? Do I have any of them?"
+> - "Connect this week's rapid prototyping to what we learned in Weeks 1–13. How does the 12 Leverage Points framework apply to sprint scoping?"

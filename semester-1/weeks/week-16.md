@@ -4,107 +4,118 @@
 
 ## Learning Objectives
 
-- Synthesize learning across 16 weeks: from CCT and Assessment Stack through multi-agent systems, sprints, red teaming, and production hardening
-- Prepare and deliver a compelling technical presentation with live or recorded demo
-- Articulate AIUC-1 domain coverage, Assessment Stack justification, and V&V architecture for your prototype
-- Give and receive constructive peer feedback on technical work
-- Reflect on the progression from Week 1 tool setup to Week 15 production-hardened prototype
+- Synthesize learning across 16 weeks: security, agentic AI, rapid prototyping, ethics
+- Prepare and deliver a compelling technical presentation
+- Apply critical thinking to reflect on your own work
+- Give and receive constructive feedback from peers
 
 ---
 
 ## Day 1 — Presentation Preparation
 
-Week 16 is not a lecture week. Both days are dedicated to presentation preparation and delivery. Day 1 is structured preparation time; Day 2 is presentations and peer feedback.
+Week 16 is not a lecture week. Instead, we dedicate the full week to **presentation preparation and delivery**.
 
-### What You're Presenting
+This is your opportunity to:
+1. **Showcase** your best work from the semester
+2. **Articulate** the security problem you solved and why it matters
+3. **Explain** your technical approach (agents, tools, architecture)
+4. **Demonstrate** that your tool works
+5. **Reflect** on what you learned and how you'd approach this differently next time
 
-Your Semester 1 project is the security tool prototype built across Weeks 11-15:
-- Designed with the Engineering Assessment Stack
-- Built with AIUC-1 controls from the start
-- Red teamed in Weeks 13-14
-- Hardened and containerized in Week 15
+### What Makes a Great Technical Presentation
 
-The presentation synthesizes everything: not just "here's my tool" but "here's how I made every architectural decision using the frameworks we studied."
+A great technical presentation has these elements:
+
+- **Hook (1 min):** Why should I care? (real-world impact, cost, time saved)
+- **Problem (2 min):** What's the security challenge? Be concrete.
+- **Solution (3 min):** Your technical approach. Show architecture.
+- **Demo (4 min):** Working tool in action.
+- **Metrics (2 min):** How well does it work? (speed, accuracy, cost)
+- **Reflection (2 min):** What did you learn? What surprised you?
+
+Total: 14 minutes. Leaves 6 min for questions.
+
+> **Key Concept:** Technical presentations are *sales pitches for your work*. You're not trying to impress with jargon — you're trying to convince the audience that you've solved a real problem in a clever way.
+
+### Class Discussion — Before Presentations
+
+Before the demo session begins, take 15 minutes for structured reflection. These questions are the synthesis moment — 16 weeks of CCT, tools, ethics, and prototyping converge here.
+
+- **Week 1 vs. Week 16 MTTI:** Your MTTI at Week 1 was roughly 26 minutes. What is your Week 16 MTTI for a similar-complexity investigation? What accounts for the difference — skill, tooling, or workflow? How much of the improvement came from faster CCT reasoning vs. faster execution?
+- **Changed assumptions:** What assumption about AI-assisted security work did you hold in Week 1 that turned out to be wrong? What evidence from a specific lab changed your mind?
+- **CCT in practice:** Which of the five CCT pillars challenged your instincts most? Was there a lab where you realized you had been applying a pillar superficially?
+- **Course redesign:** If you were designing this semester's curriculum, what would you add, cut, or reorder?
+- **Portfolio gap:** Your Sprint II prototype is now a portfolio item. What would you need to do to present it in a job interview with confidence? What is the gap between "it works" and "I would stake my professional reputation on this"?
 
 ### Presentation Structure
 
-15 minutes per team (12 minutes presentation + 3 minutes Q&A). Organize around:
+15 minutes per team (12 minutes presentation + 3 minutes Q&A). Required content:
 
-**1. Hook (1 min)**
-Why does this problem matter? Ground it in real impact:
-- What security incident does this prevent or accelerate response to?
-- What does this cost in time or money without the tool?
-- Connect to a real scenario from the course (Meridian Financial, GTG-1002, etc.)
+**1. Title Slide (Problem & Impact)**
+- Team name
+- Project title
+- "Solves X, reduces Y by Z%"
 
-**2. Problem Statement (2 min)**
-- What security challenge did you tackle? Be concrete.
-- How is it currently solved (manually, with other tools, not at all)?
-- What gap does your tool fill?
+**2. Problem Statement (2 slides)**
+- What security problem did you tackle?
+- Why does it matter? (real-world impact)
+- How is it currently solved? (if at all)
 
-**3. CCT Analysis (1 min)**
-- Which CCT pillars shaped your problem definition?
-- What perspectives did you consider that changed your approach?
-- One example of evidence-based analysis changing a design decision
+**3. CCT Analysis (1 slide)**
+- How did you apply Collaborative Critical Thinking?
+- What perspectives did you consider?
+- How did this inform your design?
 
-**4. Engineering Assessment Stack (2 min)**
-This is the core technical narrative. Walk through your Assessment Stack justification table:
-- Layer 1: What problem type? Why?
-- Layers 2-3: Why reasoning? Which model tier? What did Haiku handle vs. Sonnet?
-- Layer 4: What data architecture? Why vector AND relational, not just one?
-- Layer 5: Integration pattern — why MCP tool calls?
-- Layer 6: Verification approach
+**4. Technical Architecture (2–3 slides)**
+- Diagram of your system (agents, tools, data flow)
+- Key design decisions
+- Why this architecture? (trade-offs)
 
-One slide, one table. Let the table speak.
+**5. Implementation Details (1–2 slides)**
+- Tech stack (Claude Agent SDK, Python, etc.)
+- Key code snippets or patterns
+- Challenges faced and how you solved them
 
-**5. Demo (4 min)**
-Live is impressive; video is safe. Either way:
-- Show the input (what goes in)
-- Show execution (tool running, agent processing)
-- Show the output (structured JSON or report)
-- Narrate as you go: "The recon agent is querying the threat intel tool... now the analysis agent is correlating..."
+**6. Demo (live or video, 4–5 min)**
+- Problem → Input → Execution → Output
+- Narrate as you go
+- Show at least one interesting finding or recommendation
 
-Show at least one interesting finding or result that demonstrates the tool works on a real scenario.
+**7. Results & Metrics (1–2 slides)**
+- Performance: MTTS, MTTP, total time
+- Accuracy: How well does it work?
+- Cost: Tokens used, estimated cost
+- Comparison: vs. manual approach or baseline
 
-**6. Red Team and Defense Results (2 min)**
-This separates a course project from a production prototype:
-- How many attacks were attempted? How many succeeded before defense?
-- Which AA-TTP levels were reached?
-- Attack Reduction Rate after Week 14 defense implementation
-- One specific finding + the fix you implemented
+**8. Ethical Considerations (1 slide)**
+- Responsible AI: How did you apply ethical principles?
+- Fairness: Any bias in the approach?
+- Transparency: Is the tool auditable?
+- Potential misuse: How could this be abused?
 
-**7. AIUC-1 Coverage (1 min)**
-- Show your AIUC-1 certification readiness checklist (summary slide)
-- Highlight which controls were built in from the start vs. added during hardening
-- One domain that was harder than expected to implement
+**9. Lessons Learned (1 slide)**
+- What went well?
+- What was harder than expected?
+- What would you do differently?
 
-**8. Metrics (1 min)**
-Concrete numbers from your metrics.json:
-- MTTS, aMTTR for your tool's primary use case
-- CPT (Cost Per Transaction) after Assessment Stack optimization
-- Cost comparison: Week 11 prototype vs. Week 15 hardened (after model right-sizing and caching)
+**10. Future Work (1 slide)**
+- Next features or improvements
+- Scaling considerations
+- Integration opportunities
 
-**9. Reflection (1 min)**
-- What would you do differently if starting over?
-- What from Weeks 1-10 (theory and multi-agent systems) directly shaped your Week 11 decisions?
-- One thing you built that surprised you
+**11. Reflection & Synthesis (1 slide)**
+- How have your skills developed?
+- How will you apply this in your career?
+- Key takeaway for the class
 
-### Required Deliverables in the Presentation
-
-All seven of the following must appear in the presentation or supporting documentation:
-
-1. **AIUC-1 domain mapping** — six-domain coverage table, evidence for each domain (including which controls your system implements, which are not applicable with justification, and what gaps remain)
-2. **Assessment Stack justification** — six-layer table with decisions and rationale
-3. **V&V documentation** — test evidence, red team results, ARR measurement (the full V&V architecture: what gets verified, how, by what automated mechanism)
-4. **Cost analysis** — CPT, total project cost estimate, optimization decisions made (Sprint I vs. Sprint II CPT comparison, model right-sizing rationale)
-5. **Skills/plugins** — any Claude Code skills built during the semester that support this tool
-6. **Week 15 production artifacts** — SBOM, container scan results, decision authority document
-7. **Dark factory governance policy** — the Decision Authority Spectrum table documenting which agent decisions are automated vs. human-gated, with rationale
+**12. Questions? (final slide)**
 
 ### Preparing Your Demo
 
 **If live demo:**
 - Test 3 times before presenting
-- Have a backup data file ready (if the API is slow, you can run against cached mock data)
+- Have a fallback: if live demo fails, have a screen recording ready
+- Never apologize for a broken demo — pivot cleanly to the recording
 - Know the exact commands — no searching through shell history
 
 **If video demo:**
@@ -114,6 +125,7 @@ All seven of the following must appear in the presentation or supporting documen
 - Show the terminal output, not just "it worked"
 
 **Demo script outline (adapt to your tool):**
+
 ```
 1. "Our tool analyzes [incident type]. Here's a sample incident: [show input]"
 2. "I'll run it now..." [execute]
@@ -123,52 +135,174 @@ All seven of the following must appear in the presentation or supporting documen
 6. "It ran in X seconds and cost $Y."
 ```
 
+### Shipping Discipline: The Release Pipeline Checklist
+
+Before your prototype earns a PR and goes to leadership review, run it through this shipping checklist.
+
+**Step 1: Pre-flight — All tests pass on a clean branch**
+
+Run your full test suite from a clean state — not just the last test you ran. `git stash && python -m pytest` (or equivalent). If tests only pass in your local environment, they don't count.
+
+**Step 2: Pre-landing AI Checklist — All 7 items reviewed**
+
+Work through the Unit 4 pre-landing checklist. Document any item you knowingly skip and why — that note is a required part of the deliverable.
+
+| # | Item | What to check | Pass criteria |
+|---|---|---|---|
+| 1 | **LLM trust boundaries** | Does your system treat all LLM outputs as untrusted input? Is there validation before acting on agent decisions? | Every agent output is validated before downstream use |
+| 2 | **SQL / injection safety** | If your system writes to any database or constructs queries, are inputs parameterized? | No string concatenation in queries |
+| 3 | **Race conditions** | If agents run concurrently, is shared state (logs, files, rate counters) protected? | Thread-safe or process-isolated |
+| 4 | **Enum completeness** | Do all match/case or if-elif blocks have an explicit default? | No silent fall-through on unexpected values |
+| 5 | **Error propagation** | Does every exception either recover gracefully or surface clearly to the caller? | No bare `except: pass` blocks |
+| 6 | **Secrets in env vars** | Are all API keys, tokens, and credentials in environment variables — not in code or committed files? | `git grep -i "api_key\s*="` returns zero matches |
+| 7 | **Blast radius** | Does this PR change fewer than 5 files? If more, is the scope justified? | Documented rationale for any large-scope change |
+
+Document any item you knowingly skip and the reason why. This is a graded deliverable — the documentation is as important as the checklist result.
+
+**Step 3: Boil the Lake decision — What did you complete vs. defer?**
+
+Write 3 sentences: (1) What you completed fully because AI made it cheap. (2) What you deferred and why. (3) Whether any deferred item is a security risk that needs to be tracked. Add deferred items to a TODOS.md in your repo.
+
+**Step 4: Version tag and CHANGELOG entry created**
+
+Tag your release: `git tag -a v0.1.0 -m "Sprint II: hardened threat hunter"`. Write a one-paragraph CHANGELOG entry: what the system does, what changed from Sprint I to Sprint II, what's known-missing.
+
+**Step 5: PR created with structured description**
+
+Use `gh pr create` with a description covering: problem solved, architecture decisions, test coverage summary, known gaps, and what leadership needs to evaluate.
+
+```bash
+gh pr create \
+  --title "Sprint II: Threat Hunter v0.1.0 — Hardened" \
+  --body "## Problem
+Analysts spend 45 min/day triaging phishing alerts manually.
+
+## What this does
+3-agent system: classifier → enricher → reporter. 94% accuracy on test set.
+
+## Architecture decisions
+- Claude Sonnet for classification (cost/accuracy tradeoff)
+- Async enrichment with 30s timeout + fallback
+- Human escalation at confidence < 0.7
+
+## Test coverage
+- 23 unit tests, 4 integration tests, all passing
+- Pre-landing checklist: all 7 items reviewed, 0 deferred
+
+## Known gaps
+- No rate limiting on the enrichment API (tracked in TODOS.md)
+- Evaluation dataset is synthetic; production data may differ"
+```
+
+### Shipping Discipline: The gstack Pattern
+
+Rapid prototyping gets you to a working system fast. Shipping discipline gets it to production safely. The gstack `/ship` workflow defines a repeatable release sequence:
+
+```
+1. Pre-flight
+   └─ Detect target branch, validate not committing to base
+
+2. Merge & Test
+   └─ Fetch base, merge to test against merged state, run full suite
+
+3. Code Quality
+   ├─ Trace every changed code path through the diff
+   ├─ Generate tests for uncovered branches (cap at 20)
+   └─ Run pre-landing checklist (LLM safety, SQL, structural issues)
+
+4. Release Prep
+   ├─ Auto-bump version (MICRO/PATCH auto; MINOR/MAJOR requires approval)
+   ├─ Generate CHANGELOG from commit messages
+   └─ Create bisectable commits grouped by logical change
+
+5. Verify & Push
+   ├─ Re-run tests if code changed during prep
+   ├─ Push with upstream tracking
+   └─ Create PR with test counts, coverage summary, findings
+```
+
+Every PR your prototype creates in Week 15 should follow this logic: test before you push, generate missing coverage, document what changed, make the PR reviewable by someone who wasn't in the room.
+
+**Boil the Lake vs. MVP: Knowing When to Be Complete**
+
+AI makes the marginal cost of completeness nearly zero. When building security tools, favor complete implementations over shortcuts — generate the missing tests, handle the edge cases, write the error messages. The only question worth asking is: *does completeness here serve the security outcome?*
+
+| Signal | Boil the Lake | Stay MVP |
+|---|---|---|
+| Security tool going to production | Yes — complete error handling, audit logging, edge cases | No |
+| Prototype for leadership demo | No — polish the happy path only | Yes |
+| Test coverage | Yes — AI can generate tests for every branch cheaply | No |
+| Documentation | Yes if it's a CLAUDE.md or runbook; No for API docs on a prototype | Situational |
+| Exploratory spike | No — throw-away code stays minimal | Yes |
+
 ---
 
 ## Day 2 — Demo, Defend, Reflect
 
-### Presentation Schedule
+### Presentation Format
 
-Teams present in sequence (~15 min each). Audience: full class + faculty.
+- **Time:** ~15 min per team (slides + demo + Q&A)
+- **Slides:** 12–15 slides, focus on visuals
+- **Demo:** Live (risky but impressive) or video (safe, professional)
+- **Audience:** Full class + faculty
 
-**Audience responsibilities:**
-- Take notes on one thing each team did well
-- Take one question to ask in Q&A
-- Complete the peer feedback form during or immediately after each presentation
+### Preparation Checklist
 
-### Peer Feedback Form
+**Preparation: Live demo works end-to-end**
 
-For each presentation, complete:
-```
-Team: _______________
-Problem: _______________
+Test your live demo at least 3 times in the 24 hours before presentation. Have a fallback: if live demo fails, have a screen recording ready. Never apologize for a broken demo — pivot cleanly to the recording.
 
-Technical depth (1-5): ___
-- Did the Assessment Stack justification make sense?
-- Was the architecture decision rationale clear?
+**Preparation: 10-minute presentation structure complete**
 
-Security rigor (1-5): ___
-- Did the red team findings feel thorough?
-- Were the defenses appropriate to the attacks?
+Structure: (1) Problem & motivation — 90 sec, (2) Architecture overview & agent design decisions — 2 min, (3) Live demo — 3 min, (4) Security/ethics audit highlights — 1.5 min, (5) Sprint I vs II metrics — 1 min, (6) What you'd build next — 1 min.
 
-Demo effectiveness (1-5): ___
-- Did the demo show the tool working on a real scenario?
-- Was the output clearly explained?
+**Preparation: CCT defense prepared for three challenge questions**
 
-AIUC-1 coverage (1-5): ___
-- Were all six domains addressed?
-- Was the evidence for each domain concrete?
+Prepare CCT-structured answers for: (1) "Why did you choose this architecture over alternatives?", (2) "What is the most significant security risk in this system?", (3) "What evidence shows this improves analyst efficiency?" Use Evidence-Based Analysis for each.
 
-One thing that was especially strong:
+### Evaluation Rubric
 
-One specific suggestion for improvement:
+Peers and faculty will evaluate on:
+- **Clarity (20%):** Can we understand the problem and your solution?
+- **Technical Quality (25%):** Is the architecture sound? Well-implemented?
+- **Impact (20%):** Does the tool solve a real problem? Is it useful?
+- **Presentation (15%):** Well-organized slides? Clear demo? Good delivery?
+- **Ethical Thinking (10%):** Did you consider responsible AI and fairness?
+- **Innovation (10%):** Is there something clever or novel?
+
+### Peer Review
+
+For each peer presentation, complete the structured peer review form. Save as `log/peer-reviews/[presenter-name]-w16.md` in your student workspace and share with the presenter within 24 hours.
+
+```markdown
+# Peer Review — [Presenter Name]
+**Reviewer:** [Your Name] | **Date:** [Date] | **System:** [System Name]
+
+## 1. Problem solved
+[1-2 sentences: What security problem did they address? Was the problem well-defined?]
+
+## 2. Most impressive technical achievement
+[Specific: name the component, approach, or design decision that stood out.
+Not "it worked well" — what specifically demonstrated skill?]
+
+## 3. Most significant gap or risk
+[Specific: a security gap, architectural weakness, or untested edge case.
+Apply CCT Pillar 1 — what evidence supports this being a real risk?]
+
+## 4. One improvement suggestion
+[Actionable: "Add rate limiting to the enrichment API call in recon_agent.py"
+not "improve security." Something they could implement in a day.]
+
+## Overall: Would you use this in a real SOC?
+[ ] Yes, as-is  [ ] Yes, with modifications  [ ] Not yet — needs X first
+Reason: [one sentence]
 ```
 
 ### Q&A Guidance
 
 Good questions to ask (model them for your peers):
 - "You used Sonnet for the analysis agent — did you test with Haiku? What was the quality difference?"
-- "Your ARR was 85% — what was the 15% that still got through, and what was your decision to accept that risk?"
+- "Your accuracy was X% — what was the Y% that failed, and what was your decision to accept that risk?"
 - "Which AIUC-1 domain was hardest to implement, and what did you compromise on?"
 - "How does your tool handle the case where the threat intel API is down?"
 
@@ -178,58 +312,76 @@ Avoid questions that are just re-stating what was presented. The best Q&A surfac
 
 After all presentations are complete, individual written reflection (due within 48 hours):
 
-**500-word reflection addressing:**
-1. What was the highest-leverage change you made between Week 11 and Week 15 — not the most work, but the one that improved the tool the most?
-2. Which framework from the course (CCT, Assessment Stack, AIUC-1, V&V, PeaRL) proved most useful in practice, and why?
-3. What would you want from Semester 2 given what you now know from building a real prototype through to hardening?
+**Reflection Prompts for Your Paper:**
+- In Week 13, you built a multi-agent system. How did specialization help you? Where was orchestration hard?
+- In Weeks 14–15, you built two prototypes. How did rapid iteration change the way you think about development?
+- What was the hardest part of hardening your code for production? What's the biggest risk you worry about?
+- If you had to present your tool to a C-level executive, what's the one metric that matters most?
+- How did you ensure your tool is ethical and fair? What could go wrong?
+- What surprised you about agentic AI? What still confuses you?
+- Which framework from the course (CCT, Assessment Stack, AIUC-1, V&V, PeaRL) proved most useful in practice, and why?
 
 ---
 
 ## Deliverables
 
 **Before Day 2 (submit by start of class):**
-1. **Slide deck** (12-15 slides, all required content present)
-2. **Final metrics.json** — complete across all sprint and optimization phases
-3. **AIUC-1 certification readiness checklist** — final version from Week 15
-4. **Final Assessment Stack justification table**
-5. **V&V documentation package** — test evidence, red team logs, ARR measurements
-6. **Container scan results** — Trivy output from Week 15
+
+1. **Presentation Slides** (12–15 slides, PDF):
+   - Follow the required structure above
+   - Visuals (diagrams, screenshots, not walls of text)
+   - Speaker notes for each slide
+
+2. **Demo** (video or live, 4–5 min):
+   - Shows problem → solution → output
+   - Narrated clearly
+
+3. **Performance Summary** (1 page):
+   - MTTS, MTTP, MTTSol metrics
+   - Accuracy/effectiveness
+   - Cost (tokens, estimated USD)
+   - Key improvements from Sprint I → Sprint II
+
+4. **Complete Source Code** (GitHub repository or archive):
+   - All files from Week 15 hardening
+   - README with setup, usage, and examples
+   - Comprehensive comments
+   - Example inputs and outputs
+   - Performance metrics
 
 **After Day 2 (due within 48 hours):**
-7. **Individual reflection** (500 words)
-8. **Peer feedback forms** — completed for all teams you watched
-9. **Context library final structure** — documented directory of prompts, patterns, governance templates, and architecture patterns built during the semester
+
+5. **Reflection Paper** (1,500–2,000 words):
+   - What security problem did you solve and why it matters
+   - How you applied CCT to design the solution
+   - Technical architecture and key design decisions
+   - Challenges faced and how you overcame them
+   - Ethical considerations and responsible AI practices
+   - How your skills in agentic engineering, rapid prototyping, and security have developed
+   - What surprised you during the semester?
+   - How will you apply these skills in your future career?
+
+6. **Peer Review Forms** — one for each teammate's presentation
+
+7. **Semester Reflection** (750 words) — learning trajectory from Week 1 to Week 16
 
 ---
 
-## AIUC-1 Integration
+## Unit 4 Learning Outcomes
 
-**Full framework synthesis:** Week 16 is where AIUC-1 stops being a checklist and becomes a professional standard. The certification readiness document is the first time students produce evidence of compliance rather than just claiming it.
+By the end of Unit 4, you will be able to:
 
-**Accountability chain:** Part of the Week 16 reflection is identifying the accountability chain for your prototype: "Who is responsible when this tool makes a wrong call?" This is Domain E applied at the organizational level, not just the technical level.
-
-> **📚 Study With Claude:** Before your presentation, open Claude Chat and ask:
-> - "I built a [describe your capstone system]. I need to present it in 15 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present threat model findings and AIUC-1 compliance to a mixed audience? 4) What questions should I expect and how should I prepare for them?"
-> - Use Claude to stress-test your architecture: "Here's my system architecture: [describe it]. Play the role of a skeptical reviewer. Ask me the hardest questions you can think of about this design. Challenge my assumptions."
-
----
-
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
-
----
-
-## V&V Lens
-
-**The full V&V lifecycle:** Week 16 closes the V&V cycle started in Week 1.
-- Week 1: "Verify what the AI tells you" (light touch)
-- Week 6: Skill outputs verified against spec
-- Week 8: Audited against AIUC-1 framework
-- Weeks 11-12: Sprint V&V against success criteria
-- Weeks 13-14: Adversarial V&V under attack
-- Week 15: Deployment V&V (supply chain, container scanning)
-- Week 16: V&V documentation as a deliverable
-
-A tool without V&V documentation is not production-ready. The Week 16 presentations demonstrate that every team's tool has been verified and validated, not just built and hoped to work.
+- Design and implement multi-agent systems with orchestrators and specialized subagents
+- Use worktrees to manage parallel development and branch isolation
+- Execute rapid prototyping sprints with strict timeboxing and MVP thinking
+- Measure security tool performance using mean-time metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)
+- Harden prototypes for production: error handling, security, observability, and testing
+- Evaluate agentic systems for ethical risks and responsible AI
+- Present technical work clearly to technical and non-technical audiences
+- Reflect critically on your own development process and learning
+- Execute a disciplined shipping pipeline: pre-flight, test, quality gates, version bump, changelog, PR
+- Apply the Boil the Lake vs. MVP decision framework to determine when completeness matters
+- Build and run a pre-landing AI checklist before merging any agentic system to production
 
 ---
 
@@ -237,39 +389,32 @@ A tool without V&V documentation is not production-ready. The Week 16 presentati
 
 Semester 2 starts where Semester 1 ends. You arrive at Semester 2 having:
 - Built and shipped a real security tool
-- Applied every AIUC-1 domain with evidence
+- Applied every AIUC-1 domain with evidence (via the ethics self-audit)
 - Survived red teaming and implemented defenses
-- Containerized and hardened for production
+- Hardened your prototype for production
 - Internalized the Engineering Assessment Stack across 16 weeks of decisions
 
-Semester 2 assumes all of this. It doesn't re-teach Docker basics, MCP fundamentals, or AIUC-1 introduction. It builds on what you built this semester:
+Semester 2 assumes all of this. It builds on what you built this semester:
 
-- Weeks 1-4: Advanced multi-agent engineering (deeper SDK, comparative frameworks, optimization)
-- Weeks 5-8: Advanced red team/blue team + autonomous wargame
-- Weeks 9-12: Production security engineering (supply chain deep, NHI governance, observability)
-- Weeks 13-16: Capstone with full AIUC-1 certification and Assessment Stack documentation
+- **Unit 5 (Multi-Agent Orchestration):** Your phishing triage agent from Sprint I becomes a supervised multi-agent pipeline. The single agent that classifies and reports becomes a specialist team: a classifier agent, an enrichment agent, a report-writer agent.
+- **Unit 6 (Red Teaming):** You will attack your own Unit 2 MCP server using the techniques from Unit 6. The tools you built are the targets.
+- **Unit 7 (Hardening):** The Cedar policies you wrote in Week 12 are deployed to Amazon Verified Permissions. Your Unit 2 MCP server gets production security hardening. The gaps your Unit 3 audit identified get closed.
+- **Unit 8 (Capstone):** Your Sprint II prototype is the capstone starting point. You're not starting from scratch — you're hardening and scaling what's already there.
 
 The context library you built in Semester 1 is your starting point. Every pattern, every governance template, every architecture decision — they're your foundation for Semester 2 complexity.
 
 ---
 
-## Lab Updates (PR 4)
-
-The following additions were made to `docs/lab-s1-unit4.html` for Week 16:
-
-- **Knowledge Check — Week 16:** Two quiz questions added at the end of Week 16 covering production readiness (what it means for an AI system to handle failure gracefully) and applying the production engineer mindset to presentations (identifying failure modes and preparing contingencies).
-- **Pre-Landing AI Checklist Preview callout:** A `callout-key` added after the "Pre-landing AI checklist: all 7 items reviewed" ship step. Lists the 7 items that the full checklist (developed in Unit 7) requires: AIUC-1 governance audit, MASS security scan, agent identity/allowance profiles, structured logging and tracing, red team report, cost caps and circuit breakers, and human escalation paths tested.
+> **Build Your Sprint Skill — Shortcut the Next One**
+>
+> You've now run two sprints and have a repeatable pattern: planning → scaffolding → hardening → review. Turn this into a Claude Code skill. Create a `/sprint-setup` skill that scaffolds a new security agent project with your preferred directory structure, CLAUDE.md, logging config, and ethics checklist pre-wired. The next sprint starts in 20 seconds instead of 20 minutes.
+>
+> Use this prompt:
+>
+> "Based on my Sprint I and II work, write a Claude Code skill file called sprint-setup.md that scaffolds a new security agent project with my standard structure, dependencies, CLAUDE.md, and hardening checklist already in place."
 
 ---
 
-## Presentation Checklist: Production Readiness Evidence
-
-Include in your Week 16 presentation:
-
-1. **`/check-antipatterns` clean report** — screenshot or paste of READY or CONDITIONAL status with findings documented
-2. **Anti-pattern journey** — which patterns were found across Weeks 3-15, which were fixed, which remain as documented risk
-3. **Three-evaluator pipeline summary** — findings from `/code-review`, `/check-antipatterns`, and `/audit-aiuc1` side by side
-
-The clean report is evidence that your tool is not just functional but production-survivable. This distinction — between "it works in my terminal" and "it will work at 3am under load during an incident" — is what separates a prototype from a production system.
-
-> Your presentation should answer: "If we deployed this today, what would break first?" If the answer is "nothing on our `/check-antipatterns` report," that is your evidence.
+> **Study With Claude Code:** Before your presentation, open Claude Code and ask:
+> - "I built a [describe your capstone system]. I need to present it in 15 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present red team findings and AIUC-1 compliance to a mixed audience? 4) What questions should I expect and how should I prepare for them?"
+> - Use Claude to stress-test your architecture: "Here's my system architecture: [describe it]. Play the role of a skeptical reviewer. Ask me the hardest questions you can think of about this design. Challenge my assumptions."

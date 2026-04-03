@@ -1,372 +1,450 @@
-# Week 13: Multi-Agent Architecture Deep Dive
+# Week 13: Claude Code Deep Dive — Worktrees, Subagents, and Agent Teams
 
 **Semester 1 | Week 13 of 16**
 
 ## Learning Objectives
 
-- Apply MITRE ATLAS threat modeling to AI security systems
-- Understand the PeaRL Autonomous Agent Attack Framework (AA-RECON through AA-EXFIL)
-- Understand the dark factory concept as an attacker capability: autonomous pipelines at scale
-- Apply the Assessment Stack to red team work — find the cheapest effective attack, not the most sophisticated one
-- Build attack tools using Claude Code to probe your own prototype
-- Produce a threat model document mapping your prototype's attack surface
+- Understand the Claude agentic architecture: Claude Code, worktrees, subagents, and agent teams
+- Analyze real-world multi-agent orchestration patterns (hierarchical, peer-to-peer, pipeline)
+- Evaluate trade-offs in multi-agent systems: cost, resilience, and complexity
+- Identify failure modes and recovery strategies in distributed agent systems
+- Apply token budgeting and cost optimization to multi-agent workflows
 
 ---
 
-## Day 1 — Theory
+## Day 1 — Theory & Foundations
 
-### Why Red Team AI Systems?
+### The Claude Agentic Stack
 
-Traditional red teaming finds bugs in code. Red teaming AI security systems finds something different: bugs in reasoning, gaps in governance, and attack surfaces that don't exist in traditional software.
+The Claude platform provides a complete **agentic stack** for building sophisticated AI-powered security tools. Unlike monolithic agents, this stack enables *orchestrated multi-agent systems* where specialized agents delegate work, collaborate on complex problems, and maintain isolated development environments.
 
-An AI agent that works correctly on all test inputs can still be unsafe. Correctness and safety are not the same property. This week you systematically look for the difference.
+At its foundation sits **Claude Code**, Anthropic's interactive IDE that seamlessly integrates Claude into your development workflow. Claude Code isn't just a copilot — it's a reasoning engine that can read code, understand architecture, debug errors, and implement features. When combined with the **Claude Agent SDK** (available in Python via `from anthropic import Anthropic`), Claude Code becomes a runtime for deploying autonomous agents.
 
-### MITRE ATLAS: Threat Modeling for AI
+**Worktrees** are a git feature that Claude Code leverages to enable *branch isolation*. Rather than switching branches (which requires stashing changes), worktrees create parallel working directories on separate branches. This is critical for agentic security work: you might be developing a reconnaissance subagent in one worktree while your teammate hardens the analysis subagent in another. The key insight: **worktrees enable true parallel development by team members without merge conflicts during development**.
 
-MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems) is the ML-specific extension of the ATT&CK framework. It catalogs adversary tactics, techniques, and procedures (TTPs) specifically targeting AI systems.
+**Subagents** are specialized Claude instances with distinct system prompts and tool sets. A recon agent has access to vulnerability databases and threat intelligence APIs. An analysis agent gets a system prompt optimized for correlation and MITRE ATT&CK mapping. A reporting agent specializes in structured JSON output and executive communication. Each subagent is a complete agent with reasoning, memory, and tool access — not just a function.
 
-Key ATLAS tactics relevant to your prototypes:
+**Agent Teams** coordinate multiple subagents under an orchestrator. The orchestrator isn't "smarter" — it's a state machine that manages control flow. It receives an incident, routes data to the recon agent, waits for results, passes them to the analysis agent, and collects a final report. This separation of concerns mirrors real SOC operations: different specialists handling different stages of incident response.
 
-**Reconnaissance (AML.TA0002):**
-- Query the model to infer its architecture, training data, or capabilities
-- Probe boundaries: what does it refuse? What does it accept?
-- Application to your prototype: what can an attacker learn by submitting varied inputs?
+> **Tool-agnostic framing: worktrees and multi-agent patterns**
+>
+> **Worktrees** are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.
+>
+> **Orchestrator + specialized worker** is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), LangGraph, AutoGen, or CrewAI — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.
 
-**ML Attack Staging (AML.TA0001):**
-- Prepare attack data (adversarial examples, poisoned inputs, injection payloads)
-- Applicable to RAG systems: prepare knowledge base poisoning entries
+### Historical Context: Why Multi-Agent Systems?
 
-**Initial Access (AML.TA0004):**
-- Physical environment attack: access the system through its intended inputs
-- Supply chain compromise: attack a model, dataset, or dependency before deployment
-- Applicable to your prototype: what input channels exist? Which are validated?
+In the early 2020s, security teams built monolithic tools that tried to do everything: threat hunting, analysis, reporting, remediation. These tools were slow to deploy, expensive to maintain, and brittle — a bug in the analysis logic could break the entire pipeline. The industry shifted toward microservices and specialized components. The agentic equivalent is agent teams: each agent is specialized, testable, and replaceable.
 
-**Exfiltration (AML.TA0010):**
-- Infer training data through model outputs
-- Extract confidential data injected via RAG or context
-- Applicable to your prototype: what data could an attacker extract through carefully crafted queries?
+Consider MASS (Model & Application Security Suite), an AI security tool you'll study in this course. MASS demonstrates how production security assessment actually works — it doesn't have one monolithic "security analyzer" but 12 specialized analyzers (context analysis, MCP server security, attack surface mapping, workflow analysis, RAG security, model file integrity, etc.). They operate in parallel where possible and sequentially where required. This is the same approach you'd take when building production-grade security tooling: leverage specialization, coordinate at the orchestration layer.
 
-**Impact (AML.TA0012):**
-- Harm the availability or integrity of the system
-- Denial of model service, manipulation of model behavior
-- Applicable to your prototype: what is the worst-case outcome of a successful attack?
+### Orchestration Patterns
 
-### The PeaRL Autonomous Agent Attack Framework
+Three primary patterns emerge:
 
-PeaRL (Progressive Exploitation and Recursive Leverage) describes a seven-level escalating attack chain against autonomous agent systems. Each level builds on the previous. The key insight: individually reasonable steps can accumulate into catastrophic outcomes.
+1. **Hierarchical:** One orchestrator agent with multiple subordinate agents. The orchestrator controls all routing and state. Best for: incident response (clear hierarchy matches command structures).
 
-| Level | Code | Action | What It Exploits |
-|-------|------|--------|-----------------|
-| 1 | AA-RECON | Enumerate accessible tools and their schemas | Missing tool access controls |
-| 2 | AA-INIT | Initial access via prompt injection | Insufficient input filtering |
-| 3 | AA-PRIV | Escalate from read to write access | Excessive tool permissions |
-| 4 | AA-EVADE | Avoid audit logging | Incomplete logging coverage |
-| 5 | AA-IMPACT | Cause harm through tool execution | Missing safety gates |
-| 6 | AA-PERSIST | Maintain access across sessions | No session controls |
-| 7 | AA-EXFIL | Extract data through outputs | Data minimization failures |
+2. **Peer-to-Peer:** Multiple agents of equal status passing results to each other. Best for: research tasks where multiple perspectives enrich output (threat hunting where different analytical lenses find different threats).
 
-**AIUC-1 mapping:** Each level has a corresponding control that stops it. AA-RECON is stopped by B006 (limit agent access). AA-INIT is stopped by B005 (input filtering). AA-IMPACT is stopped by C (safety gates). The chain fails when it hits a hard control.
+3. **Pipeline:** Agents operate in sequence, each transforming input and passing to the next. Best for: processing workflows (sanitization → analysis → reporting).
 
-**The dark factory connection:** Attackers running autonomous pipelines (like GTG-1002 at 80-90% autonomy) don't manually execute each PeaRL level — they automate the chain. An attack tool that probes AA-RECON, identifies exploitable gaps, and proceeds to AA-INIT without human involvement is a dark factory attack. Your defenses must be equally automated.
+An advanced variant is the **Expert Swarm Pattern**: multiple specialized agents attack the same problem in parallel, each bringing unique expertise, and a coordinator synthesizes their findings. Rather than routing (as in hierarchical), swarm patterns emphasize diversity. In security: a threat detection swarm might include agents specialized in network analysis, behavioral profiling, code analysis, and threat intelligence. Each independently analyzes the same incident and provides output. The coordinator merges findings, identifying where experts agree (high confidence) and where they diverge (investigate further).
 
-### Assessment Stack for Red Team
+> **Key Concept:** Multi-agent systems trade simplicity for specialization. A single large model might be faster, but multiple smaller specialized agents are more auditable, cheaper per task, and easier to swap/upgrade. This is the agentic equivalent of "Unix philosophy: do one thing well."
+>
+> **Further Reading:** See the Agentic Engineering additional reading on orchestration patterns for coverage of the Expert Swarm pattern and when it outperforms hierarchical orchestration.
 
-Apply the Assessment Stack to attack selection — not just defense:
+### Cost & Token Economics
 
-**Layer 2 — Computation for Attacks:**
-- Simple injection strings (deterministic) — try these first, they're free
-- Pattern-based probing (statistical) — send varied inputs, look for inconsistent behavior
-- Reasoning-based attacks (LLM-assisted) — generate novel attack payloads using Claude
+A critical insight: using multiple agents isn't necessarily more expensive. Why?
 
-**Layer 3 — Model Selection for Attacks:**
-The cheapest effective attack wins. A regex injection that bypasses input validation costs $0. A sophisticated model-assisted attack chain costs $5+. Start cheap. Only escalate if cheap attacks fail.
+- **Specialization reduces tokens:** A recon agent doesn't need reasoning skills for reporting; a reporting agent doesn't need access to vulnerability APIs. Smaller prompts, fewer tokens, lower cost.
+- **Caching amortizes context:** If you invoke the same agent 100 times on different inputs, the system prompt is cached after the first invocation. Cost drops 90%.
+- **Parallel execution saves wallclock time:** If you run three subagents in parallel (possible with concurrent API calls), you finish in 1/3 the time versus sequential invocation.
 
-**Layer 1 — What Type of Problem Is an Attack?**
-- Classification attacks: make the model misclassify
-- Retrieval attacks (RAG): inject false data, extract data via queries
-- Reasoning attacks: confuse or redirect the agent's reasoning
-- Generation attacks: cause the agent to produce harmful outputs
+Conversely, *poor orchestration costs more:* replicating context across agents, making unnecessary API calls, or routing requests to the wrong agent wastes tokens.
 
-Match your attack type to the specific weakness you're targeting.
+> **Cost Reference: What Real Multi-Agent Runs Actually Cost**
+>
+> Students often have no frame of reference for agentic system costs. From Anthropic's engineering team running production harnesses (March 2026, Opus 4.5/4.6):
+>
+> | Run Type | Duration | Cost |
+> |---|---|---|
+> | Solo agent (one-shot task) | ~20 min | ~$9 |
+> | Full harness — planner + builder + QA (Opus 4.5) | ~6 hr | ~$200 |
+> | Simplified harness (Opus 4.6) | ~4 hr | ~$125 |
+> | Planner agent only | ~5 min | ~$0.50 |
+> | Single QA/evaluation round | ~8 min | ~$3–4 |
+>
+> For your sprints: a 110-minute sprint with one evaluator pass costs roughly $15–40 depending on model and complexity. Track with `/cost` after every session. **Cost optimization levers:** use Haiku for recon/read-only subagents (~5× cheaper than Sonnet); use `/effort low` for iteration passes, `/effort high` for final analysis; cache static system prompts (90% discount on cached tokens); set a failure cap to limit evaluator iterations. *Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.*
 
-### OWASP Top 10 as Attack Checklist
+### Failure Modes & Resilience
 
-Every item on the OWASP Top 10 for Agentic Applications is both a defense requirement (Week 8) and an attack vector (this week):
+Real agent systems fail. Plan for it.
 
-| OWASP Risk | Attack Vector | AA-TTP Code |
+- **Subagent timeout:** A recon agent queries a slow API and never returns. Solution: set timeouts at the orchestrator level; retry with exponential backoff; fallback to cached intelligence.
+- **Malformed output:** An agent returns JSON that doesn't parse. Solution: validate output schema; if invalid, ask the agent to reformat; log the error.
+- **Cascading failures:** The recon agent fails, so the orchestrator never calls the analysis agent, and the reporting agent produces incomplete output. Solution: design graceful degradation — the analysis agent can work with incomplete recon data; the reporting agent flags what's missing.
+- **Token budget exhaustion:** An agent conversation grows too long and hits the context limit. Solution: implement summarization (periodically compress conversation history) and tool-defined outputs (agents write to files/databases rather than keeping everything in context).
+
+> **Common Pitfall:** Designers often assume agents are deterministic. They aren't. The same prompt on the same input might produce different outputs due to temperature and model updates. Agentic systems must tolerate non-determinism: implement idempotency checks and result verification.
+
+> **Integration estimation: existing tools cost more than new tools.** When your sprint plan includes integrating tools you already built (your Unit 2 MCP server, your Unit 3 Cedar policies), budget approximately 2× your initial estimate. Interface friction — schema mapping, error propagation, authentication flows, format mismatches between what your tool returns and what your agent expects — always surfaces during integration. This is not a failure of planning; it is the nature of integration work. Plan for it explicitly: "integrate existing tool" is a sprint task, not a free action.
+
+> **Practice: "What this sprint will NOT build."** The scope definition for an agentic system sprint is incomplete without an explicit list of capabilities being deferred. Before finalizing any sprint spec, write this section:
+>
+> - **Capability included:** [what you will build, with acceptance criteria]
+> - **Capability deferred:** [what you considered but are NOT building this sprint, with the reason and a note of which sprint it targets]
+> - **Known gaps:** [gaps carried forward from prior audits — authentication, rate limiting, etc. — that this sprint acknowledges but does not close]
+>
+> The deferred list is not a failure — it's a scope decision. A sprint spec without a deferred list is a spec that hasn't finished thinking.
+
+---
+
+## Day 2 — Hands-On Lab: Multi-Agent Security Operations
+
+### Lab Objectives
+
+- Build a multi-agent incident response system with one orchestrator + three subagents
+- Use worktrees to develop agents in parallel with teammates
+- Implement resilient control flow, tool definitions, and agent communication
+- Measure performance: time, cost, and output quality
+
+### Setup & Architecture
+
+Your team (2–3 students) will build a **Security Operations Center (SOC) Agent Team**. The scenario: your company receives a suspicious alert — "Unusual outbound traffic detected from finance server 14:32 UTC" — and your agent team must investigate and produce a comprehensive incident report.
+
+**Architecture:**
+
+```
+Incident Alert → Orchestrator Agent (state machine + routing)
+                 ├── Recon Agent (threat intel + IOCs)
+                 ├── Analysis Agent (correlation + ATT&CK)
+                 └── Reporting Agent (structured JSON output)
+                      ↓
+               Aggregated Results → Final Incident Report
+```
+
+### Parallel Development with Worktrees
+
+Before you write any agent code, set up worktrees for parallel development:
+
+```bash
+# Team lead: Create the main project directory and initialize git
+mkdir soc-agent-team && cd soc-agent-team
+git init
+git config user.email "team@noctua.local"
+git config user.name "SOC Team"
+
+# Team lead: Create main agent skeleton
+cat > orchestrator.py << 'EOF'
+# Orchestrator Agent - routes incident investigation
+# TODO: Implement
+EOF
+
+git add orchestrator.py
+git commit -m "initial: orchestrator skeleton"
+
+# Each team member creates a worktree for their agent
+# Member A: Recon agent
+git worktree add worktrees/recon-agent -b feature/recon
+
+# Member B: Analysis agent
+git worktree add worktrees/analysis-agent -b feature/analysis
+
+# Member C: Reporting agent
+git worktree add worktrees/reporting-agent -b feature/reporting
+```
+
+Each team member now has an isolated directory where they develop without interfering with others. When each agent is complete and tested, the team merges back to main.
+
+> **Pro Tip:** Use Claude Code's integrated terminal to manage worktrees. When you `git worktree add`, Claude Code creates a path you can navigate to — making it natural to develop multiple agents simultaneously in separate Claude Code panes.
+
+### Lab Exercise: Three-Agent SOC System
+
+**Architecture:** Incident arrives → Orchestrator routes to Recon Agent (gathers IoC data via your MCP tools) → Analysis Agent (applies CCT framework to synthesize findings) → Reporting Agent (generates structured JSON + Markdown report). All three run under the Orchestrator's control.
+
+**Step 1: Initialize worktrees for parallel development**
+
+```bash
+cd ~/noctua-labs
+git init soc-agent-system && cd soc-agent-system
+git commit --allow-empty -m "init"
+# Create worktrees for each agent component
+git worktree add ../soc-recon   -b feature/recon-agent
+git worktree add ../soc-analysis -b feature/analysis-agent
+git worktree add ../soc-reporting -b feature/reporting-agent
+```
+
+**Step 2: Build the Recon Agent in its worktree**
+
+In `../soc-recon/`, use Claude Code to build `recon_agent.py`: a Claude-backed agent with access to your Unit 2 MCP tools (`query_cve`, `query_asset_exposure`, `generate_incident_report`, `search_security_kb`). Input: raw alert text. Output: structured reconnaissance JSON with all IoCs enriched.
+
+```bash
+cd ~/soc-recon
+claude
+# Prompt: "Build a recon security agent in Python using the Anthropic SDK.
+# The agent receives raw alert text and must:
+# 1. Extract all IoCs (IPs, hashes, CVEs, domains)
+# 2. Use tool calls to enrich each IoC via the MCP tools
+# 3. Return structured JSON: {iocs: [{type, value, enrichment, severity}], summary}
+# Use claude-sonnet-4-6. Include error handling for failed tool calls."
+```
+
+**Step 3: Build the Analysis Agent**
+
+In `../soc-analysis/`, build `analysis_agent.py`: applies your CCT system prompt (from Week 4) to the Recon Agent's output. Applies 5-pillar CCT analysis, generates top-3 hypotheses with probabilities, and recommends next steps. System prompt is your `security-analyst-context-v2.md`.
+
+**Step 4: Build the Reporting Agent**
+
+In `../soc-reporting/`, build `reporting_agent.py`: takes Analysis Agent output and generates a validated incident report (using your Week 5–6 schemas) in both JSON and Markdown formats. Calculates MTTI based on timestamps passed from the Orchestrator.
+
+**Step 5: Build the Orchestrator**
+
+In the main `soc-agent-system/` branch, build `orchestrator.py`: receives the alert, calls Recon → Analysis → Reporting in sequence, handles timeouts (30s per agent), and implements graceful degradation (if Recon fails, Analysis works with partial data).
+
+```bash
+cd ~/noctua-labs/soc-agent-system
+claude
+# Prompt: "Build orchestrator.py that coordinates three agents in sequence.
+# Import: recon_agent.run(alert_text), analysis_agent.run(recon_json),
+# reporting_agent.run(analysis_json, start_ts)
+# Requirements:
+# - 30s asyncio timeout per agent via asyncio.wait_for()
+# - If recon times out: pass partial data to analysis with recon_status='timeout'
+# - If analysis fails: reporting still runs with error summary
+# - Return: {mtti_seconds, recon_status, analysis_status, report}
+# - Log each stage with timestamp to structured JSON log"
+```
+
+### Implementing the Orchestrator Agent
+
+> **Key Concept:** The orchestrator is a **state machine**, not a reasoning engine. Its job is routing: accept an incident → delegate to recon agent → collect results → delegate to analysis agent → delegate to reporting agent → return final report. The orchestrator's system prompt is *minimal* — it's just instructions for control flow.
+
+**The orchestrator should be responsible for:**
+- **State tracking:** What stage of the pipeline are we in?
+- **Data flow:** What output from stage N becomes input to stage N+1?
+- **Error handling:** What if a subagent fails?
+- **Timeouts & retries:** What if a subagent is slow?
+
+**The orchestrator should NOT be responsible for:**
+- Doing analysis (that's the analysis agent)
+- Understanding threat intelligence (that's the recon agent)
+- Formatting reports (that's the reporting agent)
+
+**Claude Code Prompt for Building the Orchestrator:**
+
+```
+I'm building a three-stage incident response orchestrator agent.
+
+Architecture:
+- Orchestrator receives an incident alert
+- Orchestrator delegates to Recon Agent to gather intelligence
+- Orchestrator delegates to Analysis Agent to correlate findings
+- Orchestrator delegates to Reporting Agent to produce JSON report
+- Orchestrator returns the final report
+
+Requirements:
+1. The orchestrator's system prompt should be minimal (state machine, not reasoning engine)
+2. Each subagent should be invoked as a separate API call
+3. The orchestrator should handle the data flow: output from recon → input to analysis, etc.
+4. Add error handling: if a subagent times out, use fallback data or escalate
+
+Show me a Python class-based implementation of the orchestrator.
+Include methods: orchestrate_incident(), invoke_recon_subagent(), invoke_analysis_subagent(), invoke_reporting_subagent().
+```
+
+**Key Implementation Pattern:**
+
+```
+incident_description → invoke_recon_subagent()
+                             ↓ recon_results
+                       invoke_analysis_subagent()
+                             ↓ analysis_results
+                       invoke_reporting_subagent()
+                             ↓ final_report
+                       Return to caller
+```
+
+Each subagent call is independent; you can later parallelize them using concurrent API calls for speed.
+
+### Implementing the Recon Subagent
+
+> **Key Concept:** The recon agent is **tool-driven**. Unlike the orchestrator (which is a state machine), the recon agent is agentic — it decides which tools to call and how to reason about their outputs. The agent loop is: (system prompt + incident) → (agent thinks) → (agent calls tool) → (agent sees result) → (repeat until done).
+
+**Claude Code Prompt for Building the Recon Agent:**
+
+```
+I'm building a Threat Intelligence Recon Agent with Claude.
+
+The agent should:
+1. Accept an incident description
+2. Extract IOCs (IP addresses, domains, hashes) from the incident
+3. Use tools to check these IOCs against threat intelligence
+4. Correlate findings with MITRE ATT&CK techniques
+5. Return a structured JSON report with findings
+
+Tools available to the agent:
+- check_threat_intelligence(ioc: str): Looks up an IP/domain/hash; returns {reputation, last_seen, attributed_to, campaigns}
+- query_mitre_attack(technique: str): Looks up MITRE technique; returns {name, description, tactics, mitigations}
+
+Requirements:
+1. Implement the agentic loop: invoke agent → agent calls tools → process results → repeat until done
+2. Handle the case where the agent doesn't find any IOCs
+3. Show error handling: what if a tool call fails?
+4. Output JSON with: {incident_summary, iocs_found: [...], attack_techniques: [...], confidence_scores}
+
+Show me working Python code.
+```
+
+**Key Implementation Pattern — the agentic loop:**
+
+```python
+while True:
+  response = client.messages.create(model, system_prompt, tools, messages)
+  if response.stop_reason == "tool_use":
+    # Agent wants to use a tool
+    for tool_call in response.content:
+      result = execute_tool(tool_call.name, tool_call.input)
+      messages.append(tool_result)
+  else:
+    # Agent is done
+    break
+```
+
+**Review Checklist After Claude Generates Code:**
+
+After Claude generates the recon agent, verify:
+- [ ] The agent loop correctly handles tool calls (tool_use stop reason)
+- [ ] Tool results are sent back to the agent as `tool_result` content blocks
+- [ ] The final output is structured JSON (not free-form text)
+- [ ] The agent can handle incidents with no IOCs (graceful degradation)
+- [ ] Error handling for failed tool calls (e.g., unknown IOC)
+
+### Error Handling & Resilience
+
+> **Key Concept:** Real systems fail. Networks are unreliable. APIs timeout. Agents hallucinate. Your orchestrator must **survive failures gracefully**. The principle: *fail safe, not catastrophically.*
+
+**Failure Modes in Multi-Agent Systems:**
+
+1. **Subagent Timeout:** Recon agent hangs on a slow API call
+2. **Subagent Hallucination:** Analysis agent returns invalid JSON or nonsensical findings
+3. **Tool Failure:** A tool (e.g., threat DB lookup) times out or returns an error
+4. **Cascading Failure:** Recon fails → no input to analysis → analysis produces empty output → reporting fails
+
+**Resilience Patterns:**
+- **Timeout & Retry:** If a subagent doesn't respond in 30 seconds, retry with backoff
+- **Fallback Logic:** If a subagent fails, use degraded-mode analysis (simpler rule-based system)
+- **Partial Data Handling:** If recon found 0 IOCs, analysis should continue with what it has and flag missing data
+- **Output Validation:** Before using agent output, validate structure (is it valid JSON? Does it have required fields?)
+
+**Claude Code Prompt for Resilience:**
+
+```
+I'm building resilience into my incident response orchestrator.
+
+Requirements:
+1. Each subagent call has a timeout (30 seconds)
+2. If a subagent times out, retry with exponential backoff (2^attempt seconds)
+3. After 3 failed attempts, use fallback data (e.g., "analysis inconclusive; escalate to SOC analyst")
+4. Validate agent output: check it's valid JSON and has required fields
+5. Log all failures with context for debugging
+
+Implement:
+- invoke_with_retry(subagent_func, incident_data, max_retries=3, timeout_sec=30)
+- validate_agent_output(output, required_fields=[...])
+- Example: If recon fails, what fallback data should orchestrator use?
+
+Show working Python code with error handling.
+```
+
+**Graceful Degradation Example:**
+
+If the recon agent times out, rather than failing the entire incident response:
+- Orchestrator sends to analysis agent: `"Recon timed out. Proceeding with manual analysis baseline."`
+- Analysis agent analyzes the raw incident data (no threat intel context)
+- Reporting agent flags: `"Limited intelligence due to recon timeout; recommend human review"`
+- Incident gets escalated to SOC analyst with a note about what failed
+
+The incident response continues, but with transparency about limitations.
+
+### Measurement During Lab
+
+Track these metrics:
+
+| Metric | Definition | How to Measure |
 |---|---|---|
-| Excessive Agency | Escalate to high-risk actions via reasonable steps | AA-PRIV + AA-IMPACT |
-| Prompt Injection | Inject instructions into external data or tool outputs | AA-INIT |
-| Insecure Tool Integration | Path traversal, SQL injection via tool parameters | AA-INIT + AA-PRIV |
-| Memory Poisoning | Inject false entries into RAG knowledge base | AA-INIT + AA-PERSIST |
-| Insufficient Logging | Craft inputs that bypass or overwhelm logging | AA-EVADE |
-| Inadequate IAM | Reuse or escalate from weak credentials | AA-PRIV |
+| **Recon Time** | Time from alert to recon completion | Timestamp before/after recon subagent |
+| **Analysis Time** | Time from recon results to analysis completion | Timestamp before/after analysis subagent |
+| **Report Time** | Time from analysis to final report | Timestamp before/after reporting subagent |
+| **Total Time (aMTTR)** | Alert to final report | End timestamp - start timestamp |
+| **Token Cost** | Tokens spent across all agents | Sum of `usage.input_tokens + usage.output_tokens` |
 
----
+**Step 6: Merge and end-to-end test**
 
-## Day 2 — Lab
+Merge all three agent branches into main. Run the full system against the Meridian Financial incident. Verify: (1) Recon enriches all IoCs, (2) Analysis applies CCT and generates 3 hypotheses, (3) Reporting produces valid JSON + Markdown. Record end-to-end MTTI.
 
-### Lab: Three-Agent SOC System
+**Step 7: Compare against Week 1 MTTI baseline**
 
-Before building attack tools, document the threat model for your prototype.
-
-**Step 1: Attack Surface Mapping (15 min)**
-
-List every input channel to your prototype:
-- User-provided inputs (what fields? what formats?)
-- Tool outputs that feed back into the agent
-- External data sources (APIs, databases, files)
-- Knowledge base (if your tool uses RAG)
-
-For each channel, ask: what's the worst-case payload an attacker could send?
-
-**Step 2: Map to PeaRL Levels (10 min)**
-
-For each input channel, which PeaRL levels does it enable?
-- Direct user input → AA-INIT (prompt injection)
-- Tool with write access → AA-PRIV (privilege escalation)
-- Logging gaps → AA-EVADE
-- RAG knowledge base → AA-INIT + AA-PERSIST (memory poisoning)
-
-Document in a table:
-
-```
-| Input Channel | PeaRL Levels Reachable | Control Present? | Control Sufficient? |
-|---|---|---|---|
-| User input | AA-INIT | Yes (sanitize_input()) | Partial (patterns incomplete) |
-| Threat DB lookup | AA-RECON | No | Missing |
-| Knowledge base | AA-INIT, AA-PERSIST | No | Missing |
-```
-
-**Step 3: ATLAS TTP Selection (10 min)**
-
-For each gap identified, select the most relevant ATLAS technique:
-- Input injection → AML.T0051 (LLM Prompt Injection)
-- Knowledge base attack → AML.T0053 (Backdoor ML Model)
-- Tool enumeration → AML.T0001 (Discover ML Model)
-
-**Step 4: Build Attack Tools (55 min)**
-
-Use Claude Code to build attack tools against your own prototype:
-
-**Prompt Injection Tester:**
-```
-Build a prompt injection tester for [your tool].
-
-My tool accepts this input format: [your input schema]
-
-Generate 20 injection payloads that attempt to:
-1. Override the agent's system prompt instructions
-2. Redirect the agent to perform unauthorized actions
-3. Extract information from the agent's context that shouldn't be accessible
-4. Cause the agent to produce malformed output that bypasses validation
-
-Test each payload against my tool and record:
-- Did the injection execute? (Yes/No/Partial)
-- What was the agent's response?
-- Which OWASP risk and PeaRL level does this correspond to?
-
-Output results as structured JSON.
-```
-
-**Tool Enumeration Probe:**
-```
-Build a tool enumeration attack against [your tool].
-
-My tool exposes these MCP tools: [list your tools]
-
-For each tool:
-1. Probe the input schema boundaries (what's the min/max? what happens with null?)
-2. Test for path traversal in any file/path parameters
-3. Test for injection in any string parameters
-4. Test for integer overflow in any numeric parameters
-
-Record which probes produce unexpected behavior.
-```
-
-**Knowledge Base Poisoning Test (if your tool uses RAG):**
-```
-My tool uses a RAG knowledge base with these fields: [your schema]
-
-Craft 3 poisoning entries that:
-1. Are plausible enough to pass input validation
-2. Would change the agent's recommendations if retrieved
-3. Persist across sessions (not filtered at query time)
-
-For each entry, describe: what behavior it would cause, which query would trigger it,
-and how to detect it from the audit log.
-```
-
-**Step 5: Document Findings (10 min)**
-
-For each attack that succeeded (partial or full):
-- Vulnerability: [name]
-- AA-TTP Code: [AA-RECON, AA-INIT, etc.]
-- ATLAS TTP: [AML.T####]
-- CVSS/AIVSS Score: [estimate]
-- Affected AIUC-1 Domain: [A, B, C, D, E, F]
-- Evidence: [what output indicated the vulnerability?]
-- Week 12 control that should have stopped it: [what was missing or insufficient?]
-
-These findings drive the Week 14 defend-and-iterate session.
+Record the multi-agent system's MTTI for the Meridian Financial incident. Compare to your Week 1 manual MTTI. Calculate the improvement ratio. Consider: what is the cost per investigation (token cost)? Is the improvement worth the cost?
 
 ---
 
 ## Deliverables
 
-1. **Threat model document** — attack surface map, PeaRL level mapping, ATLAS TTP selection
-2. **Attack tools** — working code for at least 2 of the 3 attack types (injection tester, tool enumerator, knowledge base poisoner)
-3. **Findings report** — structured list of vulnerabilities found with AA-TTP codes, AIVSS scores, and affected AIUC-1 domains
-4. **Attack vs. control mapping** — for each finding: which Week 12 control failed to stop it?
+1. **Multi-Agent Codebase** (`/soc-agent-team/`):
+   - `orchestrator.py` — Main orchestrator agent with control flow
+   - `recon_agent.py` — Recon subagent with tool definitions
+   - `analysis_agent.py` — Analysis subagent with MITRE mapping
+   - `reporting_agent.py` — Reporting subagent with JSON output
+   - `main.py` — Entry point that runs the full pipeline
+   - `requirements.txt` — Dependencies (anthropic>=0.16.0)
 
----
+2. **Architecture Documentation** (`ARCHITECTURE.md`):
+   - Diagram showing orchestrator → subagent data flow
+   - Role of each subagent (inputs, outputs, tools)
+   - Failure handling strategy
+   - Token budget estimates
 
-## AIUC-1 Integration
+3. **Demo** (video or walkthrough, 5–10 min):
+   - Show the incident alert being processed
+   - Show each subagent completing its stage
+   - Show final JSON report generated
+   - Highlight error recovery (if tested)
 
-**Domain B001 (Adversarial Robustness Testing):** This week's lab IS B001 in practice. Every prompt injection test and tool enumeration probe is an adversarial robustness test.
+4. **Performance Metrics** (`metrics.json`):
 
-**V&V Adversarial Assumption:** From Week 8, V&V includes the adversarial assumption: assume an intelligent adversary is trying to make your system fail or be weaponized. Week 13 makes this assumption concrete and empirical.
-
-## V&V Lens
-
-**Red Team as Empirical V&V:** A passing unit test suite means nothing if an attacker can bypass it. Red teaming is V&V under the adversarial assumption. The findings are data: severity, exploitability, coverage of existing defenses.
-
-**Before Week 14:** Review your threat model findings with your team. Prioritize which vulnerabilities you will fix in the 24 hours before Week 14's defend session. High AIVSS + easy to fix = fix immediately. High AIVSS + complex = plan your defense carefully.
-
-### V&V Adversarial Assumption in Practice
-
-This week is where the fourth dimension of V&V Discipline — Adversarial Assumption — becomes your primary operating mode. Everything you learned about Output Verification, Calibrated Trust, and Failure Imagination now gets stress-tested:
-
-- **Can verification itself be compromised?** If your verification step queries a threat intel feed, what happens if the feed is poisoned?
-- **Can trust calibration be exploited?** If you've trained analysts to trust CVE lookups without verification, an attacker who can inject false CVE data bypasses your V&V entirely.
-- **Can failure imagination be weaponized?** If defenders over-imagine failure, they become paralyzed and stop acting on legitimate findings. Attackers can exploit this by flooding systems with false positives.
-
-Red teaming isn't just about finding vulnerabilities in agents — it's about finding vulnerabilities in your V&V process itself. Your Week 13 lab should include at least one attack that targets the verification mechanism, not just the agent.
-
----
-
-> **🧠 Domain Assist:** MITRE ATLAS threat modeling requires adversarial thinking — the ability to look at a system and see how an attacker would exploit it. If you come from a defensive or compliance background, this mindset doesn't come naturally. Before starting your threat model, ask Claude Chat:
->
-> "I have a multi-agent SOC system with agents: Alert Ingester, Enrichment Agent, Analysis Agent, and Response Recommender. They communicate through shared state and direct calls. I need to think like an attacker. Help me: 1) Where would I start? What's the easiest entry point? 2) How would I move from compromising one agent to compromising the whole system? 3) What would I target — the agents, the communication between them, the tools, or the data? 4) What MITRE ATLAS techniques would apply? 5) What's the attack the defenders are least likely to think of?"
-
----
-
-### Real-World AI Attack Scenarios
-
-Understanding attacker capabilities makes your threat model concrete. These documented scenarios connect to the attacks you're building this week:
-
-**AI-Generated Voice Phishing (Vishing)**
-Attackers clone executive voices using AI voice synthesis and call employees requesting wire transfers or credential resets. In 2024, a UK engineering firm lost $25M to a deepfake video call where the CFO appeared to authorize transfers.
-- AIUC-1 connection: Domain C (Safety) — harmful output prevention; Domain B (Security) — adversarial robustness
-- Defense: Voice verification protocols, callback procedures, multi-party authorization
-
-**AI-Scaled Spear Phishing**
-Attackers use LLMs to generate thousands of personalized phishing emails tailored to the target's role, recent activities, and communication style — scraped from LinkedIn and public data. Volume + personalization = unprecedented success rates.
-- AIUC-1 connection: Domain B (Security) — adversarial input detection
-- Defense: AI-powered email analysis, behavioral baselines
-
-**Deepfake Executive Impersonation**
-Video calls with AI-generated faces and voices impersonating executives for BEC (Business Email Compromise). The attacker doesn't need to compromise an account — they create a convincing synthetic version.
-- AIUC-1 connection: Domain E (Accountability) — identity verification, audit trails
-- Defense: Out-of-band verification, liveness detection
-
-**Autonomous Vulnerability Exploitation**
-AI agents that autonomously scan for vulnerabilities, generate exploits, test them, and deploy payloads — the attacker dark factory model. Demonstrated in research settings; emerging in the wild.
-- AIUC-1 connection: Domain B (Security) — all controls; this is the threat AIUC-1 was designed for
-- Defense: Autonomous defensive agents, real-time detection, zero-trust architecture
-
-**Synthetic Identity Fraud**
-AI generates fake identities at scale — synthetic faces, fabricated credit histories, AI-written social media profiles. Used for financial fraud, account creation abuse, and infiltrating organizations.
-- AIUC-1 connection: Domain A (Data & Privacy) — identity verification; Domain F (Society) — societal impact
-- Defense: Identity verification pipelines, behavioral analytics
-
-**AI-Powered Social Engineering Campaigns**
-Agents that maintain long-running social engineering pretexts across multiple channels — building trust over weeks before executing the attack.
-- AIUC-1 connection: Domain C (Safety) — multi-turn interaction risks; Domain B (Security) — adversarial robustness
-- Defense: Behavioral anomaly detection, communication pattern analysis
-
-**Lab reference:** For each OWASP risk in your threat model, identify which real-world attack scenario from this gallery exploits it. This connects your theoretical vulnerability assessment to real-world attacker capabilities.
-
----
-
-### The Attacker's Dark Factory
-
-The most dangerous evolution in the threat landscape is autonomous attack infrastructure — the attacker's dark factory. Unlike traditional attacks that require skilled human operators, a dark factory attack pipeline runs autonomously:
-
-1. **Recon agent** continuously scans for vulnerable targets across the internet
-2. **Exploit agent** chains vulnerabilities and generates custom payloads
-3. **Persistence agent** establishes footholds and maintains access
-4. **Exfiltration agent** identifies and extracts high-value data
-5. **Cleanup agent** covers tracks and rotates infrastructure
-
-This pipeline runs 24/7, hits thousands of targets simultaneously, and costs almost nothing per target. A 2% success rate across 100,000 targets yields 2,000 compromises with zero human labor.
-
-The Anthropic GTG-1002 espionage campaign (disclosed November 2025, detected September 2025) was an early prototype of this model — operating at 80–90% autonomy across recon, credential harvesting, and data exfiltration.
-
-**Implication for defenders:** You cannot defend against machine-speed attacks at human speed. Your defensive systems need autonomous capabilities — but with the governance guardrails (AIUC-1, V&V, human override) that prevent your dark factory from becoming another threat.
-
----
-
-> ### Case Study: Claude Finds 22 Firefox Vulnerabilities (March 2026)
->
-> In a documented case of AI autonomous security research at production scale, Anthropic deployed Claude Opus 4.6 to scan ~6,000 Firefox C++ files. Results over approximately two weeks:
->
-> | Metric | Result |
-> |---|---|
-> | Vulnerabilities confirmed | **22** (14 high-severity, 7 moderate, 1 low) |
-> | Reports generated by Claude | 112 → 22 confirmed (~80% false positive rate — normal for automated security research) |
-> | Working exploits produced | 2 of several hundred attempts — only in environments with intentionally removed security features |
-> | API cost | **$4,000** (≈ $182 per confirmed vulnerability) |
-> | Time to first finding | **20 minutes** |
->
-> Human review was required at every decision point. This is the dark factory model applied to defensive security research — not fully autonomous, but overwhelmingly AI-executed at the tactical level.
->
-> **The dual-use question:** The same agentic loop that finds bugs to patch can find bugs to exploit. What changes between defensive and offensive use is not capability — it is authorization, governance, and the human decision at the end of the chain.
->
-> **Full case study:** `resources/case-studies/firefox-autonomous-security-research.md`
-> **Primary source:** https://www.anthropic.com/news/mozilla-firefox-security
-
-> **📖 Case Study Connection:** The Autonomous Agent Attack Framework (AA-RECON, AA-INIT, AA-PRIV, AA-EVADE, AA-IMPACT) from the PeaRL case study is your TTP taxonomy for red teaming. When you attack each other's systems, report your findings using these TTP codes. When you find a new technique, propose a new TTP code and justify it.
-
----
-
-## Red Team Attack Playbook: Anti-Patterns Reference
-
-The [AI Code Anti-Patterns Reference](../../docs/resources/ai-code-antipatterns-reference.md) is your Week 13 attack specification. Every pattern with grep-detectable heuristics is a test you can run against the target system:
-
-```bash
-# Does their error handling swallow exceptions? (1.1 — false negatives)
-grep -rn "except.*:" --include="*.py" | grep -v "except.*Error"
-
-# Do they compare secrets with == ? (4.1 — timing attack)
-grep -rn "==.*key\|==.*token\|==.*secret" --include="*.py"
-
-# Do they log user input directly? (4.2 — log injection)
-grep -rn "logger.*f\"\|logging.*f\"" --include="*.py"
-
-# Do they have unbounded collections? (2.3 — memory exhaustion)
-grep -rn "\.append\b" --include="*.py"
-
-# Do they have input bounds? (4.3 — OOM / SQL injection)
-grep -rn "@tool\|@app.post" --include="*.py"
+```json
+{
+  "incident": "finance server anomaly",
+  "recon_time_sec": 4.2,
+  "analysis_time_sec": 3.1,
+  "report_time_sec": 2.5,
+  "total_time_sec": 9.8,
+  "tokens_orchestrator": 450,
+  "tokens_recon": 620,
+  "tokens_analysis": 580,
+  "tokens_reporting": 400,
+  "total_tokens": 2050,
+  "estimated_cost_usd": 0.041
+}
 ```
 
-For each finding: document the pattern ID, file:line, what the exploit sends, what the production impact would be, and whether it maps to a PeaRL AA-TTP code. This is a professional penetration test, not just a code review.
+5. **MTTI Comparison** — Week 1 manual vs. Week 13 automated, with cost analysis
 
 ---
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on the key concepts from this reading. Start easy, then get harder."
-> - "I think I understand MITRE ATLAS threat modeling but I'm not sure. Explain it to me differently and then test whether I really get it."
-> - "What are the three most common mistakes teams make when red teaming AI systems? Do I have any of them?"
-> - "Connect this week's red team work to what we learned in Weeks 11-12. What does red teaming tell us about our sprint prototypes?"
+## Sources & Tools
+
+- [Claude Agent SDK Documentation](https://docs.anthropic.com/en/docs/build-a-system-with-agents)
+- [Anthropic API Reference](https://docs.anthropic.com/en/api/messages)
+- [MITRE ATT&CK Framework](https://attack.mitre.org/)
+- Incident Response Best Practices (see `frameworks.html`)
 
 ---
 
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
-
----
-
-## PR 6 Callout Additions (lab-s1-unit4.html)
-
-- **Item 44** — Added `callout-key`: "Tool-agnostic framing: worktrees and multi-agent patterns" at the start of Week 13, after the Lab Goal callout. Clarifies that worktrees are a git feature (not Claude Code-specific), and that orchestrator + specialized worker is a framework-independent pattern applicable to LangGraph, AutoGen, CrewAI, and the Anthropic SDK.
+> **Study With Claude Code:** Open Claude Code and try:
+> - "Quiz me on the key concepts from this week's material. Start easy, then get harder."
+> - "I think I understand multi-agent orchestration but I'm not sure. Explain it to me differently and then test whether I really get it."
+> - "What are the three most common mistakes teams make when building multi-agent systems? Do I have any of them?"
+> - "Connect this week's multi-agent architecture to what we learned in Units 1–3. How do worktrees relate to the sprint workflow?"

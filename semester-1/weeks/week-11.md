@@ -1,325 +1,431 @@
-# Week 11: Bias, Fairness, and Explainability
+# Week 11: Bias, Fairness, and Explainability in Security AI
 
 **Semester 1 | Week 11 of 16**
 
 ## Learning Objectives
 
-- Apply the Engineering Assessment Stack to drive architecture decisions from first principles
-- Implement a working security tool prototype using the Think → Spec → Build → Retro cycle
-- Bake AIUC-1 controls in from the start rather than adding them after
-- Measure tool effectiveness using MTTS, MTTP, MTTSol, MTTI, aMTTR, and CPT (Cost Per Transaction)
-- Containerize your prototype on Day 1 so the production path is already paved
-- Use the CCT framework to scope problems under time pressure
+- Understand how bias manifests in security AI systems and causes real harm
+- Learn fairness metrics and measurement techniques
+- Analyze real-world bias incidents (COMPAS, healthcare algorithms, hiring systems)
+- Understand explainability techniques (LIME, SHAP) and their application to security decisions
+- Design systems that are fair, transparent, and auditable
 
 ---
 
 ## Day 1 — Theory
 
-### The Sprint Methodology
+> **The system in this lab should not have deployed without a fairness review.** The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This system was built in the lab and deployed before this analysis was run. In production, the review comes first. Use this week as a rehearsal for what pre-deployment governance looks like — not as retrospective damage assessment.
 
-Three hours. That's your timeline to go from "we have a problem" to "here's a working solution." This is not a thought experiment — it's the actual methodology used in incident response teams, threat hunting, and startup security. The key is ruthless prioritization.
+Bias in AI systems is not an abstract ethical concern — it is a concrete security risk. When a threat detection system is biased against a certain geographic region, organization type, or user demographic, it creates unfair risk exposure. When an access control system discriminates, it violates regulatory requirements (EU AI Act, GDPR) and creates liability.
 
-In a 110-minute sprint, you have roughly:
-- 15 minutes to understand the problem (CCT + Assessment Stack)
-- 15 minutes to design the solution (Spec)
-- 60 minutes to build
-- 15 minutes to test and iterate
-- 10 minutes to prepare a demo
+> **Key Concept:** Bias in AI is not just about training data. Even well-intentioned systems can discriminate through:
+> - **Historical bias:** Training data reflects past discrimination
+> - **Representation bias:** Certain groups are underrepresented in training data
+> - **Measurement bias:** The metric we optimize for doesn't capture the full problem
+> - **Aggregation bias:** One-size-fits-all models perform poorly on subgroups
+> - **Evaluation bias:** Testing on non-diverse data hides performance gaps
 
-This forces clarity. You cannot afford ambiguity or gold-plating. You build exactly what solves the problem — nothing more.
+### How Bias Manifests in Security AI
 
-### The Think → Spec → Build → Retro Cycle
+**Threat Detection Bias**
 
-This sprint implements a four-phase cycle, each powered by a Claude Code skill:
+A threat detection system is trained on security incidents from the past 5 years. Most incidents in the training data occurred at large Western companies; small companies in Asia-Pacific are underrepresented. The model learns to associate:
+- Large deal sizes → higher business impact → higher threat severity
+- Western organization names → more legitimate → lower threat likelihood
+- Non-Western language in logs → more suspicious (proxy for "unfamiliar")
 
-**Think (~15 min):** Use `/think` to critically analyze the problem, surface assumptions, identify risks, and consider alternatives before writing any spec.
+Result: The same incident at a small Asian company is flagged as higher threat severity than at a large Western company. This is unfair and creates operational friction (SecOps team questions recommendations for small companies).
 
-**Spec (~20 min):** Use `/build-spec` to produce a formal architecture document with agent role definitions, tool schemas, and success criteria before building.
+**Access Control Bias**
 
-**Build (~50 min):** Use Claude Code to implement the agent and tools rapidly in an isolated git worktree. Cut anything that doesn't directly serve the specification.
+An AI system recommends whether to grant a user access to a critical system. The system is trained on historical access decisions. In the past, managers from certain demographics were more likely to request access to certain systems. The model learns these patterns and recommends granting access to managers of similar demographics, even if policy should be uniform.
 
-**Retro (~15 min):** Use `/retro` to review what was built against the spec, capture what worked, what didn't, and what to carry into the Week 12 hardening cycle.
+Result: Systematic discrimination in access control. Regulators flag this as a GDPR violation.
 
-This cycle repeats every sprint. Week 11 is your first complete Think → Spec → Build → Retro cycle. Week 12 iterates on the failures found here.
+**Risk Scoring Bias**
 
-### Assessment Stack Drives Architecture
+A financial institution uses an AI model to score the risk of enterprise customers. The model is trained on historical loan data, which reflects past discriminatory lending practices. Certain ZIP codes have higher default rates (historically), which is due to systemic inequality, not inherent creditworthiness. The model learns this proxy and perpetuates the bias.
 
-Before writing a single line of code, run the Assessment Stack against your problem:
+Result: Unfair risk scoring for small businesses in certain regions. This violates fair lending law.
 
-**Layer 1 — Problem Type:** Is this classification, correlation, reasoning, generation, or retrieval? Most security tools span more than one — identify the *primary* type.
+> **Discussion Prompt:** Why is it hard to detect bias just by looking at the training data? Give an example: A threat detection system is trained on network logs. The logs don't explicitly include "geography" or "organization type," but these attributes can be inferred from IP addresses and domain names. How would you detect this hidden bias?
 
-**Layer 2 — Computation Approach:** Is the core problem deterministic (rules, regex, exact match), statistical (classifiers, anomaly detection), or reasoning (novel situations, ambiguous evidence)?
+### Fairness Metrics
 
-**Layer 3 — Model Selection:** If reasoning is required:
-- High-throughput routing/extraction → Haiku ($1/MTok)
-- Operational analysis → Sonnet ($3/MTok)
-- Deep attribution, novel scenarios → Opus ($5/MTok, invoke rarely)
+**Disparate Impact Ratio**
 
-**Layer 4 — Data Architecture:** Where does your data live? Exact lookup → relational. Semantic similarity → vector. Relationship traversal → graph. Trends → time series.
+The simplest fairness metric. For a binary decision (approve/deny, safe/threat), measure the decision rate for each group:
 
-**Layer 5 — Integration Pattern:** Real-time MCP tool call vs. batch vs. agent-to-agent delegation.
+```
+Decision Rate for Group A = # approved in Group A / Total in Group A
+Decision Rate for Group B = # approved in Group B / Total in Group B
 
-**Layer 6 — Verification:** How will you confirm the output is correct? Test suite for deterministic tools, human review for reasoning outputs, cross-reference for factual claims.
+Disparate Impact Ratio = min(rate A, rate B) / max(rate A, rate B)
 
-Document your Assessment Stack decision as a table in your spec. This is a deliverable for Week 16.
-
-### AIUC-1 Baked In from the Start
-
-Unlike a prototype that adds governance after the fact, Sprint I builds controls in from Day 1. As you design:
-
-**Domain B (Security):** Define input validation before you write the first tool. What can an attacker inject? What schema does your tool accept?
-
-**Domain D (Reliability):** Design graceful degradation before you need it. What happens when an API times out? What's the fallback?
-
-**Domain E (Accountability):** Add structured logging to your spec before building. What events must be logged? What's the minimum information needed to reconstruct a decision?
-
-**Domain A (Data & Privacy):** What PII will your tool process? Can it be minimized?
-
-Domains C (Safety) and F (Society) — for a prototype, the minimum is: "Does this tool take irreversible actions? If yes, add a human approval step."
-
-### The Five Security Metrics
-
-Measure yourself against these from the first run:
-
-1. **MTTS — Mean Time to Suppress:** How long until the blast radius stops expanding?
-2. **MTTP — Mean Time to Prevent:** How long until preventive measures are deployed?
-3. **MTTSol — Mean Time to Solution:** Full resolution from detection to closure (often not achievable in a sprint — aim for MTTS + MTTP first)
-4. **MTTI — Mean Time to Investigate:** How long to complete forensic and behavioral analysis?
-5. **aMTTR — Adjusted Mean Time to Remediate:** Weighted metric accounting for incident severity; includes human review time.
-
-**CPT — Cost Per Transaction:** How much does one invocation of your tool cost in API tokens? Calculate: `total_tokens * model_price / 1_000_000`. Track this for every model tier used.
-
-Record these in a metrics JSON file as part of your deliverable. They become your Week 12 baseline.
-
-### Containerize from Day 1
-
-The most expensive mistake in delivery is building on your laptop and discovering at Week 15 that it can't containerize for production. Avoid this by wrapping your prototype in a Dockerfile immediately.
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-ENTRYPOINT ["python", "-m", "your_tool"]
+Rule of Thumb: A ratio below 0.8 is considered evidence of disparate impact
 ```
 
-And a `docker-compose.yml` for local testing:
+**Example:** A threat detection system flags 10% of traffic from Group A as suspicious, and 50% of traffic from Group B as suspicious.
+- Disparate Impact Ratio = 10% / 50% = 0.2
+- This is well below 0.8, indicating severe disparate impact
 
-```yaml
-version: '3.8'
-services:
-  your-tool:
-    build: .
-    volumes:
-      - ./data:/data
-      - ./output:/output
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+**Equalized Odds**
+
+A more nuanced metric. It requires that the model has the *same true positive rate and false positive rate across groups*:
+
+```
+True Positive Rate for Group A = # true positives / # actual positives in Group A
+True Positive Rate for Group B = # true positives / # actual positives in Group B
+
+Equalized Odds: TPR(A) ≈ TPR(B) AND FPR(A) ≈ FPR(B)
 ```
 
-Local testing: `docker-compose up` — your prototype runs in a container exactly as it will in production. When Week 15 comes, you're not rewriting for containers — you're just hardening the build pipeline.
+**Why this matters:** It's not enough that the overall accuracy is the same. You need to ensure that if the model misses threats from Group A, it also misses threats from Group B at similar rates. Otherwise, Group A gets unfair risk exposure.
 
-### Sprint Antipatterns
+**Demographic Parity**
 
-These sink sprints. Recognize and avoid them:
+A metric that requires *equal prediction rates across groups*, regardless of actual differences:
 
-| Antipattern | Cost | Fix |
-|---|---|---|
-| Perfectionism | "Let's make the UI gorgeous" | CLI is fine. UI is Week 12+. |
-| Over-generalization | "Let's cover 10 use cases" | Pick one. Iterate later. |
-| Scope creep | "While we're at it, add auth" | Note it. Defer to Week 12. |
-| Architecture paralysis | 20 minutes debating frameworks | Pick one, move. |
-| Testing obsession | "We need 100 unit tests" | One happy path + one failure case. Ship it. |
+```
+Prediction Rate for Group A = # predicted positive / Total in Group A
+Prediction Rate for Group B = # predicted positive / Total in Group B
 
-The best sprint code is "good enough" code. Iterate from there.
+Demographic Parity: Prediction Rate(A) ≈ Prediction Rate(B)
+```
+
+**When to use:** Demographic parity is stricter than equalized odds. Use it when you believe there should be no difference in outcomes across groups (e.g., access control decisions should be blind to demographics).
+
+**Calibration**
+
+A metric that requires predictions to be *equally reliable across groups*:
+
+```
+Calibration: Among all instances predicted as "high threat" from Group A,
+the actual positive rate should match the actual positive rate from Group B.
+
+If the model predicts "80% chance of threat" for Group A instances and
+"80% chance of threat" for Group B instances, both should have similar
+true positive rates (~80%).
+```
+
+### Explainability Techniques
+
+**LIME (Local Interpretable Model-Agnostic Explanations)**
+
+LIME explains a single prediction by fitting a simple, interpretable model to it locally:
+
+```
+For a model prediction "High Threat":
+
+1. Perturb the input slightly (change word weights, pixel values, etc.)
+2. Get predictions for perturbed inputs
+3. Fit a simple linear model to explain the relationship between
+   perturbations and predictions
+4. Identify which features have the largest coefficients
+5. These are the "important features" for this prediction
+
+Example Output:
+"This network flow is flagged as high threat because:
+- Source IP is from a previously compromised network (+0.45)
+- Destination port matches known C2 beacon port (+0.30)
+- Payload contains base64-encoded commands (+0.20)
+These three factors together score this flow as high threat."
+```
+
+**SHAP (SHapley Additive exPlanations)**
+
+SHAP uses game theory to assign importance to each feature:
+
+```
+SHAP assigns each feature a "contribution" to the prediction, based on
+how much the prediction would change if you removed that feature.
+
+Example Output:
+"This transaction is flagged as high risk because:
+- Amount is 10x higher than average (-0.08 contribution, pushes toward "safe")
+- Destination is in a high-fraud region (+0.30 contribution)
+- Timestamp is outside typical transaction hours (+0.15 contribution)
+- Etc.
+
+Cumulative effect: Model prediction = Base Rate (0.50) +
+Feature Contributions = 0.85 (high risk)"
+```
+
+> **Common Pitfall:** Explainability does not equal fairness. You can have a system that is very explainable but still unfair. The explanation for why a certain group is disadvantaged might be clear, but the disadvantage is still unacceptable. Explainability is necessary but not sufficient for fairness.
+
+### Real-World Bias Incidents
+
+**COMPAS Recidivism Algorithm (2016)**
+
+ProPublica investigated the COMPAS algorithm used in U.S. criminal justice to predict recidivism (likelihood of re-offense). Key findings:
+- For the same criminal history, Black defendants were rated as higher risk than white defendants
+- Disparate Impact Ratio: ~0.5 (severe disparate impact)
+- False positive rate for Black defendants: 45%
+- False positive rate for white defendants: 23%
+- The algorithm was not transparent; defendants couldn't understand or appeal the rating
+
+*Security application:* A threat scoring system with similar properties would unfairly prioritize security incidents from certain demographics, leading to unfair access controls and regulatory exposure.
+
+Further Reading: [ProPublica's COMPAS investigation](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing) is the seminal work on algorithmic bias in high-stakes decision making.
+
+**Amazon's Recruiting AI (2014–2018)**
+
+Amazon built an ML-based system to screen resumes. The system was trained on historical hiring data from the tech industry, where male engineers dominated. Key findings:
+- The system learned to penalize resumes containing the word "women's" (e.g., "women's chess club")
+- Female candidates were systematically downranked
+- The bias was not intentional; it emerged from the training data
+- Amazon shut down the system rather than trying to fix it
+
+*Security application:* A security tools authorization system might systematically deprioritize security requests from certain teams or demographics based on biased historical patterns.
+
+**Healthcare Algorithms and Racial Bias (2019)**
+
+Researchers discovered that a widely-used algorithm for allocating healthcare resources was biased against Black patients. Key findings:
+- The algorithm used healthcare spending as a proxy for health needs
+- Because of systemic racism and lower healthcare access in Black communities, spending was lower despite equal health needs
+- The algorithm systematically assigned lower care priority to Black patients with the same health needs as white patients
+- Impact: Thousands of Black patients received lower priority for scarce medical resources
+
+*Security application:* A security risk prioritization system using "past incidents" as a proxy for "future risk" might systematically deprioritize risks to less-resourced departments or regions, creating unfair risk exposure.
+
+> **Fixing bias requires process changes, not just algorithmic fixes.** Reweighing the scoring model improved aggregate metrics but did not fully resolve the disparity. Why? The training data reflects historical decisions that were themselves biased. Algorithmic fixes adjust the output distribution without addressing the root cause. Organizational fixes required: (1) a fairness review gate before any scoring model deployment, (2) a feature review process that flags demographic proxies, (3) an appeals procedure for affected individuals. The algorithm is not the problem — the process that allowed deployment without review is.
+
+### Mitigation Strategies
+
+**Balanced Data Collection**
+
+Collect training data intentionally from underrepresented groups. Don't wait for natural imbalance; actively seek out incidents from small companies, non-Western organizations, etc.
+
+**Fairness Constraints During Training**
+
+When training a model, add constraints that penalize unfairness:
+
+```python
+# Standard loss function:
+loss = mean_squared_error(predictions, true_labels)
+
+# Fairness-aware loss function:
+group_A_error = mean_squared_error(predictions[group_A], true_labels[group_A])
+group_B_error = mean_squared_error(predictions[group_B], true_labels[group_B])
+
+fairness_penalty = abs(group_A_error - group_B_error)
+total_loss = accuracy_loss + fairness_weight * fairness_penalty
+```
+
+**Post-hoc Adjustment**
+
+After training, adjust decision thresholds to achieve fairness:
+
+```python
+# Original model: Predict "high threat" if P(threat) > 0.5
+# Biased result: Group B gets false-positives at 2x the rate of Group A
+
+# Post-hoc fix: Use different thresholds
+for group_A: threshold = 0.5
+for group_B: threshold = 0.6 (higher threshold means fewer positives)
+
+# This reduces false positives for Group B while maintaining accuracy
+```
+
+**Human Review and Appeal**
+
+The most robust defense: require human review for high-stakes decisions and provide appeals mechanisms. Humans can catch unfair patterns and correct them.
 
 ---
 
 ## Day 2 — Lab: Bias Detection with IBM AI Fairness 360
 
-### Problem Statement
+**Lab Goal:** Apply IBM AI Fairness 360 to analyze a simulated security threat-scoring dataset for demographic bias. Produce fairness metrics, visualizations, and a bias remediation plan.
 
-Your instructor will provide a security problem. Example problems:
-- "Build an automated threat hunter that detects suspicious user behavior in cloud infrastructure"
-- "Create a vulnerability assessment tool that correlates multiple sources of intelligence"
-- "Design a security policy compliance checker that audits infrastructure against NIST standards"
+> **The system in this lab should not have deployed without a fairness review.** The bias analysis you're about to run reveals what a pre-deployment review would have caught: a 2.1× disparity in insider threat scoring for non-US employees, violating the 80% rule for disparate impact. This geography-based disparity mirrors a wider class of bias in security tools: when training data reflects historical investigation rates or incident telemetry from a non-representative population, the model systematically over-flags some groups and under-flags others — creating both liability exposure and operational blindspots. In production, the review comes first.
 
-Teams of 2-3 students, 110 minutes total.
+**Scenario:** You have been given a synthetic dataset representing 1000 employee records scored by an AI-based insider threat detection system. The dataset includes: employee ID, department, tenure, geography, access level, and a risk_score (0-100) assigned by the AI. You will test whether the scoring system exhibits bias based on geography (US vs. non-US).
 
-### Phase 1: Think (15 min)
+### Part 1: Bias Detection (40 minutes)
 
-Apply CCT and the Assessment Stack:
+> **Key Concept:** Bias detection requires three pieces: *diverse test data*, *stratified metrics*, and *visualization*. You can't see bias without looking at subgroups separately. A model with 90% overall accuracy might have 98% accuracy for Group A and 60% for Group B — the average hides the disparity.
 
-**Evidence-Based Problem Definition (5 min):**
-- What's the concrete problem statement?
-- What data/signals are available?
-- Who is the user (analyst, DevOps, compliance officer)?
+**Architecture: Bias Testing Workflow**
 
-**Assessment Stack Pass (5 min):**
-- Layer 1: What problem type is this?
-- Layers 2-3: Deterministic, statistical, or reasoning? Which model tier?
-- Layers 4-5: What data stores? What integration pattern?
+The workflow for bias detection is:
+1. Load/construct diverse dataset with protected characteristics (region, organization type, size)
+2. Run model predictions on this data
+3. Compute fairness metrics separately for each subgroup
+4. Visualize disparities
+5. Use Claude Code to interpret findings and identify root causes
 
-**Success Criteria (5 min):**
-- Write down 3-5 measurable outcomes
-- Example: "Detects 80% of anomalies with < 5% false positives"
-- Example: "Runs in < 30 seconds per scan, costs < $0.05 per invocation"
+> **AIF360 requires Python 3.10 or 3.11.** AIF360 has known installation failures on Python 3.12+. If installation fails, use Python 3.10 or 3.11 for this exercise (`pyenv local 3.11.x`). The bias concepts in this lab are framework-independent — the code patterns apply regardless of which fairness library you use.
 
-**Output:** One-page problem analysis with Assessment Stack table.
+**Step 1: Install AIF360 and generate the synthetic dataset**
 
-### Phase 2: Spec (15 min)
+```bash
+pip install aif360 pandas matplotlib scikit-learn
+mkdir -p ~/noctua-labs/unit3/week11 && cd ~/noctua-labs/unit3/week11
 
-Don't code yet. Write:
-
-**Architecture Sketch (5 min):**
-- Agents needed? Tools? APIs?
-- What data flows in, what flows out?
-- What's the critical path (what *must* work)?
-
-**MVP Scope (5 min):**
-- Required for MVP (must work by end of sprint)
-- Deferred to Week 12 (important but not blocking)
-- Out of scope (don't discuss again until after presentations)
-
-**AIUC-1 Controls Design (5 min):**
-- Input validation: what schema do your tools accept?
-- Logging: what events do you log? What fields?
-- Graceful degradation: what happens when the main path fails?
-
-**Output:** One-page spec with ASCII architecture diagram and AIUC-1 control table.
-
-### Phase 3: Build (60 min)
-
-Use Claude Code as your pair programmer. You describe the architecture; Claude Code generates scaffolding. Your job: refine, test, iterate.
-
-**Build sequence:**
-1. Project structure + requirements.txt + Dockerfile (5 min)
-2. Tool definitions and schemas with input validation (10 min)
-3. Agent(s) with system prompts — Assessment Stack model selection applied (15 min)
-4. Orchestration and data flow (15 min)
-5. Logging and structured output (10 min)
-6. Quick local test (5 min)
-
-**During build, maintain a deferred items list.** Every time you hit something that would take more than 10 minutes to do correctly, note it and move on. These become Week 12 tasks.
-
-### Phase 4: Test and Retro (15 min)
-
-**Happy Path Test (5 min):** Run your tool on normal data. Does it complete?
-
-**Failure Case (5 min):** Feed it bad data (malformed input, missing fields). Does it handle errors?
-
-**Metrics Capture (5 min):** Record timings and costs:
-
-```json
-{
-  "sprint": "week-11",
-  "problem": "[your problem statement]",
-  "execution_time_sec": 0.0,
-  "tokens_used": 0,
-  "estimated_cost_usd": 0.0,
-  "cpt_usd": 0.0,
-  "mtts_sec": 0.0,
-  "success_criteria_met": "X of Y",
-  "deferred_items": []
-}
+# Use Claude Code to generate a biased synthetic dataset:
+# "Generate a Python script that creates a synthetic employee threat
+# scoring dataset (1000 rows) with columns: employee_id, geography
+# (US=70%, non-US=30%), department, tenure_years, access_level
+# (1-5), risk_score. Make risk_score biased: non-US employees
+# receive systematically higher scores for identical access patterns.
+# Save as threat_scores.csv"
+claude
 ```
 
-**Retro (built into the /retro skill):**
-- What from the spec did you build? What did you cut?
-- What was harder than expected?
-- What surprised you about the Assessment Stack decisions you made?
-- Top 3 items for Week 12 hardening
+**Step 2: Load dataset into AIF360 BinaryLabelDataset**
+
+Use Claude Code to write `bias_analysis.py` that loads the CSV into an AIF360 BinaryLabelDataset with geography as the protected attribute (privileged=US, unprivileged=non-US) and binarizes risk_score (score > 60 = high risk = unfavorable outcome).
+
+**Step 3: Calculate and display fairness metrics**
+
+Calculate: (1) Disparate Impact ratio, (2) Statistical Parity Difference, (3) Equal Opportunity Difference. Print each metric and determine if each passes or fails the 80% rule. Create a bar chart visualization of high-risk rates by geography.
+
+```python
+# Expected output:
+# Disparate Impact: [value] (PASS if >= 0.8, FAIL if < 0.8)
+# Statistical Parity Difference: [value] (PASS if between -0.1 and 0.1)
+# Visualize with matplotlib: risk_rate_by_geography.png
+```
+
+**Step 4: Apply a bias mitigation technique**
+
+Apply AIF360's Reweighing pre-processing algorithm to the dataset. This assigns sample weights to balance outcomes across groups without removing data. Recalculate fairness metrics on the reweighed dataset. Do they improve?
+
+**Step 5: Write the Bias Analysis Report**
+
+Document: (1) which metrics showed bias, (2) real-world harm this bias would cause — who gets over-investigated, and what threats go undetected because analyst time is consumed by false positives from biased scoring?, (3) whether reweighing fixed the problem, (4) what AIUC-1 domain this violates (F. Society — fairness and bias mitigation), (5) three organizational changes beyond algorithmic fixes.
+
+### Part 2: Fairness Metrics and Mitigation (40 minutes)
+
+> **Key Concept:** Multiple fairness definitions exist, and they're not all compatible. Demographic Parity (equal prediction rates) conflicts with Equalized Odds (equal error rates). Your choice of metric reflects your values: do you want equal treatment (same process) or equal outcomes (same results)?
+
+**Fairness Metrics Overview:**
+- **Demographic Parity Difference:** Do we accept/flag at the same rate for all groups?
+- **Equalized Odds Difference:** Do we miss threats (false negatives) and false-alarm (false positives) at the same rates for all groups?
+- **Calibration:** When we predict "80% confidence," does that actually mean 80% of those cases are true positives, regardless of group?
+
+**Claude Code Prompt for Fairness Measurement:**
+
+```
+I'm measuring fairness in my threat detection model using the Fairlearn library.
+
+I have:
+- incidents['severity'] > 6: true label (binary)
+- incidents['predicted_severity'] > 6: model prediction
+- incidents['geographic_region']: group membership (US, Asia-Pacific, EU, Africa)
+
+I need to:
+1. Compute demographic parity difference using fairlearn
+2. Compute equalized odds difference
+3. Interpret results: what do the numbers mean?
+4. Identify which groups are disadvantaged
+
+Show me working code with explanations of what each metric measures.
+```
+
+**Mitigation: Post-Hoc Threshold Adjustment**
+
+Once you've identified disparities, you can adjust decision thresholds per group. The strategy: if Asia-Pacific has 2x false positive rate, increase the threshold for Asia-Pacific (require higher confidence before flagging).
+
+**Claude Code Prompt for Mitigation:**
+
+```
+I've found that my model has unfair FPR:
+- US: 15% false positive rate
+- Asia-Pacific: 35% false positive rate
+
+I want to use post-hoc threshold adjustment to make it fair.
+
+Create Python code that:
+1. Calculates group-specific thresholds (higher threshold for Asia-Pacific to reduce FPR)
+2. Applies these thresholds to make predictions
+3. Re-measures fairness metrics to confirm improvement
+4. Documents the trade-off (e.g., "Asia-Pacific accuracy drops 2% but FPR becomes fair")
+
+Show the process step-by-step.
+```
+
+This approach is pragmatic: you're not retraining the model, just adjusting the decision boundary per group. The trade-off is transparent: the model makes different decisions for equivalent inputs (some groups need higher confidence), which is ethically clearer than hidden bias.
+
+### Part 3: Explainability (30 minutes)
+
+> **Key Concept:** LIME and SHAP answer the question: "Why did the model make this prediction?" They work by perturbing inputs and observing how predictions change. LIME is model-agnostic (works with any model). SHAP is theoretically grounded in game theory. Both require the model to be callable as a black-box function.
+
+**Explainability Architecture:**
+
+For each prediction you want to explain:
+1. Initialize an explainer (LIME or SHAP)
+2. Pass the instance (the incident/prediction you want to understand)
+3. Get a ranking of features by importance
+4. Visualize the explanation
+
+**Claude Code Prompt for Implementing Explainability:**
+
+```
+I want to use LIME to explain individual predictions from my threat detection model.
+
+I have:
+- X_train: training data (DataFrame)
+- model.predict: function that takes features and returns threat score (0-1)
+- incident_to_explain: a specific incident I want to understand
+
+I need to:
+1. Initialize a LIME explainer with feature names
+2. Explain why the model predicted "high threat" for this incident
+3. Get a visualization showing the top 5 features pushing the prediction up/down
+4. Interpret the explanation for a non-technical stakeholder
+
+Show me working Python code with explanation of LIME's process.
+```
+
+**When to Use LIME vs SHAP:**
+- **LIME:** Faster, simpler, good for individual predictions. Use this for explaining alerts to analysts.
+- **SHAP:** More theoretically sound, supports global explanations. Use this for understanding model behavior across all predictions.
+
+For Week 11, start with LIME: it's easier to understand and explains the one prediction that matters most to the analyst reviewing the alert.
+
+> **Fixing bias requires process changes, not just algorithmic fixes.** Reweighing the scoring model improved aggregate metrics but did not fully resolve the disparity. Why? The training data reflects historical decisions that were themselves biased. Algorithmic fixes adjust the output distribution without addressing the root cause. Organizational fixes required: (1) a fairness review gate before any scoring model deployment, (2) a feature review process that flags demographic proxies, (3) an appeals procedure for affected individuals, (4) a coverage audit process that evaluates model performance across the full range of threat actor geographies and sectors you are responsible for defending — not just against the vendor's benchmark suite.
 
 ---
 
 ## Deliverables
 
-1. **Working prototype** — source code, Dockerfile, docker-compose.yml, example input/output
-2. **Assessment Stack justification table** — one row per layer, decision + rationale
-3. **AIUC-1 controls as-built** — what controls are implemented, what's deferred to Week 12
-4. **Sprint metrics** — metrics.json with MTTS, MTTP, aMTTR, CPT measurements
-5. **Sprint retrospective** (500-800 words) — what was built, what was cut, what to carry to Week 12
-6. **Deferred items list** — explicit list of what Week 12 must address
+1. **`bias_analysis.py`** + **`threat_scores.csv`** — analysis code and synthetic dataset
+2. **`risk_rate_by_geography.png`** — visualization of disparate impact
+3. **Bias Analysis Report** (2,000–2,500 words):
+   - Overview of the system tested
+   - Methodology: Testing approach, groups tested, metrics used
+   - Findings: Where was bias detected? Magnitude? (Disparate Impact Ratios by group, Accuracy/FPR/FNR by group, Visualizations)
+   - Impact: Who is harmed? What are the consequences?
+   - Mitigation: What techniques did you apply? Did they work? (Fairness before and after mitigation, trade-offs)
+   - Recommendations: How can this system be made more fair?
+4. **Explainability Examples** (5–10 examples):
+   - High-risk predictions: What factors led to the decision?
+   - Low-risk predictions: What protected them?
+   - Edge cases: Predictions where the system is uncertain or contradictory
+5. **Code Artifacts** — Jupyter notebook with bias detection code, visualizations, LIME/SHAP explanations
 
 ---
 
-## AIUC-1 Integration
+## Sources & Tools
 
-**Building controls in vs. bolting on:** The difference between a prototype that passes Week 8 audit and one that fails is whether governance was designed in. Sprint I establishes the pattern: Assessment Stack first, controls in the spec, logging from the first commit.
-
-**Domain E (Accountability):** Your metrics.json IS an audit trail for this sprint. Every invocation cost, every timing measurement.
-
-## V&V Lens
-
-**Empirical Baseline:** The Sprint I metrics become your Week 12 baseline. V&V here is: "Does the tool do what the spec says?" Test against your own success criteria before the retro.
-
-**Failure is data:** If a success criterion isn't met, that's not failure — it's a measurement. Record it. Week 12 closes the gap.
-
-### V&V Lens: Measuring Verification Quality
-
-Add a V&V metric to your sprint tracking alongside MTTS/MTTP/MTTSol/MTTI/aMTTR:
-
-**Verification Rate (VR):** What percentage of your tool's findings were independently verified before action was taken?
-
-- Sprint I baseline: Track how often you verify agent outputs before acting on them
-- Sprint II target: Implement at least one automated verification step in your tool
-
-A tool that produces 50 findings with 0% verification is less valuable than a tool that produces 10 verified findings. Quality over quantity — this is the V&V mindset applied to tool design.
-
-### Sprint Metric: Cost Per Task
-
-Add to your sprint tracking alongside MTTS/MTTP/MTTSol/MTTI/aMTTR:
-
-**CPT (Cost Per Task):** Total API cost to complete one unit of work (one alert triaged, one incident analyzed, one report generated).
-
-Track across sprints:
-- Sprint I CPT: $___
-- Sprint II CPT: $___
-- Improvement: ___%
-
-A system that triages 100 alerts for $5 is more production-viable than one that triages 100 alerts for $50, even if accuracy is identical.
-
-**Cost efficiency formula:**
-```
-Efficiency = (Tasks Completed × Quality Score) / Total Cost
-```
-
-Optimize for efficiency, not just quality or cost alone.
+- [IBM AI Fairness 360](https://github.com/Trusted-AI/AIF360) — Open-source bias detection and mitigation library
+- [Aequitas](https://github.com/dssg/aequitas) — Bias and fairness audit toolkit (U of Chicago)
+- [Fairlearn](https://fairlearn.org/) — Open-source fairness metrics and mitigations
+- [LIME Documentation](https://github.com/marcotcr/lime)
+- [SHAP Documentation](https://github.com/slundberg/shap)
+- ["Weapons of Math Destruction" by Cathy O'Neil](https://weaponsofmathdestructionbook.com/) — Excellent introduction to algorithmic bias
+- [Mitchell et al., "Model Cards for Model Reporting"](https://arxiv.org/abs/1810.03993) — Framework for documenting ML model behavior
+- [Buolamwini and Buolamwini, "Gender Shades"](https://www.media.mit.edu/publications/gender-shades-intersectional-accuracy-disparities-in-commercial-gender-classification/) — Real-world study of facial recognition bias
 
 ---
 
-## Sprint I Production Readiness Requirement
-
-`/check-antipatterns` output is a required Sprint I deliverable.
-
-Before your Week 11 sprint review, run:
-
-```
-/check-antipatterns ~/noctua/tools/sprint-i/
-```
-
-Requirements:
-- **Zero CRITICAL findings** — these block deployment
-- **Document all HIGH findings** — fix or defer with written justification
-- **Include the report** in your sprint submission alongside your MTTS/MTTP/CPT metrics
-
-In your sprint retro: What patterns did the checker find? Were they patterns you anticipated? What does this tell you about gaps in your review process?
-
-> Track as a sprint metric: how many anti-pattern findings from `/check-antipatterns` were found vs. fixed in Sprint I? This becomes the baseline for Sprint II improvement.
+> **Study With Claude Code:** Use Claude Code to work through concepts:
+> - "Quiz me on fairness metrics. Start easy, then get harder."
+> - "I think I understand the difference between disparate impact and equalized odds but I'm not sure. Explain it to me differently and then test whether I really get it."
+> - "What are the three most common misconceptions about bias mitigation? Do I have any of them?"
+> - "Connect this week's bias analysis to the AIUC-1 F. Society domain. What specific controls close the gaps we found?"
 
 ---
 
-> **📚 Study With Claude:** Upload this week's reading material to Claude Chat and try:
-> - "Quiz me on the key concepts from this reading. Start easy, then get harder."
-> - "I think I understand the Engineering Assessment Stack but I'm not sure. Explain it to me differently and then test whether I really get it."
-> - "What are the three most common misconceptions about sprint methodology for AI tools? Do I have any of them?"
-> - "Connect this week's material to what we learned in Weeks 9-10. How do they relate?"
-
----
-
-> **🛠️ Produce this deliverable using your AI tools.** Use Chat to reason through the analysis, Cowork to structure and format the report, and Code to generate any data or visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
+> **Produce this deliverable using your AI tools.** Use Claude Code to reason through the analysis, structure and format the report, and generate any visualizations. The quality of your thinking matters — the mechanical production should be AI-assisted.
