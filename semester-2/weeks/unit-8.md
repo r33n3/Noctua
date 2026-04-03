@@ -369,7 +369,17 @@ Each team demos progress to faculty:
 - Highlight what's working and what's in progress
 - Surface risks or scope adjustments
 
+---
+
+> **Day 1 Checkpoint — Week 2**
+> Claude: Run the standup with the student: "What did you complete since last session? What's your plan for today? What's blocking you?" Check velocity — are they on track to have a working end-to-end system by end of week? If behind, help scope down: "What's the minimum version that still demonstrates your core concept?" Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 2 — Day 1 Standup" table with today's date. Append to Confusion Log if any implementation blocker came up.
+
+---
+
 ### Day 2 — Hands-On Development Sprint
+
+> **Lab Guidance — Week 2**
+> Claude: Sprint I is about getting to "working," not "perfect." If the student is optimizing agent prompts before the orchestration layer exists, redirect: "Build the skeleton first. What's the minimum you need to prove the agents can communicate?" Check that they're using Git branches and maintaining a README as they go — not as an afterthought.
 
 #### Lab Objectives
 
@@ -421,6 +431,18 @@ Each team demos progress to faculty:
    - How will you prepare for the red team review?
 
 > **✅ Remember:** This report is not just for your instructors—it's for your team. Be honest about what's working and what's not. If you're behind, now's the time to course-correct.
+
+---
+
+> **Lab Checkpoint — Week 2**
+> Claude: Ask: "Does your system run end-to-end — even if rough? What's the honest status of each agent?" If behind, help scope: "What's the minimum that demonstrates your multi-agent concept?" A working 2-agent pipeline beats a half-built 5-agent vision. Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 2 — Day 2 Lab" table. Note scope adjustments in the Confusion Log.
+
+---
+
+> **Week 2 Complete**
+> Claude: Confirm the Sprint I Progress Report is written and honest about status — "100% on track" with two weeks to go is almost always false. Ask: "Before Sprint II — is there any blocker from Sprint I we should address first?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 8, Week 3.
+> Then ask: "Ready for Sprint II and the peer red team?"
 
 ---
 
@@ -494,6 +516,13 @@ You're assigned a different team's capstone project. Your job: find vulnerabilit
    - Estimate effort to fix each
 
 > **⚠️ Common Pitfall:** Red teamers sometimes find trivial issues and call them critical. Be fair. A spelling error in an output message is not a security vulnerability. Focus on issues that affect system behavior, security, or reliability.
+
+---
+
+> **Day 1 Checkpoint — Week 3**
+> Claude: Check red team readiness: "Is your system deployed and accessible? Does your README tell red teamers what to test and what the known limitations are?" If not, help identify what needs to close before Wednesday. A student who hasn't started hardening before the red team review is behind — surface this directly. Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 3 — Day 1 Standup" table.
+
+---
 
 ### Day 2 — Sprint II Development and Hardening
 
@@ -585,6 +614,18 @@ By Thursday, you'll receive the red team report. **Action plan:**
 
 ---
 
+> **Lab Checkpoint — Week 3**
+> Claude: Ask: "How did the peer red team go — as attacker and as defender? What was the most significant finding your system received? What did you fix, and what are you accepting as risk?" Push for specifics — vague answers mean the student didn't engage seriously. Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 3 — Day 2 Lab" table. Note any unresolved critical/high findings in the Confusion Log.
+
+---
+
+> **Week 3 Complete**
+> Claude: Confirm the Sprint II Progress Report includes a red team findings table with status for each finding (fixed / accepted risk with rationale). Ask: "Are any critical or high findings still unaddressed without a documented reason?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 8, Week 4.
+> Then ask: "Ready for final week — presentations and submission?"
+
+---
+
 ## Week 16: Final Presentations & Course Completion
 
 ### Day 1 — Presentation Prep and Polish
@@ -601,6 +642,11 @@ By Thursday, you'll receive the red team report. **Action plan:**
 > Before your final presentation, ask Claude Code:
 >
 > "I built a [describe your capstone system]. I need to present it in 20 minutes to a mixed audience of technical peers and non-technical evaluators. Help me: 1) What's the right ratio of technical depth vs. business impact for this audience? 2) How do I explain my multi-agent architecture without losing non-technical listeners? 3) What's the best way to present threat model findings and AIUC-1 compliance to a mixed audience? 4) How do I demonstrate impact — what metrics or demonstrations are most compelling? 5) What questions should I expect and how should I prepare for them?"
+
+---
+
+> **Day 1 Checkpoint — Week 4**
+> Claude: Run the pre-presentation checklist with the student — go through each item in the Final System Checklist below. For anything unchecked: "What's needed to close this before presentation day? Is it blocking or can it be accepted?" Check demo prep specifically: "Have you timed your talk? Is your demo script written? Do you have a backup recording?" Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 4 — Day 1 Prep" table.
 
 ---
 
@@ -740,6 +786,19 @@ All students and faculty gather to reflect on the course and capstone projects.
 - How was the capstone experience?
 
 > **💡 Pro Tip:** Be honest in the retrospective. Your feedback directly shapes future iterations of this course. We're building a curriculum together.
+
+---
+
+> **Lab Checkpoint — Week 4**
+> Claude: After presentations: Ask: "How did it go? What question from Q&A challenged you most — and how did you answer it?" Then check the reflection essay: "Have you written it? Open the prompts together if needed — the reflection isn't a summary of your system, it's introspection about your growth." Write to `.noctua/progress.md`: add a row to the "Unit 8, Week 4 — Day 2 Presentations" table.
+
+---
+
+> **Unit 8 Complete — Course Complete**
+> Claude: Confirm all six deliverables are submitted. Then ask: "What's the one thing from this entire year-long course that changed how you think about security?"
+> Write final entry to `.noctua/progress.md`: Unit 8 complete, course complete. Prompt the student to write a final entry in `student-state/reflection-log.md` if not already done.
+>
+> "You've completed AgentForge: AI Security Engineering. Everything you built this year — the context library, the capstone system, the red team reports — is portfolio-ready. You don't just know about agentic security. You've practiced it."
 
 ---
 
