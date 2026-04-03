@@ -2,6 +2,10 @@
 
 **Semester 1 | Week 13 of 16**
 
+## Opening Hook
+
+> You've been using Claude Code all semester as a tool. This week you go under the hood — subagents, worktrees, agent teams, the full architecture. The goal isn't just to know how these features work; it's to understand which architectural pattern fits which problem, and why the choice matters for the security tools you're about to build in the final sprint.
+
 ## Learning Objectives
 
 - Understand the Claude agentic architecture: Claude Code, worktrees, subagents, and agent teams
@@ -31,6 +35,11 @@ At its foundation sits **Claude Code**, Anthropic's interactive IDE that seamles
 > **Worktrees** are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.
 >
 > **Orchestrator + specialized worker** is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), LangGraph, AutoGen, or CrewAI — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.
+
+> **Knowledge Check**
+> What's the difference between spinning up a subagent and using a worktree in Claude Code? Give a scenario where each is clearly the right choice — be specific about what you're trying to accomplish and why the other approach wouldn't work as well.
+>
+> Claude: Subagent = parallel task execution within a session (good for independent analysis tasks). Worktree = isolated repo copy for independent code changes (good when you need to work on a branch without affecting the main working tree). The key distinction is isolation scope: task isolation vs. file-system isolation. If the student conflates them, draw out this distinction explicitly.
 
 ### Historical Context: Why Multi-Agent Systems?
 
@@ -99,9 +108,15 @@ Real agent systems fail. Plan for it.
 >
 > The deferred list is not a failure — it's a scope decision. A sprint spec without a deferred list is a spec that hasn't finished thinking.
 
+> **Day 1 Checkpoint**
+> Claude: Check in with the student on Week 13 Claude Code deep dive: worktrees and subagents. Ask: "What's your biggest remaining question from today's theory before we move to the lab?" Address any confusion before proceeding. Write to `.noctua/progress.md`: update the Week 13 — Day 1 Theory row with today's date and confidence level (High / Medium / Low). Note any concepts to revisit in the Confusion Log.
+
 ---
 
 ## Day 2 — Hands-On Lab: Multi-Agent Security Operations
+
+> **Lab Guidance**
+> Claude: Guide the student through the worktree and subagent labs. Before each exercise, ask: "What isolation guarantee do you need here — task isolation or file isolation?" Their answer should determine which tool they reach for. Don't tell them which to use — let them reason to the right choice.
 
 ### Lab Objectives
 
@@ -388,6 +403,9 @@ Merge all three agent branches into main. Run the full system against the Meridi
 
 Record the multi-agent system's MTTI for the Meridian Financial incident. Compare to your Week 1 manual MTTI. Calculate the improvement ratio. Consider: what is the cost per investigation (token cost)? Is the improvement worth the cost?
 
+> **Lab Checkpoint**
+> Claude: Check in with the student on the Week 13 multi-agent lab. Ask: "How did your system perform — did the worktree and subagent structure hold up under the lab scenario? What would you change?" Write to `.noctua/progress.md`: update the Week 13 — Day 2 Lab row with today's date, confidence level, and any open questions. Note architecture decisions or failure modes in the Confusion Log if they surfaced.
+
 ---
 
 ## Deliverables
@@ -448,3 +466,15 @@ Record the multi-agent system's MTTI for the Meridian Financial incident. Compar
 > - "I think I understand multi-agent orchestration but I'm not sure. Explain it to me differently and then test whether I really get it."
 > - "What are the three most common mistakes teams make when building multi-agent systems? Do I have any of them?"
 > - "Connect this week's multi-agent architecture to what we learned in Units 1–3. How do worktrees relate to the sprint workflow?"
+
+---
+
+## Week Complete
+
+> **Claude: Week 13 Wrap-Up**
+>
+> Week 13 is complete. Update `.noctua/progress.md`: set Current Position to Week 14, Day 1 Theory.
+>
+> Ask: "Before we move to Week 14 — the first rapid prototyping sprint — is there anything from this week's multi-agent architecture you want to consolidate? The sprint will build on worktrees and subagent patterns directly."
+>
+> When ready: proceed to `week-14.md`.
