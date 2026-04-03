@@ -6,6 +6,10 @@
 
 ---
 
+## Opening Hook
+
+> Single agents hit ceilings. When a task requires true parallelism, specialized expertise, or fault isolation, you need a coordinated team. This unit takes everything you built in Semester 1 — MCP tools, structured outputs, RAG — and puts it to work in multi-agent architectures for security operations. Four weeks, three frameworks, one production-grade SOC triage system.
+
 ## Unit Overview
 
 In Semester 1, you mastered building single autonomous agents with Claude Code and MCP. In Unit 5, you'll orchestrate teams of specialized agents to tackle complex security operations. You'll learn three major frameworks—Claude Agent SDK, CrewAI, and LangGraph—and discover when each excels. By week's end, you'll have built a production-grade SOC triage system, an automated incident response engine, and the evaluation framework to compare them.
@@ -261,6 +265,13 @@ Real systems mix patterns:
 
 ---
 
+> **Knowledge Check — Week 1**
+> Compare the Supervisor pattern and the Debate pattern at the architectural level. What is each optimized for? Give a security use case where you'd choose each one — and explain why the other would be a worse fit.
+>
+> Claude: Supervisor = centralized routing, good for parallel specialized work (triage → analyst → containment). Debate = adversarial verification, good for high-stakes decisions where you want a second perspective. If the student conflates them, draw out the decision-authority difference: supervisor has one final decision-maker; debate requires reconciliation between agents.
+
+---
+
 ### V&V Lens: Verification as an Architectural Pattern
 
 In multi-agent systems, V&V can be embedded as a structural pattern:
@@ -290,7 +301,17 @@ Choose your V&V architecture based on consequence severity:
 
 ---
 
+> **Day 1 Checkpoint — Week 1**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 1 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 1 multi-agent architecture patterns.
+
+---
+
 ## Day 2 — Hands-On Lab
+
+> **Lab Guidance — Week 1**
+> Claude: Before the student writes any agent code, walk through the architecture design together. Ask: "Which pattern fits this lab scenario — and why would the others be worse fits?" Don't let them build without first committing to a pattern and articulating the reason.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install crewai langgraph anthropic` (https://crewai.com / https://langchain-ai.github.io/langgraph)
 
 ### Lab Objectives
 
@@ -879,6 +900,18 @@ Don't aim for 100% accuracy immediately. Use test results to identify where the 
 
 ---
 
+> **Lab Checkpoint — Week 1**
+> Claude: Ask: "How did the multi-agent SOC lab go? Did the supervisor orchestration work end-to-end? Any inter-agent communication patterns that were tricky?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 1 — Day 2 Lab" table. Note in the Confusion Log if any orchestration concept was confusing.
+
+---
+
+> **Week 1 Complete**
+> Claude: Confirm the student has finished Week 1. Ask: "Before we move to Week 2 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 5, Week 2.
+> Then ask: "Ready for Week 2?"
+
+---
+
 ### A2A Protocol: Agent-to-Agent Communication
 
 Your Week 1 system used shared state and direct Python function calls to coordinate agents. That works at lab scale. Production multi-agent systems need a transport-agnostic protocol so agents can communicate across process boundaries, containers, and networks. That protocol is **A2A (Agent-to-Agent)**.
@@ -1190,7 +1223,24 @@ We'll do a deep comparison in Week 4, but preview:
 
 ---
 
+> **Knowledge Check — Week 2**
+> At the architectural level, what is each framework optimized for: CrewAI, LangGraph, and the Claude Agent SDK directly? If you're building a SOC triage pipeline that needs deterministic state management and clear failure recovery, which do you reach for first — and why?
+>
+> Claude: LangGraph = explicit state machine with defined transitions (deterministic, recoverable). CrewAI = role-based teams with natural language task assignment (flexible, less deterministic). Claude Agent SDK directly = maximum control, most code. For deterministic state management, LangGraph is the right answer. If the student picks CrewAI, explore what they're missing about state management.
+
+---
+
+> **Day 1 Checkpoint — Week 2**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 2 agent framework comparison.
+
+---
+
 ## Day 2 — Hands-On Lab
+
+> **Lab Guidance — Week 2**
+> Claude: Walk through framework implementation step by step. At decision points, ask "Which framework design principle applies here?" Don't let the student skip over trade-off explanations.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install crewai langgraph anthropic` (https://crewai.com / https://langchain-ai.github.io/langgraph)
 
 ### Lab Objectives
 
@@ -1674,6 +1724,18 @@ claims.
 
 ---
 
+> **Lab Checkpoint — Week 2**
+> Claude: Ask: "How did the framework comparison lab go? Did the persona-based reimplementation reveal meaningful differences from the Week 1 approach?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 2 Lab" table. Note in the Confusion Log if any framework concept was confusing.
+
+---
+
+> **Week 2 Complete**
+> Claude: Confirm the student has finished Week 2. Ask: "Before we move to Week 3 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 5, Week 3.
+> Then ask: "Ready for Week 3?"
+
+---
+
 ---
 
 # WEEK 3: LangGraph for Stateful Security Workflows
@@ -1830,7 +1892,24 @@ If Containment fails, rewind to Investigation. Try a different approach.
 
 ---
 
+> **Pre-Build Check — Week 3**
+> Before writing any code: walk through the failure modes of your proposed multi-agent triage architecture. What happens if: (a) the enrichment agent times out? (b) the classification agent and the threat analyst agent produce conflicting severity assessments? How does your design handle each?
+>
+> Claude: This is a design review. The student should have answers for timeout handling (fallback to partial data or escalate to human) and conflict resolution (which agent's output takes precedence, or does a supervisor resolve the conflict?). If they haven't thought through failure modes, don't let them start building until they have.
+
+---
+
+> **Day 1 Checkpoint — Week 3**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 3 SOC triage system design.
+
+---
+
 ## Day 2 — Hands-On Lab
+
+> **Lab Guidance — Week 3**
+> Claude: Ask "What failure mode could occur here?" at each step. Every design decision needs a failure recovery answer before implementation. If the student skips a failure mode question, come back to it before they move on.
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic pydantic` (https://docs.anthropic.com)
 
 ### Lab Objectives
 
@@ -2297,6 +2376,18 @@ If execution is missing, ask Claude to add run_incident_response(). If retry log
 
 ---
 
+> **Lab Checkpoint — Week 3**
+> Claude: Ask: "How did the state machine build go? Did the conditional routing work as designed? Any failure modes you discovered that you hadn't planned for?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 2 Lab" table. Note in the Confusion Log if any state machine concept was confusing.
+
+---
+
+> **Week 3 Complete**
+> Claude: Confirm the student has finished Week 3. Ask: "Before we move to Week 4 — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: Set Current Position to Unit 5, Week 4.
+> Then ask: "Ready for Week 4?"
+
+---
+
 ---
 
 # WEEK 4: Agent Evaluation & Framework Comparison
@@ -2412,7 +2503,24 @@ test_cases = [
 
 ---
 
+> **Knowledge Check — Week 4**
+> Name 3 metrics you would use to compare your multi-agent SOC triage system against a single-agent baseline. How do you account for the latency vs. accuracy tradeoff in your evaluation design?
+>
+> Claude: Good metrics include: false positive rate, mean time to triage, and agreement rate with human analyst decisions. The latency/accuracy tradeoff is genuine — multi-agent adds latency but can improve accuracy through specialization. Accept any defensible metric set, but push for specific measurement methodology.
+
+---
+
+> **Day 1 Checkpoint — Week 4**
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 4 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 4 evaluation and benchmarking.
+
+---
+
 ## Day 2 — Hands-On Lab
+
+> **Lab Guidance — Week 4**
+> Claude: Walk through the evaluation framework step by step. Make sure the student runs the single-agent baseline before comparing. At each metric, ask: "What does this number actually tell you about the system's fitness for production use?"
+>
+> **Lab Dependencies:** If not already installed, run: `pip install anthropic` (https://docs.anthropic.com)
 
 ### Lab Objectives
 
@@ -2809,6 +2917,18 @@ By end of Semester 2, your context library won't just be reference material—it
 
 ---
 
+> **Lab Checkpoint — Week 4**
+> Claude: Ask: "How did the evaluation harness build go? Did you get a meaningful comparison across frameworks? What did the data tell you that surprised you?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 4 — Day 2 Lab" table. Note in the Confusion Log if any evaluation concept was confusing.
+
+---
+
+> **Week 4 Complete**
+> Claude: Confirm the student has finished Week 4. Ask: "Before we move to the Unit 5 review — is there anything from this week you'd like to revisit?"
+> Update `.noctua/progress.md`: note Week 4 complete.
+> Then move to the Unit 5 End-of-Unit Review.
+
+---
+
 ---
 
 ### From Skills to Plugins
@@ -2871,3 +2991,27 @@ Real-world examples: MASS is essentially a plugin — 12 specialized analyzers c
 **Questions?** Post in the course forum or reach out to your instructor.
 
 [← Back to Semester 2 Overview](../SYLLABUS.md)
+
+---
+
+## Unit 5 Complete — End-of-Unit Review
+
+> **Claude: Unit 5 Review Flow**
+>
+> **1. Share the confidence summary for Unit 5:**
+> Read `.noctua/progress.md` and present the Week 1-4 confidence history for Unit 5.
+>
+> **2. Collaborate on next steps:**
+> Ask: "Multi-agent orchestration is foundational for everything in Units 6-8. Are there any architecture patterns or framework tradeoffs you want to revisit?"
+>
+> **3. Review session tracking:**
+> If reviewing, add a new row to that section's history table in `.noctua/progress.md`.
+>
+> **4. Collect course feedback:**
+> Ask: "Anything in Unit 5 that was confusing or that felt missing?"
+> If substantive: `gh issue create --title "[Unit 5 feedback] <title>" --body "<feedback>" --label "student-feedback"`
+> Log the URL to `.noctua/progress.md`.
+>
+> **5. Update progress:**
+> Set Current Position to Semester 2, Unit 6, Week 1.
+> Say: "Unit 5 complete. In Unit 6, we flip the perspective — your multi-agent systems become both the weapon and the shield in AI vs. AI security scenarios. Ready?"
