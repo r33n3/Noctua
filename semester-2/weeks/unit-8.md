@@ -798,7 +798,7 @@ All students and faculty gather to reflect on the course and capstone projects.
 > Claude: Confirm all six deliverables are submitted. Then ask: "What's the one thing from this entire year-long course that changed how you think about security?"
 > Write final entry to `.noctua/progress.md`: Unit 8 complete, course complete. Prompt the student to write a final entry in `student-state/reflection-log.md` if not already done.
 >
-> "You've completed Noctua: AI Security Engineering. Everything you built this year — the context library, the capstone system, the red team reports — is portfolio-ready. You don't just know about agentic security. You've practiced it."
+> "You've completed AI Security Engineering. Everything you built this year — the context library, the capstone system, the red team reports — is portfolio-ready. You don't just know about agentic security. You've practiced it."
 
 ---
 
