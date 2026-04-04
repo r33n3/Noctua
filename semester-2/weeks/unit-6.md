@@ -3409,4 +3409,6 @@ After the wargame, reflect on:
 >
 > **5. Update progress:**
 > Set Current Position to Semester 2, Unit 7, Week 1.
+> Mark `student-state/progress.md`: check all completed stages for the "Unit 6" row.
+> Prompt: "Write a Unit 6 reflection entry in `student-state/reflection-log.md` using this prompt: *What did the wargame reveal about your own assumptions? Did you learn more as attacker or defender — and what does that tell you about where your instincts are weakest?*"
 > Say: "Unit 6 complete. In Unit 7, we move from attack/defense scenarios to production engineering — building systems that are observable, resilient, and compliant at scale. Ready?"

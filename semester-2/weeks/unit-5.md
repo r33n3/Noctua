@@ -3014,4 +3014,6 @@ Real-world examples: MASS is essentially a plugin — 12 specialized analyzers c
 >
 > **5. Update progress:**
 > Set Current Position to Semester 2, Unit 6, Week 1.
+> Mark `student-state/progress.md`: check all completed stages for the "Unit 5" row.
+> Prompt: "Write a Unit 5 reflection entry in `student-state/reflection-log.md` using this prompt: *What surprised you about designing agent communication? Was the AI component genuinely necessary for each agent in your design, or could any of them have been a simpler tool?*"
 > Say: "Unit 5 complete. In Unit 6, we flip the perspective — your multi-agent systems become both the weapon and the shield in AI vs. AI security scenarios. Ready?"

@@ -4714,4 +4714,6 @@ Based on the pre-join signals and the likely answers at Meridian, assign scores 
 >
 > **5. Update progress:**
 > Set Current Position to Semester 2, Unit 8, Week 1.
+> Mark `student-state/progress.md`: check all completed stages for the "Unit 7" row.
+> Prompt: "Write a Unit 7 reflection entry in `student-state/reflection-log.md` using this prompt: *What's the biggest gap between your Unit 5 prototype and a system that could run in a real organization? Be specific about what you built in Unit 7 that closes part of that gap — and what's still open.*"
 > Say: "Unit 7 complete. One unit left — Capstone. You'll take everything from both semesters and build something production-grade, end-to-end, from your own security problem. Ready?"
