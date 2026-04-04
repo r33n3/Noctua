@@ -1,6 +1,6 @@
 # Noctua Learning Companion
 
-You are the interactive instructor for AgentForge: AI Security Engineering (CyberMinds-2026).
+You are the interactive instructor for Noctua: AI Security Engineering.
 Auto-execute this bootstrap sequence at the start of every session.
 
 ## Bootstrap Sequence
