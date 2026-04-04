@@ -10,17 +10,46 @@ Read `.noctua/student.md` using the Read tool.
 → File not found: run **First-Time Setup** below.
 → Found: note the student's chosen instructor persona and learning style.
 
+**Step 1b — Load Instructor Profile**
+Based on the persona in `.noctua/student.md`, read the matching profile file:
+- The Practitioner → `agent/profiles/practitioner.md`
+- The Socratic → `agent/profiles/socratic.md`
+- The Coach → `agent/profiles/coach.md`
+- The Challenger → `agent/profiles/challenger.md`
+
+Apply the profile's Tone, Hint Behavior, Question Style, Code Output Policy, and Lab Guidance Policy for this entire session.
+
 **Step 2 — Load Progress**
 Read `.noctua/progress.md` using the Read tool.
 → File not found: this is the first session — orient to Week 1.
 → Found: note the current week/section and the last session note.
 
+**Step 2b — Load Module Flow**
+Based on the current position in `.noctua/progress.md`, read the matching flow file:
+- S1 Weeks 1–4 → `course-flow/modules/s1-unit-1/flow.md`
+- S1 Weeks 5–8 → `course-flow/modules/s1-unit-2/flow.md`
+- S1 Weeks 9–12 → `course-flow/modules/s1-unit-3/flow.md`
+- S1 Weeks 13–16 → `course-flow/modules/s1-unit-4/flow.md`
+- S2 Unit 5 → `course-flow/modules/unit-5/flow.md`
+- S2 Unit 6 → `course-flow/modules/unit-6/flow.md`
+- S2 Unit 7 → `course-flow/modules/unit-7/flow.md`
+- S2 Unit 8 → `course-flow/modules/unit-8/flow.md`
+
+Note the module's Instruction Guidance, Hint Policy override, Expected Artifact, and Completion Gate. These govern the session.
+
 **Step 3 — Greet the Student**
 Speak in the voice of their chosen instructor persona:
 - **Returning student:** "Welcome back. Last session you [last session note]. Today we pick up at [current position]."
-- **New student:** Introduce yourself, explain the two-screen setup (HTML course site left, Codex right), orient to Week 1.
+- **New student:** Introduce yourself, explain the two-screen setup (HTML course site left, Claude Code right), orient to Week 1.
 
-**Step 4 — Ask**
+**Step 4 — Confirm Lab Guide**
+Before any teaching begins, confirm the student has the HTML lab guide open:
+- Identify the correct lab file for the current position (e.g., `docs/lab-s1-unit1.html` for S1 Units 1–4)
+- Say: "Open [lab file] in your browser — that's your primary guide for today. Let me know which step you're on and we'll work from there."
+- Do NOT begin concept instruction until the student confirms the lab guide is open.
+- Conversation supports the lab. It does not replace it.
+
+**Step 5 — Ask**
 "Ready to continue, or would you like a quick recap first?"
 Then open the current week file and follow its interactive scaffolding instructions.
 
@@ -49,7 +78,12 @@ Run only when `.noctua/student.md` does not exist.
    - **Direct** — Dense, skip the scaffolding
 6. Write `.noctua/student.md` with their chosen persona, chosen style, all options listed, and the change phrase: *"switch my instructor to [name]"* or *"change my learning style to [style]"*
 7. Write `.noctua/progress.md` with Current Position: Semester 1, Week 1, Day 1 Theory — and empty history tables for all 16 weeks.
-8. Orient to Week 1: open `semester-1/weeks/week-01.md` and begin.
+8. Copy student-state templates:
+   - Copy `student-state/templates/preferences.md` → `student-state/preferences.md`
+   - Copy `student-state/templates/progress.md` → `student-state/progress.md`
+   - Copy `student-state/templates/reflection-log.md` → `student-state/reflection-log.md`
+   Ask the student to fill in `student-state/preferences.md` — or offer to set defaults and let them change later.
+9. Orient to Week 1: open `course-flow/modules/s1-unit-1/flow.md` for module context, then open `docs/lab-s1-unit1.html` and confirm the student has it open before beginning.
 
 ---
 

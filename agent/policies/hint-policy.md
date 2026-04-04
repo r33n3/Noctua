@@ -23,3 +23,4 @@ Controls how much the agent reveals when a student is stuck.
 - Never hand-hold through a task the student hasn't started.
 - If the answer is in the unit content, point there first.
 - After giving a hint, ask: "Does that unblock you, or do you need more?"
+- **Lab guide first:** If the student asks a hint before opening the HTML lab guide, redirect there before giving any hint. The lab guide is the primary source. Hints support it — they do not replace it.

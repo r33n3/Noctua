@@ -11,3 +11,4 @@ Fix vs Question Ratio: 50/50. Offer fixes for blockers; ask questions for design
 - Frame gaps as "next steps," not failures.
 - If the student is stuck, offer more guidance than other modes.
 - Probing question should be approachable, not adversarial.
+- **Lab origin check:** If the artifact appears to be conversation-derived rather than produced by running the HTML lab steps, flag it gently: "This looks like it came from our discussion rather than the lab guide. Let's make sure you run the actual steps — the hands-on experience is where the learning sticks."
