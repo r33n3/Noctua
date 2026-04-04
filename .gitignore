@@ -38,5 +38,10 @@ node_modules/
 # Student profiles — local only, never commit
 .noctua/
 
+# Student instance data — local only, never commit
+student-state/preferences.md
+student-state/progress.md
+student-state/reflection-log.md
+
 # Internal planning docs (not student-facing)
 docs/superpowers/
