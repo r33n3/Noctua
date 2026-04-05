@@ -137,7 +137,7 @@ PeaRL Security Research documented a sophisticated attack chain against autonomo
 
 This 7-level chain demonstrates that the most dangerous attacks are **not one-shot exploits but orchestrated campaigns** that combine multiple techniques.
 
-> **📖 Further Reading:** PeaRL's full technical report: "Autonomous Agent Attack Chains: A Seven-Level Framework for Agentic AI Compromise" documents the TTPs, detection signatures, and mitigation strategies for each level. See [Frameworks](resources/FRAMEWORKS.md).
+> **📖 Further Reading:** PeaRL's full technical report: "Autonomous Agent Attack Chains: A Seven-Level Framework for Agentic AI Compromise" documents the TTPs, detection signatures, and mitigation strategies for each level. See [Frameworks](../../docs/frameworks.html).
 
 **GTG-1002: The First Documented AI-Orchestrated Espionage Campaign (November 2025)**
 
@@ -377,9 +377,9 @@ Create the following artifacts:
 
 #### Sources & Further Reading
 - MITRE ATLAS Framework: [https://atlas.mitre.org/](https://atlas.mitre.org/)
-- Anthropic "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" (November 2025): [Reading List](resources/READING-LIST.md)
+- Anthropic "Disrupting the First Reported AI-Orchestrated Cyber Espionage Campaign" (November 2025): [Reading List](../../docs/reading.html)
 - OWASP Top 10 for LLM Applications: [https://owasp.org/www-project-top-10-for-large-language-model-applications/](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
-- PeaRL Security Research - Autonomous Agent Attack Chains: [Frameworks](resources/FRAMEWORKS.md)
+- PeaRL Security Research - Autonomous Agent Attack Chains: [Frameworks](../../docs/frameworks.html)
 - Dark Reading: "2026: The Year Agentic AI Becomes the Attack-Surface Poster Child"
 
 ---
@@ -3377,9 +3377,9 @@ After the wargame, reflect on:
 
 ## Course Resources
 
-- **[Reading List](resources/READING-LIST.md)** — Academic papers, reports, blog posts on AI security
-- **[Frameworks](resources/FRAMEWORKS.md)** — MITRE ATLAS, OWASP Top 10 for LLM, PeaRL's attack chains
-- **[Lab Setup Guide](resources/LAB-SETUP.md)** — Detailed instructions for tool installation and configuration
+- **[Reading List](../../docs/reading.html)** — Academic papers, reports, blog posts on AI security
+- **[Frameworks](../../docs/frameworks.html)** — MITRE ATLAS, OWASP Top 10 for LLM, PeaRL's attack chains
+- **[Lab Setup Guide](../../docs/lab-setup.html)** — Detailed instructions for tool installation and configuration
 - **[Tool Documentation](resources/TOOLS.md)** — Garak, PyRIT, Promptfoo, NeMo Guardrails, LlamaFirewall commands and examples
 - **[Agent Development Guide](resources/AGENT-DEV.md)** — Claude Agent SDK patterns for red and blue team agents
 

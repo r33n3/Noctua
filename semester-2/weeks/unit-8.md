@@ -127,7 +127,7 @@ Here are concrete, achievable project ideas suitable for a 4-week capstone:
 
 > **💬 Discussion Prompt:** In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?
 
-> **📖 Further Reading:** Review [Framework documentation](resources/FRAMEWORKS.md) to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.
+> **📖 Further Reading:** Review [Framework documentation](../../docs/frameworks.html) to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.
 
 > **🔑 Key Concept:** Both PeaRL and MASS are open source because their creator believes **security should always be open to anyone to use**. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?
 
@@ -324,9 +324,9 @@ After your presentation, you'll receive written feedback from reviewers focusing
 
 #### Sources & Tools
 
-- [Framework Documentation](resources/FRAMEWORKS.md) — Claude Agent SDK, CrewAI, LangGraph comparison
-- [Lab Setup Guide](resources/LAB-SETUP.md) — Getting your development environment ready
-- [Reading List](resources/READING-LIST.md) — MITRE ATLAS, agentic patterns, responsible AI
+- [Framework Documentation](../../docs/frameworks.html) — Claude Agent SDK, CrewAI, LangGraph comparison
+- [Lab Setup Guide](../../docs/lab-setup.html) — Getting your development environment ready
+- [Reading List](../../docs/reading.html) — MITRE ATLAS, agentic patterns, responsible AI
 
 ---
 
@@ -608,9 +608,9 @@ By Thursday, you'll receive the red team report. **Action plan:**
 
 #### Sources & Tools
 
-- [Reading List](resources/READING-LIST.md) — MITRE ATLAS attack chains, hardening best practices
-- [Framework Documentation](resources/FRAMEWORKS.md) — Observability and monitoring patterns
-- [Lab Setup Guide](resources/LAB-SETUP.md) — Deployment and testing infrastructure
+- [Reading List](../../docs/reading.html) — MITRE ATLAS attack chains, hardening best practices
+- [Framework Documentation](../../docs/frameworks.html) — Observability and monitoring patterns
+- [Lab Setup Guide](../../docs/lab-setup.html) — Deployment and testing infrastructure
 
 ---
 
@@ -973,9 +973,9 @@ Congratulations! You've completed a graduate-level course in agentic security en
 
 ## Key Resources
 
-- [Reading List](resources/READING-LIST.md) — MITRE ATLAS, agent frameworks, security hardening, responsible AI
-- [Frameworks Documentation](resources/FRAMEWORKS.md) — Claude Agent SDK, CrewAI, LangGraph patterns
-- [Lab Setup Guide](resources/LAB-SETUP.md) — Environment configuration, deployment, debugging
+- [Reading List](../../docs/reading.html) — MITRE ATLAS, agent frameworks, security hardening, responsible AI
+- [Frameworks Documentation](../../docs/frameworks.html) — Claude Agent SDK, CrewAI, LangGraph patterns
+- [Lab Setup Guide](../../docs/lab-setup.html) — Environment configuration, deployment, debugging
 
 ---
 

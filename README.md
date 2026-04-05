@@ -376,12 +376,12 @@ Admission to this course requires:
 ### For Instructors
 1. Start with the full syllabi in `semester-1/SYLLABUS.md` and `semester-2/SYLLABUS.md`
 2. Review lab guides in the `labs/` directories to understand learning objectives and assessment rubrics
-3. Check `resources/LAB-SETUP.md` to prepare your lab environment
+3. Check `docs/lab-setup.html` to prepare your lab environment
 4. Distribute weekly readings and labs through your institution's learning management system
 
 ### For Students
 1. Read this README and the full course syllabus to understand expectations
-2. Complete the lab environment setup (`resources/LAB-SETUP.md`) in Week 1
+2. Complete the lab environment setup (`docs/lab-setup.html`) in Week 1
 3. Work through weekly readings and labs in sequence
 4. Maintain a CCT reflection journal as specified in the assessment guidelines
 5. Collaborate with peers on team projects while maintaining academic integrity
@@ -427,9 +427,9 @@ Developed in collaboration with cybersecurity and AI research communities, infor
 
 - [Semester 1 Syllabus](semester-1/SYLLABUS.md)
 - [Semester 2 Syllabus](semester-2/SYLLABUS.md)
-- [Lab Setup Guide](resources/LAB-SETUP.md)
-- [Reading List](resources/READING-LIST.md)
-- [Security Frameworks Reference](resources/FRAMEWORKS.md)
+- [Lab Setup Guide](docs/lab-setup.html)
+- [Reading List](docs/reading.html)
+- [Security Frameworks Reference](docs/frameworks.html)
 
 ---
 

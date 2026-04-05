@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lab Setup Guide — Noctua</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="labs.css">
 </head>
 <body>
 
@@ -34,67 +34,14 @@
 <h3 id="additional-accounts-free-tier-sufficient">Additional Accounts (Free Tier Sufficient)</h3>
 <ul>
 <li><strong>GitHub Account (Required)</strong>: All course work is Git-based. Create a free account at https://github.com if you don't have one. SSH key authentication is recommended.</li>
-<li><strong>AWS Account (Required)</strong>: Free tier sufficient for course labs. Used for ECR (container registry), ECS (container orchestration), and IaC deployments. Sign up at https://aws.amazon.com/free/</li>
+<li><strong>AWS Account (Required for Semester 2)</strong>: Free tier sufficient. Used for ECR (container registry), ECS (container orchestration), and IaC deployments in the DevSecOps promotion pipeline. Not required for Semester 1. Sign up at https://aws.amazon.com/free/</li>
 <li><strong>OpenAI API Account (For Semester 2)</strong>: Free tier with $5 credit sufficient for multi-vendor comparative labs. Sign up at https://platform.openai.com</li>
 <li><strong>Ollama (Free, Local)</strong>: Used for open-weight model labs and sensitive data scenarios. No account required.</li>
 </ul>
 <h2 id="development-environment-setup">Development Environment Setup</h2>
-<p>Choose one of the following setup paths based on your preference and device.</p>
-<h3 id="option-a-github-codespaces-recommended">Option A: GitHub Codespaces (Recommended)</h3>
-<p>GitHub Codespaces provides a fully configured cloud development environment without local installation complexity.</p>
-<p><strong>Prerequisites:</strong></p>
-<ul>
-<li>GitHub account with Codespaces access (free tier includes monthly minutes)</li>
-</ul>
-<p><strong>Setup Steps:</strong></p>
-<ol>
-<li>Fork the Noctua course repository to your GitHub account</li>
-<li>Click the green "Code" button on your fork</li>
-<li>Select the "Codespaces" tab</li>
-<li>Click "Create codespace on main"</li>
-<li>Wait for the environment to initialize (2-3 minutes)</li>
-<li>A VS Code environment opens in your browser with all tools pre-installed</li>
-</ol>
-<p>The Codespace includes a <code>devcontainer.json</code> that automatically installs:</p>
-<ul>
-<li>Python 3.11+</li>
-<li>Node.js 20+</li>
-<li>Git</li>
-<li>Claude Code CLI</li>
-<li>Docker</li>
-<li>Essential development tools</li>
-</ul>
-<p><strong>Sample devcontainer.json</strong> (reference—included in course repo):</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Noctua Development&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mcr.microsoft.com/devcontainers/python:3.11-node-20&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ghcr.io/devcontainers/features/github-cli:1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ghcr.io/devcontainers/features/aws-cli:1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ghcr.io/devcontainers/features/docker-in-docker:2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;postCreateCommand&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash .devcontainer/setup.sh&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;customizations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;vscode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;extensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">        </span><span class="s2">&quot;ms-python.python&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="s2">&quot;ms-python.debugpy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="s2">&quot;GitHub.copilot&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="s2">&quot;ms-vscode.makefile-tools&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">],</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;python.defaultInterpreterPath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin/python&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;python.linting.enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;python.linting.pylintEnabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
-
-<p><strong>Cost:</strong> GitHub Codespaces free tier provides 60 core-hours per month, sufficient for course labs. Paid tiers are available if needed.</p>
-<h3 id="option-b-local-machine-setup">Option B: Local Machine Setup</h3>
-<p>If you prefer a local development environment, follow these steps.</p>
+<p>The primary course setup is local — Claude Max subscription + Claude Code CLI in your own terminal. Codespaces is available if you need an isolated cloud environment.</p>
+<h3 id="option-a-local-machine-setup-primary">Option A: Local Machine Setup (Primary)</h3>
+<p>This is the standard course setup. Claude Code runs in your local terminal alongside a browser window showing the lab guide. Most labs assume this two-screen pattern.</p>
 <p><strong>System Requirements:</strong></p>
 <ul>
 <li>macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+)</li>
@@ -216,6 +163,20 @@ aws sts get-caller-identity  <span class="c1"># Verify authentication</span>
 <div class="codehilite"><pre><span></span><code>claude --version
 </code></pre></div>
 
+<h3 id="option-b-github-codespaces-isolation">Option B: GitHub Codespaces (Isolation Alternative)</h3>
+<p>Use Codespaces when you need a fully isolated cloud environment — for example, when working with sensitive lab data you don't want on your local machine, or when your local environment has conflicts you can't resolve quickly.</p>
+<p><strong>Setup:</strong></p>
+<ol>
+<li>Fork the Noctua course repository to your GitHub account</li>
+<li>Click the green "Code" button on your fork, select the "Codespaces" tab</li>
+<li>Click "Create codespace on main" — environment initializes in 2–3 minutes</li>
+<li>A browser-based VS Code session opens with Python, Node.js, Git, and GitHub CLI pre-installed</li>
+<li>Install Claude Code CLI inside the Codespace: <code>npm install -g @anthropic-ai/claude-code</code></li>
+<li>Authenticate: <code>claude login</code></li>
+</ol>
+<p><strong>Cost:</strong> Free tier provides 60 core-hours per month (~15 hours of 4-core development). Sufficient for occasional isolation labs; the free tier won't sustain daily course use as a primary environment.</p>
+<div class="callout callout-tip"><p><strong>Note on Ollama in Codespaces:</strong> Local model inference via Ollama is not available in Codespaces — the cloud machine doesn't have the GPU resources. For Ollama labs, use the local setup.</p></div>
+
 <h3 id="claude-code-cli-setup">Claude Code CLI Setup</h3>
 <p>Once installed, authenticate with your Claude Max account.</p>
 <p><strong>Step 1: Authenticate</strong></p>
@@ -229,29 +190,9 @@ claude config list
 </code></pre></div>
 
 <p><strong>Step 3: Configure for Course</strong></p>
-<p>Create a <code>.claudeconfig</code> file in your project root (or use global settings):</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;modelId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;claude-opus-4-6&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;allowedTools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;bash&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;read&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;write&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;glob&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;grep&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;edit&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;workingDirectory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">300000</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
-
-<p>Key settings for the course:</p>
-<ul>
-<li><strong>modelId</strong>: Use <code>claude-opus-4-6</code> for full capabilities. The course may specify different models for cost optimization in specific labs.</li>
-<li><strong>allowedTools</strong>: Controls which tools Claude can use. The defaults above are recommended. MCP servers will be added per lab.</li>
-<li><strong>timeout</strong>: Maximum execution time in milliseconds (adjust if labs require longer runs).</li>
-</ul>
+<p>Claude Code is configured through a <code>CLAUDE.md</code> file in your project root and a <code>.claude/settings.json</code> file. The course repository already includes a <code>CLAUDE.md</code> with course-specific instructions. You don't need to create one manually — it's included when you fork and clone the repo.</p>
+<p>MCP servers are registered with the <code>claude mcp add</code> command (covered in Unit 2 labs), or by editing <code>.claude/settings.json</code>. Each lab guide will tell you exactly which MCP servers to register and how.</p>
+<p>To switch models within a session, use the <code>/model</code> slash command. Labs that require a specific model will say so explicitly.</p>
 <p><strong>Step 4: Run Your First Command</strong></p>
 <div class="codehilite"><pre><span></span><code>claude <span class="s2">&quot;Create a simple Python script that prints &#39;Noctua Lab Environment Ready&#39;&quot;</span>
 </code></pre></div>
@@ -362,14 +303,14 @@ pip-audit</code></pre></div>
   curl -fsSL https://ollama.ai/install.sh | sh</code></li>
 </ul>
 <p><strong>Pull a Model:</strong></p>
-<div class="codehilite"><pre><span></span><code>ollama pull llama2
+<div class="codehilite"><pre><span></span><code>ollama pull llama3.2
 </code></pre></div>
 
-<p>This downloads a 4GB model. Alternative models:</p>
+<p>This downloads a ~2GB model. Alternative models:</p>
 <ul>
 <li><code>ollama pull mistral</code> (faster, lighter)</li>
-<li><code>ollama pull neural-chat</code> (optimized for conversation)</li>
-<li><code>ollama pull openchat</code> (low-latency)</li>
+<li><code>ollama pull llama3.1:8b</code> (strong reasoning, 8B parameters)</li>
+<li><code>ollama pull phi4-mini</code> (low-latency, small footprint)</li>
 </ul>
 <p><strong>Verify:</strong></p>
 <div class="codehilite"><pre><span></span><code>ollama list
@@ -675,7 +616,7 @@ curl http://localhost:8080
 <li>[ ] Git branches (main, dev) verified</li>
 <li>[ ] Docker Desktop installed and running (<code>docker --version</code>)</li>
 <li>[ ] GitHub CLI installed and authenticated (<code>gh auth status</code>)</li>
-<li>[ ] AWS CLI v2 installed and configured (<code>aws sts get-caller-identity</code>)</li>
+<li>[ ] AWS CLI v2 installed and configured — Semester 2 only (<code>aws sts get-caller-identity</code>)</li>
 </ul>
 <p><strong>Agentic Frameworks and MCP:</strong></p>
 <ul>
@@ -684,7 +625,7 @@ curl http://localhost:8080
 <li>[ ] CrewAI installed (Semester 2)</li>
 <li>[ ] LangGraph installed (Semester 2)</li>
 <li>[ ] AutoGen installed (Semester 2)</li>
-<li>[ ] Ollama installed and has at least one model (<code>ollama list</code>)</li>
+<li>[ ] Ollama installed and has at least one model: <code>ollama pull llama3.2</code> then <code>ollama list</code></li>
 <li>[ ] OpenAI API account created (Semester 2)</li>
 </ul>
 <p><strong>Course AI Security Tools (Production Approaches Study):</strong></p>
@@ -774,15 +715,15 @@ npm config get prefix  <span class="c1"># Check global install directory</span>
 <p><strong>Problem:</strong> Model download fails or is very slow</p>
 <p><strong>Solution:</strong>
 1. Check internet connection
-2. Try pulling a smaller model: <code>ollama pull mistral</code> (smaller than llama2)
+2. Try pulling a smaller model: <code>ollama pull phi4-mini</code>
 3. Check available disk space: <code>df -h</code>
-4. Resume partial download: <code>ollama pull llama2</code> (automatically resumes)</p>
+4. Resume partial download: re-run the same <code>ollama pull</code> command (automatically resumes)</p>
 <p><strong>Problem:</strong> Model not found after pulling</p>
 <p><strong>Solution:</strong></p>
 <div class="codehilite"><pre><span></span><code>ollama list  <span class="c1"># Verify model is listed</span>
-ollama show llama2  <span class="c1"># Get model details</span>
-ollama rm llama2  <span class="c1"># Remove and repull if corrupted</span>
-ollama pull llama2
+ollama show llama3.2  <span class="c1"># Get model details</span>
+ollama rm llama3.2  <span class="c1"># Remove and repull if corrupted</span>
+ollama pull llama3.2
 </code></pre></div>
 
 <h2 id="cost-considerations">Cost Considerations</h2>
@@ -795,16 +736,16 @@ ollama pull llama2
 </ul>
 <p><strong>OpenAI API Usage (Semester 2):</strong></p>
 <ul>
-<li>Pricing: ~$0.01-0.10 per 1K tokens depending on model</li>
-<li>Free tier includes $5 credit per month</li>
-<li>Typical course usage: $10-20 per student for entire semester</li>
+<li>Pricing: varies by model — check current rates at platform.openai.com/pricing</li>
+<li>New accounts receive a small API credit; verify amount when you sign up</li>
+<li>Typical course usage: $10–20 per student for the full Semester 2</li>
 <li>Budget-conscious: Use local models (Ollama) for cost-sensitive labs</li>
 </ul>
-<p><strong>GitHub Codespaces:</strong></p>
+<p><strong>GitHub Codespaces (Option B only):</strong></p>
 <ul>
-<li>Free tier: 60 core-hours per month (equivalent to ~15 hours of 4-core development)</li>
-<li>Paid: $0.36 per core-hour for usage beyond free tier</li>
-<li>Recommendation: Use free tier during course; upgrade if needed for extended sessions</li>
+<li>Free tier: 60 core-hours per month — sufficient for occasional isolation labs</li>
+<li>Paid: usage billed per core-hour beyond free tier (check current rates at github.com/features/codespaces)</li>
+<li>Not recommended as primary environment — use local setup for daily course work</li>
 </ul>
 <p><strong>All Other Tools:</strong></p>
 <ul>
@@ -836,7 +777,10 @@ ollama pull llama2
 </main>
 
 <script src="labs.js"></script>
-<script>document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-setup.html');</script>
+<script>
+  document.getElementById('sidebar-nav').innerHTML = buildSidebar('lab-setup.html');
+  initLabPage('lab-setup');
+</script>
 <script>
 (function() {
   var IDX = [

@@ -297,7 +297,7 @@ If any are missing, iterate — don't accept a vague response as sufficient.
 
 > **💡 Skill Preview:** The system prompt you just refined — the one that produces structured JSON threat assessments with confidence scores and alternative hypotheses — is a reusable artifact. If you saved it as a SKILL.md file, you'd have a Claude Code skill you could invoke with `/threat-assess` anytime. We'll formally learn skill-building in Week 13, but for now, save your best prompts to `~/noctua/context/prompts/`. You're building your skill library without knowing it yet.
 
-**Homework:** Install Claude Code on your development machine using the [Lab Setup Guide](../../resources/LAB-SETUP.md).
+**Homework:** Install Claude Code on your development machine using the [Lab Setup Guide](../../docs/lab-setup.html).
 
 ---
 

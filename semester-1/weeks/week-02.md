@@ -62,7 +62,7 @@ Inclusive perspective also means seeking dissenting views. If everyone in the ro
 
 A famous example is the Space Shuttle Challenger disaster in 1986. Engineers at Morton Thiokol raised concerns about O-ring failure in cold temperatures. Management overrode them. The full information was distributed across the organization — engineering, management, safety — but the perspective that mattered most was never adequately included in the final decision. Inclusive perspective means building cultures where that dissenting engineer's voice is not just heard but *sought*.
 
-> **📖 Further Reading:** Daniel Kahneman's "Thinking, Fast and Slow" (Chapters 8–10) explores groupthink, overconfidence, and the value of dissenting voices. See [Reading List](../../resources/READING-LIST.md).
+> **📖 Further Reading:** Daniel Kahneman's "Thinking, Fast and Slow" (Chapters 8–10) explores groupthink, overconfidence, and the value of dissenting voices. See [Reading List](../../docs/reading.html).
 
 ### Pillar 3: Strategic Connections
 

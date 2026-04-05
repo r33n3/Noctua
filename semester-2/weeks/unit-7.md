@@ -4667,9 +4667,9 @@ Based on the pre-join signals and the likely answers at Meridian, assign scores 
 ## Resources and References
 
 **Supply Chain Security (Week 9):**
-- [Reading List](resources/READING-LIST.md)
-- [SBOM and Provenance Tools](resources/FRAMEWORKS.md)
-- [Lab Setup Guide](resources/LAB-SETUP.md)
+- [Reading List](../../docs/reading.html)
+- [SBOM and Provenance Tools](../../docs/frameworks.html)
+- [Lab Setup Guide](../../docs/lab-setup.html)
 
 **Identity Governance (Week 10):**
 - HashiCorp Vault documentation

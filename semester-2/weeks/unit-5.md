@@ -259,7 +259,7 @@ Real systems mix patterns:
 - Avoid tool duplication (if two agents need threat intel, share a tool or have one agent call the other)
 - Think about data dependencies (if Agent B needs outputs from Agent A, make that explicit in orchestration)
 
-> **📖 Further Reading:** See the Agentic Engineering additional reading on orchestration patterns for coverage of the **Orchestrator Pattern** (one supervisor coordinates specialized agents) and the **Expert Swarm Pattern** (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See [Frameworks Documentation](resources/FRAMEWORKS.md) for implementation examples.
+> **📖 Further Reading:** See the Agentic Engineering additional reading on orchestration patterns for coverage of the **Orchestrator Pattern** (one supervisor coordinates specialized agents) and the **Expert Swarm Pattern** (multiple agents attack a problem simultaneously, validating each other's outputs). This unit applies both patterns to SOC operations. See [Frameworks Documentation](../../docs/frameworks.html) for implementation examples.
 
 > **🔑 Key Concept:** **Context Isolation and Sharing** — Multi-agent systems require careful management of what context each agent can access. Agentic Engineering practice covers how to design context so agents have sufficient information to act without unnecessary exposure to sensitive data. Your SOC system uses this principle: the Analyst agent sees threat intel but not full customer PII; the Response Recommender sees severity but not raw logs.
 
@@ -2982,9 +2982,9 @@ Real-world examples: MASS is essentially a plugin — 12 specialized analyzers c
 
 ## Resources
 
-- [Reading List](resources/READING-LIST.md)
-- [Framework Comparison](resources/FRAMEWORKS.md)
-- [Lab Setup Guide](resources/LAB-SETUP.md)
+- [Reading List](../../docs/reading.html)
+- [Framework Comparison](../../docs/frameworks.html)
+- [Lab Setup Guide](../../docs/lab-setup.html)
 
 ---
 
