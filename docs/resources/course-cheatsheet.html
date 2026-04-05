@@ -852,6 +852,15 @@ curl -o ~/.claude/commands/check-antipatterns.md \<br>
         <div class="cs-section-title">Harness Engineering — Plain Language</div>
         <p style="font-size:10.5px;color:rgba(255,255,255,0.7);margin:0 0 8px;">A harness makes correct agent behavior the easy path. When it's missing, agents drift. When it's present, agents self-correct.</p>
 
+        <table class="cs-table" style="margin-bottom:8px;">
+          <thead><tr><th>Harness</th><th>Constrains</th><th>Lives in</th></tr></thead>
+          <tbody>
+            <tr><td class="label">Development</td><td>Claude while you work — session tool scope, file access, hook enforcement</td><td><code>.claude/settings.json</code>, <code>.claude/hooks/</code></td></tr>
+            <tr><td class="label">Deployment</td><td>The agent you ship — input validation, output filtering, audit pipeline</td><td><code>harnesses/&lt;agent&gt;/blueprint.yaml</code>, <code>fixed_steps/</code></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:10px;color:rgba(255,255,255,0.5);margin:0 0 10px;">Same vocabulary, different jobs. Don't conflate them.</p>
+
         <table class="cs-table">
           <thead><tr><th>Layer</th><th>What it is</th><th>What breaks without it</th></tr></thead>
           <tbody>

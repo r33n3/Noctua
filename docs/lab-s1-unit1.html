@@ -833,6 +833,34 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   </ul>
   </div>
 
+  <div class="callout callout-key" style="margin-top:16px;">
+  <strong>Two harnesses — one concept, two different jobs</strong>
+  <p>You will encounter the word "harness" throughout this course. It always means the same thing — the system of controls that shape and constrain agent behavior — but it refers to two distinct contexts that are easy to confuse:</p>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;">
+    <thead><tr style="border-bottom:1px solid rgba(212,160,23,0.3);">
+      <th style="text-align:left;padding:6px 10px;color:var(--accent);">Harness</th>
+      <th style="text-align:left;padding:6px 10px;color:var(--accent);">What it constrains</th>
+      <th style="text-align:left;padding:6px 10px;color:var(--accent);">Lives in</th>
+      <th style="text-align:left;padding:6px 10px;color:var(--accent);">When you build it</th>
+    </tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid rgba(212,160,23,0.1);">
+        <td style="padding:6px 10px;font-weight:600;">Development</td>
+        <td style="padding:6px 10px;">Claude while you work — what it can read, write, and run in your session</td>
+        <td style="padding:6px 10px;"><code>.claude/settings.json</code>, <code>.claude/hooks/</code></td>
+        <td style="padding:6px 10px;">Unit 1 setup, evolved throughout</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px;font-weight:600;">Deployment</td>
+        <td style="padding:6px 10px;">The agent you ship — what it validates, filters, and enforces in production</td>
+        <td style="padding:6px 10px;"><code>harnesses/&lt;agent&gt;/blueprint.yaml</code>, <code>fixed_steps/</code></td>
+        <td style="padding:6px 10px;">Unit 7 and Unit 8 only</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:10px;">They use the same enforcement vocabulary — hooks, deny rules, deterministic pipelines — but they protect different things. The development harness protects you and your codebase. The deployment harness protects the users and systems your agent operates in.</p>
+  </div>
+
   <div class="callout" style="margin-top:16px;">
   <p><strong>What you mastered</strong></p>
   <ul>
