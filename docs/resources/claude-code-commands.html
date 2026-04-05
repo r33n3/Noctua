@@ -216,8 +216,8 @@
 <!-- NOCTUA COURSE SKILLS -->
 <div class="section">
   <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA COURSE SKILLS</div>
-  <div class="cmd"><div class="cmd-name">/think</div><div class="cmd-desc">CCT analysis workflow. Structured critical thinking before building.<br><span class="tip">Reads: CLAUDE.md (CCT framework). Writes: conversation only.</span></div></div>
-  <div class="cmd"><div class="cmd-name">/build-spec</div><div class="cmd-desc">Generate spec package from idea or /think output. Component manifests, model selection, swarm configs.<br><span class="tip">Reads: references/approach-selection.md. Writes: plans/SPEC-{name}.md</span></div></div>
+  <div class="cmd"><div class="cmd-name">/think</div><div class="cmd-desc">CCT analysis workflow. Structured critical thinking before building. Ends with harness audit.<br><span class="tip">Reads: CLAUDE.md (CCT framework). Writes: .claude/context.md — enables /spec to skip clarifying questions.</span></div></div>
+  <div class="cmd"><div class="cmd-name">/build-spec</div><div class="cmd-desc">Generate component manifest from SPEC.md or /think output. Approach selection, model assignment, swarm config, data contracts.<br><span class="tip">Reads: SPEC.md, resources/approach-selection.md, swarm-patterns.md. Writes: plans/SPEC-{name}.md</span></div></div>
   <div class="cmd"><div class="cmd-name">/tool-select</div><div class="cmd-desc">Engineering Assessment Stack decision. Chat/Cowork/Code recommendation.<br><span class="tip">Reads: Engineering Assessment Stack. Writes: conversation only.</span></div></div>
   <div class="cmd"><div class="cmd-name">/audit-aiuc1</div><div class="cmd-desc">AIUC-1 compliance audit against 6 domains (A–F).<br><span class="tip">Reads: working tool. Writes: reports/AUDIT-{name}.md</span></div></div>
   <div class="cmd"><div class="cmd-name">/harness-assess</div><div class="cmd-desc">Diagnostic review skill. Assesses whether prompts, tools, permissions, state, logging, and gates are actually enforced.<br><span class="tip">Reads: environment controls, plans/SPEC-*.md. Writes: reports/HARNESS-ASSESS-{name}.md</span></div></div>
@@ -290,51 +290,60 @@
 
 <!-- NOCTUA SKILL FLOW -->
 <div class="section span-2">
-  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA SKILL FLOW — Think → Spec → Plan → Build → Review → Audit → Harden → Sprint</div>
-  <div class="mono-block">/think ─→ structured analysis (conversation)
+  <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> NOCTUA SKILL FLOW — Think → Spec → Build-Spec → Audit → Plan → Build → Check → Sprint → Merge → Retro</div>
+  <div class="mono-block">/think ──────────────────────────────→ .claude/context.md
+  │  reads: CLAUDE.md (CCT framework)   (enables /spec to skip clarifying questions)
   │
   ▼
-/build-spec ──→ plans/SPEC-{name}.md (spec package artifact)
-  │       reads: references/approach-selection.md, swarm-patterns.md
+/spec ───────────────────────────────→ SPEC.md
+  │  reads: .claude/context.md, codebase  (feature status, acceptance criteria, drift baseline)
   │
   ▼
-Plan Mode → verified plan (human reviews via Ctrl+G, approves)
-  │          reads: plans/SPEC-*.md, CLAUDE.md, codebase (read-only)
+/build-spec ─────────────────────────→ plans/SPEC-{name}.md
+  │  reads: SPEC.md, resources/approach-selection.md, swarm-patterns.md
+  │  reads: .claude/agents/              (component manifest, model selection, swarm config)
   │
   ▼
-Build ────→ working tool
-  │          uses: .claude/agents/ (delegates), .mcp.json (external tools)
-  │          constrained by: settings.json (deny rules), hooks/ (enforcement)
-  │
-  ▼
-/code-review → terminal output | --comment for PR
-  │          4 parallel agents · ≥80 confidence threshold · bug/sec/perf/style
-  │
-  ▼
-◆ ASSISTIVE GATE — code review passed, prototype ready for audit
-  │
-  ▼
-/audit-aiuc1 → reports/AUDIT-{name}.md
-  │          6 AIUC-1 domains · tier classification · human reviewer attested
+/audit-aiuc1 (pre-build gate) ───────→ reports/AUDIT-{name}.md
+  │  6 AIUC-1 domains · tier classification · human reviewer attested
   │
   ▼
 ◆ TIER 2 GATE — AIUC-1 baseline verified → SUPERVISED_AUTONOMOUS unlocked
   │
   ▼
-/harness-assess ──→ reports/HARNESS-ASSESS-{name}.md
+Plan Mode ───────────────────────────→ plans/{plan-name}.md
+  │  reads: plans/SPEC-*.md, CLAUDE.md, codebase (read-only)
+  │  human reviews + edits via Ctrl+G, approves before any code written
   │
   ▼
-/worktree-setup ─→ .claude/worktrees/{name}/ (isolated parallel environments)
-  │               sprint-progress.md · decisions.md · launch-worktrees.sh
+Build ───────────────────────────────→ source files, working tool
+  │  uses: .claude/agents/ · .mcp.json
+  │  constrained by: settings.json deny rules, .claude/hooks/
+  │
+  ▼
+/check-antipatterns (pre-PR gate) ───→ [findings — must fix before raising PR]
+  │  L1 code quality · L2 architecture · L3 operations · L4 security
+  │
+  ▼
+/worktree-setup ─────────────────────→ .claude/worktrees/{name}/
+  │  CLAUDE-{name}.md · sprint-progress.md · decisions.md · launch-worktrees.sh
   │
   ▼
 Sprint execution (parallel tmux agents)
+  │  each agent runs /check-antipatterns before raising PR
   │
   ▼
-/merge-worktrees ─→ PRs merged in order · tests validated between each
+/merge-worktrees ────────────────────→ PRs merged per sprint-progress.md order
+  │  rebases each branch · runs tests between merges · stops on failure
   │
   ▼
-/retro → reports/RETRO-{sprint}.md</div>
+/retro ──────────────────────────────→ SPEC.md (drift) + CLAUDE.md (antipatterns)
+  │  Phase 1: /check-antipatterns gate on merged code
+  │  reads: git log, sprint artifacts
+  │  ├─ /harness-assess (optional) ───→ reports/HARNESS-ASSESS-{name}.md
+  │  │     environment-scoped, not build-scoped — run when controls change
+  │  └─ /audit-aiuc1 (optional) ──────→ reports/AUDIT-{name}.md
+            post-sprint governance check — also valid as pre-build gate (see above)</div>
 </div>
 
 <!-- DEFENSE LAYER MAP -->

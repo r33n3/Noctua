@@ -550,15 +550,23 @@
         <div class="skill-row">
           <div class="skill-name">/think</div>
           <div class="skill-when">Before any decision, code, or recommendation</div>
-          <div class="skill-output">Output: Goal (restated) · Assumptions · Risks · Alternatives · Unknowns · Direction + Confidence level</div>
+          <div class="skill-output">Output: Goal (restated) · Assumptions · Risks · Alternatives · Unknowns · Direction + Confidence · Harness audit<br><span style="font-size:9px;color:rgba(255,255,255,0.35);">Writes .claude/context.md — /spec reads this to skip clarifying questions</span></div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/spec</div>
+          <div class="skill-when">After /think · before /build-spec</div>
+          <div class="skill-output">Output: SPEC.md — feature status, acceptance criteria, drift baseline<br><span style="font-size:9px;color:rgba(255,255,255,0.35);">Reads .claude/context.md · /retro updates this file after each sprint</span></div>
         </div>
 
         <hr class="cs-divider">
 
         <div class="skill-row">
           <div class="skill-name">/build-spec</div>
-          <div class="skill-when">After /think · before any build session</div>
-          <div class="skill-output">Output: Problem statement · Success criteria · Out of scope · Architecture table · Tool definitions · AIUC-1 controls · Definition of done</div>
+          <div class="skill-when">After /spec · before plan mode</div>
+          <div class="skill-output">Output: plans/SPEC-{name}.md — component manifest, approach selection, model assignment, swarm config, data contracts<br><span style="font-size:9px;color:rgba(255,255,255,0.35);">Reads SPEC.md + resources/approach-selection.md + swarm-patterns.md</span></div>
         </div>
 
         <hr class="cs-divider">

@@ -425,13 +425,24 @@
 <!-- SKILL FLOW DIAGRAM -->
 <div class="section">
   <div class="section-head"><div class="sh-dot" style="background:var(--teal)"></div> ARTIFACT FLOW — How Skills Read and Write the Directory Structure</div>
-  <div class="mono-block">/think ─────────────────────────────→ [conversation only — no artifact]
-  │  reads: CLAUDE.md (CCT framework)
+  <div class="mono-block">/think ─────────────────────────────→ .claude/context.md
+  │  reads: CLAUDE.md (CCT framework)   (handoff artifact — /spec reads this)
   │
   ▼
-/build-spec ──────────────────────────────→ plans/SPEC-{name}.md
-  │  reads: resources/approach-selection.md, resources/swarm-patterns.md
+/spec ──────────────────────────────→ SPEC.md
+  │  reads: .claude/context.md, codebase
+  │  feature status · acceptance criteria · drift baseline
+  │
+  ▼
+/build-spec ────────────────────────→ plans/SPEC-{name}.md
+  │  reads: SPEC.md, resources/approach-selection.md, swarm-patterns.md
   │  reads: .claude/agents/ (available worker definitions)
+  │  component manifest · model selection · swarm config · data contracts
+  │
+  ▼
+/audit-aiuc1 (pre-build gate) ──────→ reports/AUDIT-{name}.md
+  │  reads: plans/SPEC-*.md, AIUC-1 domains A-F
+  │  also valid post-sprint — run whenever governance controls change
   │
   ▼
 Plan Mode (human reviews + approves) → plans/{plan-name}.md
@@ -440,35 +451,34 @@ Plan Mode (human reviews + approves) → plans/{plan-name}.md
   │
   ▼
 Build ──────────────────────────────→ source files, working tool
-  │  uses: .claude/agents/ (delegates subtasks to workers)
-  │  uses: .mcp.json (MCP tool access)
-  │  constrained by: settings.json (deny rules block dangerous calls)
-  │  constrained by: .claude/hooks/ (enforcement scripts run around every tool)
+  │  uses: .claude/agents/ · .mcp.json
+  │  constrained by: settings.json deny rules, .claude/hooks/
   │
   ▼
-/audit-aiuc1 ───────────────────────→ reports/AUDIT-{name}.md
-  │  reads: working tool, AIUC-1 domains A-F
-  │
-  ▼
-/harness-assess ────────────────────→ reports/HARNESS-ASSESS-{name}.md
-  │  reads: environment controls, plans/SPEC-*.md, prior assessment findings
+/check-antipatterns (pre-PR gate) ──→ [findings — fix before raising PR]
+  │  L1 code quality · L2 architecture · L3 operations · L4 security
   │
   ▼
 /worktree-setup ────────────────────→ .claude/worktrees/{name}/ (isolated copy)
-  │  reads: task descriptions, settings.json
   │  writes: CLAUDE-{name}.md briefings, sprint-progress.md, decisions.md
   │  writes: launch-worktrees.sh (tmux session per agent)
   │
   ▼
 Sprint execution (parallel tmux agents)
+  │  each agent runs /check-antipatterns before raising PR
   │
   ▼
 /merge-worktrees ───────────────────→ PRs merged in order per sprint-progress.md
   │  rebases each branch · runs tests between merges · stops on failure
   │
   ▼
-/retro ──────────────────────────────→ reports/RETRO-{sprint}.md
-     reads: git log, sprint artifacts, assessment findings</div>
+/retro ─────────────────────────────→ SPEC.md (drift) + CLAUDE.md (antipatterns)
+  │  Phase 1: /check-antipatterns gate on merged code
+  │  reads: git log, sprint artifacts
+  │  ├─ /harness-assess (optional) ──→ reports/HARNESS-ASSESS-{name}.md
+  │  │     environment-scoped — run when controls or permissions change
+  │  └─ /audit-aiuc1 (optional) ─────→ reports/AUDIT-{name}.md
+              post-sprint governance check</div>
 </div>
 
 <div class="footer">
