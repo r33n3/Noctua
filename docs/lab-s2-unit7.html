@@ -767,6 +767,19 @@ aws iam put-role-policy \
   </div>
 </div>
 
+<div class="callout callout-warn">
+  <strong>Pre-review gate: run two automated checks before any human governance review</strong>
+  <p>The role review is a human judgment call — but only if the automated baseline is clean. Run both checks and fix all findings before the strategic, engineering, and SOC reviews begin.</p>
+  <p><strong>Step 1 — Code quality:</strong> Zero CRITICAL findings required. CRITICAL findings in the role review count against your governance score.</p>
+  <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit7/soc-system/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p><strong>Step 2 — Controls inventory:</strong> Produces evidence of what controls are implemented vs. implied. Bring this output to your role review — it's what the reviewer is asking about.</p>
+  <div class="code-block"><pre><code>/harness-assess ~/noctua-labs/unit7/soc-system/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
+    <a href="skills/check-antipatterns.md" download="check-antipatterns.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download check-antipatterns.md</a>
+    <a href="skills/harness.md" download="harness.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download harness-assess.md</a>
+  </div>
+</div>
+
 <div class="section">
   <h4> Release Governance: Role Review + Changelog</h4>
   <p>Before your Unit 7 capstone PR, apply the gstack role-based review pattern and produce the required governance artifacts. These are the practices that separate a working system from a production-ready one.</p>

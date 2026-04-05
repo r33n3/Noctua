@@ -661,6 +661,14 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
         </div>
       </div>
 
+      <div class="callout callout-warn">
+        <strong>Before you harden: run <code>/check-antipatterns</code> first</strong>
+        <p>Week 15 is about production hardening — but hardening doesn't fix structural anti-patterns, it layers controls on top of them. Clean up the code issues before you add observability, container scanning, and CI/CD gates.</p>
+        <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit8/capstone/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <p>Required: zero CRITICAL findings before proceeding to Step 1. Document your findings in <code>docs/security/antipattern-report.md</code> — it becomes part of your capstone governance package.</p>
+        <a href="skills/check-antipatterns.md" download="check-antipatterns.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;margin-top:8px;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download check-antipatterns.md</a>
+      </div>
+
       <!-- Lab Steps -->
       <h3>Lab Steps — Week 15</h3>
 

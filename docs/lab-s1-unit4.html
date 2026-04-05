@@ -520,6 +520,18 @@ class JSONFormatter(logging.Formatter):
 /retro Unit 4 Sprint I + II — phishing triage pipeline</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
+<div class="callout callout-tip">
+  <strong>Merge Before You Present: Run <code>/merge-worktrees</code></strong>
+  <p>If you built Sprint II across multiple worktrees, merge them now — before Week 16 presentations. Presenting from an unmerged worktree means your demo runs against a branch that won't survive the sprint. The <code>/merge-worktrees</code> skill handles conflict resolution, runs your test suite after each merge, and produces a merge report.</p>
+  <div class="code-block"><pre><code># From your main Claude Code session (not inside a worktree):
+/merge-worktrees</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p><strong>Critical:</strong> Run this from your main session, not from inside a worktree. The skill merges worktrees <em>into</em> main — it can't run from inside one of the branches being merged.</p>
+  <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
+    <a href="skills/merge-worktrees.md" download="merge-worktrees.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download merge-worktrees.md</a>
+    <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
+  </div>
+</div>
+
 <hr>
 
 <!-- ======== WEEK 16 ======== -->
