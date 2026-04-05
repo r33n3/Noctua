@@ -566,7 +566,15 @@
         <div class="skill-row">
           <div class="skill-name">/worktree-setup</div>
           <div class="skill-when">After /build-spec · before parallel build</div>
-          <div class="skill-output">Output: git worktree commands per component · directory map table · per-worktree structure setup · merge + cleanup commands</div>
+          <div class="skill-output">Output: .claude/worktrees.yaml · git worktree per task · CLAUDE-{name}.md briefings · sprint-progress.md · decisions.md · tmux launch script with timezone-aware cost guidance</div>
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="skill-row">
+          <div class="skill-name">/merge-worktrees</div>
+          <div class="skill-when">After all worktree agents have raised PRs</div>
+          <div class="skill-output">Output: reads sprint-progress.md merge order · checks each PR state · rebases if needed · runs tests between merges · stops on failure · final validation report</div>
         </div>
 
         <hr class="cs-divider">
@@ -592,16 +600,25 @@
         <div class="cs-section-title">Install All Skills</div>
         <div class="cs-code">
 mkdir -p ~/.claude/commands<br><br>
+<span class="comment"># Core cycle skills</span><br>
 curl -o ~/.claude/commands/think.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/think/SKILL.md<br>
 curl -o ~/.claude/commands/build-spec.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md<br>
-curl -o ~/.claude/commands/worktree-setup.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/build-spec/SKILL.md<br>
 curl -o ~/.claude/commands/retro.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/retro/SKILL.md<br><br>
+<span class="comment"># Worktree sprint skills</span><br>
+curl -o ~/.claude/commands/worktree-setup.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/worktree-setup/SKILL.md<br>
+curl -o ~/.claude/commands/merge-worktrees.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/merge-worktrees/SKILL.md<br><br>
+<span class="comment"># Governance + quality skills</span><br>
 curl -o ~/.claude/commands/harness-assess.md \<br>
-&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/harness/SKILL.md<br>
+curl -o ~/.claude/commands/audit-aiuc1.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/audit-aiuc1/SKILL.md<br>
+curl -o ~/.claude/commands/check-antipatterns.md \<br>
+&nbsp;https://raw.githubusercontent.com/r33n3/Noctua/main/.claude/skills/check-antipatterns/SKILL.md
         </div>
         <div style="font-size:9.5px;color:rgba(255,255,255,0.4);">Skills are plain text. Read, edit, fork them. See docs/skills/ for full install + modifications.</div>
       </div>

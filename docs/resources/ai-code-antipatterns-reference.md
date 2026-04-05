@@ -3,7 +3,7 @@
 
 > **Purpose:** Bookmark this. Reference it every time you build, review, or red team.
 > **Usage:** Each pattern has: what it is, why AI generates it, what breaks, security impact, detection, fix.
-> **Skill:** Run `/check-prod-readiness` to audit your code against all patterns automatically.
+> **Skill:** Run `/check-antipatterns` to audit your code against all patterns automatically.
 > **Defense layers:** L1 = Code Quality, L2 = Architecture, L3 = Operations, L4 = Security
 
 ---

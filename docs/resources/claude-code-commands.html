@@ -221,7 +221,8 @@
   <div class="cmd"><div class="cmd-name">/tool-select</div><div class="cmd-desc">Engineering Assessment Stack decision. Chat/Cowork/Code recommendation.<br><span class="tip">Reads: Engineering Assessment Stack. Writes: conversation only.</span></div></div>
   <div class="cmd"><div class="cmd-name">/audit-aiuc1</div><div class="cmd-desc">AIUC-1 compliance audit against 6 domains (A–F).<br><span class="tip">Reads: working tool. Writes: reports/AUDIT-{name}.md</span></div></div>
   <div class="cmd"><div class="cmd-name">/harness-assess</div><div class="cmd-desc">Diagnostic review skill. Assesses whether prompts, tools, permissions, state, logging, and gates are actually enforced.<br><span class="tip">Reads: environment controls, plans/SPEC-*.md. Writes: reports/HARNESS-ASSESS-{name}.md</span></div></div>
-  <div class="cmd"><div class="cmd-name">/worktree</div><div class="cmd-desc">Isolated git worktrees for parallel agents. Each gets own .claude/ copy.<br><span class="tip">Reads: .claude/agents/, settings.json. Writes: ../worktrees/{name}-{n}/</span></div></div>
+  <div class="cmd"><div class="cmd-name">/worktree-setup</div><div class="cmd-desc">Isolated git worktrees for parallel sprint agents. Wizard → .claude/worktrees.yaml → CLAUDE-{name}.md briefings → sprint-progress.md + decisions.md + tmux launch script.<br><span class="tip">Reads: settings.json, task descriptions. Writes: .claude/worktrees/{name}/, sprint-progress.md, launch-worktrees.sh</span></div></div>
+  <div class="cmd"><div class="cmd-name">/merge-worktrees</div><div class="cmd-desc">Sprint merge coordinator. Reads PR order from sprint-progress.md, rebases + merges in sequence, runs tests between each merge, stops on failure. <span class="b b-new">NEW</span><br><span class="tip">Run from main session after all agents raise PRs. Never from worktree panes.</span></div></div>
   <div class="cmd"><div class="cmd-name">/retro</div><div class="cmd-desc">Sprint retrospective. Lessons learned, what worked, what didn't.<br><span class="tip">Reads: sprint artifacts, git log. Writes: reports/RETRO-{sprint}.md</span></div></div>
 </div>
 
@@ -323,10 +324,17 @@ Build ────→ working tool
 /harness-assess ──→ reports/HARNESS-ASSESS-{name}.md
   │
   ▼
-/worktree ─→ ../worktrees/{name}-{n}/ (isolated parallel environments)
+/worktree-setup ─→ .claude/worktrees/{name}/ (isolated parallel environments)
+  │               sprint-progress.md · decisions.md · launch-worktrees.sh
   │
   ▼
-Sprint execution → /retro → reports/RETRO-{sprint}.md</div>
+Sprint execution (parallel tmux agents)
+  │
+  ▼
+/merge-worktrees ─→ PRs merged in order · tests validated between each
+  │
+  ▼
+/retro → reports/RETRO-{sprint}.md</div>
 </div>
 
 <!-- DEFENSE LAYER MAP -->
