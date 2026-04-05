@@ -12,7 +12,7 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>Eight course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Six drive the delivery cycle; <code>/harness-assess</code> reviews whether the surrounding harness is actually implemented and enforceable; <code>/audit-aiuc1</code> validates governance before elevation. Install them on Day 1. Modify them as you go.</p>
+<p>Nine course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Six drive the delivery cycle; <code>/harness-build</code> constructs the enforcement harness around your agents; <code>/harness-assess</code> diagnoses whether that harness is actually implemented; <code>/audit-aiuc1</code> validates governance before elevation. Install them on Day 1. Modify them as you go.</p>
 
 <div class="callout callout-key">
   <strong>Why This Cycle Exists</strong>
@@ -25,11 +25,12 @@
     <li><strong>/check-antipatterns</strong> — Production readiness audit before shipping. Four layers: code quality, architecture, operations, and security. Outputs BLOCKED / CONDITIONAL / READY verdict. Run after build, before merge or deployment.</li>
     <li><strong>/merge-worktrees</strong> — Sprint merge coordinator. Reads merge order from <code>sprint-progress.md</code>, rebases and merges PRs in sequence, validates tests between each merge, stops on failure. Run from the main session after all agents raise PRs.</li>
     <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
-    <li><strong>/harness-assess</strong> — The diagnostic skill. Reviews whether your environment's harness is actually implemented: prompts, tools, permissions, state, gates, logging, and misuse resistance. Use it to inspect the harness, not to replace it.</li>
+    <li><strong>/harness-build</strong> — The constructive skill. Reads existing context (settings.json, hooks, CLAUDE.md), classifies every control as inside vs outside the reasoning loop, scaffolds missing outside-loop enforcement, and writes or updates <code>harnesses/*/blueprint.yaml</code>. Run after /build-spec, before building.</li>
+    <li><strong>/harness-assess</strong> — The diagnostic skill. Reads <code>blueprint.yaml</code> and checks every claim against reality. Reviews prompts, tools, permissions, state, gates, logging, and misuse resistance. Use it to score the harness /harness-build produced.</li>
     <li><strong>/audit-aiuc1</strong> — Audit your tool or agent system against the six AIUC-1 domains before elevation to a higher autonomy mode. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates.</li>
   </ul>
-  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /build-spec, /build-spec constrains /worktree, /worktree produces the evidence for /retro. <code>/harness-assess</code> is separate: it evaluates whether those connections are actually enforced in the environment rather than merely described in docs.</p>
-  <p><strong>Distinction:</strong> Harness engineering is the discipline, <code>/harness-assess</code> is the review skill, and evaluation harnesses are test artifacts.</p>
+  <p>The harness lives in the connections between phases. /retro feeds /think, /think informs /build-spec, /build-spec constrains /worktree, /worktree produces the evidence for /retro. <code>/harness-build</code> wires outside-loop enforcement into the project; <code>/harness-assess</code> scores whether those controls are real.</p>
+  <p><strong>Distinction:</strong> Harness engineering is the discipline. <code>/harness-build</code> is the builder. <code>/harness-assess</code> is the auditor. A project with only docs is not harnessed — it is described.</p>
 </div>
 
 <div class="callout callout-key">
@@ -63,6 +64,7 @@ curl -o ~/.claude/commands/worktree-setup.md     https://raw.githubusercontent.c
 curl -o ~/.claude/commands/check-antipatterns.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/check-antipatterns.md
 curl -o ~/.claude/commands/merge-worktrees.md    https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/merge-worktrees.md
 curl -o ~/.claude/commands/retro.md              https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/harness-build.md      https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness-build.md
 curl -o ~/.claude/commands/harness-assess.md     https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
 curl -o ~/.claude/commands/audit-aiuc1.md        https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md
 
@@ -274,6 +276,39 @@ ls ~/.claude/commands/</code></pre>
     <li>Create <code>/retro-light</code> — a 5-minute version for quick end-of-session capture</li>
     <li>Add a "Share with community" prompt that extracts reusable patterns into a GitHub gist</li>
     <li>Link retro output automatically to a CHANGELOG.md entry</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="harness-build">/harness-build — Build an Agent Harness</h2>
+<p>The constructive harness skill. Reads your existing project context, classifies every control as inside or outside the reasoning loop, scaffolds missing outside-loop enforcement (hook stubs, deny rules), and writes or updates <code>harnesses/*/blueprint.yaml</code>. Run after <code>/build-spec</code>. Run <code>/harness-assess</code> after to score the result.</p>
+<p><strong>Best used in:</strong> At the start of any agent-building lab, after <code>/worktree-setup</code>, after any sprint close to advance harness maturity, and before <code>/harness-assess</code> so there is something concrete to evaluate.</p>
+
+<div class="callout callout-reading">
+  <strong>Why /harness-build exists</strong>
+  <p>The inside/outside loop distinction is the key security concept in this course. Controls inside the reasoning loop (CLAUDE.md, skills, agents, plans) are probabilistic — the agent CAN ignore them under goal pressure. Controls outside the loop (hooks, permissions.deny, CLI flags) are deterministic — they always fire regardless of what the model decides.</p>
+  <p><code>/harness-build</code> makes that distinction concrete by reading what you have, showing you which column each control sits in, and scaffolding the enforcement layer that most projects skip. A project with a polished CLAUDE.md and no hooks has guidance, not a harness. <code>/harness-build</code> closes that gap.</p>
+  <p>The harness grows across the course: minimal in Unit 1 (one hook, one deny rule), fully declared by Unit 7 (blueprint.yaml + all fixed_steps implemented + AIUC-1 controls mapped). <code>/harness-build</code> advances it from wherever you are to the next level.</p>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="harness-build.md" download="harness-build.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download harness-build.md</a>
+  <a href="harness-build.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/commands/harness-build.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness-build.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications</strong>
+  <ul>
+    <li>Extend the blueprint schema with project-specific deny rules for your domain (e.g., block all network egress except approved endpoints)</li>
+    <li>Add a harness maturity rubric specific to your deployment environment</li>
+    <li>Wire the <code>aiuc1:</code> block to auto-populate from your <code>/audit-aiuc1</code> output</li>
+    <li>Create a <code>/harness-build-multi</code> variant that generates per-agent blueprints for multi-agent systems</li>
   </ul>
 </div>
 
