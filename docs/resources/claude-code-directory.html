@@ -481,9 +481,22 @@ Sprint execution (parallel tmux agents)
               post-sprint governance check</div>
 </div>
 
+<div class="section" style="margin-bottom:12px;">
+  <div class="section-head"><div class="sh-dot" style="background:var(--green)"></div> DIAGNOSTIC COMMANDS — Verify Your Setup</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11.5px;">
+    <div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--gold);font-weight:600;margin-bottom:4px;">/doctor</div>
+      <div style="color:var(--text-dim);line-height:1.6;">Runs a full health check on your Claude Code environment. Checks: auth status, model access, settings.json validity, hooks registration, MCP server connectivity. Run this any time your setup behaves unexpectedly or after installing new tools.</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--gold);font-weight:600;margin-bottom:4px;">/memory</div>
+      <div style="color:var(--text-dim);line-height:1.6;">View the auto-generated MEMORY.md index — the project conventions, feedback, and context Claude has persisted across sessions. Run this at the start of a new session to see what Claude remembers about your project, or to review and prune stale entries.</div>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
-  Noctua · AI Security Engineering · Claude Code Directory Structure Reference · Update 41 · March 2026<br>
-  Run <code>/doctor</code> to verify your current directory structure health. Run <code>/memory</code> to view auto-generated project conventions.
+  Noctua · AI Security Engineering · Claude Code Directory Structure Reference · Update 41 · March 2026
 </div>
 
 </div><!-- poster -->
