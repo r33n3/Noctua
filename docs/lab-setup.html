@@ -15,242 +15,300 @@
 
 <main class="main">
   <div class="content">
-    <h1 id="lab-environment-setup-guide-agentforge">Lab Environment Setup Guide — Noctua</h1>
-<h2 id="overview">Overview</h2>
-<p>The Noctua lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure (Debian servers, ELK stacks), this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.</p>
-<p>You will develop autonomous security agents capable of threat detection, incident response, vulnerability assessment, and security architecture using Claude's Agent SDK, MCP servers, and agent teams. This practical approach prepares you to build production-ready security systems in enterprise environments.</p>
-<h2 id="required-accounts-and-subscriptions">Required Accounts and Subscriptions</h2>
-<h3 id="claude-max-subscription-primary">Claude Max Subscription (Primary)</h3>
-<p>A Claude Max subscription is required for all course work. This provides access to:</p>
-<ul>
-<li><strong>Claude Code CLI</strong>: Command-line interface for autonomous code generation and iteration</li>
-<li><strong>Claude Agent SDK</strong>: Framework for building agentic workflows with tool use and autonomous decision-making</li>
-<li><strong>Worktrees</strong>: Isolated development branches for parallel experimentation</li>
-<li><strong>Subagents</strong>: Specialized agents delegated to specific security domains</li>
-<li><strong>MCP (Model Context Protocol) Servers</strong>: Bidirectional communication between Claude and custom tools, APIs, and data sources</li>
-<li><strong>Agent Teams</strong>: Orchestrated multi-agent systems for complex security operations</li>
-</ul>
-<p>Claude Max is available through institutional purchase (check with your program) or individual subscription at the current rate. Verify your subscription level grants access to all agent capabilities.</p>
-<h3 id="additional-accounts-free-tier-sufficient">Additional Accounts (Free Tier Sufficient)</h3>
-<ul>
-<li><strong>GitHub Account (Required)</strong>: All course work is Git-based. Create a free account at https://github.com if you don't have one. SSH key authentication is recommended.</li>
-<li><strong>AWS Account (Required for Semester 2)</strong>: Free tier sufficient. Used for ECR (container registry), ECS (container orchestration), and IaC deployments in the DevSecOps promotion pipeline. Not required for Semester 1. Sign up at https://aws.amazon.com/free/</li>
-<li><strong>OpenAI API Account (For Semester 2)</strong>: Free tier with $5 credit sufficient for multi-vendor comparative labs. Sign up at https://platform.openai.com</li>
-<li><strong>Ollama (Free, Local)</strong>: Used for open-weight model labs and sensitive data scenarios. No account required.</li>
-</ul>
-<h2 id="development-environment-setup">Development Environment Setup</h2>
-<p>The primary course setup is local — Claude Max subscription + Claude Code CLI in your own terminal. Codespaces is available if you need an isolated cloud environment.</p>
-<h3 id="option-a-local-machine-setup-primary">Option A: Local Machine Setup (Primary)</h3>
-<p>This is the standard course setup. Claude Code runs in your local terminal alongside a browser window showing the lab guide. Most labs assume this two-screen pattern.</p>
-<p><strong>System Requirements:</strong></p>
-<ul>
-<li>macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+)</li>
-<li>16GB RAM recommended</li>
-<li>20GB free disk space</li>
-<li>Administrator access for Docker</li>
-</ul>
-<p><strong>Step 1: Install Python 3.11+</strong></p>
-<ul>
-<li>
-<p><strong>macOS</strong>: Use Homebrew
-  <code>bash
-  brew install python@3.11
-  python3 --version</code></p>
-</li>
-<li>
-<p><strong>Windows</strong>: Download from https://www.python.org/downloads/ and run the installer. Check "Add Python to PATH" during installation.
-  <code>powershell
-  python --version</code></p>
-</li>
-<li>
-<p><strong>Linux</strong>: Use package manager
-  <code>bash
-  sudo apt update
-  sudo apt install python3.11 python3.11-venv python3-pip
-  python3 --version</code></p>
-</li>
-</ul>
-<p><strong>Step 2: Install Node.js 20+</strong></p>
-<ul>
-<li>
-<p><strong>macOS</strong>: Use Homebrew
-  <code>bash
-  brew install node@20
-  node --version
-  npm --version</code></p>
-</li>
-<li>
-<p><strong>Windows</strong>: Download from https://nodejs.org/ and run the LTS installer.
-  <code>powershell
-  node --version
-  npm --version</code></p>
-</li>
-<li>
-<p><strong>Linux</strong>: Use NodeSource repository
-  <code>bash
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-  sudo apt install nodejs
-  node --version</code></p>
-</li>
-</ul>
-<p><strong>Step 3: Install Git</strong></p>
-<ul>
-<li><strong>macOS</strong>: <code>brew install git</code></li>
-<li><strong>Windows</strong>: Download from https://git-scm.com/</li>
-<li><strong>Linux</strong>: <code>sudo apt install git</code></li>
-</ul>
-<p>Verify and configure:</p>
-<div class="codehilite"><pre><span></span><code>git --version
-git config --global user.name <span class="s2">&quot;Your Name&quot;</span>
-git config --global user.email <span class="s2">&quot;your.email@example.com&quot;</span>
-</code></pre></div>
 
-<p>Generate SSH keys for GitHub authentication:</p>
-<div class="codehilite"><pre><span></span><code>ssh-keygen -t ed25519 -C <span class="s2">&quot;your.email@example.com&quot;</span>
-cat ~/.ssh/id_ed25519.pub  <span class="c1"># Copy this and add to GitHub Settings &gt; SSH Keys</span>
-</code></pre></div>
+    <h1>Lab Environment Setup Guide</h1>
+    <p class="lead">Configure your local environment for CSEC 601/602. All labs use Claude Code CLI + a browser window showing the lab guide. Complete this guide before Week 1.</p>
 
-<p><strong>Step 4: Install Docker Desktop</strong></p>
-<p>Docker is required for Semester 2 containerized labs and simulated security environments.</p>
-<ul>
-<li><strong>macOS</strong>: Download from https://www.docker.com/products/docker-desktop</li>
-<li><strong>Windows</strong>: Download Docker Desktop from https://www.docker.com/products/docker-desktop</li>
-<li><strong>Linux</strong>: Follow https://docs.docker.com/engine/install/</li>
-</ul>
-<p>Verify installation:</p>
-<div class="codehilite"><pre><span></span><code>docker --version
-docker run hello-world
-</code></pre></div>
+    <!-- ── OVERVIEW ── -->
+    <div class="lab-section" id="section-overview">
+      <h2>Overview</h2>
+      <p>The Noctua lab environment is designed for graduate students to build real agentic cybersecurity tools using Claude's autonomous agent capabilities. Rather than relying on traditional infrastructure, this course centers on rapid prototyping with Claude Max subscription, supplemented by open-source frameworks for multi-vendor exposure.</p>
+      <p>You will develop autonomous security agents capable of threat detection, incident response, vulnerability assessment, and security architecture using Claude's Agent SDK, MCP servers, and agent teams.</p>
+      <div class="callout callout-key">
+        <strong>Two-screen setup</strong>
+        <p>Primary pattern for every lab: lab guide open in browser (left screen), Claude Code CLI in terminal (right screen). All labs assume this layout.</p>
+      </div>
+    </div>
 
-<p><strong>Step 5: Install GitHub CLI (gh)</strong></p>
-<p>The GitHub CLI is used for managing repositories, pull requests, CI/CD workflows, and container registry operations — all from the terminal.</p>
-<ul>
-<li><strong>macOS</strong>: <code>brew install gh</code></li>
-<li><strong>Windows</strong>: <code>winget install --id GitHub.cli</code></li>
-<li><strong>Linux</strong>:
-  <code>bash
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli-stable.list &gt; /dev/null
-  sudo apt update &amp;&amp; sudo apt install gh</code></li>
-</ul>
-<p>Authenticate and verify:</p>
-<div class="codehilite"><pre><span></span><code>gh auth login
-gh --version
-</code></pre></div>
+    <!-- ── REQUIRED ACCOUNTS ── -->
+    <div class="lab-section" id="section-accounts">
+      <h2>Required Accounts</h2>
 
-<p><strong>Step 6: Install AWS CLI v2</strong></p>
-<p>AWS CLI is used for ECR (Elastic Container Registry) and ECS (Elastic Container Service) operations when promoting containerized prototypes to cloud deployments.</p>
-<ul>
-<li><strong>macOS</strong>: <code>brew install awscli</code></li>
-<li><strong>Windows</strong>: Download from https://aws.amazon.com/cli/</li>
-<li><strong>Linux</strong>:
-  <code>bash
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  unzip awscliv2.zip &amp;&amp; sudo ./aws/install</code></li>
-</ul>
-<p>Configure and verify:</p>
-<div class="codehilite"><pre><span></span><code>aws configure  <span class="c1"># Enter your Access Key ID, Secret, region (us-east-1), output format (json)</span>
+      <h3>Claude Max Subscription (Required)</h3>
+      <p>A Claude Max subscription is required for all course work. This provides access to:</p>
+      <ul>
+        <li><strong>Claude Code CLI</strong> — command-line interface for autonomous code generation</li>
+        <li><strong>Claude Agent SDK</strong> — framework for building agentic workflows with tool use</li>
+        <li><strong>Worktrees</strong> — isolated development branches for parallel experimentation</li>
+        <li><strong>Subagents</strong> — specialized agents delegated to specific security domains</li>
+        <li><strong>MCP Servers</strong> — bidirectional communication between Claude and custom tools</li>
+        <li><strong>Agent Teams</strong> — orchestrated multi-agent systems for complex security operations</li>
+      </ul>
+      <p>Claude Max is available through institutional purchase (check with your program) or individual subscription. Verify your subscription level grants access to all agent capabilities.</p>
+
+      <h3>Additional Accounts (Free Tier Sufficient)</h3>
+      <ul>
+        <li><strong>GitHub (Required)</strong> — all course work is Git-based. SSH key authentication recommended. <a href="https://github.com" target="_blank">github.com</a></li>
+        <li><strong>AWS (Required for Semester 2)</strong> — free tier sufficient. Used for ECR, ECS, and IaC deployments. Not required for Semester 1. <a href="https://aws.amazon.com/free/" target="_blank">aws.amazon.com/free</a></li>
+        <li><strong>OpenAI API (Semester 2)</strong> — free tier with initial credit sufficient for multi-vendor comparative labs. <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
+        <li><strong>Ollama (Free, Local)</strong> — open-weight model labs and sensitive data scenarios. No account required.</li>
+      </ul>
+    </div>
+
+    <!-- ── LOCAL SETUP ── -->
+    <div class="lab-section" id="section-local">
+      <h2>Option A: Local Machine Setup (Primary)</h2>
+      <p>This is the standard course setup. Claude Code runs in your local terminal alongside a browser window showing the lab guide. Most labs assume this two-screen pattern.</p>
+
+      <div class="callout callout-info">
+        <strong>System Requirements</strong>
+        <p>macOS 11+, Windows 10/11, or Linux (Ubuntu 20.04+) &nbsp;|&nbsp; 16 GB RAM recommended &nbsp;|&nbsp; 20 GB free disk &nbsp;|&nbsp; Administrator access (Docker)</p>
+      </div>
+
+      <h3 id="step-python">Step 1: Install Python 3.11+</h3>
+
+      <p><strong>macOS (Homebrew):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>brew install python@3.11
+python3 --version</code></pre>
+      </div>
+
+      <p><strong>Windows:</strong> Download from <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a> and run the installer. Check "Add Python to PATH".</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>python --version</code></pre>
+      </div>
+
+      <p><strong>Linux:</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>sudo apt update
+sudo apt install python3.11 python3.11-venv python3-pip
+python3 --version</code></pre>
+      </div>
+
+      <h3 id="step-node">Step 2: Install Node.js 20+</h3>
+
+      <p><strong>macOS:</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>brew install node@20
+node --version &amp;&amp; npm --version</code></pre>
+      </div>
+
+      <p><strong>Windows:</strong> Download the LTS installer from <a href="https://nodejs.org/" target="_blank">nodejs.org</a>.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>node --version &amp;&amp; npm --version</code></pre>
+      </div>
+
+      <p><strong>Linux (NodeSource):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs
+node --version</code></pre>
+      </div>
+
+      <h3 id="step-git">Step 3: Install Git</h3>
+      <ul>
+        <li><strong>macOS:</strong> <code>brew install git</code></li>
+        <li><strong>Windows:</strong> Download from <a href="https://git-scm.com/" target="_blank">git-scm.com</a></li>
+        <li><strong>Linux:</strong> <code>sudo apt install git</code></li>
+      </ul>
+      <p>Configure identity and generate SSH keys:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>git --version
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Generate SSH key for GitHub authentication
+ssh-keygen -t ed25519 -C "your.email@example.com"
+cat ~/.ssh/id_ed25519.pub  # Copy output → GitHub Settings > SSH Keys</code></pre>
+      </div>
+
+      <h3 id="step-docker">Step 4: Install Docker Desktop</h3>
+      <p>Docker is required for Semester 2 containerized labs and simulated security environments.</p>
+      <ul>
+        <li><strong>macOS / Windows:</strong> Download from <a href="https://www.docker.com/products/docker-desktop" target="_blank">docker.com/products/docker-desktop</a></li>
+        <li><strong>Linux:</strong> Follow <a href="https://docs.docker.com/engine/install/" target="_blank">docs.docker.com/engine/install</a></li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>docker --version
+docker run hello-world</code></pre>
+      </div>
+
+      <h3 id="step-gh">Step 5: Install GitHub CLI</h3>
+      <p>Used for managing repositories, pull requests, CI/CD workflows, and container registry operations.</p>
+      <ul>
+        <li><strong>macOS:</strong> <code>brew install gh</code></li>
+        <li><strong>Windows:</strong> <code>winget install --id GitHub.cli</code></li>
+        <li><strong>Linux:</strong></li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli-stable.list > /dev/null
+sudo apt update &amp;&amp; sudo apt install gh</code></pre>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>gh auth login
+gh --version</code></pre>
+      </div>
+
+      <h3 id="step-aws">Step 6: Install AWS CLI v2</h3>
+      <p>Used for ECR and ECS operations when promoting containerized prototypes to cloud (Semester 2).</p>
+      <ul>
+        <li><strong>macOS:</strong> <code>brew install awscli</code></li>
+        <li><strong>Windows:</strong> Download from <a href="https://aws.amazon.com/cli/" target="_blank">aws.amazon.com/cli</a></li>
+        <li><strong>Linux:</strong></li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip &amp;&amp; sudo ./aws/install</code></pre>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>aws configure  # Enter Access Key ID, Secret, region (us-east-1), output format (json)
 aws --version
-aws sts get-caller-identity  <span class="c1"># Verify authentication</span>
-</code></pre></div>
+aws sts get-caller-identity  # Verify authentication</code></pre>
+      </div>
 
-<p><strong>Step 7: Install Claude Code CLI</strong></p>
-<p>The Claude Code CLI is the primary interface for autonomous development in this course.</p>
-<div class="codehilite"><pre><span></span><code>npm install -g @anthropic-ai/claude-code
-</code></pre></div>
+      <h3 id="step-claude">Step 7: Install Claude Code CLI</h3>
+      <p>The Claude Code CLI is the primary interface for autonomous development in this course.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>npm install -g @anthropic-ai/claude-code
+claude --version</code></pre>
+      </div>
+    </div>
 
-<p>Verify installation:</p>
-<div class="codehilite"><pre><span></span><code>claude --version
-</code></pre></div>
+    <!-- ── CODESPACES ── -->
+    <div class="lab-section" id="section-codespaces">
+      <h2>Option B: GitHub Codespaces (Isolation Alternative)</h2>
+      <p>Use Codespaces when you need a fully isolated cloud environment — for example, when working with sensitive lab data you don't want on your local machine, or when your local environment has conflicts you can't resolve quickly.</p>
+      <ol>
+        <li>Fork the Noctua course repository to your GitHub account</li>
+        <li>Click the green "Code" button on your fork, select the "Codespaces" tab</li>
+        <li>Click "Create codespace on main" — environment initializes in 2–3 minutes</li>
+        <li>A browser-based VS Code session opens with Python, Node.js, Git, and GitHub CLI pre-installed</li>
+        <li>Install Claude Code CLI inside the Codespace:</li>
+      </ol>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>npm install -g @anthropic-ai/claude-code
+claude login</code></pre>
+      </div>
+      <div class="callout callout-warn">
+        <strong>Ollama not available in Codespaces</strong>
+        <p>Local model inference via Ollama requires GPU resources not available in the cloud environment. For Ollama labs, use the local setup. Free tier provides 60 core-hours/month — sufficient for occasional isolation labs, not for daily course work.</p>
+      </div>
+    </div>
 
-<h3 id="option-b-github-codespaces-isolation">Option B: GitHub Codespaces (Isolation Alternative)</h3>
-<p>Use Codespaces when you need a fully isolated cloud environment — for example, when working with sensitive lab data you don't want on your local machine, or when your local environment has conflicts you can't resolve quickly.</p>
-<p><strong>Setup:</strong></p>
-<ol>
-<li>Fork the Noctua course repository to your GitHub account</li>
-<li>Click the green "Code" button on your fork, select the "Codespaces" tab</li>
-<li>Click "Create codespace on main" — environment initializes in 2–3 minutes</li>
-<li>A browser-based VS Code session opens with Python, Node.js, Git, and GitHub CLI pre-installed</li>
-<li>Install Claude Code CLI inside the Codespace: <code>npm install -g @anthropic-ai/claude-code</code></li>
-<li>Authenticate: <code>claude login</code></li>
-</ol>
-<p><strong>Cost:</strong> Free tier provides 60 core-hours per month (~15 hours of 4-core development). Sufficient for occasional isolation labs; the free tier won't sustain daily course use as a primary environment.</p>
-<div class="callout callout-tip"><p><strong>Note on Ollama in Codespaces:</strong> Local model inference via Ollama is not available in Codespaces — the cloud machine doesn't have the GPU resources. For Ollama labs, use the local setup.</p></div>
+    <!-- ── CLAUDE CODE SETUP ── -->
+    <div class="lab-section" id="section-cc-setup">
+      <h2>Claude Code CLI Setup</h2>
 
-<h3 id="claude-code-cli-setup">Claude Code CLI Setup</h3>
-<p>Once installed, authenticate with your Claude Max account.</p>
-<p><strong>Step 1: Authenticate</strong></p>
-<div class="codehilite"><pre><span></span><code>claude login
-</code></pre></div>
+      <h3>Authenticate</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>claude login</code></pre>
+      </div>
+      <p>A browser window opens to authenticate with your Claude account. Complete the login flow and return to the terminal. Your authentication token is stored locally.</p>
 
-<p>A browser window opens to authenticate with your Claude account. Complete the login flow and return to the terminal. Your authentication token is stored locally.</p>
-<p><strong>Step 2: Verify Installation</strong></p>
-<div class="codehilite"><pre><span></span><code>claude --version
-claude config list
-</code></pre></div>
+      <h3>Verify and Configure</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>claude --version
+claude config list</code></pre>
+      </div>
+      <p>Claude Code is configured through a <code>CLAUDE.md</code> file in your project root. The course repository already includes one with course-specific instructions — you don't need to create it manually. MCP servers are registered with <code>claude mcp add</code> (covered in Unit 2 labs); each lab guide specifies which servers to register.</p>
 
-<p><strong>Step 3: Configure for Course</strong></p>
-<p>Claude Code is configured through a <code>CLAUDE.md</code> file in your project root and a <code>.claude/settings.json</code> file. The course repository already includes a <code>CLAUDE.md</code> with course-specific instructions. You don't need to create one manually — it's included when you fork and clone the repo.</p>
-<p>MCP servers are registered with the <code>claude mcp add</code> command (covered in Unit 2 labs), or by editing <code>.claude/settings.json</code>. Each lab guide will tell you exactly which MCP servers to register and how.</p>
-<p>To switch models within a session, use the <code>/model</code> slash command. Labs that require a specific model will say so explicitly.</p>
-<p><strong>Step 4: Run Your First Command</strong></p>
-<div class="codehilite"><pre><span></span><code>claude <span class="s2">&quot;Create a simple Python script that prints &#39;Noctua Lab Environment Ready&#39;&quot;</span>
-</code></pre></div>
+      <h3>Run Your First Command</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>claude "Create a simple Python script that prints 'Noctua Lab Environment Ready'"</code></pre>
+      </div>
+      <p>Claude generates the script, saves it, and reports success. This confirms your setup is working.</p>
+    </div>
 
-<p>Claude generates the script, saves it, and reports success. This verifies your setup is working.</p>
-<h3 id="mcp-server-development-setup">MCP Server Development Setup</h3>
-<p>Throughout the course, you will build MCP (Model Context Protocol) servers to extend Claude's capabilities for security operations. MCP servers act as bridges between Claude and external tools, APIs, data sources, and custom security functions.</p>
-<p><strong>Install MCP SDKs:</strong></p>
-<p>Python MCP SDK (primary for security tools):</p>
-<div class="codehilite"><pre><span></span><code>pip install mcp
-</code></pre></div>
+    <!-- ── MCP SETUP ── -->
+    <div class="lab-section" id="section-mcp">
+      <h2>MCP Server Development Setup</h2>
+      <p>Throughout the course you will build MCP (Model Context Protocol) servers to extend Claude's capabilities for security operations. MCP servers act as bridges between Claude and external tools, APIs, data sources, and custom security functions.</p>
 
-<p>TypeScript MCP SDK (alternative, if you prefer Node.js):</p>
-<div class="codehilite"><pre><span></span><code>npm install @modelcontextprotocol/sdk
-</code></pre></div>
+      <h3>Install MCP SDKs</h3>
+      <p><strong>Python MCP SDK (primary for security tools):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install mcp</code></pre>
+      </div>
+      <p><strong>TypeScript MCP SDK (optional, if you prefer Node.js):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>npm install @modelcontextprotocol/sdk</code></pre>
+      </div>
 
-<p><strong>Verification: Build a Hello World MCP Server</strong></p>
-<p>Create a file <code>hello_mcp_server.py</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">mcp.server.lowlevel</span> <span class="kn">import</span> <span class="n">Server</span>
-<span class="kn">from</span> <span class="nn">mcp.types</span> <span class="kn">import</span> <span class="n">Tool</span><span class="p">,</span> <span class="n">TextContent</span><span class="p">,</span> <span class="n">ToolResult</span>
+      <h3>Verification: Hello World MCP Server</h3>
+      <p>Create a file <code>hello_mcp_server.py</code>:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>import asyncio
+import json
+from mcp.server.lowlevel import Server
+from mcp.types import Tool, TextContent, ToolResult
 
-<span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="s2">&quot;hello-mcp&quot;</span><span class="p">)</span>
+server = Server("hello-mcp")
 
-<span class="nd">@server</span><span class="o">.</span><span class="n">tool</span><span class="p">()</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_security_status</span><span class="p">(</span><span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a mock security status report.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
-        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;secure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;threats&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;agent_version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span>
-    <span class="p">})</span>
+@server.tool()
+async def get_security_status(tool_name: str) -&gt; str:
+    """Returns a mock security status report."""
+    return json.dumps({
+        "status": "secure",
+        "threats": 0,
+        "agent_version": "1.0"
+    })
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">server</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello World MCP Server running...&quot;</span><span class="p">)</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>  <span class="c1"># Run forever</span>
+async def main():
+    async with server:
+        print("Hello World MCP Server running...")
+        await asyncio.Future()  # Run forever
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
-</code></pre></div>
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>python hello_mcp_server.py</code></pre>
+      </div>
+      <p>If it starts without errors, your MCP development environment is ready.</p>
+    </div>
 
-<p>Run the server:</p>
-<div class="codehilite"><pre><span></span><code>python hello_mcp_server.py
-</code></pre></div>
+    <!-- ── DEPENDENCY SECURITY ── -->
+    <div class="lab-section" id="section-deps">
+      <h2>Dependency Security: Before You <code>pip install</code></h2>
 
-<p>If it starts without errors, your MCP development environment is ready.</p>
-<h2 id="dependency-security">Dependency Security: Before You pip install</h2>
-<div class="callout callout-warn"><p><strong>Supply Chain Reality Check:</strong> On March 24, 2026, LiteLLM — an LLM routing library with 97M monthly downloads — was compromised because its security scanner (Trivy) was compromised first. The attacker never broke into LiteLLM directly. They broke into a <em>tool LiteLLM trusted</em>. The malicious package was discovered by an MCP plugin in Cursor pulling it as a transitive dependency — a package the developer never explicitly installed. See: <a href="resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study: LiteLLM Supply Chain Attack</a></p></div>
-<p>For every project in this course:</p>
-<ol>
-<li>Use the Noctua Keystore, not <code>.env</code> files — credentials encrypted at rest</li>
-<li>Use virtual environments per project — blast radius containment</li>
-<li>Pin dependencies by hash, not just version number</li>
-<li>Run <code>pip-audit</code> before first use and in CI</li>
-</ol>
-<div class="codehilite"><pre><span></span><code># Install tooling
+      <div class="callout callout-warn">
+        <strong>Supply Chain Reality Check</strong>
+        <p>On March 24, 2026, LiteLLM — an LLM routing library with 97M monthly downloads — was compromised because its security scanner (Trivy) was compromised first. The attacker never broke into LiteLLM directly. They broke into a <em>tool LiteLLM trusted</em>. The malicious package was discovered by an MCP plugin in Cursor pulling it as a transitive dependency — a package the developer never explicitly installed. See: <a href="resources/case-studies/CASE-STUDY-LITELLM-SUPPLY-CHAIN.md">Case Study: LiteLLM Supply Chain Attack</a></p>
+      </div>
+
+      <p>For every project in this course:</p>
+      <ol>
+        <li>Use virtual environments per project — blast radius containment</li>
+        <li>Pin dependencies by hash, not just version number</li>
+        <li>Run <code>pip-audit</code> before first use and in CI</li>
+        <li>Never commit secrets to Git — use environment variables or the Noctua Keystore</li>
+      </ol>
+
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Install tooling
 pip install pip-tools pip-audit
 
 # Generate hash-pinned requirements (do this once per project)
@@ -260,519 +318,564 @@ pip-compile --generate-hashes requirements.in -o requirements.txt
 pip install --require-hashes -r requirements.txt
 
 # Audit for known CVEs
-pip-audit</code></pre></div>
-<div class="callout callout-tip"><p><strong>Why hash pinning?</strong> Version pinning (<code>pip install litellm==1.82.7</code>) failed in the LiteLLM attack — the attacker published a malicious package under that exact version number. Hash pinning verifies the <em>content</em> of the package, not just the version label. If the content changes, the hash won't match and installation fails.</p></div>
+pip-audit</code></pre>
+      </div>
 
-<h2 id="multi-vendor-framework-setup-semester-2">Multi-Vendor Framework Setup (Semester 2)</h2>
-<p>Semester 2 introduces frameworks for building multi-vendor security orchestration. These allow you to build agents that work with multiple LLMs and security platforms.</p>
-<h3 id="crewai">CrewAI</h3>
-<p>CrewAI provides role-based agent teams with task delegation.</p>
-<div class="codehilite"><pre><span></span><code>pip install crewai crewai-tools
-</code></pre></div>
+      <div class="callout callout-tip">
+        <strong>Why hash pinning?</strong>
+        <p>Version pinning (<code>pip install litellm==1.82.7</code>) failed in the LiteLLM attack — the attacker published a malicious package under that exact version number. Hash pinning verifies the <em>content</em> of the package, not just the version label. If the content changes, the hash won't match and installation fails.</p>
+      </div>
+    </div>
 
-<p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>python -c <span class="s2">&quot;import crewai; print(crewai.__version__)&quot;</span>
-</code></pre></div>
+    <!-- ── MULTI-VENDOR FRAMEWORKS ── -->
+    <div class="lab-section" id="section-frameworks">
+      <h2>Multi-Vendor Framework Setup (Semester 2)</h2>
+      <p>Semester 2 introduces frameworks for building multi-vendor security orchestration. These allow you to build agents that work with multiple LLMs and security platforms. Install these before starting Unit 5.</p>
 
-<h3 id="langgraph">LangGraph</h3>
-<p>LangGraph enables stateful, multi-step agent workflows.</p>
-<div class="codehilite"><pre><span></span><code>pip install langgraph langchain-anthropic langchain-openai langchain-community
-</code></pre></div>
+      <h3>CrewAI</h3>
+      <p>Role-based agent teams with task delegation.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install crewai crewai-tools
+python -c "import crewai; print(crewai.__version__)"</code></pre>
+      </div>
 
-<p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>python -c <span class="s2">&quot;import langgraph; print(&#39;LangGraph installed&#39;)&quot;</span>
-</code></pre></div>
+      <h3>LangGraph</h3>
+      <p>Stateful, multi-step agent workflows with graph-based execution.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install langgraph langchain-anthropic langchain-openai langchain-community
+python -c "import langgraph; print('LangGraph installed')"</code></pre>
+      </div>
 
-<h3 id="autogenag2">AutoGen/AG2</h3>
-<p>AutoGen (now AG2) provides multi-agent conversation patterns.</p>
-<div class="codehilite"><pre><span></span><code>pip install pyautogen-agentchat
-</code></pre></div>
+      <h3>AutoGen / AG2</h3>
+      <p>Multi-agent conversation patterns (AutoGen is now AG2).</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install pyautogen-agentchat
+python -c "import autogen_agentchat; print('AG2 installed')"</code></pre>
+      </div>
 
-<p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>python -c <span class="s2">&quot;import autogen_agentchat; print(&#39;AG2 installed&#39;)&quot;</span>
-</code></pre></div>
+      <h3>Ollama (Local Models)</h3>
+      <p>Runs open-weight models locally — useful for offline security work and sensitive data labs.</p>
 
-<h3 id="ollama-local-models">Ollama (Local Models)</h3>
-<p>Ollama runs open-weight models locally, useful for offline security work and sensitive data labs.</p>
-<p><strong>Install Ollama:</strong></p>
-<ul>
-<li><strong>macOS</strong>: Download from https://ollama.ai</li>
-<li><strong>Windows</strong>: Download from https://ollama.ai (WSL 2 required)</li>
-<li><strong>Linux</strong>:
-  <code>bash
-  curl -fsSL https://ollama.ai/install.sh | sh</code></li>
-</ul>
-<p><strong>Pull a Model:</strong></p>
-<div class="codehilite"><pre><span></span><code>ollama pull llama3.2
-</code></pre></div>
+      <p><strong>Install Ollama:</strong></p>
+      <ul>
+        <li><strong>macOS / Windows:</strong> Download from <a href="https://ollama.ai" target="_blank">ollama.ai</a> (WSL 2 required on Windows)</li>
+        <li><strong>Linux:</strong></li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>curl -fsSL https://ollama.ai/install.sh | sh</code></pre>
+      </div>
 
-<p>This downloads a ~2GB model. Alternative models:</p>
-<ul>
-<li><code>ollama pull mistral</code> (faster, lighter)</li>
-<li><code>ollama pull llama3.1:8b</code> (strong reasoning, 8B parameters)</li>
-<li><code>ollama pull phi4-mini</code> (low-latency, small footprint)</li>
-</ul>
-<p><strong>Verify:</strong></p>
-<div class="codehilite"><pre><span></span><code>ollama list
-</code></pre></div>
+      <p><strong>Pull a model (~2 GB download):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>ollama pull llama3.2
+ollama list  # Verify model appears</code></pre>
+      </div>
 
-<p>You should see your downloaded model listed.</p>
-<p><strong>When to Use Local Models:</strong></p>
-<ul>
-<li>Labs involving sensitive data that shouldn't leave your machine</li>
-<li>Offline security assessments</li>
-<li>Cost optimization for large batch operations</li>
-<li>Network-isolated environments</li>
-</ul>
-<h2 id="course-repository-setup">Course Repository Setup</h2>
-<p>All course work is version-controlled using Git.</p>
-<p><strong>Step 1: Fork the Course Repository</strong></p>
-<ol>
-<li>Navigate to the Noctua course repository on GitHub</li>
-<li>Click the "Fork" button (top right)</li>
-<li>Select your account as the fork destination</li>
-<li>Wait for the fork to complete</li>
-</ol>
-<p><strong>Step 2: Clone Your Fork Locally</strong></p>
-<div class="codehilite"><pre><span></span><code>git clone git@github.com:YOUR-USERNAME/Noctua.git
-<span class="nb">cd</span> Noctua
-</code></pre></div>
+      <p><strong>Alternative models:</strong></p>
+      <ul>
+        <li><code>ollama pull mistral</code> — faster, lighter footprint</li>
+        <li><code>ollama pull llama3.1:8b</code> — strong reasoning, 8B parameters</li>
+        <li><code>ollama pull phi4-mini</code> — low-latency, small footprint</li>
+      </ul>
 
-<p>Replace <code>YOUR-USERNAME</code> with your GitHub username.</p>
-<p><strong>Step 3: Add Upstream Remote</strong></p>
-<p>This allows you to sync with course updates:</p>
-<div class="codehilite"><pre><span></span><code>git remote add upstream git@github.com:COURSE-ORGANIZATION/Noctua.git
-git fetch upstream
-</code></pre></div>
+      <div class="callout callout-tip">
+        <strong>When to use local models</strong>
+        <p>Labs involving sensitive data that shouldn't leave your machine, offline security assessments, cost optimization for large batch operations, or network-isolated environments.</p>
+      </div>
+    </div>
 
-<p><strong>Step 4: Branch Strategy</strong></p>
-<p>Follow this branch naming convention:</p>
-<ul>
-<li><strong>main</strong>: Official course releases and reference implementations (do not commit here)</li>
-<li><strong>dev</strong>: Your personal development branch for in-progress work</li>
-<li><strong>lab-XX</strong>: Individual branches for each lab (e.g., <code>lab-01</code>, <code>lab-02</code>)</li>
-</ul>
-<p><strong>Create your dev branch:</strong></p>
-<div class="codehilite"><pre><span></span><code>git checkout -b dev
+    <!-- ── REPO SETUP ── -->
+    <div class="lab-section" id="section-repo">
+      <h2>Course Repository Setup</h2>
+
+      <h3>Fork and Clone</h3>
+      <ol>
+        <li>Navigate to the Noctua course repository on GitHub</li>
+        <li>Click "Fork" (top right) and select your account as the fork destination</li>
+        <li>Clone your fork locally:</li>
+      </ol>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>git clone git@github.com:YOUR-USERNAME/Noctua.git
+cd Noctua</code></pre>
+      </div>
+
+      <h3>Add Upstream Remote</h3>
+      <p>Allows you to sync with course updates:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>git remote add upstream git@github.com:r33n3/Noctua.git
+git fetch upstream</code></pre>
+      </div>
+
+      <h3>Branch Strategy</h3>
+      <ul>
+        <li><strong>main</strong> — official course releases (do not commit here)</li>
+        <li><strong>dev</strong> — your personal development branch for in-progress work</li>
+        <li><strong>lab-XX</strong> — individual branches per lab (e.g., <code>lab-01</code>, <code>lab-02</code>)</li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Create your dev branch
+git checkout -b dev
 git push -u origin dev
-</code></pre></div>
 
-<p><strong>For each lab, create a new branch:</strong></p>
-<div class="codehilite"><pre><span></span><code>git checkout -b lab-01
-<span class="c1"># Work on lab 01</span>
-git commit -am <span class="s2">&quot;Complete lab 01: [description]&quot;</span>
-git push -u origin lab-01
-</code></pre></div>
+# For each lab, create a new branch
+git checkout -b lab-01
+# ...work on lab...
+git commit -am "Complete lab 01: threat detection agent"
+git push -u origin lab-01</code></pre>
+      </div>
 
-<p><strong>Syncing with Course Updates:</strong></p>
-<div class="codehilite"><pre><span></span><code>git fetch upstream
+      <h3>Syncing with Course Updates</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>git fetch upstream
 git rebase upstream/main
-git push origin main
-</code></pre></div>
+git push origin main</code></pre>
+      </div>
 
-<p><strong>Git Workflow Expectations:</strong></p>
-<ul>
-<li>Commit frequently (each functional unit)</li>
-<li>Write descriptive commit messages: "Add threat detection agent" not "update"</li>
-<li>Never force-push to main or dev branches</li>
-<li>Create pull requests for code review (if required by your program)</li>
-<li>Document your work in README files within lab directories</li>
-</ul>
-<h2 id="devsecops-promotion-pipeline">DevSecOps Promotion Pipeline</h2>
-<p>Noctua follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — we don't teach CI/CD in detail — but we follow the methodology so that when a prototype is selected by leadership for delivery, the path to production is already paved.</p>
-<h3 id="the-promotion-path">The Promotion Path</h3>
-<p><strong>Local Development (Docker Desktop)</strong>
-Every prototype starts as a containerized application on Docker Desktop. From Week 1, students containerize their agents with a <code>Dockerfile</code> and <code>docker-compose.yml</code>. This ensures reproducibility, isolation, and a clean path to cloud deployment.</p>
-<p><strong>Version Control &amp; CI (GitHub + GH CLI)</strong>
-All code lives in GitHub. Students use <code>gh</code> for PR workflows, branch management, and triggering CI pipelines. GitHub Actions handles automated testing, linting, and security scanning on every push.</p>
-<p><strong>Container Registry (ECR)</strong>
-When a prototype graduates from local Docker to cloud deployment, container images are pushed to Amazon ECR. Students learn to tag, push, and manage container images using the AWS CLI:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Authenticate Docker to ECR</span>
-aws ecr get-login-password --region us-east-1 <span class="p">|</span> docker login --username AWS --password-stdin &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com
+      <div class="callout callout-tip">
+        <strong>Git workflow expectations</strong>
+        <p>Commit frequently (each functional unit). Write descriptive commit messages: "Add threat detection agent" not "update". Never force-push to main or dev. Document your work in README files within lab directories.</p>
+      </div>
+    </div>
 
-<span class="c1"># Tag and push a local image</span>
+    <!-- ── DEVSECOPS PIPELINE ── -->
+    <div class="lab-section" id="section-pipeline">
+      <h2>DevSecOps Promotion Pipeline</h2>
+      <p>Noctua follows a DevSecOps methodology for promoting prototypes from local development to production deployment. This isn't a DevSecOps course — but we follow the methodology so that when a prototype is selected for delivery, the path to production is already paved.</p>
+
+      <h3>The Promotion Path</h3>
+      <p><strong>Local Development (Docker Desktop)</strong> — every prototype starts as a containerized application on Docker Desktop. From Week 1, containerize agents with a <code>Dockerfile</code> and <code>docker-compose.yml</code>. This ensures reproducibility, isolation, and a clean path to cloud deployment.</p>
+      <p><strong>Version Control &amp; CI (GitHub + gh CLI)</strong> — all code lives in GitHub. GitHub Actions handles automated testing, linting, and security scanning on every push.</p>
+      <p><strong>Container Registry (ECR)</strong> — when a prototype graduates from local Docker to cloud deployment, images are pushed to Amazon ECR:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Authenticate Docker to ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com
+
+# Tag and push
 docker tag my-agent:latest &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest
-docker push &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest
-</code></pre></div>
+docker push &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest</code></pre>
+      </div>
+      <p><strong>Container Orchestration (ECS)</strong> — production deployments use Amazon ECS. Students define task definitions, services, and load balancers — first via CLI, then via Infrastructure as Code.</p>
+      <p><strong>Infrastructure as Code</strong> — production infrastructure is defined in code (CloudFormation or Terraform), not clicked in consoles. This ensures repeatability, auditability, and version-controlled infrastructure changes.</p>
 
-<p><strong>Container Orchestration (ECS)</strong>
-Production deployments use Amazon ECS for container orchestration. Students define task definitions, services, and load balancers — first manually via CLI, then via Infrastructure as Code.</p>
-<p><strong>Infrastructure as Code (IaC)</strong>
-Production infrastructure is defined in code (CloudFormation or Terraform), not clicked in consoles. This ensures repeatability, auditability, and version-controlled infrastructure changes.</p>
-<h3 id="security-gates-at-each-stage">Security Gates at Each Stage</h3>
-<p>The DevSecOps pipeline includes security checkpoints that align with course content:</p>
-<ul>
-<li><strong>Pre-commit</strong>: Secrets detection (no API keys in code), linting, type checking</li>
-<li><strong>PR Review</strong>: Automated security scanning, peer code review, Claude Code review</li>
-<li><strong>Build</strong>: Container image scanning for vulnerabilities (Trivy, Snyk)</li>
-<li><strong>Registry</strong>: Image signing and provenance verification</li>
-<li><strong>Deploy</strong>: Environment-based promotion gates (dev → staging → prod), runtime policy enforcement</li>
-<li><strong>Production</strong>: Observability, anomaly detection, audit logging</li>
-</ul>
-<h3 id="containerization-from-day-1">Containerization from Day 1</h3>
-<p>Every lab prototype should include a minimal <code>Dockerfile</code>. This is the standard pattern:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
-<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
-<span class="k">COPY</span><span class="w"> </span>requirements.txt .
-<span class="k">RUN</span><span class="w"> </span>pip install --no-cache-dir -r requirements.txt
-<span class="k">COPY</span><span class="w"> </span>. .
-<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;agent.py&quot;</span><span class="p">]</span>
-</code></pre></div>
+      <h3>Security Gates</h3>
+      <ul>
+        <li><strong>Pre-commit</strong> — secrets detection (no API keys in code), linting, type checking</li>
+        <li><strong>PR Review</strong> — automated security scanning, peer code review, Claude Code review</li>
+        <li><strong>Build</strong> — container image scanning for vulnerabilities (Trivy, Snyk)</li>
+        <li><strong>Registry</strong> — image signing and provenance verification</li>
+        <li><strong>Deploy</strong> — environment-based promotion gates (dev → staging → prod), runtime policy enforcement</li>
+        <li><strong>Production</strong> — observability, anomaly detection, audit logging</li>
+      </ul>
 
-<p>And a <code>docker-compose.yml</code> for local development:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.8&quot;</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">agent</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8080:8080&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data:/app/data</span><span class="w"></span>
-</code></pre></div>
+      <h3>Containerization from Day 1</h3>
+      <p>Every lab prototype should include a minimal <code>Dockerfile</code>:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["python", "agent.py"]</code></pre>
+      </div>
+      <p>And a <code>docker-compose.yml</code> for local development:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>version: "3.8"
+services:
+  agent:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data</code></pre>
+      </div>
+      <div class="callout callout-key">
+        <strong>Build locally, promote the container</strong>
+        <p>Students who containerize from Week 1 find that promoting a prototype to production is a matter of adding security gates and IaC — not a rewrite. This is the same pattern used in enterprise AI deployments.</p>
+      </div>
+    </div>
 
-<p>This pattern — build locally on Docker Desktop, push to ECR, deploy to ECS — is the same pattern used in enterprise AI deployments. Students who follow it from Week 1 will find that promoting a prototype to production is a matter of adding security gates and IaC, not a rewrite.</p>
-<hr />
-<h2 id="lab-specific-environments">Lab-Specific Environments</h2>
-<h3 id="course-security-research-platforms-primary">Course Security Research Platforms (Primary)</h3>
-<h4 id="mass-model-application-security-suite">MASS (Model &amp; Application Security Suite)</h4>
-<p>MASS is an AI security tool that demonstrates real approaches to solving security assessment and compliance challenges in production AI deployments. It covers vulnerability scanning, compliance mapping, and attack surface analysis across models, prompts, tools, and agent workflows. You will study how MASS approaches these problems — its analyzer architecture, compliance mapping methodology, and MCP-based integration patterns — then use Claude Code to implement your own security assessment capabilities.</p>
-<p><strong>What MASS Teaches (Source Code to Study):</strong></p>
-<p>Study the MASS repository at https://github.com/r33n3/MASS to understand:</p>
-<p><strong>12 Analyzer Architectural Patterns:</strong></p>
-<ul>
-<li>Input validation analyzer</li>
-<li>Prompt injection analyzer</li>
-<li>Output poisoning analyzer</li>
-<li>Model behavior analyzer</li>
-<li>Data leakage analyzer</li>
-<li>Dependency analyzer</li>
-<li>Configuration analyzer</li>
-<li>Compliance analyzer</li>
-<li>Governance analyzer</li>
-<li>Threat modeling analyzer</li>
-<li>Risk assessment analyzer</li>
-<li>Remediation recommendation analyzer</li>
-</ul>
-<p>Each analyzer demonstrates modular security assessment design patterns you will implement in your own tools.</p>
-<p><strong>Compliance Framework Mapping Methodology:</strong>
-MASS maps findings to compliance frameworks as a case study:</p>
-<ul>
-<li><strong>OWASP LLM Top 10</strong> — Architectural pattern for vulnerability classification</li>
-<li><strong>MITRE ATLAS</strong> — Technique mapping patterns for AI threat modeling</li>
-<li><strong>NIST AI RMF</strong> — Risk management framework integration patterns</li>
-<li><strong>EU AI Act</strong> — Regulatory mapping patterns</li>
-</ul>
-<p>Study how MASS structures its compliance mappings—you will build similar patterns in your own governance tools.</p>
-<p><strong>MCP Server Design as Tool Exposure Patterns:</strong>
-MASS exposes security tools via an MCP server architecture, demonstrating how to bridge autonomous agents with security capabilities. This is a case study in MCP design patterns; you will design your own MCP servers for security functions throughout the course.</p>
-<p><strong>How Students Use MASS:</strong></p>
-<ol>
-<li><strong>Code Review</strong>: Clone the repository and review the 12 analyzers' implementation</li>
-<li><strong>Architecture Study</strong>: Understand how MASS structures modular security functions</li>
-<li><strong>Implementation</strong>: Build your own security analyzers using similar patterns in Claude Code</li>
-<li><strong>Lab Application</strong>: When labs require security assessment, implement your own analyzers inspired by MASS patterns rather than running MASS directly</li>
-</ol>
-<p><strong>Reference Repository:</strong> https://github.com/r33n3/MASS</p>
-<p><strong>Students will use Claude Code to build their own security analyzers inspired by MASS's architecture.</strong></p>
-<h4 id="pearl-policy-enforced-autonomous-risk-layer">PeaRL (Policy-enforced Autonomous Risk Layer)</h4>
-<p>PeaRL is an AI security tool that demonstrates real approaches to solving governance and oversight challenges in production autonomous agent deployments. It covers environment-based promotion gates, policy-as-code enforcement, behavioral anomaly detection, fairness attestation, and approval workflows. You will study how PeaRL approaches these problems — its multi-layer governance model, AGP anomaly detection patterns, and context compilation methodology — then use Claude Code to implement your own governance capabilities.</p>
-<p><strong>What PeaRL Teaches (Source Code to Study):</strong></p>
-<p>Study the PeaRL repository at https://github.com/r33n3/PeaRL to understand:</p>
-<p><strong>Governance Model Architectural Patterns:</strong></p>
-<ul>
-<li><strong>Environment Hierarchy</strong>: Design pattern for agent environment progression (development → staging/pilot → pre-production → production)</li>
-<li><strong>Approval Workflow Pattern</strong>: Multi-stage approval systems with stakeholder roles and delegation</li>
-<li><strong>Fairness Requirements Framework</strong>: Systematic evaluation of agent behavior for bias and fairness</li>
-<li><strong>Behavioral Anomaly Detection</strong>: Pattern analysis for detecting unexpected or dangerous agent behavior</li>
-</ul>
-<p><strong>Anomaly Detection Patterns (AGP-01 through AGP-05):</strong></p>
-<p>These anomaly governance patterns (AGP) demonstrate automated detection of problematic agent behavior:</p>
-<ul>
-<li><strong>AGP-01</strong>: Excessive tool usage pattern</li>
-<li><strong>AGP-02</strong>: Out-of-scope action pattern</li>
-<li><strong>AGP-03</strong>: Fairness violation pattern</li>
-<li><strong>AGP-04</strong>: Data leakage pattern</li>
-<li><strong>AGP-05</strong>: Behavior drift pattern</li>
-</ul>
-<p>Study how PeaRL implements these detection patterns—you will design similar anomaly detection in your own governance systems.</p>
-<p><strong>39 MCP Tools as Governance Tooling Example:</strong></p>
-<p>PeaRL exposes 39 tools via MCP, demonstrating comprehensive governance tooling design:</p>
-<ul>
-<li>Context compilation tools</li>
-<li>Findings submission tools</li>
-<li>Environment promotion tools</li>
-<li>Fairness evaluation tools</li>
-<li>Compliance assessment tools</li>
-<li>Behavioral monitoring tools</li>
-</ul>
-<p>These tools are an example of comprehensive governance interface design. Study the MCP architecture, but you will design your own governance interfaces for your agents.</p>
-<p><strong>How Students Use PeaRL:</strong></p>
-<ol>
-<li><strong>Architecture Review</strong>: Clone the repository and review the governance model implementation</li>
-<li><strong>Pattern Study</strong>: Understand the anomaly detection patterns, approval workflows, and environment hierarchy</li>
-<li><strong>Design</strong>: Create your own governance layers for autonomous agents in course labs, inspired by PeaRL's patterns</li>
-<li><strong>Implementation</strong>: Build governance systems using Claude Code and custom MCP servers</li>
-</ol>
-<p><strong>Reference Repository:</strong> https://github.com/r33n3/PeaRL</p>
-<p><strong>Students will design their own governance layers inspired by PeaRL's architecture.</strong></p>
-<hr />
-<h3 id="ai-red-teaming-adversarial-testing-tools">AI Red Teaming &amp; Adversarial Testing Tools</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Garak (NVIDIA) — LLM vulnerability scanner</span>
+    <!-- ── SECURITY RESEARCH PLATFORMS ── -->
+    <div class="lab-section" id="section-platforms">
+      <h2>Course Security Research Platforms</h2>
+
+      <h3>MASS (Model &amp; Application Security Suite)</h3>
+      <p>MASS is an AI security tool demonstrating real approaches to security assessment and compliance in production AI deployments. You will study how MASS approaches vulnerability scanning, compliance mapping, and attack surface analysis — then use Claude Code to implement your own security assessment capabilities.</p>
+
+      <p><strong>What MASS Teaches (Source Code to Study):</strong></p>
+      <p>Study the MASS repository at <a href="https://github.com/r33n3/MASS" target="_blank">github.com/r33n3/MASS</a> to understand 12 analyzer architectural patterns:</p>
+      <ul>
+        <li>Input validation, prompt injection, output poisoning, model behavior</li>
+        <li>Data leakage, dependency, configuration, compliance</li>
+        <li>Governance, threat modeling, risk assessment, remediation recommendation</li>
+      </ul>
+
+      <p><strong>Compliance Framework Mapping (Study Patterns):</strong></p>
+      <ul>
+        <li><strong>OWASP LLM Top 10</strong> — architectural pattern for vulnerability classification</li>
+        <li><strong>MITRE ATLAS</strong> — technique mapping patterns for AI threat modeling</li>
+        <li><strong>NIST AI RMF</strong> — risk management framework integration patterns</li>
+        <li><strong>EU AI Act</strong> — regulatory mapping patterns</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <strong>How to use MASS in this course</strong>
+        <p>1. Clone and review the 12 analyzers' implementation. 2. Understand how MASS structures modular security functions. 3. Build your own security analyzers using similar patterns in Claude Code. Students implement their own analyzers inspired by MASS patterns rather than running MASS directly.</p>
+      </div>
+
+      <h3>PeaRL (Policy-enforced Autonomous Risk Layer)</h3>
+      <p>PeaRL is an AI security tool demonstrating governance and oversight challenges in production autonomous agent deployments. You will study how PeaRL approaches environment-based promotion gates, policy-as-code enforcement, behavioral anomaly detection, and approval workflows.</p>
+
+      <p><strong>What PeaRL Teaches (Source Code to Study):</strong></p>
+      <p>Study the PeaRL repository at <a href="https://github.com/r33n3/PeaRL" target="_blank">github.com/r33n3/PeaRL</a> to understand:</p>
+      <ul>
+        <li><strong>Environment Hierarchy</strong> — design pattern for agent environment progression (dev → staging/pilot → pre-production → production)</li>
+        <li><strong>Approval Workflow Pattern</strong> — multi-stage approval systems with stakeholder roles and delegation</li>
+        <li><strong>Fairness Requirements Framework</strong> — systematic evaluation of agent behavior for bias</li>
+        <li><strong>Behavioral Anomaly Detection</strong> — pattern analysis for detecting unexpected or dangerous agent behavior</li>
+      </ul>
+
+      <p><strong>Anomaly Governance Patterns (AGP-01 through AGP-05):</strong></p>
+      <ul>
+        <li><strong>AGP-01</strong> — Excessive tool usage pattern</li>
+        <li><strong>AGP-02</strong> — Out-of-scope action pattern</li>
+        <li><strong>AGP-03</strong> — Fairness violation pattern</li>
+        <li><strong>AGP-04</strong> — Data leakage pattern</li>
+        <li><strong>AGP-05</strong> — Behavior drift pattern</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <strong>How to use PeaRL in this course</strong>
+        <p>1. Clone and review the governance model implementation. 2. Understand the anomaly detection patterns, approval workflows, and environment hierarchy. 3. Design your own governance layers for autonomous agents in course labs, inspired by PeaRL's patterns.</p>
+      </div>
+    </div>
+
+    <!-- ── AI SECURITY TOOLS ── -->
+    <div class="lab-section" id="section-security-tools">
+      <h2>AI Security Tools</h2>
+
+      <h3>Red Teaming &amp; Adversarial Testing</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Garak (NVIDIA) — LLM vulnerability scanner
 pip install garak
-garak --list_probes  <span class="c1"># List available probe modules</span>
+garak --list_probes  # List available probe modules
 
-<span class="c1"># PyRIT (Microsoft) — Multi-turn adversarial red teaming</span>
+# PyRIT (Microsoft) — Multi-turn adversarial red teaming
 pip install pyrit
-<span class="c1"># Requires Azure OpenAI or compatible endpoint configuration</span>
+# Requires Azure OpenAI or compatible endpoint configuration
 
-<span class="c1"># Promptfoo — Red teaming with compliance mapping</span>
+# Promptfoo — Red teaming with compliance mapping
 npm install -g promptfoo
-promptfoo init  <span class="c1"># Initialize config</span>
-promptfoo redteam run  <span class="c1"># Run red team evaluation</span>
+promptfoo init         # Initialize config
+promptfoo redteam run  # Run red team evaluation
 
-<span class="c1"># DeepTeam — LLM vulnerability testing (40+ vulnerability types)</span>
-pip install deepteam
-</code></pre></div>
+# DeepTeam — LLM vulnerability testing (40+ vulnerability types)
+pip install deepteam</code></pre>
+      </div>
 
-<h3 id="ai-guardrails-governance-tools">AI Guardrails &amp; Governance Tools</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># NeMo Guardrails (NVIDIA) — Programmable LLM guardrails</span>
+      <h3>Guardrails &amp; Governance</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># NeMo Guardrails (NVIDIA) — Programmable LLM guardrails
 pip install nemoguardrails
 nemoguardrails chat --config ./config/
 
-<span class="c1"># Guardrails AI — Runtime validation framework</span>
+# Guardrails AI — Runtime validation framework
 pip install guardrails-ai
 guardrails hub install hub://guardrails/toxic_language
 
-<span class="c1"># Cisco MCP Scanner — MCP supply chain security</span>
+# Cisco MCP Scanner — MCP supply chain security
 pip install mcp-scanner
-mcp-scanner scan  <span class="c1"># Scans MCP configurations for vulnerabilities</span>
-</code></pre></div>
+mcp-scanner scan  # Scans MCP configurations for vulnerabilities</code></pre>
+      </div>
 
-<h3 id="llamafirewall-meta-agent-security">LlamaFirewall (Meta) — Agent Security</h3>
-<div class="codehilite"><pre><span></span><code>pip install llamafirewall
-<span class="c1"># Three defense layers: PromptGuard 2, Agent Alignment Checks, CodeShield</span>
-<span class="c1"># See: https://github.com/meta-llama/llama-firewall</span>
-</code></pre></div>
+      <h3>LlamaFirewall (Meta) — Agent Security</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install llamafirewall
+# Three defense layers: PromptGuard 2, Agent Alignment Checks, CodeShield
+# See: https://github.com/meta-llama/llama-firewall</code></pre>
+      </div>
 
-<h3 id="fairness-bias-assessment">Fairness &amp; Bias Assessment</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># IBM AI Fairness 360</span>
+      <h3>Fairness &amp; Bias Assessment</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># IBM AI Fairness 360
 pip install aif360
 
-<span class="c1"># Aequitas (University of Chicago)</span>
-pip install aequitas
-</code></pre></div>
+# Aequitas (University of Chicago)
+pip install aequitas</code></pre>
+      </div>
 
-<h3 id="traditional-security-tools-supplementary">Traditional Security Tools (Supplementary)</h3>
-<p>Certain labs may use traditional tools for data collection and manual verification:</p>
-<ul>
-<li>Wireshark: <code>brew install wireshark</code> (macOS) or <code>sudo apt install wireshark</code> (Linux)</li>
-<li>nmap: <code>brew install nmap</code> or <code>sudo apt install nmap</code></li>
-<li>Burp Suite Community: https://portswigger.net/burp/communitydownload</li>
-</ul>
-<h3 id="mock-data-and-simulated-environments">Mock Data and Simulated Environments</h3>
-<p>The course provides Docker Compose files for creating realistic lab environments without exposing real systems.</p>
-<p><strong>Available Environments</strong> (in <code>/lab-environments/</code>):</p>
-<ul>
-<li><strong>mock-siem</strong>: Simulated SIEM with sample security events and logs</li>
-<li><strong>vulnerable-app</strong>: Intentionally vulnerable web application for security testing</li>
-<li><strong>network-traffic</strong>: Captured network traffic samples for analysis</li>
-<li><strong>log-repository</strong>: Large dataset of real sanitized security logs</li>
-</ul>
-<p><strong>Running a Lab Environment:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> lab-environments/mock-siem
+      <h3>Traditional Security Tools (Supplementary)</h3>
+      <p>Certain labs may use traditional tools for data collection and manual verification:</p>
+      <ul>
+        <li><strong>Wireshark:</strong> <code>brew install wireshark</code> (macOS) or <code>sudo apt install wireshark</code> (Linux)</li>
+        <li><strong>nmap:</strong> <code>brew install nmap</code> or <code>sudo apt install nmap</code></li>
+        <li><strong>Burp Suite Community:</strong> <a href="https://portswigger.net/burp/communitydownload" target="_blank">portswigger.net/burp/communitydownload</a></li>
+      </ul>
+
+      <h3>Mock Data and Simulated Environments</h3>
+      <p>The course provides Docker Compose files for creating realistic lab environments without exposing real systems. Available environments (in <code>/lab-environments/</code>):</p>
+      <ul>
+        <li><strong>mock-siem</strong> — simulated SIEM with sample security events and logs</li>
+        <li><strong>vulnerable-app</strong> — intentionally vulnerable web application for security testing</li>
+        <li><strong>network-traffic</strong> — captured network traffic samples for analysis</li>
+        <li><strong>log-repository</strong> — large dataset of real sanitized security logs</li>
+      </ul>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>cd lab-environments/mock-siem
 docker-compose up -d
-</code></pre></div>
 
-<p>Access the environment (details in each lab):</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Example: Access SIEM dashboard</span>
+# Access SIEM dashboard
 open http://localhost:5601
 
-<span class="c1"># Example: Interact with vulnerable app</span>
-curl http://localhost:8080
-</code></pre></div>
+# Stop when done
+docker-compose down</code></pre>
+      </div>
+    </div>
 
-<p><strong>Stopping Environments:</strong></p>
-<div class="codehilite"><pre><span></span><code>docker-compose down
-</code></pre></div>
+    <!-- ── VERIFICATION CHECKLIST ── -->
+    <div class="lab-section" id="section-verify">
+      <h2>Verification Checklist</h2>
+      <p>Complete every item before beginning Week 1 coursework. Run the provided command for each item — if any fail, consult the Troubleshooting section or post in the course forum.</p>
 
-<p>All lab environments are containerized and isolated—they can be safely started and stopped without affecting your system or other labs.</p>
-<h2 id="verification-checklist">Verification Checklist</h2>
-<p>Before beginning coursework, verify your complete setup:</p>
-<p><strong>Core Development Tools:</strong></p>
-<ul>
-<li>[ ] Claude Max subscription active and verified</li>
-<li>[ ] Claude Code CLI installed (<code>claude --version</code>)</li>
-<li>[ ] Claude Code CLI authenticated (<code>claude login</code>)</li>
-<li>[ ] Python 3.11+ installed and accessible (<code>python3 --version</code>)</li>
-<li>[ ] pip package manager working (<code>pip --version</code>)</li>
-<li>[ ] Node.js 20+ installed (<code>node --version</code>)</li>
-<li>[ ] npm package manager working (<code>npm --version</code>)</li>
-<li>[ ] Git installed and configured (<code>git config --list</code>)</li>
-<li>[ ] SSH keys generated and added to GitHub</li>
-<li>[ ] GitHub account created and accessible</li>
-<li>[ ] Course repository forked and cloned locally</li>
-<li>[ ] Git branches (main, dev) verified</li>
-<li>[ ] Docker Desktop installed and running (<code>docker --version</code>)</li>
-<li>[ ] GitHub CLI installed and authenticated (<code>gh auth status</code>)</li>
-<li>[ ] AWS CLI v2 installed and configured — Semester 2 only (<code>aws sts get-caller-identity</code>)</li>
-</ul>
-<p><strong>Agentic Frameworks and MCP:</strong></p>
-<ul>
-<li>[ ] MCP SDK installed (Python: <code>pip list | grep mcp</code>)</li>
-<li>[ ] First MCP server runs successfully (hello_mcp_server.py)</li>
-<li>[ ] CrewAI installed (Semester 2)</li>
-<li>[ ] LangGraph installed (Semester 2)</li>
-<li>[ ] AutoGen installed (Semester 2)</li>
-<li>[ ] Ollama installed and has at least one model: <code>ollama pull llama3.2</code> then <code>ollama list</code></li>
-<li>[ ] OpenAI API account created (Semester 2)</li>
-</ul>
-<p><strong>Course AI Security Tools (Production Approaches Study):</strong></p>
-<ul>
-<li>[ ] Reviewed MASS source code architecture (12 analyzers, compliance mapping patterns) at https://github.com/r33n3/MASS</li>
-<li>[ ] Understood MASS compliance framework mappings (OWASP LLM, MITRE ATLAS, NIST AI RMF, EU AI Act)</li>
-<li>[ ] Reviewed MASS MCP server design pattern for tool exposure</li>
-<li>[ ] Reviewed PeaRL source code architecture (environment hierarchy, approval workflows, fairness patterns) at https://github.com/r33n3/PeaRL</li>
-<li>[ ] Understood PeaRL governance model and anomaly detection patterns (AGP-01 through AGP-05)</li>
-<li>[ ] Reviewed PeaRL MCP tools design (39 governance tools as comprehensive tooling example)</li>
-</ul>
-<p>For each item, run the provided command. If any fail, consult the Troubleshooting section or post in the course discussion forum.</p>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="claude-code-cli-issues">Claude Code CLI Issues</h3>
-<p><strong>Problem:</strong> <code>claude: command not found</code></p>
-<p><strong>Solution:</strong>
-1. Verify installation: <code>npm list -g @anthropic-ai/claude-code</code>
-2. If not installed, run: <code>npm install -g @anthropic-ai/claude-code</code>
-3. Ensure npm global bin directory is in PATH: <code>echo $PATH | grep npm</code>
-4. If not present, add to your shell profile (~/.bashrc, ~/.zshrc, etc.): <code>export PATH="$HOME/.npm-global/bin:$PATH"</code></p>
-<p><strong>Problem:</strong> <code>Authentication failed</code></p>
-<p><strong>Solution:</strong>
-1. Clear existing credentials: <code>rm ~/.claude/credentials.json</code>
-2. Re-authenticate: <code>claude login</code>
-3. If login fails, verify your Claude Max subscription is active in your account dashboard
-4. For organizational accounts, contact your administrator to ensure Claude Code access is provisioned</p>
-<p><strong>Problem:</strong> MCP servers don't appear in <code>claude config</code></p>
-<p><strong>Solution:</strong>
-1. Verify MCP server is running: Check terminal where server started for error messages
-2. Ensure MCP SDK is installed: <code>pip install mcp --upgrade</code>
-3. Check MCP server configuration in <code>.claudeconfig</code> matches actual server details
-4. For TypeScript servers, ensure TypeScript compilation completed: <code>npm run build</code></p>
-<h3 id="python-and-dependency-issues">Python and Dependency Issues</h3>
-<p><strong>Problem:</strong> <code>ModuleNotFoundError: No module named 'mcp'</code></p>
-<p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code>pip install --upgrade mcp
-python3 -m pip install mcp  <span class="c1"># Use python3 explicitly if python points to Python 2</span>
-</code></pre></div>
+      <h3>Core Development Tools</h3>
+      <ul class="checklist">
+        <li><label><input type="checkbox" class="lab-step" id="chk-claude-sub" onchange="toggleStep('chk-claude-sub', this.checked)"> Claude Max subscription active and verified</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-cc-install" onchange="toggleStep('chk-cc-install', this.checked)"> Claude Code CLI installed (<code>claude --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-cc-auth" onchange="toggleStep('chk-cc-auth', this.checked)"> Claude Code CLI authenticated (<code>claude login</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-python" onchange="toggleStep('chk-python', this.checked)"> Python 3.11+ installed (<code>python3 --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-pip" onchange="toggleStep('chk-pip', this.checked)"> pip working (<code>pip --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-node" onchange="toggleStep('chk-node', this.checked)"> Node.js 20+ installed (<code>node --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-npm" onchange="toggleStep('chk-npm', this.checked)"> npm working (<code>npm --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-git" onchange="toggleStep('chk-git', this.checked)"> Git installed and configured (<code>git config --list</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-ssh" onchange="toggleStep('chk-ssh', this.checked)"> SSH keys generated and added to GitHub</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-github" onchange="toggleStep('chk-github', this.checked)"> GitHub account created and accessible</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-fork" onchange="toggleStep('chk-fork', this.checked)"> Course repository forked and cloned locally</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-branches" onchange="toggleStep('chk-branches', this.checked)"> Git branches (main, dev) verified</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-docker" onchange="toggleStep('chk-docker', this.checked)"> Docker Desktop installed and running (<code>docker --version</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-gh" onchange="toggleStep('chk-gh', this.checked)"> GitHub CLI installed and authenticated (<code>gh auth status</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-aws" onchange="toggleStep('chk-aws', this.checked)"> AWS CLI v2 installed — Semester 2 only (<code>aws sts get-caller-identity</code>)</label></li>
+      </ul>
 
-<p><strong>Problem:</strong> Version conflicts between packages</p>
-<p><strong>Solution:</strong>
-Create a virtual environment to isolate dependencies:</p>
-<div class="codehilite"><pre><span></span><code>python3 -m venv noctua-env
-<span class="nb">source</span> noctua-env/bin/activate  <span class="c1"># macOS/Linux</span>
-<span class="c1"># OR</span>
-noctua-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate  <span class="c1"># Windows</span>
-pip install -r requirements.txt
-</code></pre></div>
+      <h3>Agentic Frameworks and MCP</h3>
+      <ul class="checklist">
+        <li><label><input type="checkbox" class="lab-step" id="chk-mcp" onchange="toggleStep('chk-mcp', this.checked)"> MCP SDK installed (<code>pip list | grep mcp</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-hello-mcp" onchange="toggleStep('chk-hello-mcp', this.checked)"> Hello World MCP server runs successfully (hello_mcp_server.py)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-crewai" onchange="toggleStep('chk-crewai', this.checked)"> CrewAI installed — Semester 2 only</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-langgraph" onchange="toggleStep('chk-langgraph', this.checked)"> LangGraph installed — Semester 2 only</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-autogen" onchange="toggleStep('chk-autogen', this.checked)"> AG2 (AutoGen) installed — Semester 2 only</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-ollama" onchange="toggleStep('chk-ollama', this.checked)"> Ollama installed with at least one model (<code>ollama list</code>)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-openai" onchange="toggleStep('chk-openai', this.checked)"> OpenAI API account created — Semester 2 only</label></li>
+      </ul>
 
-<h3 id="docker-issues">Docker Issues</h3>
-<p><strong>Problem:</strong> <code>docker: command not found</code> or Docker daemon not running</p>
-<p><strong>Solution:</strong>
-1. Verify Docker Desktop is installed: Open Applications (macOS) or Programs (Windows)
-2. Start Docker Desktop if not running
-3. Test with: <code>docker run hello-world</code></p>
-<p><strong>Problem:</strong> Permission denied for docker commands on Linux</p>
-<p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo usermod -aG docker <span class="nv">$USER</span>
+      <h3>Course Security Platforms (Architecture Review)</h3>
+      <ul class="checklist">
+        <li><label><input type="checkbox" class="lab-step" id="chk-mass-arch" onchange="toggleStep('chk-mass-arch', this.checked)"> Reviewed MASS source code architecture (12 analyzers, compliance mapping patterns)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-mass-mcp" onchange="toggleStep('chk-mass-mcp', this.checked)"> Reviewed MASS MCP server design pattern for tool exposure</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-pearl-arch" onchange="toggleStep('chk-pearl-arch', this.checked)"> Reviewed PeaRL source code architecture (environment hierarchy, approval workflows, fairness patterns)</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-pearl-agp" onchange="toggleStep('chk-pearl-agp', this.checked)"> Understood PeaRL governance model and anomaly detection patterns (AGP-01 through AGP-05)</label></li>
+      </ul>
+    </div>
+
+    <!-- ── TROUBLESHOOTING ── -->
+    <div class="lab-section" id="section-troubleshoot">
+      <h2>Troubleshooting</h2>
+
+      <h3>Claude Code CLI Issues</h3>
+
+      <div class="callout callout-warn">
+        <strong>Problem: <code>claude: command not found</code></strong>
+        <p>1. Verify installation: <code>npm list -g @anthropic-ai/claude-code</code><br>
+        2. If not installed: <code>npm install -g @anthropic-ai/claude-code</code><br>
+        3. Ensure npm global bin is in PATH: <code>echo $PATH | grep npm</code><br>
+        4. If missing, add to your shell profile: <code>export PATH="$HOME/.npm-global/bin:$PATH"</code></p>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Problem: <code>Authentication failed</code></strong>
+        <p>1. Clear existing credentials: <code>rm ~/.claude/credentials.json</code><br>
+        2. Re-authenticate: <code>claude login</code><br>
+        3. If login fails, verify your Claude Max subscription is active in your account dashboard<br>
+        4. For organizational accounts, contact your administrator to ensure Claude Code access is provisioned</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Problem: MCP servers don't appear in <code>claude config</code></strong>
+        <p>1. Verify MCP server is running — check terminal for error messages<br>
+        2. Ensure MCP SDK is installed: <code>pip install mcp --upgrade</code><br>
+        3. Check MCP server configuration in <code>.claudeconfig</code> matches actual server details<br>
+        4. For TypeScript servers, ensure compilation completed: <code>npm run build</code></p>
+      </div>
+
+      <h3>Python and Dependency Issues</h3>
+
+      <div class="callout callout-warn">
+        <strong>Problem: <code>ModuleNotFoundError: No module named 'mcp'</code></strong>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>pip install --upgrade mcp
+python3 -m pip install mcp  # Use python3 explicitly if python points to Python 2</code></pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Problem: Version conflicts between packages</strong>
+        <p>Create a virtual environment to isolate dependencies:</p>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>python3 -m venv noctua-env
+source noctua-env/bin/activate  # macOS/Linux
+# OR
+noctua-env\Scripts\activate     # Windows
+pip install -r requirements.txt</code></pre>
+      </div>
+
+      <h3>Docker Issues</h3>
+
+      <div class="callout callout-warn">
+        <strong>Problem: <code>docker: command not found</code> or Docker daemon not running</strong>
+        <p>1. Verify Docker Desktop is installed: open Applications (macOS) or Programs (Windows)<br>
+        2. Start Docker Desktop if not running<br>
+        3. Test with: <code>docker run hello-world</code></p>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Problem: Permission denied for docker commands on Linux</strong>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>sudo usermod -aG docker $USER
 newgrp docker
-docker ps  <span class="c1"># Test</span>
-</code></pre></div>
+docker ps  # Test</code></pre>
+      </div>
 
-<h3 id="git-and-github-issues">Git and GitHub Issues</h3>
-<p><strong>Problem:</strong> <code>Permission denied (publickey)</code> when pushing to GitHub</p>
-<p><strong>Solution:</strong>
-1. Verify SSH key exists: <code>ls ~/.ssh/id_ed25519.pub</code>
-2. If missing, generate: <code>ssh-keygen -t ed25519 -C "your.email@example.com"</code>
-3. Copy public key: <code>cat ~/.ssh/id_ed25519.pub</code>
-4. Add to GitHub: Settings &gt; SSH and GPG keys &gt; New SSH key &gt; Paste
-5. Test connection: <code>ssh -T git@github.com</code></p>
-<p><strong>Problem:</strong> <code>fatal: not a git repository</code></p>
-<p><strong>Solution:</strong>
-Ensure you're in the correct directory:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span> Noctua
-git status
-</code></pre></div>
+      <h3>Git and GitHub Issues</h3>
 
-<h3 id="nodejs-and-npm-issues">Node.js and npm Issues</h3>
-<p><strong>Problem:</strong> Global npm packages not found</p>
-<p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code>npm list -g  <span class="c1"># See installed packages</span>
-which npm    <span class="c1"># Verify npm location</span>
-npm config get prefix  <span class="c1"># Check global install directory</span>
-</code></pre></div>
+      <div class="callout callout-warn">
+        <strong>Problem: <code>Permission denied (publickey)</code> when pushing</strong>
+        <p>1. Verify SSH key exists: <code>ls ~/.ssh/id_ed25519.pub</code><br>
+        2. If missing, generate: <code>ssh-keygen -t ed25519 -C "your.email@example.com"</code><br>
+        3. Copy public key: <code>cat ~/.ssh/id_ed25519.pub</code><br>
+        4. Add to GitHub: Settings &gt; SSH and GPG keys &gt; New SSH key &gt; Paste<br>
+        5. Test connection: <code>ssh -T git@github.com</code></p>
+      </div>
 
-<h3 id="ollama-issues">Ollama Issues</h3>
-<p><strong>Problem:</strong> Model download fails or is very slow</p>
-<p><strong>Solution:</strong>
-1. Check internet connection
-2. Try pulling a smaller model: <code>ollama pull phi4-mini</code>
-3. Check available disk space: <code>df -h</code>
-4. Resume partial download: re-run the same <code>ollama pull</code> command (automatically resumes)</p>
-<p><strong>Problem:</strong> Model not found after pulling</p>
-<p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code>ollama list  <span class="c1"># Verify model is listed</span>
-ollama show llama3.2  <span class="c1"># Get model details</span>
-ollama rm llama3.2  <span class="c1"># Remove and repull if corrupted</span>
-ollama pull llama3.2
-</code></pre></div>
+      <div class="callout callout-warn">
+        <strong>Problem: <code>fatal: not a git repository</code></strong>
+        <p>Ensure you're in the correct directory:</p>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>cd Noctua
+git status</code></pre>
+      </div>
 
-<h2 id="cost-considerations">Cost Considerations</h2>
-<p><strong>Claude Max Subscription:</strong></p>
-<ul>
-<li>Current pricing: $20/month (subject to change—verify in your account)</li>
-<li>Institutional pricing may be available through your program</li>
-<li>Cost includes all Claude Code, Agent SDK, and MCP capabilities</li>
-<li>Estimate for course: Will vary based on lab complexity; typical programs allocate 1 subscription per student</li>
-</ul>
-<p><strong>OpenAI API Usage (Semester 2):</strong></p>
-<ul>
-<li>Pricing: varies by model — check current rates at platform.openai.com/pricing</li>
-<li>New accounts receive a small API credit; verify amount when you sign up</li>
-<li>Typical course usage: $10–20 per student for the full Semester 2</li>
-<li>Budget-conscious: Use local models (Ollama) for cost-sensitive labs</li>
-</ul>
-<p><strong>GitHub Codespaces (Option B only):</strong></p>
-<ul>
-<li>Free tier: 60 core-hours per month — sufficient for occasional isolation labs</li>
-<li>Paid: usage billed per core-hour beyond free tier (check current rates at github.com/features/codespaces)</li>
-<li>Not recommended as primary environment — use local setup for daily course work</li>
-</ul>
-<p><strong>All Other Tools:</strong></p>
-<ul>
-<li>Python, Node.js, Git: Free and open-source</li>
-<li>Docker Desktop: Free</li>
-<li>MCP SDK: Free (open-source)</li>
-<li>CrewAI, LangGraph, AutoGen: Free (open-source)</li>
-<li>Ollama: Free (open-source)</li>
-<li>Burp Suite Community: Free (limited features; Pro available for $399/year)</li>
-<li>Wireshark, nmap: Free and open-source</li>
-</ul>
-<p><strong>Total Estimated Cost Per Student (Full Year):</strong></p>
-<ul>
-<li>Minimum: $240 (Claude Max, $20/month × 12)</li>
-<li>Typical: $240 + $15 (Claude Max + OpenAI API usage)</li>
-<li>Maximum: $240 + $50 + $399 (if using Burp Suite Pro)</li>
-</ul>
-<p>Most students will fall in the typical range. Financial hardship policies should be coordinated with your program.</p>
-<h2 id="next-steps">Next Steps</h2>
-<ol>
-<li>Complete the Verification Checklist above</li>
-<li>Post any blockers to the course discussion forum with the specific error message</li>
-<li>Clone the course repository and review the <code>/labs</code> directory structure</li>
-<li>Read the Lab 1 README for your first assignment</li>
-<li>Join the course Slack/Discord for real-time support and peer collaboration</li>
-</ol>
-<p>Welcome to Noctua. You're now ready to build autonomous security agents.</p>
+      <h3>Node.js and npm Issues</h3>
+
+      <div class="callout callout-warn">
+        <strong>Problem: Global npm packages not found</strong>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>npm list -g          # See installed packages
+which npm            # Verify npm location
+npm config get prefix  # Check global install directory</code></pre>
+      </div>
+
+      <h3>Ollama Issues</h3>
+
+      <div class="callout callout-warn">
+        <strong>Problem: Model download fails or is very slow</strong>
+        <p>1. Check internet connection<br>
+        2. Try pulling a smaller model: <code>ollama pull phi4-mini</code><br>
+        3. Check available disk space: <code>df -h</code><br>
+        4. Resume partial download: re-run the same <code>ollama pull</code> command (automatically resumes)</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>Problem: Model not found after pulling</strong>
+      </div>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>ollama list           # Verify model is listed
+ollama show llama3.2  # Get model details
+ollama rm llama3.2    # Remove and repull if corrupted
+ollama pull llama3.2</code></pre>
+      </div>
+    </div>
+
+    <!-- ── COST ── -->
+    <div class="lab-section" id="section-cost">
+      <h2>Cost Considerations</h2>
+
+      <h3>Claude Max Subscription</h3>
+      <ul>
+        <li>Current pricing: $20/month (subject to change — verify in your account)</li>
+        <li>Institutional pricing may be available through your program</li>
+        <li>Includes all Claude Code, Agent SDK, and MCP capabilities</li>
+      </ul>
+
+      <h3>OpenAI API (Semester 2)</h3>
+      <ul>
+        <li>Pricing varies by model — check current rates at <a href="https://platform.openai.com/pricing" target="_blank">platform.openai.com/pricing</a></li>
+        <li>New accounts receive initial credit — verify amount when you sign up</li>
+        <li>Typical course usage: $10–20 per student for Semester 2</li>
+        <li>Use local models (Ollama) for cost-sensitive labs</li>
+      </ul>
+
+      <h3>GitHub Codespaces (Option B only)</h3>
+      <ul>
+        <li>Free tier: 60 core-hours per month — sufficient for occasional isolation labs</li>
+        <li>Paid: usage billed per core-hour beyond free tier</li>
+        <li>Not recommended as primary environment — use local setup for daily course work</li>
+      </ul>
+
+      <h3>All Other Tools</h3>
+      <p>Python, Node.js, Git, Docker Desktop, MCP SDK, CrewAI, LangGraph, AutoGen, Ollama, Wireshark, nmap — all free and open-source. Burp Suite Community is free; Pro is $399/year.</p>
+
+      <h3>Estimated Cost Per Student (Full Year)</h3>
+      <ul>
+        <li><strong>Minimum:</strong> $240 (Claude Max, $20/month × 12)</li>
+        <li><strong>Typical:</strong> ~$255 (Claude Max + OpenAI API usage)</li>
+        <li><strong>Maximum:</strong> ~$650 (if using Burp Suite Pro)</li>
+      </ul>
+      <p>Most students will fall in the typical range. Financial hardship policies should be coordinated with your program.</p>
+    </div>
+
+    <!-- ── NEXT STEPS ── -->
+    <div class="lab-section" id="section-next">
+      <h2>Next Steps</h2>
+      <ol>
+        <li>Complete the Verification Checklist above</li>
+        <li>Post any blockers to the course discussion forum with the specific error message</li>
+        <li>Clone the course repository and review the <code>/labs</code> directory structure</li>
+        <li>Open <code>docs/lab-s1-unit1.html</code> — that's your guide for Week 1</li>
+        <li>Join the course Slack/Discord for real-time support and peer collaboration</li>
+      </ol>
+      <div class="unit-complete">
+        <strong>Environment Ready</strong><br>
+        You're set up. Welcome to Noctua — let's build autonomous security agents.
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -821,10 +924,7 @@ ollama pull llama3.2
     {t:"Lab Setup Guide",d:"Environment setup: Claude Code install, API keys, MCP servers, Python environment, git config.",tags:["setup","lab","install","environment"],url:"lab-setup.html"},
     {t:"Reading List",d:"Week-by-week assigned readings: OWASP docs, Claude docs, research papers, dark factory reference.",tags:["reading","resources","papers"],url:"reading.html"},
     {t:"Frameworks & Protocols",d:"Full reference: OWASP Top 10 LLM, OWASP NHI, Agentic Apps, MCP spec, A2A spec, AIUC-1.",tags:["frameworks","protocols","reference","owasp"],url:"frameworks.html"},
-    {t:"CCT — Collaborative Critical Thinking",d:"5-pillar framework: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance. Adapted from Seth Jaeger's 5 Habits of Mind.",tags:["cct","critical thinking","jaeger","habits","pillars"],url:"s1-unit1.html"},
-    {t:"Semi-Formal Reasoning",d:"Structured evidence chains (premises → trace → divergence → conclusion) improving AI accuracy from 78% to 88–93%. Ugare & Chandra, arXiv:2603.01896v2.",tags:["semi-formal","reasoning","accuracy","evidence chains","meta"],url:"s1-unit2.html"},
-    {t:"Cedar Policy Language",d:"Formal policy language for agent context injection and gate/elevation governance. Used in PeaRL for allowance profile enforcement.",tags:["cedar","policy","governance","pearl"],url:"s1-unit2.html"},
-    {t:"AIUC-1 Deployment Tiers",d:"Three tiers by accuracy: Tier 1 (>95% autonomous), Tier 2 (85–95% supervised), Tier 3 (<85% human approval). Sets oversight requirement.",tags:["aiuc1","tiers","accuracy","deployment","ethics","governance"],url:"s1-unit3.html"},
+    {t:"CCT — Collaborative Critical Thinking",d:"5-pillar framework: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance.",tags:["cct","critical thinking","pillars"],url:"s1-unit1.html"},
     {t:"Command Reference",d:"Complete Claude Code slash commands, flags, keyboard shortcuts, and session management reference.",tags:["commands","reference","claude code","cli"],url:"resources/claude-code-commands.html"},
     {t:"Directory Reference",d:"Claude Code directory structure: CLAUDE.md locations, .claude/ paths, hooks, MCP config, memory system.",tags:["directory","reference","claude code","hooks","mcp"],url:"resources/claude-code-directory.html"},
   ];
