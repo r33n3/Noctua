@@ -102,7 +102,7 @@
 <p><strong>Design Decision:</strong> This section has been restructured as "Adversarial Agentic Scenarios" and is grounded in the Anthropic case study and similar incidents. Red-team exercises are used extensively throughout the course.</p>
 <hr />
 <h3 id="5-performance-metrics-mtts-mttp-mttsol-mtti-amttr">5. Performance Metrics (MTTS, MTTP, MTTSol, MTTI, aMTTR)</h3>
-<p><strong>Original Metrics:</strong></p>
+<p><strong>Original Metrics (2023 definitions):</strong></p>
 <ul>
 <li><strong>MTTS (Mean Time To Symptom):</strong> How long until an issue is visible?</li>
 <li><strong>MTTP (Mean Time To Patch):</strong> How long to develop a fix?</li>
@@ -110,6 +110,7 @@
 <li><strong>MTTI (Mean Time To Investigate):</strong> How long to understand root cause?</li>
 <li><strong>aMTTR (Assisted Mean Time To Recovery):</strong> How long with human involvement?</li>
 </ul>
+<p><strong>2026 Canonical Redefinitions (see week-01.md):</strong> These metrics were refined in the 2026 course to reflect agentic security operations more precisely. MTTS now means Mean Time to <strong>Suppress</strong> (blast radius stops expanding — the first actionable containment milestone). MTTP means Mean Time to <strong>Prevent</strong> (preventive measures deployed). aMTTR means Adjusted Mean Time to <strong>Remediate</strong>, weighted by severity and including human review time. The redefinitions sharpen the metrics for agentic contexts where "symptom" and "patch" are too ambiguous to drive operational targets.</p>
 <p><strong>2026 Validation:</strong></p>
 <p>These metrics remain conceptually valid and have become more operationally critical. However, they now apply in an agentic context where:</p>
 <ul>
@@ -193,7 +194,7 @@
 <p><strong>2026 Evolution:</strong></p>
 <p>"Prompt engineering" is now quaint terminology. The discipline has expanded to "context engineering," which encompasses:</p>
 <p><strong>System Prompts:</strong> High-level role definition and constraints for the model. In agentic systems, system prompts define agent behavior, values, and decision criteria.</p>
-<p><strong>Context Windows:</strong> Managing what information the model can access. With context windows now reaching 1M tokens (Claude Opus 4.6, Gemini 2.5), this becomes a strategic problem: Which documents? Which conversation history? Which tool outputs? The order matters.</p>
+<p><strong>Context Windows:</strong> Managing what information the model can access. With context windows ranging from 200K tokens (Claude Opus 4.6) to 1M tokens (Gemini 2.5), this becomes a strategic problem: Which documents? Which conversation history? Which tool outputs? The order matters.</p>
 <p><strong>Tool Definitions:</strong> For agentic systems, tools (functions, APIs, MCP servers) are part of context. How tools are described shapes agent behavior. Tool misuse is a security vulnerability.</p>
 <p><strong>Memory Management:</strong> Agentic systems have persistent memory. What is retained? What is forgotten? Memory poisoning (injecting false information) is an attack vector.</p>
 <p><strong>Retrieval Systems:</strong> RAG (Retrieval Augmented Generation) is standard. How information is indexed, retrieved, and ranked shapes model behavior and ground truth.</p>
@@ -338,7 +339,7 @@
 <li>Vector databases (Pinecone, Weaviate, Milvus) for RAG</li>
 <li>Prompt evaluation frameworks (LangSmith, DeepEval, Ragas)</li>
 </ul>
-<p><strong>Design Decision:</strong> Labs have been redesigned as cloud-native deployments. GitHub Codespaces templates provide consistent student setup. Cost management and observability are integrated as first-class concerns in every lab.</p>
+<p><strong>Design Decision:</strong> Labs are designed as cloud-native deployments with cost management and observability as first-class concerns. The primary lab environment is Claude Max + Claude Code CLI (terminal-based), which provides a lower-friction entry point than Codespaces while preserving the same agentic engineering workflows. GitHub Codespaces remains the recommended option for students who need environment isolation or are on shared machines.</p>
 <hr />
 <h2 id="whats-new-and-must-be-added">What's New and Must Be Added</h2>
 <h3 id="1-agentic-engineering-as-a-discipline">1. Agentic Engineering as a Discipline</h3>
@@ -714,7 +715,7 @@
     {t:"RAG — Retrieval Augmented Generation",d:"Retrieve relevant documents from a vector store, inject into context. Reduces hallucination. Key attack surface: poisoned retrieval.",tags:["rag","retrieval","embeddings","vector"],url:"s2-unit5.html"},
     {t:"Dark Factory Maturity Stages",d:"Stage 1 (ad-hoc) through Stage 6 (self-optimizing). Most orgs at Stage 2–3 in 2026. Assessment framework for new engagements.",tags:["maturity","stages","assessment","dark factory"],url:"s2-unit7.html"},
     {t:"AIUC-1 Compliance",d:"AI Use Compliance framework covering bias, fairness, transparency, accountability, data governance.",tags:["aiuc1","compliance","ethics","unit3"],url:"s1-unit3.html"},
-    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /build-spec, /worktree-setup, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
+    {t:"Claude Code",d:"Anthropic's CLI for AI-assisted development. Slash commands (/think, /spec, /build-spec, /worktree-setup, /merge-worktrees, /retro), hooks, MCP, CLAUDE.md.",tags:["claude code","cli","slash commands","anthropic"],url:"s1-unit1.html"},
     {t:"claude-opus-4-6",d:"Most capable Claude model. Use for complex reasoning, architecture design, red-teaming.",tags:["model","opus","claude"],url:"s1-unit1.html"},
     {t:"claude-sonnet-4-6",d:"Balanced capability/speed. Primary model for agent workers and most course labs.",tags:["model","sonnet","claude"],url:"s1-unit1.html"},
     {t:"claude-haiku-4-5",d:"Fastest Claude model. Use for high-throughput sub-tasks, triage, and cost-sensitive workers.",tags:["model","haiku","claude"],url:"s1-unit1.html"},
