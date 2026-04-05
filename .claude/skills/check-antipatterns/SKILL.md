@@ -3,10 +3,12 @@ name: check-antipatterns
 description: >
   Audit code for production anti-patterns that AI commonly generates.
   Checks for: silent error swallowing, race conditions, naive retry logic,
-  state assumptions, missing idempotency, unbounded collections, connection
-  pool issues, missing circuit breakers, unstructured logging, missing
-  correlation IDs, no health checks, no graceful shutdown, timing attacks,
-  log injection, input bounds, secret rotation, audit trail gaps.
+  unbounded agent loops, missing defensive assertions, state assumptions,
+  missing idempotency, unbounded collections, global state in tool scope,
+  connection pool issues, missing circuit breakers, unstructured logging,
+  missing correlation IDs, no health checks, no graceful shutdown, timing
+  attacks, log injection, input bounds, secret rotation, audit trail gaps,
+  dynamic code execution (eval/exec).
   Use before every sprint review, deployment, or deliverable.
   Run after /code-review (which checks code quality) and before
   /audit-aiuc1 (which checks governance).
@@ -58,6 +60,14 @@ grep -rn "== .*\.\|!= .*\." --include="*.py" | grep -v "\".*\.\|'.*\."
 
 # 1.6 Encoding assumptions
 grep -rn "open(.*\"r\"" --include="*.py" | grep -v "encoding"
+
+# 1.7 Unbounded agent loops
+grep -rn "while.*not\|while True\|while task\|while loop" --include="*.py"
+# For each: is there a counter with an explicit upper bound?
+
+# 1.8 Missing defensive assertions
+grep -rn "^def \|^async def " --include="*.py" -l | xargs grep -L "assert"
+# Flag any file where functions accept dict/list inputs but have no assert statements
 ```
 
 For each finding: read the surrounding code context to verify it's
@@ -74,6 +84,10 @@ For each external API call:
 For each webhook/event handler:
 - Is there an idempotency check? (2.2)
 - What happens if it fires twice? (2.2)
+
+For each MCP server or tool handler file:
+- Are there module-level mutable dicts/lists? (2.8)
+- Is that state shared across requests? Would two concurrent callers corrupt each other?
 
 For each in-memory collection:
 - Is it bounded? (2.3)
@@ -108,6 +122,12 @@ grep -rn "@tool\|@app.post\|@app.get" --include="*.py"
 # 4.4 Secret rotation
 grep -rn "os.environ\[.*KEY\|os.environ\[.*SECRET\|os.environ\[.*TOKEN" --include="*.py"
 # Is this read once at startup or refreshed?
+
+# 4.7 Dynamic code execution
+grep -rn "\beval(\|\bexec(\|compile(" --include="*.py"
+grep -rn "__import__\|importlib.import_module" --include="*.py"
+grep -rn "render_template_string\|Template(" --include="*.py"
+# Any hit here is CRITICAL — verify there is no user/agent input reaching these calls
 ```
 
 For audit trail gaps (4.5): check every automated action — is there

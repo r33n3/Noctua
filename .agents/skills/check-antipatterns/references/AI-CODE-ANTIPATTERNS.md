@@ -110,6 +110,86 @@ def lookup_cve(cve_id: str) -> dict:
 
 ---
 
+### 1.7 Unbounded Agent Loops
+
+**What it is:** Agent control loops (`while True`, recursive tool calls, agentic retry fans) with no explicit `max_turns`, `max_depth`, or iteration cap.
+
+```python
+# ❌ AI-generated pattern
+async def run_agent(task):
+    while not task.complete:
+        result = await call_tool(task.next_step())
+        task.update(result)
+    return task
+```
+
+**Why AI generates it:** AI models the loop as "keep going until done" — the same logic that works in bounded human workflows. It doesn't model runaway API spend or adversarial inputs that keep the loop alive.
+
+**What breaks:** Unbounded tool calls exhaust API quotas, trigger rate limits, and in agentic pipelines can loop indefinitely on malformed or adversarial inputs. Cost blowout is invisible until the bill arrives.
+
+**Security impact:** RESOURCE EXHAUSTION. An attacker who controls tool output can keep the loop alive indefinitely. No `max_turns` = no blast radius limit.
+
+**Detection:**
+```bash
+grep -rn "while.*not\|while True\|while task\|while loop" --include="*.py"
+# For each: is there a counter with an explicit upper bound and assertion?
+```
+
+**Fix:**
+```python
+# ✅ Fixed
+MAX_TURNS = 10
+
+async def run_agent(task):
+    for turn in range(MAX_TURNS):
+        result = await call_tool(task.next_step())
+        task.update(result)
+        if task.complete:
+            return task
+    raise AgentLoopError(f"Task did not complete within {MAX_TURNS} turns", task_id=task.id)
+```
+
+---
+
+### 1.8 Missing Defensive Assertions
+
+**What it is:** Functions and tool handlers that accept inputs and proceed without asserting preconditions. No invariant checks at function entry or exit.
+
+```python
+# ❌ AI-generated pattern
+def analyze_alert(alert: dict) -> dict:
+    # Assumes alert has 'severity', 'source', 'timestamp' — always
+    score = severity_weights[alert["severity"]] * source_trust[alert["source"]]
+    return {"score": score, "timestamp": alert["timestamp"]}
+```
+
+**Why AI generates it:** AI generates "happy path" code. It models the expected input, not the space of possible inputs. Assertions feel like clutter.
+
+**What breaks:** A missing key raises `KeyError` deep in the call chain with no context. A wrong type silently produces a wrong result. Tool output from a prior agent step that contains an error propagates as valid data.
+
+**Security impact:** FALSE RESULTS. In a security pipeline, an unasserted assumption means a malformed alert, a poisoned RAG result, or a truncated API response is processed as if it were valid. The system reports a conclusion it cannot actually support.
+
+**Detection:**
+```bash
+# Functions with no assert statements
+grep -rn "^def \|^async def " --include="*.py" -l | xargs grep -L "assert"
+```
+
+**Fix:**
+```python
+# ✅ Fixed
+def analyze_alert(alert: dict) -> dict:
+    assert isinstance(alert, dict), f"Expected dict, got {type(alert)}"
+    assert "severity" in alert, f"Missing required field 'severity': {alert.keys()}"
+    assert "source" in alert, f"Missing required field 'source': {alert.keys()}"
+    assert alert["severity"] in severity_weights, f"Unknown severity: {alert['severity']}"
+    score = severity_weights[alert["severity"]] * source_trust.get(alert["source"], 0.5)
+    assert 0.0 <= score <= 1.0, f"Score out of bounds: {score}"
+    return {"score": score, "timestamp": alert.get("timestamp", time.time())}
+```
+
+---
+
 ## LAYER 2 — ARCHITECTURE
 
 ---
@@ -173,6 +253,53 @@ def lookup_cve(cve_id: str) -> dict:
 **What it is:** No migration strategy for database schema changes.
 
 **Fix:** Migration scripts, backward-compatible changes, default values for new columns.
+
+---
+
+### 2.8 Global State in Tool Scope
+
+**What it is:** Module-level mutable objects (dicts, lists, counters) in MCP server or tool handler files, shared silently across all requests.
+
+```python
+# ❌ AI-generated pattern
+# mcp_server.py
+alert_cache = {}          # shared across all requests
+active_sessions = []      # grows forever
+request_count = 0         # race condition under concurrency
+
+@tool
+def get_alert(alert_id: str) -> dict:
+    alert_cache[alert_id] = fetch(alert_id)   # writes to global
+    return alert_cache[alert_id]
+```
+
+**Why AI generates it:** AI generates the simplest state management that works in a single-request test. Module-level variables are the path of least resistance in Python.
+
+**What breaks:** Under concurrency, two requests race on the same dict. In multi-instance deploys, each instance has its own copy — no shared truth. `alert_cache` grows without bound (see 2.3). A test that clears module state between runs passes; production does not clear state between requests.
+
+**Security impact:** DATA LEAKAGE between requests. One tenant's data visible in another's response. Audit log counters drift. Cache poisoning via one malicious request affects all subsequent callers.
+
+**Detection:**
+```bash
+# Module-level mutable assignments (not constants)
+grep -n "^[a-z_].*= \[\]\|^[a-z_].*= {}\|^[a-z_].*= 0" --include="*.py" -r
+# For each: is it inside a function/class, or at module scope?
+```
+
+**Fix:**
+```python
+# ✅ Fixed — state lives in a class, injected via dependency
+class AlertService:
+    def __init__(self):
+        self._cache: dict[str, dict] = {}
+        self._lock = asyncio.Lock()
+
+    async def get_alert(self, alert_id: str) -> dict:
+        async with self._lock:
+            if alert_id not in self._cache:
+                self._cache[alert_id] = await fetch(alert_id)
+            return self._cache[alert_id]
+```
 
 ---
 
@@ -268,6 +395,56 @@ def lookup_cve(cve_id: str) -> dict:
 
 ---
 
+### 4.7 Dynamic Code Execution
+
+**What it is:** Use of `eval`, `exec`, `compile`, or dynamic `__import__` inside tool handlers or agent pipelines, often to enable "flexible" tool dispatch or template execution.
+
+```python
+# ❌ AI-generated pattern
+@tool
+def run_analysis(query: str) -> str:
+    # "Flexible" query execution
+    result = eval(query)
+    return str(result)
+```
+
+**Why AI generates it:** AI optimizes for flexibility. `eval` is the shortest path to "execute arbitrary logic." The model doesn't account for who controls the input.
+
+**What breaks:** Any caller — including an adversarial agent, a prompt-injected tool result, or a poisoned RAG document — can execute arbitrary Python in the server process. One unsanitized input = remote code execution with the server's permissions.
+
+**Security impact:** CRITICAL / RCE. In an MCP server running with filesystem or network access, this is a full system compromise. There is no safe use of `eval`/`exec` on untrusted input.
+
+**Detection:**
+```bash
+# Direct dynamic execution
+grep -rn "\beval(\|\bexec(\|compile(" --include="*.py"
+
+# Dynamic imports
+grep -rn "__import__\|importlib.import_module" --include="*.py"
+
+# Jinja/template rendering of user input
+grep -rn "render_template_string\|Template(" --include="*.py"
+```
+
+**Fix:** Replace dynamic dispatch with an explicit allowlist:
+```python
+# ✅ Fixed
+ALLOWED_ANALYSES = {
+    "count_critical": count_critical_alerts,
+    "summarize": summarize_alerts,
+    "trend": trend_analysis,
+}
+
+@tool
+def run_analysis(query: str) -> str:
+    handler = ALLOWED_ANALYSES.get(query)
+    if handler is None:
+        raise ValueError(f"Unknown analysis '{query}'. Allowed: {list(ALLOWED_ANALYSES)}")
+    return str(handler())
+```
+
+---
+
 ## QUICK REFERENCE
 
 | # | Pattern | Layer | Severity |
@@ -278,6 +455,8 @@ def lookup_cve(cve_id: str) -> dict:
 | 1.4 | State assumptions | L1 | MEDIUM |
 | 1.5 | Floating point comparison | L1 | LOW |
 | 1.6 | Encoding assumptions | L1 | MEDIUM |
+| 1.7 | Unbounded agent loops | L1 | CRITICAL |
+| 1.8 | Missing defensive assertions | L1 | HIGH |
 | 2.1 | Connection pool exhaustion | L2 | CRITICAL |
 | 2.2 | Missing idempotency | L2 | CRITICAL |
 | 2.3 | Unbounded collections | L2 | HIGH |
@@ -285,6 +464,7 @@ def lookup_cve(cve_id: str) -> dict:
 | 2.5 | Circuit breaker absence | L2 | HIGH |
 | 2.6 | No graceful degradation | L2 | MEDIUM |
 | 2.7 | Schema evolution blindness | L2 | MEDIUM |
+| 2.8 | Global state in tool scope | L2 | HIGH |
 | 3.1 | Unstructured logging | L3 | MEDIUM |
 | 3.2 | Missing correlation IDs | L3 | HIGH |
 | 3.3 | No health checks | L3 | HIGH |
@@ -297,6 +477,7 @@ def lookup_cve(cve_id: str) -> dict:
 | 4.4 | Secret rotation | L4 | MEDIUM |
 | 4.5 | Audit trail gaps | L4 | HIGH |
 | 4.6 | Invisible failure states | L4 | CRITICAL |
+| 4.7 | Dynamic code execution (eval/exec) | L4 | CRITICAL |
 
 ---
 
