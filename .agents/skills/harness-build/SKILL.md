@@ -1,281 +1,217 @@
 ---
 name: harness-build
 description: >
-  Build or advance an agent harness for the current project. Reads
-  existing context (settings.json, hooks, CLAUDE.md, blueprint.yaml),
-  classifies controls as inside vs outside the reasoning loop, scaffolds
-  missing outside-loop enforcement, and writes or updates blueprint.yaml.
-  Companion to /harness-assess — build first, assess to score.
+  Build the enforcement harness for a deployed AI agent project. Reads
+  the agent codebase to understand what it does, then produces
+  harnesses/<agent>/blueprint.yaml and scaffolds fixed_steps/ pipeline
+  scripts. Unit 7 and Unit 8 only — this is a production readiness
+  tool, not a lab scaffold.
 ---
 
 # /harness-build — Build an Agent Harness
 
-Use this skill to construct or advance the harness around an agent
-project. It reads what you have, classifies each control by enforcement
-type, scaffolds the enforcement gaps, and produces or updates
-`harnesses/<name>/blueprint.yaml`.
+Use this skill when preparing an agent project for production deployment.
+It formalizes the enforcement boundary around a built agent: what inputs
+are validated, what outputs are filtered, what runs deterministically
+regardless of model decisions.
 
 Run `/harness-assess` after to score the result.
 
 ---
 
-## The Core Distinction
+## Where the Harness Lives
 
-Every control in your project falls into one of two layers:
+The harness is a project artifact, committed and versioned alongside the
+agent code:
 
-**Inside the reasoning loop — guidance (probabilistic, bypassable)**
-- `CLAUDE.md` — agent CAN ignore under goal pressure
-- `.claude/rules/*.md` — scoped, still probabilistic
-- `.claude/skills/` — activation not guaranteed
-- `harnesses/*/flexible_steps/` — the AI-driven part
+```
+project/
+  harnesses/
+    <agent-name>/
+      blueprint.yaml      ← boundary declaration
+      fixed_steps/        ← deterministic pipeline (always fires)
+      flexible_steps/     ← AI-driven steps (guidance, not enforcement)
+```
 
-**Outside the reasoning loop — enforcement (deterministic, always fires)**
-- `settings.json → permissions.deny` — CANNOT bypass
-- `settings.json → hooks.PreToolUse` — runs BEFORE every tool call
-- `settings.json → hooks.PostToolUse` — runs AFTER every tool call
-- `settings.json → sandboxing` — OS-level isolation
-- `.claude/hooks/*.sh` — the actual enforcement scripts
-- `--max-turns`, `--max-budget-usd` — hard caps
-- `--allowedTools` — explicit tool restriction
-- `harnesses/*/fixed_steps/` — deterministic pipeline
+`fixed_steps/` is the agent's own deterministic pipeline — input
+validation, context injection, output filtering, audit logging. These
+run regardless of what the model decides.
 
-A harness that only has inside-loop controls is documentation, not
-enforcement. This skill focuses on closing that gap.
+This is separate from `.claude/settings.json` and `.claude/hooks/`,
+which are Claude Code's session-level enforcement. Both matter, but
+they are different layers. Note what `.claude/` controls exist but do
+not treat them as the harness.
 
 ---
 
-## What to Read First
+## Step 1 — Read the Agent
 
-Before generating anything, read these files if they exist:
+Before writing anything, read the agent codebase:
 
-```
-harnesses/*/blueprint.yaml       existing blueprint (update, don't replace)
-.claude/settings.json            what deny rules and hooks are wired today
-.claude/hooks/*.sh               what enforcement scripts exist and what they do
-CLAUDE.md                        what guidance is in the reasoning loop
-.noctua/progress.md              course position (determines harness maturity target)
-student-state/preferences.md     review style (affects output verbosity)
-```
+- What tools does it call?
+- What external systems does it reach?
+- What inputs does it accept? From where?
+- What does it output? To whom?
+- What can go wrong if the model does the wrong thing?
 
-If `blueprint.yaml` does not exist, create it at
-`harnesses/<project-slug>/blueprint.yaml` where `<project-slug>` is
-derived from the directory name or project context.
+This determines what `fixed_steps/` needs to enforce.
 
 ---
 
-## Step 1 — Inventory
+## Step 2 — Scaffold fixed_steps/
 
-Read the files above and produce a classified inventory:
+Create `harnesses/<agent-name>/fixed_steps/` with the minimum viable
+pipeline for this agent. Each step is a script that runs deterministically.
+
+**Standard steps to consider:**
 
 ```
-OUTSIDE LOOP (enforcement — will be written to blueprint.yaml):
-  ✓ permissions.deny: [list tools actually denied]
-  ✓ PreToolUse: [script name] — [what it does]
-  ✓ PostToolUse: [script name] — [what it does]
-  ✗ sandboxing: not configured
-  ✗ max_turns: not set
-  ✗ max_budget_usd: not set
-
-INSIDE LOOP (guidance — noted in blueprint.yaml as flexible_steps):
-  ~ CLAUDE.md: [key behavioral constraints listed]
-  ~ skills: [skills present]
-  ~ rules: [rules files present]
-
-GAPS (outside-loop controls with no implementation):
-  - No PostToolUse audit hook
-  - No deny rules for destructive tools
-  - No cost cap
+fixed_steps/
+  01_validate_input.py    ← schema/type check all inputs before agent sees them
+  02_inject_context.py    ← add required context (user role, env, constraints)
+  03_filter_output.py     ← strip PII, secrets, or disallowed content from response
+  04_audit_log.py         ← record tool calls, decisions, timestamps
 ```
 
-Show this inventory to the student before proceeding. Ask: **"What
-should be enforced that isn't yet?"** — then scaffold their answer.
+Not every agent needs all four. Only scaffold what the agent's risk
+profile requires. A read-only analysis agent needs input validation and
+audit logging. A write-capable agent also needs output filtering and
+context injection.
+
+**Stub pattern — each step should be minimal and readable:**
+
+```python
+#!/usr/bin/env python3
+"""
+fixed_steps/01_validate_input.py
+Validates agent input before passing to the model.
+Exit 0 = pass. Non-zero = block.
+"""
+import sys
+import json
+
+def validate(payload: dict) -> bool:
+    # TODO: add validation logic for this agent's input schema
+    return True
+
+if __name__ == "__main__":
+    try:
+        payload = json.load(sys.stdin)
+        if not validate(payload):
+            print("Input validation failed", file=sys.stderr)
+            sys.exit(1)
+    except Exception as e:
+        print(f"Validation error: {e}", file=sys.stderr)
+        sys.exit(1)
+```
+
+Stubs are intentional. Students write the validation logic. The
+scaffold gets them past the structural friction.
 
 ---
 
-## Step 2 — Scaffold Enforcement Gaps
+## Step 3 — Write blueprint.yaml
 
-For each gap the student wants to close, scaffold the minimum viable
-implementation. Do not write complete security logic — write stubs that
-work and that students understand and can extend.
-
-**Hook stub pattern (`.claude/hooks/<name>.sh`):**
-
-```bash
-#!/usr/bin/env bash
-# <hook-name>.sh — <one-line description>
-# Receives tool call as JSON on stdin when triggered via PreToolUse/PostToolUse
-
-INPUT=$(cat)
-TOOL=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name','unknown'))" 2>/dev/null)
-
-# Log every tool call (replace with real audit destination)
-echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] tool=$TOOL" >> ~/.claude/audit.log
-
-# Exit 0 = allow. Exit non-zero = block.
-exit 0
-```
-
-**settings.json hook wiring pattern:**
-
-```json
-{
-  "permissions": {
-    "deny": ["Bash(rm *)", "Bash(curl *)"]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [{ "type": "command", "command": ".claude/hooks/validate_input.sh" }]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [{ "type": "command", "command": ".claude/hooks/audit_log.sh" }]
-      }
-    ]
-  }
-}
-```
-
-After writing each hook, confirm it is executable:
-```bash
-chmod +x .claude/hooks/<name>.sh
-```
-
----
-
-## Step 3 — Write or Update blueprint.yaml
-
-Write `harnesses/<project-slug>/blueprint.yaml` declaring every
-outside-loop control that is now actually implemented.
-
-**Blueprint schema:**
+Write `harnesses/<agent-name>/blueprint.yaml` declaring the boundary.
+Only declare what is actually implemented.
 
 ```yaml
-# harnesses/<project-slug>/blueprint.yaml
-name: <project-slug>
+# harnesses/<agent-name>/blueprint.yaml
+name: <agent-name>
 version: "1.0"
-assessed_by: /harness-assess
-built_by: /harness-build
 
-boundary:
-  allowed_tools: []          # explicit allowlist — leave empty if using deny-only
-  denied_tools: []           # tools in permissions.deny
-  max_turns: null            # --max-turns value, or null if not set
-  max_budget_usd: null       # --max-budget-usd value, or null if not set
-  sandboxing: false          # true if settings.json sandboxing is enabled
+# What this agent is and what it touches
+description: <one sentence>
+inputs:
+  - source: <where input comes from>
+    schema: <what shape it takes>
+outputs:
+  - destination: <where output goes>
+    schema: <what shape it takes>
+tools:
+  - <tool-1>
+  - <tool-2>
+external_systems:
+  - <system-1>
 
-fixed_steps:                 # outside-loop enforcement — must exist in .claude/hooks/
-  - event: PreToolUse
-    script: .claude/hooks/validate_input.sh
+# Deterministic enforcement pipeline
+fixed_steps:
+  - script: fixed_steps/01_validate_input.py
     purpose: input validation
     blocks_on_failure: true
-  - event: PostToolUse
-    script: .claude/hooks/audit_log.sh
+  - script: fixed_steps/04_audit_log.py
     purpose: audit logging
     blocks_on_failure: false
 
-flexible_steps:              # inside-loop guidance — probabilistic
+# AI-driven steps (guidance, not enforcement)
+flexible_steps:
   - source: CLAUDE.md
-    summary: <one-line summary of behavioral constraints>
-  - source: .claude/skills/
-    skills: []
+    summary: <key behavioral constraints>
 
-aiuc1:                       # map outside-loop controls to AIUC-1 domains
-  # A: Data & Privacy
-  # B: Security
-  # C: Safety
-  # D: Reliability
-  # E: Accountability
-  # F: Society
+# Claude Code session enforcement (separate layer, noted here for completeness)
+claude_code_enforcement:
+  settings_json: .claude/settings.json
+  hooks: .claude/hooks/
+  deny_rules: []   # list tools blocked via permissions.deny
+
+# AIUC-1 domain controls
+aiuc1:
   controls: []
-  # example:
-  # - domain: B
-  #   control: tool_scope_restriction
-  #   implemented_by: permissions.deny
-  # - domain: E
+  # - domain: B   # Security
+  #   control: input_validation
+  #   implemented_by: fixed_steps/01_validate_input.py
+  # - domain: E   # Accountability
   #   control: audit_logging
-  #   implemented_by: PostToolUse hook
+  #   implemented_by: fixed_steps/04_audit_log.py
 
-gaps:                        # honest record of what is not yet enforced
+# Honest gap record
+gaps:
   - description: <gap>
     risk: <why it matters>
+    accepted: false
     next_action: <what to add>
 ```
 
-Only write fields you have evidence for. Do not fill `aiuc1.controls`
-until Unit 3 — leave the commented examples in place as a prompt.
-
 ---
 
-## Step 4 — Show the Delta
+## Step 4 — Show the Harness
 
-After scaffolding, show the student what changed:
+After scaffolding, present a summary:
 
 ```
-HARNESS DELTA — <project-slug>
+HARNESS: <agent-name>
 
-ADDED (outside loop):
-  + .claude/hooks/audit_log.sh (PostToolUse — logging)
-  + .claude/hooks/validate_input.sh (PreToolUse — input gate)
-  + settings.json: permissions.deny [Bash(rm *)]
+fixed_steps/ (deterministic — always fires):
+  ✓ 01_validate_input.py
+  ✓ 04_audit_log.py
+  ✗ output filtering — not implemented (gap recorded)
 
-UPDATED:
-  ~ harnesses/<project-slug>/blueprint.yaml (created)
+flexible_steps/ (guidance — probabilistic):
+  ~ CLAUDE.md behavioral constraints
 
-STILL MISSING (run /harness-assess to score):
-  - sandboxing not configured
-  - max_budget_usd not set
-  - aiuc1 block empty (fill in Unit 3)
+Claude Code enforcement (session layer):
+  ~ settings.json: [any deny rules noted]
+  ~ hooks: [any hooks noted]
 
-NEXT: /harness-assess to get your maturity score.
+blueprint.yaml: written to harnesses/<agent-name>/blueprint.yaml
+
+NEXT: /harness-assess to score this harness.
 ```
-
----
-
-## Harness Maturity by Course Position
-
-Use `.noctua/progress.md` to calibrate what gaps are acceptable now:
-
-| Course Position | Minimum Viable Harness |
-|---|---|
-| Unit 1 (Weeks 1–4) | blueprint.yaml exists, one hook (logging), one deny rule |
-| Unit 2 (Weeks 5–8) | Tool scope declared, input validation hook, deny rules wired |
-| Unit 3 (Weeks 9–12) | `aiuc1:` block populated, all domains have a mapped control or documented gap |
-| Unit 4 / Sprint | All fixed_steps/ from spec implemented and executable |
-| Unit 7 (Production) | Full blueprint, all hooks implemented, no undocumented gaps, sandboxing configured |
-| Unit 8 (Capstone) | Unit 7 standard + gap list empty or each gap has an accepted risk decision |
-
-Do not pressure students to close every gap immediately. Flag what is
-missing, note the expected maturity for their current position, and
-leave the gaps honest in `blueprint.yaml`.
 
 ---
 
 ## When to Run
 
-- At the start of any lab that involves building an agent
-- After `/build-spec` when the spec is locked and building begins
-- After `/worktree-setup` to wire harness controls into the new worktree
-- After any sprint close, to advance harness maturity before the retro
-- Before `/harness-assess` to make sure there is something to assess
+Unit 7 and Unit 8 only.
 
-Typical order:
+- Unit 7: Before the role review gate. Agent is built, code is clean
+  (checked by /check-antipatterns), now formalize the enforcement boundary.
+- Unit 8: Required capstone deliverable. blueprint.yaml is graded.
+
+Workflow:
 ```
-/think → /build-spec → /worktree-setup → [build] → /check-antipatterns → /harness-build → /harness-assess → /retro
+[build] → /check-antipatterns → /harness-build → /harness-assess → /retro
 ```
-
----
-
-## What This Skill Does Not Do
-
-- Does not write full security logic — stubs only
-- Does not guarantee the hooks are correct — student must review and test
-- Does not populate `aiuc1:` controls before Unit 3
-- Does not replace `/harness-assess` — run assess after building
-- Does not modify CLAUDE.md or flexible_steps — those are student-owned
 
 ---
 
@@ -283,11 +219,5 @@ Typical order:
 
 ```bash
 curl -o ~/.claude/commands/harness-build.md \
-  https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness-build.md
-```
-
-Or project-local:
-```bash
-curl -o .claude/commands/harness-build.md \
   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness-build.md
 ```
