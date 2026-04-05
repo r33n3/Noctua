@@ -437,6 +437,33 @@
       <hr class="cs-divider">
 
       <div class="cs-section">
+        <div class="cs-section-title">Cost Optimization</div>
+        <table class="cs-table">
+          <thead><tr><th>Strategy</th><th>Savings</th><th>When to Use</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="label">Prompt Caching</td>
+              <td>~90% on repeated context</td>
+              <td>Same system prompt, docs, or conversation history sent across multiple requests. Cache the prefix — only pay to process it once.</td>
+            </tr>
+            <tr>
+              <td class="label">Batch Processing</td>
+              <td>50% on input + output</td>
+              <td>High-volume workloads that don't need real-time responses. Send async, collect results later. Best for bulk analysis, eval runs, report generation.</td>
+            </tr>
+            <tr>
+              <td class="label">Model Matching</td>
+              <td>3–15× per request</td>
+              <td>Start dev on Sonnet. Evaluate Haiku for production volume tasks. Reserve Opus for genuine deep reasoning — not default escalation.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;">Rule: caching removes redundant processing cost · batching removes per-token cost · model matching removes per-request cost</div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
         <div class="cs-section-title">MCP Tool Pattern</div>
         <div class="cs-code">
           <span class="comment"># fastmcp — sprint prototyping</span><br>
