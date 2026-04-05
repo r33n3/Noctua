@@ -130,6 +130,10 @@ swarm:
 2. Check **Stage 0 evidence** — what did prototyping show about model performance?
 3. Check **constraints** — does data need to stay local (→ Ollama/local model)? Is cost critical (→ smallest viable model)? Is this high-stakes (→ strongest available)?
 4. Apply **cheapest viable model** principle — don't use Sonnet where Haiku works, don't use API where local works, don't use LLM where static code works
+5. Evaluate **cost optimization strategy** per component — for each model-dependent component, answer three questions:
+   - **Caching?** Does this component receive stable repeated context (system prompt, docs, conversation history)? If yes, mark cacheable and describe what to cache. Caching can reduce context processing cost ~90% for repeated prefixes.
+   - **Batching?** Does this component require a real-time response, or can it run async? If async is acceptable, mark batch-eligible — batch API delivers 50% token discount.
+   - **Model match?** Is the assigned model the cheapest that meets the quality bar? If untested, mark EVALUATE and create a Stage 0 ticket to trial the next tier down.
 
 **Capability tiers map to model options:**
 
@@ -244,6 +248,10 @@ Status: [Draft | Reviewed | Approved]
 - **Governance:** [audit logging, AIUC-1 domain, human gates]
 - **Test strategy:** [based on confidence rating]
 - **Estimated cost:** [per invocation if model-dependent, or "zero" if deterministic]
+- **Cost optimization:**
+  - Caching: [YES — describe what context is stable and cacheable | NO — context changes every call]
+  - Batching: [YES — async delivery acceptable | NO — real-time response required]
+  - Model match: [CONFIRMED — cheapest viable model assigned | EVALUATE — Stage 0 needed to test cheaper tier | N/A — deterministic]
 
 [Repeat for each component]
 
@@ -361,6 +369,9 @@ Before finalizing any spec package, verify:
 - [ ] Build order and dependencies are explicit
 - [ ] Scope boundary is clear (what the system does NOT do)
 - [ ] Cost estimate exists for model-dependent components
+- [ ] Every model-dependent component has a caching verdict (YES with what to cache / NO with reason)
+- [ ] Every model-dependent component has a batching verdict (batch-eligible / real-time required)
+- [ ] Every model-dependent component has a model match verdict (CONFIRMED / EVALUATE with Stage 0 ticket / N/A)
 - [ ] Success criteria are measurable
 
 ---

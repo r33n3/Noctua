@@ -1,6 +1,6 @@
 ---
 name: build-spec
-description: "Generate a complete specification package from an idea, /think output, or feature requirement. Produces component manifests with approach types (static code, automation, SLM, LLM, deterministic tool), confidence ratings, agent swarm configurations (2-5 agents), data contracts, and build instructions that Codex or a /worktree skill can consume to execute in one shot. Use this skill whenever someone says 'spec this', 'write a spec', 'spec out', 'design this system', 'plan this build', 'how should we build this', 'create a spec package', 'spec a feature', 'what agents do we need', or wants to go from idea to buildable plan. Also use when updating an existing project with a new feature or requirement. Always use this skill before building anything non-trivial — the spec is what makes one-shot builds possible."
+description: "Generate a complete specification package from an idea, /think output, or feature requirement. Produces component manifests with approach types (static code, automation, SLM, LLM, deterministic tool), confidence ratings, agent swarm configurations (2-5 agents), data contracts, and build instructions that Claude Code or a /worktree skill can consume to execute in one shot. Use this skill whenever someone says 'spec this', 'write a spec', 'spec out', 'design this system', 'plan this build', 'how should we build this', 'create a spec package', 'spec a feature', 'what agents do we need', or wants to go from idea to buildable plan. Also use when updating an existing project with a new feature or requirement. Always use this skill before building anything non-trivial — the spec is what makes one-shot builds possible."
 ---
 
 # Specification Package Generator
@@ -130,6 +130,10 @@ swarm:
 2. Check **Stage 0 evidence** — what did prototyping show about model performance?
 3. Check **constraints** — does data need to stay local (→ Ollama/local model)? Is cost critical (→ smallest viable model)? Is this high-stakes (→ strongest available)?
 4. Apply **cheapest viable model** principle — don't use Sonnet where Haiku works, don't use API where local works, don't use LLM where static code works
+5. Evaluate **cost optimization strategy** per component — for each model-dependent component, answer three questions:
+   - **Caching?** Does this component receive stable repeated context (system prompt, docs, conversation history)? If yes, mark cacheable and describe what to cache. Caching can reduce context processing cost ~90% for repeated prefixes.
+   - **Batching?** Does this component require a real-time response, or can it run async? If async is acceptable, mark batch-eligible — batch API delivers 50% token discount.
+   - **Model match?** Is the assigned model the cheapest that meets the quality bar? If untested, mark EVALUATE and create a Stage 0 ticket to trial the next tier down.
 
 **Capability tiers map to model options:**
 
@@ -145,7 +149,7 @@ swarm:
 | data_processing | No model — Python, SQL, MCP tools | Don't use LLM for structured transforms |
 
 **Provider options per agent:**
-- **API (Anthropic):** Codex Haiku/Sonnet/Opus — managed, metered, cached
+- **API (Anthropic):** Claude Haiku/Sonnet/Opus — managed, metered, cached
 - **API (other):** OpenAI, Google, Mistral — when specific capability needed
 - **Local (Ollama):** Llama, Mistral, Phi — when data can't leave environment or cost is critical
 - **Local (specialized):** Fine-tuned SLM, embedding model — purpose-built for narrow task
@@ -244,6 +248,10 @@ Status: [Draft | Reviewed | Approved]
 - **Governance:** [audit logging, AIUC-1 domain, human gates]
 - **Test strategy:** [based on confidence rating]
 - **Estimated cost:** [per invocation if model-dependent, or "zero" if deterministic]
+- **Cost optimization:**
+  - Caching: [YES — describe what context is stable and cacheable | NO — context changes every call]
+  - Batching: [YES — async delivery acceptable | NO — real-time response required]
+  - Model match: [CONFIRMED — cheapest viable model assigned | EVALUATE — Stage 0 needed to test cheaper tier | N/A — deterministic]
 
 [Repeat for each component]
 
@@ -326,7 +334,7 @@ Generated: [date]
 
 ## Handoff to /worktree
 
-The spec package is designed to be consumed by a `/worktree` skill or Codex directly. The agent swarm configuration tells `/worktree`:
+The spec package is designed to be consumed by a `/worktree` skill or Claude Code directly. The agent swarm configuration tells `/worktree`:
 
 - How many worktrees to create (one per agent)
 - What branch name per worktree
@@ -361,6 +369,9 @@ Before finalizing any spec package, verify:
 - [ ] Build order and dependencies are explicit
 - [ ] Scope boundary is clear (what the system does NOT do)
 - [ ] Cost estimate exists for model-dependent components
+- [ ] Every model-dependent component has a caching verdict (YES with what to cache / NO with reason)
+- [ ] Every model-dependent component has a batching verdict (batch-eligible / real-time required)
+- [ ] Every model-dependent component has a model match verdict (CONFIRMED / EVALUATE with Stage 0 ticket / N/A)
 - [ ] Success criteria are measurable
 
 ---
