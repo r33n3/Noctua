@@ -194,7 +194,7 @@
 <p><strong>2026 Evolution:</strong></p>
 <p>"Prompt engineering" is now quaint terminology. The discipline has expanded to "context engineering," which encompasses:</p>
 <p><strong>System Prompts:</strong> High-level role definition and constraints for the model. In agentic systems, system prompts define agent behavior, values, and decision criteria.</p>
-<p><strong>Context Windows:</strong> Managing what information the model can access. With context windows ranging from 200K tokens (Claude Opus 4.6) to 1M tokens (Gemini 2.5), this becomes a strategic problem: Which documents? Which conversation history? Which tool outputs? The order matters.</p>
+<p><strong>Context Windows:</strong> Managing what information the model can access. Context windows are now large enough that fitting information in is rarely the constraint — deciding <em>what to include, in what order, and why</em> is the design challenge. Which documents? Which conversation history? Which tool outputs? The order matters.</p>
 <p><strong>Tool Definitions:</strong> For agentic systems, tools (functions, APIs, MCP servers) are part of context. How tools are described shapes agent behavior. Tool misuse is a security vulnerability.</p>
 <p><strong>Memory Management:</strong> Agentic systems have persistent memory. What is retained? What is forgotten? Memory poisoning (injecting false information) is an attack vector.</p>
 <p><strong>Retrieval Systems:</strong> RAG (Retrieval Augmented Generation) is standard. How information is indexed, retrieved, and ranked shapes model behavior and ground truth.</p>
