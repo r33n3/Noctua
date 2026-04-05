@@ -12,7 +12,7 @@
 <main class="main"><div class="content">
 
 <h1>Course Skills</h1>
-<p>Six course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Five drive the delivery cycle; <code>/harness-assess</code> reviews whether the surrounding harness is actually implemented and enforceable. Install them on Day 1. Modify them as you go.</p>
+<p>Eight course skills that take you from "I have a security problem" to "I have a working, reviewed tool" — without losing clarity under time pressure. Six drive the delivery cycle; <code>/harness-assess</code> reviews whether the surrounding harness is actually implemented and enforceable; <code>/audit-aiuc1</code> validates governance before elevation. Install them on Day 1. Modify them as you go.</p>
 
 <div class="callout callout-key">
   <strong>Why This Cycle Exists</strong>
@@ -22,6 +22,8 @@
     <li><strong>/think</strong> — Forces you to understand the real problem before committing to an approach. Ends with a Harness Audit: what guardrails does this work need, what constraints already exist, what's the verification strategy?</li>
     <li><strong>/build-spec</strong> — Translates your thinking into a contract the agent builds from. Includes anti-requirements (things the agent must NOT do), verifiable acceptance criteria, explicit file scope, and lessons from past retros encoded directly into the spec.</li>
     <li><strong>/worktree-setup</strong> — Isolates parallel work into separate branches. Configures pre-commit hooks and output suppression (silence passing tests, surface only failures) so the agent hits constraints during execution, not after you review.</li>
+    <li><strong>/check-antipatterns</strong> — Production readiness audit before shipping. Four layers: code quality, architecture, operations, and security. Outputs BLOCKED / CONDITIONAL / READY verdict. Run after build, before merge or deployment.</li>
+    <li><strong>/merge-worktrees</strong> — Sprint merge coordinator. Reads merge order from <code>sprint-progress.md</code>, rebases and merges PRs in sequence, validates tests between each merge, stops on failure. Run from the main session after all agents raise PRs.</li>
     <li><strong>/retro</strong> — Closes the loop with gap classification. Every problem found is labeled: spec gap, constraint gap, context gap, or process gap. Each label maps to a specific fix. Three of the same gap type triggers a permanent harness component.</li>
     <li><strong>/harness-assess</strong> — The diagnostic skill. Reviews whether your environment's harness is actually implemented: prompts, tools, permissions, state, gates, logging, and misuse resistance. Use it to inspect the harness, not to replace it.</li>
     <li><strong>/audit-aiuc1</strong> — Audit your tool or agent system against the six AIUC-1 domains before elevation to a higher autonomy mode. Produces a scored gap report that doubles as the AIUC-1 baseline evidence required for PeaRL elevation gates.</li>
@@ -55,12 +57,14 @@
   <pre><code>mkdir -p ~/.claude/commands
 
 # Download all six skills at once (run from your terminal)
-curl -o ~/.claude/commands/think.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
-curl -o ~/.claude/commands/build-spec.md          https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
-curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
-curl -o ~/.claude/commands/retro.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
-curl -o ~/.claude/commands/harness-assess.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
-curl -o ~/.claude/commands/audit-aiuc1.md   https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md
+curl -o ~/.claude/commands/think.md              https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/think.md
+curl -o ~/.claude/commands/build-spec.md         https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/build-spec.md
+curl -o ~/.claude/commands/worktree-setup.md     https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
+curl -o ~/.claude/commands/check-antipatterns.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/check-antipatterns.md
+curl -o ~/.claude/commands/merge-worktrees.md    https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/merge-worktrees.md
+curl -o ~/.claude/commands/retro.md              https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/retro.md
+curl -o ~/.claude/commands/harness-assess.md     https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/harness.md
+curl -o ~/.claude/commands/audit-aiuc1.md        https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/audit-aiuc1.md
 
 # Verify
 ls ~/.claude/commands/</code></pre>
@@ -111,11 +115,12 @@ ls ~/.claude/commands/</code></pre>
   <p>The updated skill now requires two things that most specs omit. First: <strong>anti-requirements</strong> — an explicit list of what the agent must NOT do (don't touch this module, don't add dependencies, don't refactor outside scope). Every ambiguity you leave in the spec is a decision the agent makes without you. Anti-requirements shrink that space. Second: <strong>verifiable acceptance criteria</strong> — observable checks, not prose. "The API returns 200 with a valid token" is a criterion. "Authentication should work" is a wish.</p>
   <p>The spec is also your scope enforcer. Sprint labs give you 60 minutes to build. Without a written scope, every new idea that surfaces during the build phase looks reasonable to add. The spec gives you something to point to: "That's not in scope — deferred to next sprint." This is not a constraint — it's what lets you finish.</p>
   <p>In a team context, the spec is the shared contract. If two people are building different components in parallel worktrees, the spec is what keeps them compatible. If you're using Claude Code to build one component and doing another yourself, the spec is what keeps you aligned with your own work.</p>
+  <p>The skill also forces a <strong>cost optimization verdict per component</strong>: caching (does this component send repeated stable context?), batching (does it require real-time response, or can it run async for a 50% token discount?), and model match (is the assigned model the cheapest that meets the quality bar, or does it need a Stage 0 trial at the next tier down?). Cost becomes a design constraint at spec time — not a billing surprise at the end of a sprint.</p>
 </div>
 
 <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
-  <a href="spec.md" download="spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download spec.md</a>
-  <a href="spec.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+  <a href="build-spec.md" download="build-spec.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download build-spec.md</a>
+  <a href="build-spec.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
 </div>
 
 <div class="code-block">
@@ -166,6 +171,74 @@ ls ~/.claude/commands/</code></pre>
     <li>Add a security-specific hook: run Bandit or detect-secrets on every commit</li>
     <li>Create <code>/worktree-agent</code> that pairs each worktree with a named Claude Code session for a specific agent role</li>
     <li>Customize TASK.md template to always include your anti-requirements section from the spec</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="check-antipatterns">/check-antipatterns — Production Readiness Audit</h2>
+<p>Audit code for production anti-patterns before shipping. Four layers: code quality, architecture, operations, and security. Outputs a BLOCKED / CONDITIONAL / READY verdict with file-and-line evidence for every finding.</p>
+<p><strong>Best used in:</strong> Unit 2 (before MCP server deliverable), Unit 4 (Sprint I and II exit gates), Unit 6 (before red team begins — fix obvious problems first), Unit 7 (production hardening), Unit 8 (capstone exit gate).</p>
+
+<div class="callout callout-reading">
+  <strong>Why /check-antipatterns exists</strong>
+  <p>AI-generated code has predictable failure modes. Claude prioritizes "never crash" over "fail informatively," producing silent error swallowing. It generates happy-path loops with no termination guards, module-level global state that races under concurrency, and <code>eval()</code>-based dispatch that becomes RCE when an attacker controls the input. These patterns look correct in isolation — they pass code review, they pass unit tests — and then they fail silently in production or get exploited in a red team exercise.</p>
+  <p>The skill audits four layers in order: <strong>L1 Code Quality</strong> (silent errors, unbounded loops, missing assertions, naive retry), <strong>L2 Architecture</strong> (connection pools, idempotency, unbounded collections, global state in tool scope), <strong>L3 Operations</strong> (structured logging, correlation IDs, health checks, graceful shutdown), and <strong>L4 Security</strong> (timing attacks, log injection, input bounds, secret rotation, eval/exec, audit trail gaps). Each layer has grep-detectable checks and code analysis checks. Findings are classified CRITICAL / HIGH / MEDIUM / LOW. CRITICAL findings block deployment.</p>
+  <p>The skill was built from the <strong>Power of 10 rules</strong> (Holzmann, NASA/JPL) adapted for Python agent code: fixed loop bounds (R2), assertion density (R5), smallest possible scope (R6), and restricted metaprogramming (R8) map directly to the four patterns most likely to cause failures in production agentic systems.</p>
+  <p>Run it before the red team finds your mistakes. CRITICAL findings discovered by Garak or PyRIT count against your blue team score — they were preventable before the exercise started.</p>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="check-antipatterns.md" download="check-antipatterns.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download check-antipatterns.md</a>
+  <a href="check-antipatterns.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/commands/check-antipatterns.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/check-antipatterns.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Add your stack's specific patterns — Node.js async pitfalls, Go goroutine leaks, Rust unsafe blocks</li>
+    <li>Create <code>/check-antipatterns-mcp</code> tuned for MCP server code — emphasizes global state (2.8), input bounds (4.3), and audit trail gaps (4.5)</li>
+    <li>Add a <code>--fix</code> mode that generates a patch file for auto-fixable findings (1.1, 4.1, 4.2)</li>
+    <li>Integrate with your CI pipeline: run on every PR and fail on CRITICAL findings</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="merge-worktrees">/merge-worktrees — Sprint Merge Coordinator</h2>
+<p>Merges worktree PRs in dependency order after a parallel sprint. Reads the merge sequence from <code>sprint-progress.md</code>, rebases where needed, validates tests between each merge, and stops on failure. Always run from the main session — never from inside a worktree.</p>
+<p><strong>Best used in:</strong> Unit 4 (Sprint I and II close), Unit 5 (multi-agent system integration), Unit 8 (capstone sprint merge before Week 16 presentations).</p>
+
+<div class="callout callout-reading">
+  <strong>Why /merge-worktrees exists</strong>
+  <p>Parallel worktrees compress build time — three components built simultaneously instead of sequentially. But they create a merge problem: three PRs exist, they have dependencies, and merging them in the wrong order causes regressions that are hard to attribute. Manually managing the sequence, rebasing after each merge, and running tests between merges is exactly the kind of mechanical coordination work that should be automated.</p>
+  <p><code>/merge-worktrees</code> reads the merge order you defined in <code>sprint-progress.md</code> when you set up the sprint. It presents the plan and waits for confirmation before touching anything. Then it merges one PR at a time: check for conflicts, rebase if needed, merge, pull main, run tests. If tests fail after a merge, it stops and surfaces the failure with options — investigate, continue at risk, or revert. It never silently continues past a broken state.</p>
+  <p>The skill ends with a cleanup prompt: run <code>/retro</code>, push main, remove worktree branches. This ensures the sprint is fully closed — no dangling branches, no uncommitted decisions, no context left in worktree directories that will confuse the next sprint.</p>
+  <p><strong>Critical constraint:</strong> run this from your main Claude Code session, not from inside any worktree. Worktree panes should be closed or idle before <code>/merge-worktrees</code> runs.</p>
+</div>
+
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap;">
+  <a href="merge-worktrees.md" download="merge-worktrees.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download merge-worktrees.md</a>
+  <a href="merge-worktrees.md" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; View</a>
+</div>
+
+<div class="code-block">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <pre><code>curl -o ~/.claude/commands/merge-worktrees.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/merge-worktrees.md</code></pre>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Suggested modifications:</strong>
+  <ul>
+    <li>Change the test command from <code>pytest</code> to your project's test runner</li>
+    <li>Add a pre-merge <code>/check-antipatterns</code> call — catch production issues before they land on main</li>
+    <li>Add Slack or GitHub notification on successful sprint merge</li>
+    <li>Create <code>/merge-worktrees-dry-run</code> that previews the merge plan and conflict risk without executing</li>
   </ul>
 </div>
 
