@@ -162,6 +162,13 @@
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a structured red team operation against your own multi-agent SOC system. Use Garak for automated scanning and PyRIT for multi-turn adversarial conversations. Document all findings with AIVSS scores. This is the Red Team Exercise (8% of grade).</p></div>
 
+<div class="callout callout-tip">
+  <strong>Before you attack: run <code>/check-antipatterns</code> first</strong>
+  <p>Fix the obvious problems before the red team finds them. A blue team that ships silent error swallowing, unbounded agent loops, or <code>eval()</code> in tool handlers is handing the attacker free wins. Run the audit on your SOC system now — clear all CRITICAL findings before Garak and PyRIT run.</p>
+  <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit5/soc-system/</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.5);">Required: zero CRITICAL findings before red team begins. CRITICAL findings found by the red team count against your blue team score.</p>
+</div>
+
 <div class="quiz-block" id="quiz-u6w6">
   <h4> Knowledge Check — Week 6</h4>
 
