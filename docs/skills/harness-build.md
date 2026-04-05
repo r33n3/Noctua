@@ -264,7 +264,7 @@ leave the gaps honest in `blueprint.yaml`.
 
 Typical order:
 ```
-/think → /build-spec → /worktree-setup → /harness-build → [build] → /check-antipatterns → /harness-assess → /retro
+/think → /build-spec → /worktree-setup → [build] → /check-antipatterns → /harness-build → /harness-assess → /retro
 ```
 
 ---
