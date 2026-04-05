@@ -13,7 +13,7 @@ This directory contains the week-by-week course files for Semester 1 of the Noct
 | [Week 3](week-03.md) | MCP Servers + Tool Design | MCP architecture, A2A intro, Tool Search Tool, CVE lookup MCP lab | B (Security) |
 | [Week 4](week-04.md) | Multi-Tool Systems + Data Architecture | Multi-tool MCP, input validation, data architecture (relational/vector/graph/time series) | D (Reliability), E |
 | [Week 5](week-05.md) | Hybrid RAG for Security | Hybrid retrieval, lost-in-the-middle, citation verification, knowledge base poisoning | A (Data & Privacy) |
-| [Week 6](week-06.md) | Skill Building + Assessment Crystallization | Skill anatomy, YAML frontmatter, `/tool-select`, `/audit-aiuc1`, full Assessment Stack | All 6 introduced |
+| [Week 6](week-06.md) | Skill Building + Assessment Crystallization | Skill anatomy, YAML frontmatter, `/audit-aiuc1`, full Assessment Stack | All 6 introduced |
 | [Week 7](week-07.md) | Break Everything (Scaling Limits Lab) | 7 stations: context stuffing, agent proliferation, RAG flooding, skill stacking, model mismatch, excessive agency, cost cliffs | All 6 tested |
 | [Week 8](week-08.md) | Audit Your Own Tools (AIUC-1 Synthesis) | OWASP Top 10 for Agentic Apps, AIVSS scoring, defense in depth, bias testing, governance policy | C (Safety), F (Society) |
 | [Week 9](week-09.md) | Multi-Agent Security Systems I | 5 orchestration patterns, worktree 3-layer model, tmux setup, dark factory, SOC agent team lab | B revisited |
