@@ -176,9 +176,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 .ssr-tag { display: inline-block; font-size: 10px; background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25); color: var(--accent); border-radius: 3px; padding: 1px 5px; margin-top: 3px; margin-right: 3px; }
 .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
 
-/* === SCROLL PROGRESS BAR (appended to body by main.js) === */
-/* Must be position:fixed — otherwise it becomes a flex sibling of .main and compresses the layout */
+/* === ELEMENTS APPENDED TO BODY BY main.js ===
+   body is display:flex — anything appended to it becomes a flex item and
+   breaks the layout unless given position:fixed to pull it out of flow.   */
 .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 999; pointer-events: none; transition: width 0.1s linear; }
+.back-to-top { position: fixed; bottom: 32px; right: 24px; z-index: 200; width: 36px; height: 36px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 16px; display: none; align-items: center; justify-content: center; transition: opacity 0.2s; }
+.back-to-top.visible { display: flex; }
+.back-to-top:hover { color: var(--accent); border-color: var(--accent); }
 
 /* === SCROLLBAR === */
 ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg); }
