@@ -50,6 +50,14 @@
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
   .span-2 { grid-column: span 2; }
 
+  /* Responsive inline grids */
+  .r-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .r-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) {
+    .r-grid-2, .r-grid-3 { grid-template-columns: 1fr; }
+    .span-2 { grid-column: span 1; }
+  }
+
   /* Sections */
   .section {
     background: var(--surface); border: 1px solid var(--border);
@@ -258,7 +266,7 @@
 <!-- DIRECTORY MAP -->
 <div class="section span-2">
   <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> DIRECTORY QUICK REFERENCE</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+  <div class="r-grid-2" style="gap:12px;font-size:11px;">
     <div>
       <div style="font-size:10px;font-weight:700;color:var(--gold);margin-bottom:6px;letter-spacing:1px;">PROJECT (committed to git)</div>
       <div class="cmd"><div class="cmd-name">CLAUDE.md</div><div class="cmd-desc">Always-on context. Layer 1 GUIDANCE. <span class="warn">Bypassable.</span></div></div>
@@ -348,7 +356,7 @@ Sprint execution (parallel tmux agents)
 <!-- DEFENSE LAYER MAP -->
 <div class="section span-2">
   <div class="section-head"><div class="sh-dot" style="background:var(--red)"></div> DEFENSE LAYER CLASSIFICATION — Inside vs Outside the Reasoning Loop</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:11px;">
+  <div class="r-grid-2" style="gap:16px;font-size:11px;">
     <div>
       <div style="color:var(--orange);font-weight:700;font-size:10px;letter-spacing:1px;margin-bottom:6px;">⚠ INSIDE LOOP — GUIDANCE (probabilistic, bypassable)</div>
       <div style="color:var(--text-dim);line-height:1.8;">
@@ -381,7 +389,7 @@ Sprint execution (parallel tmux agents)
 <!-- COST CHEAT SHEET -->
 <div class="section span-2">
   <div class="section-head"><div class="sh-dot" style="background:var(--gold)"></div> COST &amp; TOKEN QUICK REFERENCE <span class="b b-cost">COST</span></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:11px;">
+  <div class="r-grid-3" style="font-size:11px;">
     <div>
       <div style="color:var(--gold);font-weight:700;font-size:10px;margin-bottom:4px;">MODEL PRICING (per MTok — approximate)</div>
       <div style="color:var(--text-dim);line-height:1.8;">

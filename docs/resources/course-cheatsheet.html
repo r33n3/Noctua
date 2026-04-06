@@ -276,6 +276,20 @@
 
     /* ── Sidebar nav area — override for cheatsheet full-width feel ── */
     .content { max-width: 100%; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .cs-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .cs-grid { grid-template-columns: 1fr; }
+      .cs-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .cs-col:last-child { border-bottom: none; }
+      .cs-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .cs-header-side { align-self: flex-start; }
+      .cs-table { font-size: 12px; }
+      .cs-table td, .cs-table th { padding: 5px 8px; }
+    }
   </style>
 </head>
 <body>
