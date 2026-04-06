@@ -176,6 +176,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 .ssr-tag { display: inline-block; font-size: 10px; background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.25); color: var(--accent); border-radius: 3px; padding: 1px 5px; margin-top: 3px; margin-right: 3px; }
 .ssr-empty { padding: 12px 14px; color: var(--text-muted); font-size: 12px; text-align: center; }
 
+/* === SCROLL PROGRESS BAR (appended to body by main.js) === */
+/* Must be position:fixed — otherwise it becomes a flex sibling of .main and compresses the layout */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 999; pointer-events: none; transition: width 0.1s linear; }
+
 /* === SCROLLBAR === */
 ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.25); border-radius: 4px; }
