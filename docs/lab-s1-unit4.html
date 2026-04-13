@@ -21,7 +21,7 @@
 </div>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 33 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 34 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -542,6 +542,80 @@ class JSONFormatter(logging.Formatter):
 # Sprint II: CRITICAL __ HIGH __ MEDIUM __
 # Target: READY status (no CRITICAL or HIGH)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
+
+    <div class="lab-step" id="step-w15-8">
+      <label><input type="checkbox" onchange="toggleStep('w15-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Deploy your hardened agent to Claude Managed Agents — your S1 production milestone</div>
+        <div class="step-desc">
+          <p>Your agent is hardened, audited, and READY. Now deploy it. Claude Managed Agents is Anthropic's hosted harness — you deploy once, then run investigations as sessions. Anthropic runs the loop and tool execution in a container; you don't manage any server infrastructure.</p>
+          <p><strong>What this step teaches:</strong> The difference between "it runs on my laptop" and "it's deployed." Same agent logic, different runtime. This is the simplest path to production for a Claude agent.</p>
+        </div>
+      </div></label>
+      <div class="code-block"><pre><code>import anthropic, json, os
+
+client = anthropic.Anthropic()  # uses ANTHROPIC_API_KEY from env
+
+# ── STEP 1: Deploy the agent (run ONCE — save the IDs) ───────────────────────
+# Paste your Sprint II system prompt below:
+SYSTEM_PROMPT = """
+[Your hardened Sprint II system prompt here — the one that passed AIUC-1 audit]
+"""
+
+agent = client.beta.agents.create(
+    name="Unit 4 Sprint II — &lt;your tool name&gt;",
+    model="claude-sonnet-4-6",
+    system=SYSTEM_PROMPT,
+    tools=[{"type": "agent_toolset_20260401"}],  # bash, file ops, web_search included
+)
+environment = client.beta.environments.create(
+    name="unit4-sprint2-env",
+    config={"type": "cloud", "networking": {"type": "unrestricted"}},
+)
+
+# Save IDs — you'll reuse these for every session
+ids = {"agent_id": agent.id, "environment_id": environment.id}
+with open("managed_agent_ids.json", "w") as f:
+    json.dump(ids, f, indent=2)
+print(f"Deployed: {ids}")
+
+# ── STEP 2: Run a test session against your Sprint I test cases ───────────────
+with open("managed_agent_ids.json") as f:
+    ids = json.load(f)
+
+session = client.beta.sessions.create(
+    agent=ids["agent_id"],
+    environment_id=ids["environment_id"],
+    title="Test Session — Week 15",
+)
+
+test_input = "[Paste your Sprint I test case #1 here]"
+
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(session.id, events=[{
+        "type": "user.message",
+        "content": [{"type": "text", "text": test_input}]
+    }])
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "agent.tool_use":
+            print(f"\n[Tool: {event.name}]", flush=True)
+        elif event.type == "session.status_idle":
+            print("\n\n── Session complete ──")
+            break</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:12px">
+        <strong>After deployment: answer these questions</strong>
+        <ul>
+          <li>Did your agent produce the same output as the local version? If not — why? (context window, tool availability, system prompt differences?)</li>
+          <li>How long did the session take vs. local execution? What drove the difference?</li>
+          <li>Your agent is now "live" — anyone with the session API and your agent ID can run it. What access controls would a production deployment need?</li>
+          <li>Look at <code>tools/mass/claude-managed-agents/</code> in this repo — that's the MASS scanner deployed the same way. Your Sprint II agent is structurally identical. In Unit 5 you'll compare this pattern against two others.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -561,6 +635,7 @@ class JSONFormatter(logging.Formatter):
     <li><strong>Hardened Prototype</strong> — complete code with error handling, validation, logging, and README</li>
     <li><strong>Sprint II AIUC-1 Governance Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
     <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
+    <li><strong>Managed Agent Deployment</strong> — <code>managed_agent_ids.json</code> proving a live deployment + answers to the 4 post-deployment questions</li>
   </ul>
 </div>
 

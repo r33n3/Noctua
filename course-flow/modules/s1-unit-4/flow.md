@@ -43,7 +43,7 @@ Module-specific: For architecture design in Week 13, never give the architecture
 
 1. **Week 13 — Multi-Agent SOC System** — Build a working orchestrator + 3 subagents (recon, analysis, reporting). Deliver `ARCHITECTURE.md` with data flow diagram.
 2. **Week 14 — Sprint I Prototype** — Full Think → Spec → Build → Retro sprint. Build containerized prototype. Submit via GitHub PR. Write Sprint Retrospective.
-3. **Week 15 — Hardening Sprint** — Harden the Week 14 prototype: error handling, input validation, logging, rate limiting, output validation. Run `/check-antipatterns`. Produce Hardening Report.
+3. **Week 15 — Hardening Sprint** — Harden the Week 14 prototype: error handling, input validation, logging, rate limiting, output validation. Run `/check-antipatterns`. Produce Hardening Report. Deploy the hardened agent to Claude Managed Agents as the S1 production milestone (Step 8).
 4. **Week 16 — Midyear Presentations** — Present capstone system (12–15 slides, 4–5 min demo). Submit final deliverables. Participate in S1 retrospective.
 
 See `semester-1/weeks/week-13.md` through `week-16.md` for full lab instructions.
@@ -54,7 +54,7 @@ See `semester-1/weeks/week-13.md` through `week-16.md` for full lab instructions
 
 **Week 14:** Sprint I prototype (source code, `Dockerfile`, `docker-compose.yml`, README with `docker-compose up` instructions), GitHub PR (submitted via `gh pr create`), Sprint Retrospective (1000–1500 words)
 
-**Week 15:** Hardened codebase (all hardening checklist items addressed), Hardening Report (1000–1500 words), `/check-antipatterns` output showing resolved findings
+**Week 15:** Hardened codebase (all hardening checklist items addressed), Hardening Report (1000–1500 words), `/check-antipatterns` output showing resolved findings, `managed_agent_ids.json` proving a live Managed Agent deployment + post-deployment reflection (4 questions)
 
 **Week 16:** Presentation slides (12–15 slides, PDF), demo recording (4–5 min backup), S1 reflection
 
@@ -71,6 +71,7 @@ Context library additions: orchestrator pattern, error handling pattern, deploym
 - Week 14 prototype with no Dockerfile or broken `docker-compose up` — required for submission
 - Sprint Retrospective that summarizes the sprint instead of reflecting — redirect to "what would you tell a teammate starting this sprint?"
 - Week 15 hardening that adds comments but doesn't address error handling or input validation — run `/check-antipatterns` and require responses to each finding
+- Week 15 Managed Agent deployment skipped or not actually run — require `managed_agent_ids.json` and a screenshot/log of a successful session as evidence
 
 **Probing question bank:**
 - "Which agent in your Week 13 system could be replaced by a deterministic function? Should it be?"

@@ -80,6 +80,18 @@
   </div>
 </div>
 
+<div class="callout callout-key">
+  <strong>The attacker mindset: what changes when you switch sides</strong>
+  <p>Every unit so far has had you thinking as a <em>builder</em>: "How do I make this work?" Adversarial security requires a different mode: "How do I make this <em>fail</em>?" These are not the same question — and switching between them is a skill that takes deliberate practice.</p>
+  <p>Three shifts that mark the transition:</p>
+  <ol>
+    <li><strong>From reliability to exploitability.</strong> A builder asks "does this handle errors?" An attacker asks "which error path gives me leverage?" Look at every error handler, every fallback, every graceful degradation — and ask: can I reliably trigger this? What do I get if I do?</li>
+    <li><strong>From intent to behavior.</strong> A builder defines what the system is <em>supposed</em> to do. An attacker cares only about what it <em>actually</em> does under adversarial inputs. The gap between intent and behavior is where attacks live.</li>
+    <li><strong>From my system to the target's incentives.</strong> Your system processes security alerts. An attacker thinks: "What does this agent <em>trust</em>? What sources does it act on without scrutiny?" Trust is the attack surface for AI systems in a way it isn't for traditional software.</li>
+  </ol>
+  <p>For this week's lab: before you read the ATLAS catalog, spend 5 minutes looking at your Unit 5 system diagram and asking "what does this agent trust and act on?" Write down your answer. Then use ATLAS to name the techniques that exploit those trust relationships.</p>
+</div>
+
 <div class="lab-section">
   <h4> Lab Exercise: MITRE ATLAS Threat Model</h4>
   <div class="lab-steps">
