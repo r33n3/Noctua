@@ -67,7 +67,7 @@
 <h3 id="3-rapid-prototyping-rapidp">3. Rapid Prototyping (RapidP)</h3>
 <p><strong>Original Vision:</strong> Building functional AI applications in minimal time through incremental iteration.</p>
 <p><strong>2026 Validation:</strong></p>
-<p>RapidP was prescient bordering on prophetic. In 2023, it was an aspiration; in 2026, it is the dominant development paradigm. Tools like Claude Code, CrewAI, LangGraph, and the Claude Agent SDK have compressed the timeline for building complex agentic systems from weeks to hours.</p>
+<p>RapidP was prescient bordering on prophetic. In 2023, it was an aspiration; in 2026, it is the dominant development paradigm. Tools like Claude Code, the Claude Agent SDK, Claude Managed Agents, and the OpenAI Agents SDK have compressed the timeline for building complex agentic systems from weeks to hours.</p>
 <p>A developer can now:</p>
 <ul>
 <li>Define agent roles and responsibilities (hours)</li>
@@ -209,10 +209,9 @@
 <p><strong>Mature Production Frameworks:</strong></p>
 <ul>
 <li><strong>Claude Agent SDK:</strong> Open-source framework from Anthropic, built for rapid agent development with tools, memory, and built-in safety features</li>
-<li><strong>CrewAI:</strong> High-level orchestration framework for multi-agent collaboration</li>
-<li><strong>LangGraph:</strong> Graph-based agent orchestration from LangChain, excellent for complex workflows</li>
-<li><strong>AutoGen/AG2:</strong> Microsoft's multi-agent framework with speaker selection and conversation management</li>
+<li><strong>Claude Managed Agents:</strong> Anthropic's server-side execution platform for deploying and managing agents with built-in safety and observability</li>
 <li><strong>OpenAI Agents SDK:</strong> Native agent framework integrated with GPT models</li>
+<li><strong>AutoGen/AG2:</strong> Microsoft's multi-agent framework with speaker selection and conversation management</li>
 </ul>
 <p><strong>Supporting Infrastructure:</strong></p>
 <ul>
@@ -227,7 +226,7 @@
 <li>Container-based (Docker, Kubernetes)</li>
 <li>GitHub Codespaces for consistent development environments</li>
 </ul>
-<p><strong>Design Decision:</strong> Labs have been redesigned around Claude Agent SDK and CrewAI as the primary frameworks, with LangGraph for complex workflows. Infrastructure has been upgraded to cloud-native deployment. GitHub Codespaces is used for consistent student environments. Labs include MCP server design and integration as core competencies.</p>
+<p><strong>Design Decision:</strong> Labs have been redesigned around the Claude SDK and Claude Managed Agents as the primary frameworks, with the OpenAI Agents SDK for multi-framework comparison. Infrastructure has been upgraded to cloud-native deployment. GitHub Codespaces is used for consistent student environments. Labs include MCP server design and integration as core competencies.</p>
 <hr />
 <h3 id="4-nlp-foundations-context-matters-more-than-mechanics">4. NLP Foundations: Context Matters More Than Mechanics</h3>
 <p><strong>Original NLP Content:</strong> Tokenization, stemming, lemmatization, Named Entity Recognition (NER), sentiment analysis. Traditional approaches using NLTK or scikit-learn.</p>
@@ -631,7 +630,7 @@
 <h3 id="what-requires-rebuilding">What Requires Rebuilding</h3>
 <p>The practical execution layer—tools, frameworks, course structure, and threat models—has changed dramatically:</p>
 <ul>
-<li><strong>Tools:</strong> MetaGPT and AgileCoder are obsolete. Claude Agent SDK, CrewAI, and LangGraph are the new references.</li>
+<li><strong>Tools:</strong> MetaGPT and AgileCoder are obsolete. Claude SDK, Claude Managed Agents, and OpenAI Agents SDK are the new references.</li>
 <li><strong>Concepts:</strong> "Prompt engineering" evolved into "context engineering." The scope and sophistication required is much greater.</li>
 <li><strong>Threat Model:</strong> AI-orchestrated cyberattacks are no longer hypothetical. Agentic systems pose qualitatively new security challenges.</li>
 <li><strong>Frameworks:</strong> OWASP Top 10 for Agentic Applications, MITRE ATLAS, and NIST AI RMF provide concrete guidance that didn't exist in 2023.</li>
@@ -650,7 +649,7 @@
 <p><strong>Makes agentic engineering the execution layer:</strong> Every concept is taught through the lens of building, evaluating, and securing multi-agent systems.</p>
 </li>
 <li>
-<p><strong>Grounds in modern frameworks:</strong> Claude Agent SDK, CrewAI, LangGraph, and MCP are the reference implementations.</p>
+<p><strong>Grounds in modern frameworks:</strong> Claude SDK, Claude Managed Agents, OpenAI Agents SDK, and MCP are the reference implementations.</p>
 </li>
 <li>
 <p><strong>Integrates security frameworks:</strong> OWASP, MITRE, and NIST are woven throughout, not isolated.</p>
@@ -690,7 +689,7 @@
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","openai-agents-sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

@@ -131,7 +131,7 @@ The cybersecurity and AI landscape has shifted dramatically since 2023:
 
 - **Mature Security Frameworks** now exist for agentic systems: OWASP Top 10 for Agentic Apps (2026), NIST Cyber AI Profile (December 2025), and MITRE ATLAS cataloging 15 tactics and 66 techniques (including 46 sub-techniques, as of the October 2025 update; the framework is actively evolving).
 
-- **Multi-Agent Orchestration** is production-ready. Claude Agent SDK, CrewAI, LangGraph, and AutoGen/AG2 provide mature platforms for building agent teams at scale.
+- **Multi-Agent Orchestration** is production-ready. Claude Managed Agents (Anthropic-hosted loop), the OpenAI Agents SDK (runner in your process), and the Claude Agent SDK provide mature platforms for building agent teams at scale.
 
 - **Non-Human Identities (NHIs)** outnumber human identities by ratios typically ranging from 25:1 to over 100:1, with some environments exceeding 500:1 (ManageEngine, 2026; Silverfort, 2025; Entro, 2025), creating new governance and security challenges.
 
@@ -163,7 +163,7 @@ Deep technical work: multi-agent systems, red teaming, adversarial AI, and produ
 
 | Unit | Weeks | Focus Area | Key Outcomes |
 |------|-------|-----------|--------------|
-| **Unit 5: Multi-Agent Orchestration** | 1-4 | Claude Agent SDK, CrewAI, LangGraph, AutoGen—designing agent teams for security operations | Build and evaluate multi-agent SOC and threat analysis systems |
+| **Unit 5: Multi-Agent Orchestration** | 1-4 | Claude Agent SDK, Claude Managed Agents, OpenAI Agents SDK—designing and comparing agent harnesses for security operations | Build and evaluate multi-agent SOC and threat analysis systems; run a 3-framework comparison using MASS |
 | **Unit 6: AI Attacker vs. AI Defender** | 5-8 | Red teaming AI agents, prompt injection, goal hijacking, tool misuse, adversarial ML, real-world case studies | Conduct adversarial testing; harden agents against known attack patterns |
 | **Unit 7: Production Security Engineering** | 9-12 | AI supply chain security, NHI governance, observability, cost management, deployment patterns | Design secure agent deployments; implement monitoring and audit trails |
 | **Unit 8: Capstone Projects** | 13-16 | Full agentic cybersecurity systems—built, tested, red-teamed, and presented | Deliver production-grade security agent system with documentation and threat assessment |
@@ -199,16 +199,14 @@ The lab stack is centered on **Claude Max subscription** capabilities, with mult
 - **Aequitas** (U of Chicago) — Bias and fairness audit toolkit
 
 ### Agent Orchestration Frameworks
-- **CrewAI** — Role-based multi-agent teams with flexible orchestration
-- **LangGraph** — Stateful agent workflows with built-in state machines and persistence
-- **AutoGen/AG2** — Multi-agent conversation patterns and hierarchical teams
-- **OpenAI Agents SDK** — Cross-platform agent development and analysis
+- **Claude Managed Agents** — Anthropic-hosted agent harness. Anthropic runs the loop and tool execution in a per-session container; you deploy once and run per-scan sessions. Used in Unit 5 and beyond.
+- **OpenAI Agents SDK** — Runner-managed loop in your process. `Agent` + `@function_tool` + `Runner.run_sync()`. Used in Unit 5 comparison exercises.
+- **AutoGen/AG2** — Multi-agent conversation patterns (reference only; not a primary lab framework)
 
 ### Infrastructure & DevSecOps Pipeline
 - **Docker Desktop** — Local containerization from Day 1; every prototype ships as a container
-- **AWS CLI + ECR/ECS** — Container registry and orchestration for cloud-native promotion
 - **GitHub CLI (gh)** — PR workflows, CI/CD triggers, branch management, and security scanning
-- **Infrastructure as Code** — CloudFormation/Terraform for repeatable, auditable deployments
+- **Infrastructure as Code** — Terraform/Pulumi for repeatable, auditable deployments
 - **Ollama + Open-Weight Models** — Local model deployment for sensitive security research
 - **Python 3.11+** — Primary language
 - **Git / GitHub Actions** — Version control, worktrees, automated security gates
@@ -270,6 +268,12 @@ Noctua/
 │   └── weeks/
 │       ├── unit-5.md through unit-8.md     # Unit content (aligned to HTML)
 │
+├── tools/                             # Production-grade security tools (study, run, extend)
+│   └── mass/
+│       ├── README.md                  # Tool index, quick starts, where MASS appears per unit
+│       ├── claude-managed-agents/     # MASS 7-agent DAG — Anthropic-hosted implementation
+│       └── openai-sdk-agents/         # MASS 7-agent DAG — OpenAI Agents SDK implementation
+│
 ├── resources/                         # Reference materials
 │
 └── original-materials/
@@ -294,8 +298,7 @@ Admission to this course requires:
 
 **Required Platform Access (provided through course fees or institutional licensing):**
 - **Claude Max subscription** — Primary platform for Chat, Cowork, and Claude Code
-- **OpenAI Platform account** — API access for model comparison and multi-model evaluation
-- **AWS Academy or lab account** — For running open-source models (Ollama/vLLM) and production deployment labs (Unit 7)
+- **OpenAI Platform account** — Free tier sufficient; used for the Unit 5 OpenAI Agents SDK comparison week
 
 **Required Hardware (student-provided laptop):**
 - Minimum: 8GB RAM, 4-core CPU, 50GB free storage
@@ -348,8 +351,8 @@ Admission to this course requires:
 - **Anthropic — "Building Agents with the Claude Agent SDK"** (anthropic.com/engineering) — Official SDK documentation and patterns
 - **Anthropic — "Effective Context Engineering for AI Agents"** — Managing context windows and semantic retrieval
 - **"Designing AI Agents"** (emerging body of work from multiple researchers) — Agent architecture patterns
-- **CrewAI Documentation** (docs.crewai.com) — Role-based multi-agent framework
-- **LangGraph Documentation** (langchain-ai.github.io/langgraph) — State machines and workflow management
+- **Anthropic — Managed Agents Documentation** (anthropic.com/docs/managed-agents) — Server-managed stateful agents with hosted tool execution
+- **OpenAI Agents SDK Documentation** (openai.github.io/openai-agents-python) — Runner-managed agent loop with handoffs and function tools
 
 ### AI Security & Adversarial Techniques
 - **OWASP Top 10 for Agentic Applications (2026)** — Web application security adapted for AI agents

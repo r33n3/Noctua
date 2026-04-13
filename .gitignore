@@ -45,3 +45,13 @@ student-state/reflection-log.md
 
 # Internal planning docs (not student-facing)
 docs/superpowers/
+
+# Author's local Claude Code config — students install skills from docs/skills/
+.claude/
+
+# Codex-specific agent config — used during course review, not student-facing
+.agents/
+AGENTS.md
+
+# MASS deployed agent IDs (contain real Anthropic agent IDs)
+tools/mass/claude-managed-agents/agent_ids.json

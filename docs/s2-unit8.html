@@ -72,10 +72,10 @@
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.</p>
 <p><strong>Production-Promotable Capstone:</strong> By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy to ECS/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a <strong>deployable artifact with full provenance, governance, and operational readiness</strong>. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.</p>
 </div>
-<div class="callout callout-warn"><p><strong>Deployment Target: AWS AgentCore (Required)</strong><br/>
-Your capstone system must be deployed to production infrastructure — not running locally on Claude Code. The primary deployment target is <strong>AWS AgentCore via Strands SDK</strong>.<br/><br/>
-<strong>Pre-capstone checkpoint (do before Week 13 starts):</strong> Verify your AWS account has Bedrock model access enabled. Run a basic <code>Agent(model=BedrockModel(...))</code> call to confirm access. Bedrock access approval can take 24–48 hours — do not discover this on the first day of Week 13.<br/><br/>
-Lambda is the fallback if AgentCore access is delayed. Your Strands code is identical — only the deployment target changes.</p></div>
+<div class="callout callout-warn"><p><strong>Deployment Target: Cloud Infrastructure (Required)</strong><br/>
+Your capstone system must be deployed to production infrastructure — not running locally on Claude Code. The primary stack is <strong>Claude SDK for custom agent logic + Claude Managed Agents for hosted execution</strong>, deployed via Docker/containers to cloud infrastructure (AWS ECS, Lambda, or equivalent).<br/><br/>
+<strong>Pre-capstone checkpoint (do before Week 13 starts):</strong> Verify your Anthropic API key is active and you can make a basic <code>client.messages.create(...)</code> call. Confirm your container registry and deployment pipeline are configured. Do not discover environment issues on the first day of Week 13.<br/><br/>
+If Claude Managed Agents hosted execution is not yet available in your region, deploy as containerized agents with the Claude SDK — the agent logic is identical; only the hosting boundary changes.</p></div>
 <h4 id="capstone-project-ideas">Capstone Project Ideas</h4>
 <p>Here are concrete, achievable project ideas suitable for a 4-week capstone:</p>
 <p><strong>Autonomous SOC Analyst</strong></p>
@@ -139,7 +139,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <li><strong>Open Source:</strong> PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.</li>
 </ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?</p>
-<p><strong>Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.</p>
+<p><strong>Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude SDK, Claude Managed Agents, OpenAI Agents SDK) and how they support multi-agent patterns.</p>
 <p><strong>🔑 Key Concept:</strong> Both PeaRL and MASS are open source because their creator believes <strong>security should always be open to anyone to use</strong>. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?</p>
 </div>
 <h4 id="architecture-review-methodology">Architecture Review Methodology</h4>
@@ -206,7 +206,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <li>Tools and data sources</li>
 <li>How it communicates with other agents</li>
 <li><strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?</li>
-<li><strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?</li>
+<li><strong>Framework choice:</strong> Which framework will you use? (Claude SDK, Claude Managed Agents, OpenAI Agents SDK?) Why is it the right fit?</li>
 </ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from Agentic Engineering principles means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
 </div>
@@ -280,7 +280,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 7. Timeline and risks (1 slide)
 8. Questions?</p>
 <div class="callout callout-pitfall"><p><strong>Common Pitfall:</strong> Slides that are text-heavy or too technical. Reviewers want to understand your vision in 15 minutes. Use diagrams. Show your system architecture visually. Practice beforehand and time yourself.</p>
-<p><strong>Pro Tip:</strong> In the Q&amp;A, be honest about unknowns. "We haven't decided on framework yet, but we're between CrewAI and LangGraph because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.</p>
+<p><strong>Pro Tip:</strong> In the Q&amp;A, be honest about unknowns. "We haven't decided on framework yet, but we're between Claude SDK and Claude Managed Agents because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.</p>
 </div>
 <h4 id="step-5-incorporate-feedback-and-finalize-thursdayfriday">Step 5: Incorporate Feedback and Finalize (Thursday–Friday)</h4>
 <p>After your presentation, you'll receive written feedback from reviewers focusing on:</p>
@@ -302,7 +302,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <ol><li><strong>Capstone Proposal</strong> (500–1000 words)</li><li><strong>Architecture Document</strong> (1500–2500 words)<ul><li><strong>Presentation Slides</strong> (PDF)<ul><li><strong>Peer Review Feedback Summary</strong> (1 page: what did you learn? what did you change?)</li></ul></li></ul></li></ol>
 <h4 id="sources-tools">Sources &amp; Tools</h4>
 <ul>
-<li><a href="frameworks.html">Framework Documentation</a> — Claude Agent SDK, CrewAI, LangGraph comparison</li>
+<li><a href="frameworks.html">Framework Documentation</a> — Claude SDK, Claude Managed Agents, OpenAI Agents SDK comparison</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Getting your development environment ready</li>
 <li><a href="reading.html">Reading List</a> — MITRE ATLAS, agentic patterns, responsible AI</li>
 </ul>
@@ -410,7 +410,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <p>On Day 1 of Week 15, teams finalize their production deployments. After the freeze, no changes until red team results are received. Deployment must include:</p>
 <ol>
 <li>Working security agent system (3+ agents with distinct IAM roles, real MCP connections)</li>
-<li>Full governance stack: IAM per-agent, Bedrock Guardrails, observability dashboard, SBOM</li>
+<li>Full governance stack: IAM per-agent, guardrails layer (NeMo Guardrails or equivalent), observability dashboard, SBOM</li>
 <li>Documentation package:
 <ul>
 <li>Architecture diagram (agents, tools, data flows)</li>
@@ -442,7 +442,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <thead><tr><th>OWASP Risk</th><th>What to test</th></tr></thead>
 <tbody>
 <tr><td>#1 Excessive Agency</td><td>Can any agent take actions beyond its stated scope? What's the blast radius of a single agent error? Try to exceed failure caps.</td></tr>
-<tr><td>#2 Insufficient Guardrails</td><td>Test Bedrock Guardrails with adversarial inputs from Unit 6. Can you bypass content filtering?</td></tr>
+<tr><td>#2 Insufficient Guardrails</td><td>Test the guardrails layer (NeMo Guardrails / system prompt defenses) with adversarial inputs from Unit 6. Can you bypass content filtering?</td></tr>
 <tr><td>#3 Insecure Tool Integration</td><td>Path traversal on file-reading tools. Command injection on bash-executing tools. Are inputs validated before execution?</td></tr>
 <tr><td>#4 Lack of Output Validation</td><td>Can you make the agent produce findings with fabricated evidence? Does output schema enforcement hold?</td></tr>
 <tr><td>#5 Prompt Injection</td><td>Inject via tool outputs. Inject via data the agent retrieves (RAG poisoning). Test indirect injection through MCP server responses.</td></tr>
@@ -566,7 +566,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <li>For each fix: what defense layer does it operate at? Is it inside or outside the reasoning loop? How do you verify it holds?</li>
 <li>Re-run the specific attacks that found the vulnerabilities — verify fixes hold</li>
 </ol>
-<div class="callout callout-tip"><p><strong>Scope the hardening realistically.</strong> Fixing an IAM misconfiguration, reconfiguring Bedrock Guardrails, or redeploying to AgentCore takes longer than fixing a code vulnerability. For infrastructure-level fixes, provide the fix plan + code change — your instructor will verify the approach is correct. What matters is that you understand what the fix is and why it addresses the finding.</p></div>
+<div class="callout callout-tip"><p><strong>Scope the hardening realistically.</strong> Fixing an IAM misconfiguration, reconfiguring a guardrails layer, or redeploying a containerized agent takes longer than fixing a code vulnerability. For infrastructure-level fixes, provide the fix plan + code change — your instructor will verify the approach is correct. What matters is that you understand what the fix is and why it addresses the finding.</p></div>
 <h4 id="afternoon-final-verification">Afternoon: Final Verification and Presentation Prep</h4>
 <ul>
 <li>PeaRL Delegated Autonomous promotion gate re-check with fixes applied:
@@ -574,7 +574,7 @@ Lambda is the fallback if AgentCore access is delayed. Your Strands code is iden
 <li>[ ] Every agent has its own IAM role</li>
 <li>[ ] No shared credentials</li>
 <li>[ ] Egress filtered to known domains</li>
-<li>[ ] Bedrock Guardrails active on input AND output</li>
+<li>[ ] Guardrails layer active on input AND output</li>
 <li>[ ] Observability dashboard shows all agent operations</li>
 <li>[ ] Failure caps configured on every agent</li>
 <li>[ ] Dependencies hash-pinned</li>
@@ -881,7 +881,7 @@ Your context library is not academic. Every pattern was discovered and tested th
 <table>
 <thead><tr><th>Component</th><th>Weight</th><th>Key Criteria</th></tr></thead>
 <tbody>
-<tr><td>Deployed System</td><td>25%</td><td>Works in production (AgentCore/Lambda), 3+ agents with distinct IAM roles, real MCP connections, Bedrock Guardrails configured</td></tr>
+<tr><td>Deployed System</td><td>25%</td><td>Works in production (cloud infrastructure/containers), 3+ agents with distinct IAM roles, real MCP connections, guardrails layer configured</td></tr>
 <tr><td>Security Governance Package</td><td>20%</td><td>Controls matrix complete and accurate, AIUC-1 mapped with evidence, PeaRL Delegated Autonomous gate verified, SBOM present</td></tr>
 <tr><td>Red Team Report (attacking)</td><td>20%</td><td>All 10 OWASP Agentic risks tested, OWASP AIVSS scored, defense layer classified, fixes recommended with implementation detail</td></tr>
 <tr><td>Hardening Response (defending)</td><td>15%</td><td>Critical/High findings fixed or documented fix plan provided, residual risk documented with rationale, verification evidence present</td></tr>
@@ -921,7 +921,7 @@ Your context library is not academic. Every pattern was discovered and tested th
 <h2 id="key-resources">Key Resources</h2>
 <ul>
 <li><a href="reading.html">Reading List</a> — MITRE ATLAS, agent frameworks, security hardening, responsible AI</li>
-<li><a href="frameworks.html">Frameworks Documentation</a> — Claude Agent SDK, CrewAI, LangGraph patterns</li>
+<li><a href="frameworks.html">Frameworks Documentation</a> — Claude SDK, Claude Managed Agents, OpenAI Agents SDK patterns</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Environment configuration, deployment, debugging</li>
 </ul>
 <hr/>
@@ -938,7 +938,7 @@ Your context library is not academic. Every pattern was discovered and tested th
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

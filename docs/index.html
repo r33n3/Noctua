@@ -64,7 +64,7 @@
 <strong>Why Claude Code — and what transfers</strong>
 <p>This course runs on Claude Code and the Claude Agent SDK. That's a deliberate choice, not a default. Claude Code offers the most mature agentic engineering environment for security practitioners in 2026: native CLAUDE.md configuration, MCP tool-calling architecture, built-in worktree support for isolated agent execution, and a sub-agent model that maps directly to production security workflows.</p>
 <p>A significant portion of what you learn here is not Claude-specific. The Think → Spec → Build → Retro cycle is workflow-agnostic. MCP is an open protocol with growing adoption across OpenAI, Google, and open-source stacks. System prompt governance, JSON output schemas, and RAG architecture are cross-vendor by definition. Unit 1 maps out exactly what transfers and what doesn't — so if your organization runs on Azure OpenAI, Google Vertex, or an open-source stack, you know your translation layer from day one.</p>
-<p><strong>The tradeoff:</strong> standardizing on one vendor's stack reduces cognitive overhead in labs but limits multi-vendor exposure. Semester 2 introduces CrewAI and LangGraph to partially address this.</p>
+<p><strong>The tradeoff:</strong> standardizing on one vendor's stack reduces cognitive overhead in labs but limits multi-vendor exposure. Semester 2 introduces Claude Managed Agents and the OpenAI Agents SDK to partially address this — providing direct comparison between two production-grade multi-agent platforms.</p>
 </div>
 <hr />
 <h2 id="whats-new-in-2026">What's New in 2026</h2>
@@ -80,7 +80,7 @@
 <p><strong>Mature Security Frameworks</strong> now exist for agentic systems: OWASP Top 10 for Agentic Apps (2026), NIST Cyber AI Profile (December 2025), and MITRE ATLAS cataloging 66 adversarial techniques.</p>
 </li>
 <li>
-<p><strong>Multi-Agent Orchestration</strong> is production-ready. Claude Agent SDK, CrewAI, LangGraph, and AutoGen/AG2 provide mature platforms for building agent teams at scale.</p>
+<p><strong>Multi-Agent Orchestration</strong> is production-ready. Claude Managed Agents, OpenAI Agents SDK, and AutoGen/AG2 provide mature platforms for building agent teams at scale.</p>
 </li>
 <li>
 <p><strong>Non-Human Identities (NHIs)</strong> outnumber human identities in enterprise systems by ratios typically ranging from 25:1 to over 100:1, creating new governance and security challenges.</p>
@@ -153,7 +153,7 @@
 <tr>
 <td><strong>Unit 5: Multi-Agent Orchestration</strong></td>
 <td>1-4</td>
-<td>Claude Agent SDK, CrewAI, LangGraph, AutoGen—designing agent teams for security operations</td>
+<td>Claude Managed Agents and OpenAI Agents SDK—comparing orchestration approaches, designing agent teams for security operations</td>
 <td>Build and evaluate multi-agent SOC and threat analysis systems</td>
 </tr>
 <tr>
@@ -209,10 +209,9 @@
 </ul>
 <h3 id="agent-orchestration-frameworks">Agent Orchestration Frameworks</h3>
 <ul>
-<li><strong>CrewAI</strong> — Role-based multi-agent teams with flexible orchestration</li>
-<li><strong>LangGraph</strong> — Stateful agent workflows with built-in state machines and persistence</li>
+<li><strong>Claude Managed Agents</strong> — Anthropic’s production multi-agent orchestration layer; builds on the Claude Agent SDK with managed infrastructure, tool use, and subagent delegation</li>
+<li><strong>OpenAI Agents SDK</strong> — Cross-platform agent development; used in Semester 2 for comparative multi-agent architecture study</li>
 <li><strong>AutoGen/AG2</strong> — Multi-agent conversation patterns and hierarchical teams</li>
-<li><strong>OpenAI Agents SDK</strong> — Cross-platform agent development and analysis</li>
 </ul>
 <h3 id="infrastructure-devsecops-pipeline">Infrastructure &amp; DevSecOps Pipeline</h3>
 <ul>
@@ -345,8 +344,8 @@
 <li><strong>Anthropic — "Building Agents with the Claude Agent SDK"</strong> (anthropic.com/engineering) — Official SDK documentation and patterns</li>
 <li><strong>Anthropic — "Effective Context Engineering for AI Agents"</strong> — Managing context windows and semantic retrieval</li>
 <li><strong>"Designing AI Agents"</strong> (emerging body of work from multiple researchers) — Agent architecture patterns</li>
-<li><strong>CrewAI Documentation</strong> (docs.crewai.com) — Role-based multi-agent framework</li>
-<li><strong>LangGraph Documentation</strong> (langchain-ai.github.io/langgraph) — State machines and workflow management</li>
+<li><strong>Anthropic — Claude Managed Agents</strong> (docs.anthropic.com/en/docs/agents) — Official documentation for Anthropic’s managed multi-agent orchestration platform</li>
+<li><strong>OpenAI Agents SDK</strong> (github.com/openai/openai-agents-python) — Open-source SDK for building cross-platform agent systems; used in Semester 2 for comparative architecture study</li>
 </ul>
 <h3 id="ai-security-adversarial-techniques">AI Security &amp; Adversarial Techniques</h3>
 <ul>
@@ -441,7 +440,7 @@
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude managed agents","openai agents sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

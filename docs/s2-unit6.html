@@ -44,6 +44,8 @@
 <p>The shift is profound: <strong>control flows through natural language, not system calls</strong>. This creates fundamentally new categories of vulnerabilities that traditional security models don't anticipate.</p>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> AI threats operate at the semantic and behavioral layer, not the syntactic layer. A prompt injection attack exploits the agent's understanding of language, not memory corruption. This requires entirely new defense paradigms. Agentic Engineering principles provide deep insight into how LLMs respond predictably to adversarial inputs—understanding these patterns is essential for both attack and defense.</p>
 </div>
+<div class="callout callout-warn"><strong>Attack surface shift with server-side tools:</strong> When tool execution moves to a hosted container (Claude Managed Agents), you lose direct visibility into tool inputs and outputs. An attacker who controls the system prompt or injects into the context can trigger tool calls you can't intercept client-side. Design your threat model accordingly: log the event stream, implement prompt injection defenses at the input boundary, and treat agent.tool_use events as your primary audit trail.
+</div>
 <p><strong>The Threat Taxonomy</strong></p>
 <p>Understanding the landscape begins with categorizing how agents can be compromised.</p>
 <blockquote>
@@ -3009,12 +3011,12 @@ Red Team Score: 100 (initial access) + 50 (5000 records × 1 point) + 50 (persis
 <li><strong><a href="resources/AGENT-DEV.md">Agent Development Guide</a></strong> — Claude Agent SDK patterns for red and blue team agents</li>
 </ul>
 <hr/>
-<div class="callout callout-tip"><p><strong>Looking ahead to Unit 8:</strong> The red team skills you develop this unit — adversarial inputs, prompt injection, IAM probing, guardrail bypass attempts — will be applied to production Strands/AWS deployments in the Unit 8 capstone. You will attack another team's live AgentCore deployment, not a Claude Code prototype. Production red teaming tests different things:</p>
+<div class="callout callout-tip"><p><strong>Looking ahead to Unit 8:</strong> The red team skills you develop this unit — adversarial inputs, prompt injection, IAM probing, guardrail bypass attempts — will be applied to production Claude API deployments in the Unit 8 capstone. You will attack another team's live deployed system, not a Claude Code prototype. Production red teaming tests different things:</p>
 <ul>
 <li>IAM misconfigurations — agent roles with excessive permissions (don't exist in Claude Code)</li>
-<li>Network egress — can the agent call a C2 domain if Guardrails don't block it?</li>
-<li>Bedrock Guardrails bypass — the same adversarial inputs you tested here, against a managed content filter</li>
-<li>Observability gaps — can the blue team see your attack in their CloudWatch dashboard?</li>
+<li>Network egress — can the agent call a C2 domain if egress rules don't block it?</li>
+<li>Content filter bypass — the same adversarial inputs you tested here, against the Claude API system prompt and NeMo Guardrails layer</li>
+<li>Observability gaps — can the blue team see your attack in their observability dashboard?</li>
 <li>Supply chain surface — are the target team's dependencies hash-pinned?</li>
 </ul>
 <p>Keep your red team methodology notes — you will apply OWASP Agentic Top 10 systematically in Unit 8.</p></div>
@@ -3031,7 +3033,7 @@ Red Team Score: 100 (initial access) + 50 (5000 records × 1 point) + 50 (persis
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

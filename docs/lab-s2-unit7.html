@@ -14,7 +14,7 @@
 
 <h1>Lab Guide: Unit 7 — Production Security Engineering</h1>
 <p><strong>CSEC 602 | Weeks 9–12 | Semester 2</strong></p>
-<p>Transform your agentic systems from proof-of-concept to production-grade: supply chain security, NHI governance, observability, and containerized deployment with CI/CD.</p>
+<p>Transform your agentic systems from proof-of-concept to production-grade: supply chain security, NHI governance, observability, and containerized deployment with CI/CD. Deploy a Claude API-powered security agent to AWS infrastructure using ECS, Secrets Manager, and VPC network controls.</p>
 
 <div class="callout callout-tip">
   <strong>Claude as your governance reviewer:</strong> Use Claude to review your governance artifacts before filing them. Paste your AIUC-1 assessment and ask: "What risk did I underestimate?" Production regrets are expensive.
@@ -367,10 +367,14 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 
 # Each agent in Strands gets its own IAM role — not shared credentials
 # IAM policy for soc-recon-001 (threat intelligence analyst):
-# Allow: bedrock:InvokeModel (for LLM calls)
+# Allow: secretsmanager:GetSecretValue on noctua/soc-agent/* (for ANTHROPIC_API_KEY)
 # Allow: execute-api:Invoke on threat-intel-api/* (NVD, IP reputation)
 # Allow: logs:PutLogEvents (for audit trail)
 # Deny: everything else (s3:*, iam:*, ec2:*, database writes)
+#
+# Note: Direct API keys to external providers are simpler to permission
+# than managed AI services — no service-specific IAM actions needed,
+# just standard Secrets Manager read permissions.
 
 # Write the JSON IAM policy for your recon agent:
 cat > iam-policy-recon.json << 'EOF'
@@ -379,8 +383,8 @@ cat > iam-policy-recon.json << 'EOF'
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": ["bedrock:InvokeModel"],
-      "Resource": "arn:aws:bedrock:*::foundation-model/anthropic.*"
+      "Action": ["secretsmanager:GetSecretValue"],
+      "Resource": "arn:aws:secretsmanager:*:*:secret:noctua/soc-agent/*"
     },
     {
       "Effect": "Allow",
@@ -401,8 +405,17 @@ EOF
         <div class="step-desc">Migrate one tool from your NHI registry into a Strands agent. Connect your existing MCP server — no modification needed. Run it locally first, verify the output matches your Claude Code version, then verify the <code>@tool</code> decorator enforces the same input validation as your PreToolUse hook did.</div>
       </div></label>
       <div class="code-block" data-collapsible data-collapsed="true" data-label="Strands Triage Agent with MCP + Tool Validation"><pre><code>from strands import Agent, tool
-from strands.models import BedrockModel
 from strands.tools.mcp import MCPClient
+import anthropic
+import boto3
+import json
+import os
+
+# Retrieve ANTHROPIC_API_KEY from AWS Secrets Manager
+def get_secret(secret_name: str) -> str:
+    client = boto3.client('secretsmanager', region_name='us-east-1')
+    response = client.get_secret_value(SecretId=secret_name)
+    return json.loads(response['SecretString'])['ANTHROPIC_API_KEY']
 
 # Connect your existing MCP server — same protocol, no changes needed
 mcp_client = MCPClient(
@@ -422,8 +435,11 @@ def validate_alert_input(alert_data: dict) -> dict:
         raise ValueError(f"Missing required alert fields: {missing}")
     return alert_data
 
+# Direct Claude API call using key from Secrets Manager
+api_key = get_secret("noctua/soc-agent/api-keys")
+claude_client = anthropic.Anthropic(api_key=api_key)
+
 agent = Agent(
-    model=BedrockModel(model_id="anthropic.claude-sonnet-4-6-20250514-v1:0"),
     tools=[mcp_client, validate_alert_input],
     system_prompt="""You are a security triage agent.
     NEVER execute remediation — only report findings with evidence."""
@@ -551,7 +567,7 @@ with tracer.start_as_current_span("recon_agent") as span:
 <div class="week-header"><span class="week-badge">WEEK 12</span><span class="week-sub">Lab: Dockerfile, Container Scanning &amp; CI/CD Security Gates</span></div>
 
 <div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production via AWS AgentCore.</p></div>
-<div class="callout callout-warn"><p><strong>Pre-capstone checkpoint — do this now:</strong> Your Unit 8 capstone requires a live deployment on AWS AgentCore. Verify you have Bedrock model access before Week 13 starts. Run the test below. If it fails, contact your instructor immediately — Bedrock access approval can take 24–48 hours and cannot be expedited on Week 13 Day 1.</p></div>
+<div class="callout callout-warn"><p><strong>Pre-capstone checkpoint — do this now:</strong> Your Unit 8 capstone requires a live deployment on AWS ECS. Verify your ANTHROPIC_API_KEY is stored in AWS Secrets Manager and your container can retrieve it before Week 13 starts. Run the test below. If it fails, check your IAM role permissions on the Secrets Manager secret.</p></div>
 
 <div class="quiz-block" id="quiz-u7w12">
   <h4> Knowledge Check — Week 12</h4>
@@ -683,38 +699,45 @@ jobs:
     <div class="lab-step" id="step-u7w12-6">
       <label><input type="checkbox" onchange="toggleStep('u7w12-6',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 6: Verify Bedrock access — pre-capstone checkpoint</div>
-        <div class="step-desc">Confirm your AWS account can invoke Claude via Bedrock. This is required before Week 13. If this fails, open a support case now — do not wait.</div>
+        <div class="step-title">Step 6: Verify Claude API access via Secrets Manager — pre-capstone checkpoint</div>
+        <div class="step-desc">Confirm your AWS Secrets Manager secret is accessible from your container environment and that the ANTHROPIC_API_KEY it contains is valid. This is required before Week 13. If this fails, check your IAM role's Secrets Manager permissions — do not wait.</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install strands-agents
+      <div class="code-block"><pre><code>pip install anthropic boto3
 
-# Test Bedrock access — run this now
+# Test Claude API access via Secrets Manager — run this now
 python3 - << 'EOF'
-from strands import Agent
-from strands.models import BedrockModel
+import anthropic
+import boto3
+import json
 
 try:
-    agent = Agent(
-        model=BedrockModel(model_id="anthropic.claude-sonnet-4-6-20250514-v1:0"),
-        system_prompt="You are a test agent. Respond with 'Bedrock access confirmed.'"
+    # Retrieve key from Secrets Manager (same path as production)
+    sm = boto3.client('secretsmanager', region_name='us-east-1')
+    secret = json.loads(sm.get_secret_value(SecretId='noctua/soc-agent/api-keys')['SecretString'])
+    api_key = secret['ANTHROPIC_API_KEY']
+
+    client = anthropic.Anthropic(api_key=api_key)
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=64,
+        messages=[{"role": "user", "content": "Respond with 'Claude API access confirmed.' only."}]
     )
-    result = agent("Confirm access")
-    print("SUCCESS:", result)
+    print("SUCCESS:", response.content[0].text)
 except Exception as e:
-    print("FAILED — open a support case immediately:", e)
+    print("FAILED — check IAM role Secrets Manager permissions:", e)
 EOF</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w12-7">
       <label><input type="checkbox" onchange="toggleStep('u7w12-7',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 7: Deploy your Strands agent to AWS AgentCore</div>
-        <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 to AgentCore. AgentCore handles the managed runtime — you configure IAM role, Bedrock Guardrails, and Secrets Manager. This is the production version of your Claude Code prototype.</div>
+        <div class="step-title">Step 7: Deploy your agent to AWS ECS with Secrets Manager</div>
+        <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 as a containerized ECS task. ECS handles the managed runtime — you configure the IAM role, Secrets Manager secret, and VPC network controls. This is the production version of your Claude Code prototype.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-collapsed="true" data-label="AgentCore Deployment — Secrets Manager + IAM + Bedrock Guardrails"><pre><code># Move credentials from noctua-keystore to AWS Secrets Manager
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="ECS Deployment — Secrets Manager + IAM + VPC"><pre><code># Store ANTHROPIC_API_KEY in AWS Secrets Manager
 aws secretsmanager create-secret \
   --name "noctua/soc-agent/api-keys" \
-  --secret-string '{"NVD_API_KEY": "your-key-here"}'
+  --secret-string '{"ANTHROPIC_API_KEY": "your-key-here", "NVD_API_KEY": "your-key-here"}'
 
 # Create IAM role for the agent (use the policy from Week 10 Step 6)
 aws iam create-role \
@@ -726,11 +749,26 @@ aws iam put-role-policy \
   --policy-name ReconLeastPrivilege \
   --policy-document file://iam-policy-recon.json
 
-# Configure Bedrock Guardrails (in AWS console — Bedrock → Guardrails → Create)
-# Block: PII in output, credential patterns, prompt injection, off-topic requests
+# Register ECS task definition — inject secret as environment variable
+# at launch time (never stored in the image or task config in plaintext)
+aws ecs register-task-definition \
+  --cli-input-json file://task-definition.json
+# task-definition.json includes:
+# "secrets": [{"name": "ANTHROPIC_API_KEY",
+#              "valueFrom": "arn:aws:secretsmanager:...:noctua/soc-agent/api-keys:ANTHROPIC_API_KEY::"}]
 
-# Deploy via AgentCore (requires agentcore CLI or AWS console)
-# Your Strands agent code runs as-is — AgentCore is the runtime</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Deploy ECS service into your VPC
+aws ecs create-service \
+  --cluster noctua-soc \
+  --service-name soc-recon \
+  --task-definition soc-recon:1 \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-xxx],securityGroups=[sg-xxx]}"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>This pattern is provider-agnostic.</strong> You're deploying a container that calls an external API via a key in Secrets Manager. Swap the SDK and the key to use OpenAI, Google, or any other provider. The IAM policies, networking, ECS task definition, and deployment pipeline are identical.
     </div>
 
     <div class="callout callout-key">
@@ -751,9 +789,9 @@ aws iam put-role-policy \
       </div></label>
       <div class="code-block"><pre><code># PeaRL Delegated Autonomous promotion gate — verify each item:
 # [ ] Agent has its own IAM role (not shared with other agents)
-# [ ] No hardcoded credentials (all in Secrets Manager)
-# [ ] Egress filtered (security group allows only known API domains)
-# [ ] Bedrock Guardrails active on input AND output
+# [ ] No hardcoded credentials (ANTHROPIC_API_KEY in Secrets Manager, not image)
+# [ ] Egress filtered (security group allows only api.anthropic.com and known API domains)
+# [ ] Output validation active (NeMo Guardrails or equivalent — applied in agent code)
 # [ ] CloudWatch dashboard shows agent operations (OTel → CloudWatch)
 # [ ] max_iterations configured on the agent (failure cap)
 # [ ] dependencies hash-pinned (requirements-pinned.txt present)
@@ -867,7 +905,7 @@ aws iam put-role-policy \
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
-    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
+    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps. Deploys Claude API via Secrets Manager on ECS.",tags:["unit7","production","security","nhi","spiffe","claude api","ecs"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
     // Key topics
     {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},

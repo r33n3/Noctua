@@ -34,7 +34,7 @@ At its foundation sits **Claude Code**, Anthropic's interactive IDE that seamles
 >
 > **Worktrees** are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.
 >
-> **Orchestrator + specialized worker** is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), LangGraph, AutoGen, or CrewAI — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.
+> **Orchestrator + specialized worker** is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), Claude Managed Agents, OpenAI Agents SDK, or AutoGen — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.
 
 > **Knowledge Check**
 > What's the difference between spinning up a subagent and using a worktree in Claude Code? Give a scenario where each is clearly the right choice — be specific about what you're trying to accomplish and why the other approach wouldn't work as well.

@@ -116,7 +116,7 @@ The six stages of dark factory maturity, and what each looks like in the field:
 | Stage | Name | What you'll see | Where security work starts |
 |---|---|---|---|
 | **1** | Ad-Hoc Experimentation | Personal API keys in `.env` files. Individual scripts. No shared infrastructure. | Education, secrets scanning. No platform to govern yet. |
-| **2** | Siloed Pilots | Team-owned cloud environments. LangChain projects. Manual deployments. Inconsistent credential practices. | IAM cleanup, S3 access controls, basic input validation. |
+| **2** | Siloed Pilots | Team-owned cloud environments. SDK-based AI projects. Manual deployments. Inconsistent credential practices. | IAM cleanup, cloud access controls, basic input validation. |
 | **3** | Platform Foundation | Central LLM gateway. Emerging agent registry. Shared containers. Basic CI/CD. | Security gates in CI/CD, per-agent IAM, NHI governance begins. |
 | **4** | Governed Scale | 50+ agents in production. Automated security gates. Full observability. Per-agent credential scoping. | Red teaming, supply chain hardening, workload identity, behavioral monitoring. |
 | **5** | Democratized Creation | No-code tools for non-engineers. Agent marketplace. Governance embedded in creation. | Platform security, marketplace integrity, untrained-user threat surface. |

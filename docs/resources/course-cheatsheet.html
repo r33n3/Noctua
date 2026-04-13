@@ -1002,6 +1002,245 @@ curl -o ~/.claude/commands/check-antipatterns.md \<br>
   </div><!-- /cs-grid -->
 </div><!-- /cs-page side 3 -->
 
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDE 4 — SDK & FRAMEWORK REFERENCE
+════════════════════════════════════════════════════════════════ -->
+<div class="cs-page">
+
+  <div class="cs-header">
+    <div>
+      <div class="cs-header-title">Noctua — AI Security Engineering</div>
+      <div class="cs-header-sub">Course Reference · noctua.ai-security.dev</div>
+    </div>
+    <div class="cs-header-side">Side 4 · SDK &amp; Frameworks</div>
+  </div>
+
+  <div class="cs-grid">
+
+    <!-- ── COL 1: SURFACE SELECTION + CLAUDE API ── -->
+    <div class="cs-col col-purple">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Surface Selection — Which SDK to Use</div>
+        <table class="cs-table">
+          <thead><tr><th>Use Case</th><th>Surface</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Single call — classify, summarize, extract</td>
+              <td class="label">Claude API</td>
+            </tr>
+            <tr>
+              <td>Multi-step workflow — you control the loop</td>
+              <td class="label">Claude SDK + tool use</td>
+            </tr>
+            <tr>
+              <td>Stateful agent — Anthropic hosts everything</td>
+              <td class="label">Claude Managed Agents</td>
+            </tr>
+            <tr>
+              <td>Cross-provider / Runner-managed loop</td>
+              <td class="label">OpenAI Agents SDK</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Pick the lowest surface that satisfies your requirements. Managed Agents and OpenAI SDK add infrastructure — don't use them when a direct API call will do.</div>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Claude API — Single Call</div>
+        <div class="cs-code">
+          <span class="comment"># One request → one response</span><br>
+          <span class="key">import</span> anthropic<br><br>
+          client = anthropic.Anthropic()<br>
+          response = client.messages.create(<br>
+          &nbsp;&nbsp;<span class="key">model</span>=<span class="str">"claude-sonnet-4-5"</span>,<br>
+          &nbsp;&nbsp;<span class="key">max_tokens</span>=<span class="val">1024</span>,<br>
+          &nbsp;&nbsp;<span class="key">messages</span>=[{<span class="str">"role"</span>: <span class="str">"user"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"content"</span>: prompt}]<br>
+          )<br>
+          result = response.content[<span class="val">0</span>].text
+        </div>
+        <ul class="cs-list" style="margin-top:4px;">
+          <li>Best for: classification, summarization, extraction</li>
+          <li>No loop, no state, no tool execution</li>
+          <li>Add <code>cache_control</code> on repeated system prompts to cut 90% of input cost</li>
+        </ul>
+      </div>
+
+      <hr class="cs-divider">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Claude SDK — Agentic Loop (you write the loop)</div>
+        <div class="cs-code">
+          <span class="comment"># You drive the tool-use loop</span><br>
+          <span class="key">while</span> response.stop_reason == <span class="str">"tool_use"</span>:<br>
+          &nbsp;&nbsp;tool_call = get_tool_use_block(response)<br>
+          &nbsp;&nbsp;result = dispatch_tool(tool_call)<br>
+          &nbsp;&nbsp;messages.append(tool_result(result))<br>
+          &nbsp;&nbsp;response = client.messages.create(...)<br>
+          <span class="comment"># loop ends when stop_reason == "end_turn"</span>
+        </div>
+        <ul class="cs-list" style="margin-top:4px;">
+          <li>You own retry logic, state, and loop termination</li>
+          <li>Tools are local Python functions — full control</li>
+          <li>Right choice when tool logic must run in your environment</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ── COL 2: CLAUDE MANAGED AGENTS ── -->
+    <div class="cs-col col-teal">
+
+      <div class="cs-section">
+        <div class="cs-section-title">Claude Managed Agents — Quick Reference</div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.55);margin:0 0 8px;">Anthropic hosts the agentic loop. Tools (bash, read, write, web, etc.) execute on Anthropic infrastructure. You create once, run many times via sessions.</p>
+
+        <div style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">ONE-TIME SETUP</div>
+        <div class="cs-code">
+          <span class="comment"># Create the agent</span><br>
+          agent = client.beta.agents.create(<br>
+          &nbsp;&nbsp;<span class="key">name</span>=<span class="str">"security-analyst"</span>,<br>
+          &nbsp;&nbsp;<span class="key">model</span>=<span class="str">"claude-sonnet-4-5"</span>,<br>
+          &nbsp;&nbsp;<span class="key">system</span>=system_prompt,<br>
+          &nbsp;&nbsp;<span class="key">tools</span>=[{<span class="str">"type"</span>: <span class="str">"agent_toolset_20260401"</span>}]<br>
+          )<br><br>
+          <span class="comment"># Create an execution environment</span><br>
+          env = client.beta.environments.create(<br>
+          &nbsp;&nbsp;<span class="key">name</span>=<span class="str">"analyst-env"</span>,<br>
+          &nbsp;&nbsp;<span class="key">config</span>={...}<br>
+          )
+        </div>
+
+        <div style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">PER-RUN</div>
+        <div class="cs-code">
+          <span class="comment"># Start a session</span><br>
+          session = client.beta.sessions.create(<br>
+          &nbsp;&nbsp;<span class="key">agent</span>=agent.id,<br>
+          &nbsp;&nbsp;<span class="key">environment_id</span>=env.id<br>
+          )<br><br>
+          <span class="comment"># Stream events and send input</span><br>
+          <span class="key">with</span> session.events.stream() <span class="key">as</span> stream:<br>
+          &nbsp;&nbsp;session.events.send(<span class="str">"Analyze this alert: ..."</span>)<br>
+          &nbsp;&nbsp;<span class="key">for</span> event <span class="key">in</span> stream:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;handle(event)
+        </div>
+
+        <div style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">STREAM EVENTS TO HANDLE</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">agent.message</td><td>Text output from the agent</td></tr>
+            <tr><td class="label">agent.tool_use</td><td>Tool call in progress (bash, read, write, web, etc.)</td></tr>
+            <tr><td class="label">session.status_idle</td><td>Agent has finished the current turn — safe to send next input</td></tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:9px;font-weight:700;color:#5eead4;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">BUILT-IN TOOLSET</div>
+        <div class="cs-code">
+          <span class="comment"># agent_toolset_20260401 includes:</span><br>
+          <span class="comment"># bash · read · write · edit</span><br>
+          <span class="comment"># glob · grep · web_fetch · web_search</span><br><br>
+          {<span class="str">"type"</span>: <span class="str">"agent_toolset_20260401"</span>}
+        </div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Tools execute on Anthropic infrastructure — no local process needed. Audit all tool invocations via <code>agent.tool_use</code> events.</div>
+      </div>
+
+    </div>
+
+    <!-- ── COL 3: OPENAI AGENTS SDK ── -->
+    <div class="cs-col col-gold">
+
+      <div class="cs-section">
+        <div class="cs-section-title">OpenAI Agents SDK — Quick Reference</div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.55);margin:0 0 8px;">Runner executes the agentic loop in your process. Tools are local Python functions decorated with <code>@function_tool</code>. Cross-provider: works with any OpenAI-compatible model endpoint.</p>
+
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">ONE-TIME SETUP</div>
+        <div class="cs-code">
+          <span class="key">from</span> agents <span class="key">import</span> Agent, Runner, function_tool<br><br>
+          @function_tool<br>
+          <span class="key">def</span> scan_alert(alert_id: str) -> str:<br>
+          &nbsp;&nbsp;<span class="comment"># your tool logic here</span><br>
+          &nbsp;&nbsp;<span class="key">return</span> result<br><br>
+          analyst = Agent(<br>
+          &nbsp;&nbsp;<span class="key">name</span>=<span class="str">"SecurityAnalyst"</span>,<br>
+          &nbsp;&nbsp;<span class="key">instructions</span>=system_prompt,<br>
+          &nbsp;&nbsp;<span class="key">model</span>=<span class="str">"gpt-4o"</span>,<br>
+          &nbsp;&nbsp;<span class="key">tools</span>=[scan_alert]<br>
+          )
+        </div>
+
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">PER-RUN</div>
+        <div class="cs-code">
+          <span class="comment"># Synchronous — blocks until done</span><br>
+          result = Runner.run_sync(analyst, <span class="str">"input"</span>)<br>
+          <span class="key">print</span>(result.final_output)<br><br>
+          <span class="comment"># Streamed — handle events as they arrive</span><br>
+          <span class="key">async with</span> Runner.run_streamed(<br>
+          &nbsp;&nbsp;analyst, <span class="str">"input"</span>) <span class="key">as</span> stream:<br>
+          &nbsp;&nbsp;<span class="key">async for</span> chunk <span class="key">in</span> stream:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;handle(chunk)
+        </div>
+
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">MULTI-AGENT PATTERNS</div>
+        <div class="cs-code">
+          <span class="comment"># Handoff: analyst passes to escalation agent</span><br>
+          analyst = Agent(<br>
+          &nbsp;&nbsp;...,<br>
+          &nbsp;&nbsp;<span class="key">handoffs</span>=[escalation_agent]<br>
+          )<br><br>
+          <span class="comment"># As tool: treat another agent as a callable</span><br>
+          triage = Agent(<br>
+          &nbsp;&nbsp;...,<br>
+          &nbsp;&nbsp;<span class="key">tools</span>=[escalation_agent.as_tool(<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">tool_name</span>=<span class="str">"escalate"</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">tool_description</span>=<span class="str">"Escalate to L2"</span><br>
+          &nbsp;&nbsp;)]<br>
+          )
+        </div>
+
+        <hr class="cs-divider">
+
+        <div class="cs-section-title">Managed Agents vs OpenAI SDK — Key Difference</div>
+        <table class="cs-table">
+          <thead><tr><th>Dimension</th><th>Claude Managed Agents</th><th>OpenAI Agents SDK</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="label">Loop execution</td>
+              <td>Anthropic infrastructure</td>
+              <td>Your process (client-side)</td>
+            </tr>
+            <tr>
+              <td class="label">Tool execution</td>
+              <td>Server-side (remote)</td>
+              <td>Client-side (local)</td>
+            </tr>
+            <tr>
+              <td class="label">Model provider</td>
+              <td>Anthropic only</td>
+              <td>Any OpenAI-compatible endpoint</td>
+            </tr>
+            <tr>
+              <td class="label">State management</td>
+              <td>Sessions managed by Anthropic</td>
+              <td>You manage state and retries</td>
+            </tr>
+            <tr>
+              <td class="label">When to use</td>
+              <td>Persistent, stateful agents; no local infra needed</td>
+              <td>Cross-provider; tools must run locally; full loop control</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div><!-- /cs-grid -->
+</div><!-- /cs-page side 4 -->
+
 </div></main>
 
 <script src="../labs.js"></script>

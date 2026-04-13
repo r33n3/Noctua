@@ -49,8 +49,7 @@
       <h3>Additional Accounts (Free Tier Sufficient)</h3>
       <ul>
         <li><strong>GitHub (Required)</strong> — all course work is Git-based. SSH key authentication recommended. <a href="https://github.com" target="_blank">github.com</a></li>
-        <li><strong>AWS (Required for Semester 2)</strong> — free tier sufficient. Used for ECR, ECS, and IaC deployments. Not required for Semester 1. <a href="https://aws.amazon.com/free/" target="_blank">aws.amazon.com/free</a></li>
-        <li><strong>OpenAI API (Semester 2)</strong> — free tier with initial credit sufficient for multi-vendor comparative labs. <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
+        <li><strong>OpenAI Platform (Unit 5 only)</strong> — free tier with initial credit sufficient for the OpenAI Agents SDK comparison week. <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
         <li><strong>Ollama (Free, Local)</strong> — open-weight model labs and sensitive data scenarios. No account required.</li>
       </ul>
     </div>
@@ -160,26 +159,7 @@ sudo apt update &amp;&amp; sudo apt install gh</code></pre>
 gh --version</code></pre>
       </div>
 
-      <h3 id="step-aws">Step 6: Install AWS CLI v2</h3>
-      <p>Used for ECR and ECS operations when promoting containerized prototypes to cloud (Semester 2).</p>
-      <ul>
-        <li><strong>macOS:</strong> <code>brew install awscli</code></li>
-        <li><strong>Windows:</strong> Download from <a href="https://aws.amazon.com/cli/" target="_blank">aws.amazon.com/cli</a></li>
-        <li><strong>Linux:</strong></li>
-      </ul>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip &amp;&amp; sudo ./aws/install</code></pre>
-      </div>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>aws configure  # Enter Access Key ID, Secret, region (us-east-1), output format (json)
-aws --version
-aws sts get-caller-identity  # Verify authentication</code></pre>
-      </div>
-
-      <h3 id="step-claude">Step 7: Install Claude Code CLI</h3>
+      <h3 id="step-claude">Step 6: Install Claude Code CLI</h3>
       <p>The Claude Code CLI is the primary interface for autonomous development in this course.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -329,31 +309,46 @@ pip-audit</code></pre>
 
     <!-- ── MULTI-VENDOR FRAMEWORKS ── -->
     <div class="lab-section" id="section-frameworks">
-      <h2>Multi-Vendor Framework Setup (Semester 2)</h2>
-      <p>Semester 2 introduces frameworks for building multi-vendor security orchestration. These allow you to build agents that work with multiple LLMs and security platforms. Install these before starting Unit 5.</p>
+      <h2>Agent Framework Setup (Semester 2, Unit 5)</h2>
+      <p>Unit 5 compares three agent harnesses against the same security scanning workload. Install these before starting Unit 5. All three use the MASS 7-agent DAG from <code>tools/mass/</code> in the course repo.</p>
 
-      <h3>CrewAI</h3>
-      <p>Role-based agent teams with task delegation.</p>
+      <h3>Claude SDK (Week 1 — already installed)</h3>
+      <p>Custom agent loop using the Anthropic Python SDK. Installed in Week 4 of Semester 1.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>pip install crewai crewai-tools
-python -c "import crewai; print(crewai.__version__)"</code></pre>
+        <pre><code>pip install anthropic pyyaml httpx
+python -c "import anthropic; print(anthropic.__version__)"</code></pre>
       </div>
 
-      <h3>LangGraph</h3>
-      <p>Stateful, multi-step agent workflows with graph-based execution.</p>
+      <h3>OpenAI Agents SDK (Week 2)</h3>
+      <p>Runner-managed loop in your process. <code>Agent</code> + <code>@function_tool</code> + <code>Runner.run_sync()</code>. Requires an OpenAI Platform API key.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>pip install langgraph langchain-anthropic langchain-openai langchain-community
-python -c "import langgraph; print('LangGraph installed')"</code></pre>
+        <pre><code>pip install openai-agents pydantic
+python -c "from agents import Agent; print('OpenAI Agents SDK installed')"</code></pre>
       </div>
 
-      <h3>AutoGen / AG2</h3>
-      <p>Multi-agent conversation patterns (AutoGen is now AG2).</p>
+      <h3>Claude Managed Agents (Week 3)</h3>
+      <p>Anthropic-hosted loop. Deploy agents once; run per-session scans. Requires only your existing Anthropic API key.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>pip install pyautogen-agentchat
-python -c "import autogen_agentchat; print('AG2 installed')"</code></pre>
+        <pre><code># No additional install — uses the anthropic package already installed
+# Deploy the MASS agents:
+cd tools/mass/claude-managed-agents
+python deploy.py deploy</code></pre>
+      </div>
+
+      <h3>MASS 2.0 — Course Security Tool</h3>
+      <p>The MASS 7-agent security scanner is included in the course repo at <code>tools/mass/</code>. Both implementations (Claude Managed Agents and OpenAI Agents SDK) are ready to run and extend.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code># Verify MASS tools are present
+ls tools/mass/claude-managed-agents/
+ls tools/mass/openai-sdk-agents/</code></pre>
+      </div>
+      <div class="callout callout-info">
+        <strong>Where MASS appears in the course</strong>
+        <p>Unit 4: Study the orchestrator DAG as a reference architecture. Unit 5: Run both implementations against the 10-incident test suite for the framework comparison. Unit 6: Use MASS to red-team your own agent. Unit 7: Deploy MASS; study its own production security posture. Unit 8: Extend MASS or build a governance layer on top for the capstone.</p>
       </div>
 
       <h3>Ollama (Local Models)</h3>
@@ -454,18 +449,15 @@ git push origin main</code></pre>
       <h3>The Promotion Path</h3>
       <p><strong>Local Development (Docker Desktop)</strong> — every prototype starts as a containerized application on Docker Desktop. From Week 1, containerize agents with a <code>Dockerfile</code> and <code>docker-compose.yml</code>. This ensures reproducibility, isolation, and a clean path to cloud deployment.</p>
       <p><strong>Version Control &amp; CI (GitHub + gh CLI)</strong> — all code lives in GitHub. GitHub Actions handles automated testing, linting, and security scanning on every push.</p>
-      <p><strong>Container Registry (ECR)</strong> — when a prototype graduates from local Docker to cloud deployment, images are pushed to Amazon ECR:</p>
+      <p><strong>Container Registry</strong> — when a prototype graduates from local Docker to cloud deployment, images are pushed to a container registry (GitHub Container Registry for this course). Tag and push your image, then deploy via your cloud provider's container service.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code># Authenticate Docker to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com
-
-# Tag and push
-docker tag my-agent:latest &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest
-docker push &lt;account&gt;.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest</code></pre>
+        <pre><code># Push to GitHub Container Registry
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+docker tag my-agent:latest ghcr.io/USERNAME/my-agent:latest
+docker push ghcr.io/USERNAME/my-agent:latest</code></pre>
       </div>
-      <p><strong>Container Orchestration (ECS)</strong> — production deployments use Amazon ECS. Students define task definitions, services, and load balancers — first via CLI, then via Infrastructure as Code.</p>
-      <p><strong>Infrastructure as Code</strong> — production infrastructure is defined in code (CloudFormation or Terraform), not clicked in consoles. This ensures repeatability, auditability, and version-controlled infrastructure changes.</p>
+      <p><strong>Infrastructure as Code</strong> — production infrastructure is defined in code (Terraform or Pulumi), not clicked in consoles. This ensures repeatability, auditability, and version-controlled infrastructure changes. Unit 7 covers deploying your agent to a cloud provider of your choice.</p>
 
       <h3>Security Gates</h3>
       <ul>
@@ -513,27 +505,25 @@ services:
       <h2>Course Security Research Platforms</h2>
 
       <h3>MASS (Model &amp; Application Security Suite)</h3>
-      <p>MASS is an AI security tool demonstrating real approaches to security assessment and compliance in production AI deployments. You will study how MASS approaches vulnerability scanning, compliance mapping, and attack surface analysis — then use Claude Code to implement your own security assessment capabilities.</p>
+      <p>MASS is a production-grade 7-agent AI security scanner included in this course repo at <code>tools/mass/</code>. It scans AI agent systems for vulnerabilities: prompt injection, jailbreaks, secrets, MCP misconfigs, agentic topology risks, and compliance gaps. It produces structured findings, a tribunal verdict, and deployable security policies (Cedar, Claude API guardrails, LiteLLM, nginx, NeMo).</p>
 
-      <p><strong>What MASS Teaches (Source Code to Study):</strong></p>
-      <p>Study the MASS repository at <a href="https://github.com/r33n3/MASS" target="_blank">github.com/r33n3/MASS</a> to understand 12 analyzer architectural patterns:</p>
+      <p><strong>Two implementations — same DAG, different harness:</strong></p>
       <ul>
-        <li>Input validation, prompt injection, output poisoning, model behavior</li>
-        <li>Data leakage, dependency, configuration, compliance</li>
-        <li>Governance, threat modeling, risk assessment, remediation recommendation</li>
+        <li><code>tools/mass/claude-managed-agents/</code> — Anthropic-hosted loop. Deploy once with <code>deploy.py</code>; run scans as sessions.</li>
+        <li><code>tools/mass/openai-sdk-agents/</code> — Runner-managed loop in your process. <code>python 01-orchestrator.py /path/to/scan/target</code></li>
       </ul>
 
-      <p><strong>Compliance Framework Mapping (Study Patterns):</strong></p>
+      <p><strong>What MASS demonstrates (source code to study):</strong></p>
       <ul>
-        <li><strong>OWASP LLM Top 10</strong> — architectural pattern for vulnerability classification</li>
-        <li><strong>MITRE ATLAS</strong> — technique mapping patterns for AI threat modeling</li>
-        <li><strong>NIST AI RMF</strong> — risk management framework integration patterns</li>
-        <li><strong>EU AI Act</strong> — regulatory mapping patterns</li>
+        <li>Orchestrator DAG pattern — Phase 1–9 pipeline with parallel workers, conditional red team, parallel tribunal</li>
+        <li>Tribunal aggregation — 3 judges with weighted scoring (security 0.40, remediation 0.30, evidence 0.30)</li>
+        <li>Policy generation — Cedar, Claude API guardrails, LiteLLM config, nginx config, NeMo Guardrails colang</li>
+        <li>OWASP LLM Top 10, MITRE ATLAS, NIST AI RMF, AIUC-1 compliance mapping</li>
       </ul>
 
       <div class="callout callout-info">
-        <strong>How to use MASS in this course</strong>
-        <p>1. Clone and review the 12 analyzers' implementation. 2. Understand how MASS structures modular security functions. 3. Build your own security analyzers using similar patterns in Claude Code. Students implement their own analyzers inspired by MASS patterns rather than running MASS directly.</p>
+        <strong>How MASS is used across the course</strong>
+        <p>Unit 4: Study the orchestrator DAG as a reference architecture before building your own. Unit 5: Run both implementations against the 10-incident test suite for the framework comparison. Unit 6: Use MASS to red-team your own agent; defend against a MASS scan. Unit 7: Deploy MASS to cloud infrastructure; study its own production security posture. Unit 8: Extend MASS or build a governance layer on top for the capstone.</p>
       </div>
 
       <h3>PeaRL (Policy-enforced Autonomous Risk Layer)</h3>

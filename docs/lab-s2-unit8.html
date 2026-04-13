@@ -204,7 +204,7 @@ EOF
 
 cat > requirements.txt << 'EOF'
 anthropic>=0.40.0
-crewai>=0.28.0  # or langgraph>=0.1.0
+openai-agents>=0.0.3  # OpenAI Agents SDK (alternative orchestration)
 opentelemetry-api>=1.20.0
 opentelemetry-sdk>=1.20.0
 cyclonedx-bom>=4.0.0
@@ -606,7 +606,7 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
       </div>
 
       <p>Sprint II finalizes your production deployment and runs the peer red team. Your system must be deployed to AWS AgentCore (or Lambda fallback) before the deployment freeze on Day 1. Peer teams attack your live production deployment — not your repository — using the full OWASP Agentic Top 10 methodology. You attack another team's deployment in return.</p>
-      <div class="callout callout-warn"><p><strong>Deployment freeze — Day 1 of Week 15:</strong> Finalize your production deployment before the freeze. After freeze, no changes until you receive the red team report. Your deployment must include: working 3-agent system on AgentCore, IAM role per agent, Bedrock Guardrails, CloudWatch observability, SBOM, hash-pinned dependencies, and documentation package (architecture diagram, controls matrix, AIUC-1 mapping). Provide the red team an access package: read-only observer role + instructor-scoped attacker role (limited to your team's sandbox).</p></div>
+      <div class="callout callout-warn"><p><strong>Deployment freeze — Day 1 of Week 15:</strong> Finalize your production deployment before the freeze. After freeze, no changes until you receive the red team report. Your deployment must include: working 3-agent system on cloud infrastructure, IAM role per agent, guardrails layer (NeMo Guardrails or equivalent), observability dashboard, SBOM, hash-pinned dependencies, and documentation package (architecture diagram, controls matrix, AIUC-1 mapping). Provide the red team an access package: read-only observer role + instructor-scoped attacker role (limited to your team's sandbox).</p></div>
 
       <!-- Knowledge Check -->
       <div class="quiz-block">
@@ -1389,7 +1389,7 @@ echo "Congratulations — CSEC 602 complete."</code></pre>
             <tr><td style="padding:8px;">S1 U2</td><td style="padding:8px;">MCP + Context Engineering</td><td style="padding:8px;">Multi-tool MCP server with audit logging</td></tr>
             <tr><td style="padding:8px;">S1 U3</td><td style="padding:8px;">AI Security Governance</td><td style="padding:8px;">AI Security Policy + Fairness audit</td></tr>
             <tr><td style="padding:8px;">S1 U4</td><td style="padding:8px;">Rapid Prototyping</td><td style="padding:8px;">3-agent SOC system Sprint + presentation</td></tr>
-            <tr><td style="padding:8px;">S2 U5</td><td style="padding:8px;">Multi-Agent Orchestration</td><td style="padding:8px;">Framework comparison (SDK/CrewAI/LangGraph)</td></tr>
+            <tr><td style="padding:8px;">S2 U5</td><td style="padding:8px;">Multi-Agent Orchestration</td><td style="padding:8px;">Framework comparison (Claude SDK/Claude Managed Agents/OpenAI Agents SDK)</td></tr>
             <tr><td style="padding:8px;">S2 U6</td><td style="padding:8px;">AI Attacker vs Defender</td><td style="padding:8px;">Red/Blue wargame + MITRE ATLAS threat model</td></tr>
             <tr><td style="padding:8px;">S2 U7</td><td style="padding:8px;">Production Security Engineering</td><td style="padding:8px;">SBOM + NHI + OpenTelemetry + CI/CD pipeline</td></tr>
             <tr><td style="padding:8px;">S2 U8</td><td style="padding:8px;">Capstone Production Delivery</td><td style="padding:8px;">Production-ready agentic security system</td></tr>
@@ -1437,7 +1437,7 @@ echo "Congratulations — CSEC 602 complete."</code></pre>
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

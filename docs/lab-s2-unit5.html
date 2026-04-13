@@ -14,7 +14,7 @@
 
 <h1>Lab Guide: Unit 5 — Multi-Agent Orchestration for Security</h1>
 <p><strong>CSEC 602 | Weeks 1–4 | Semester 2</strong></p>
-<p>Build, compare, and evaluate multi-agent security systems using Claude Agent SDK, CrewAI, and LangGraph. Produce a quantitative framework comparison for your midyear report.</p>
+<p>Build, compare, and evaluate multi-agent security systems using Claude Agent SDK, OpenAI Agents SDK, and Claude Managed Agents. Produce a quantitative framework comparison for your midyear report.</p>
 
 <div class="callout callout-tip">
   <strong>Claude as your agent swarm designer:</strong> Use Claude to design your agent swarm before you build it. Describe the system you want, then ask: "What can go wrong when these agents interact?" You'll surface failure modes before they're bugs.
@@ -176,31 +176,33 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <hr>
 
 <!-- ======== WEEK 2 ======== -->
-<h2 id="week-2">Week 2 — CrewAI for Security Operations</h2>
-<div class="week-header"><span class="week-badge">WEEK 2</span><span class="week-sub">Lab: CrewAI SOC Investigation Team</span></div>
+<h2 id="week-2">Week 2 — OpenAI Agents SDK</h2>
+<div class="week-header"><span class="week-badge">WEEK 2</span><span class="week-sub">Lab: Cross-Provider Agent Design</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a SOC investigation agent using the OpenAI Agents SDK. Compare the Runner-managed loop pattern (your process, client-side tools) against Claude Managed Agents (Anthropic infrastructure, server-side tools). Run against the same 10-incident test suite you'll use all unit.</p></div>
 
 <div class="quiz-block" id="quiz-u5w2">
-  <h4> Knowledge Check — Week 2</h4>
+  <h4>Knowledge Check — Week 2</h4>
 
-  <div class="quiz-question" data-qid="u5w2q1" data-answer="c" data-explain="CrewAI's three core concepts: Agents (role-based entities with backstory, tools, and goals), Tasks (specific work items with descriptions, expected output, and assigned agent), and Crews (organized groups of agents executing tasks with defined process types — sequential or parallel).">
-    <p class="q-text">1. What are CrewAI's three core building blocks?</p>
+  <div class="quiz-question" data-qid="u5w2q1" data-answer="c" data-explain="The fundamental difference: with OpenAI Agents SDK, Runner executes in your process and tools run in your code (client-side). With Claude Managed Agents, Anthropic runs the loop on their infrastructure and tools execute in a server-side container. Both abstract the agent loop — the question is who hosts the execution environment.">
+    <p class="q-text">1. What is the fundamental architectural difference between OpenAI Agents SDK and Claude Managed Agents?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w2q1" value="a"> A) Models, Prompts, and Workflows</label>
-      <label><input type="radio" name="u5w2q1" value="b"> B) Nodes, Edges, and States</label>
-      <label><input type="radio" name="u5w2q1" value="c"> C) Agents, Tasks, and Crews</label>
-      <label><input type="radio" name="u5w2q1" value="d"> D) Functions, Triggers, and Pipelines</label>
+      <label><input type="radio" name="u5w2q1" value="a"> A) OpenAI Agents SDK only supports GPT models; Managed Agents only supports Claude</label>
+      <label><input type="radio" name="u5w2q1" value="b"> B) OpenAI Agents SDK requires more code; Managed Agents is simpler</label>
+      <label><input type="radio" name="u5w2q1" value="c"> C) Runner executes in your process with client-side tools; Managed Agents runs on Anthropic infrastructure with server-side tools</label>
+      <label><input type="radio" name="u5w2q1" value="d"> D) OpenAI Agents SDK is synchronous only; Managed Agents supports streaming</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w2q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="u5w2q2" data-answer="b" data-explain="Process.parallel in CrewAI executes tasks concurrently when they have no dependencies, reducing total execution time. For a SOC investigation, gathering threat intel, checking access logs, and querying the vulnerability database are independent tasks that can run simultaneously.">
-    <p class="q-text">2. What does Process.parallel achieve in a CrewAI security investigation?</p>
+  <div class="quiz-question" data-qid="u5w2q2" data-answer="b" data-explain="handoffs=[] lets an agent delegate the entire conversation to another agent — the receiving agent takes over. .as_tool() wraps an agent as a callable tool so the orchestrator invokes it and gets a result back, maintaining control. The distinction matters: handoffs transfer ownership; as_tool() is a subordinate call.">
+    <p class="q-text">2. What is the difference between handoffs=[] and .as_tool() in OpenAI Agents SDK?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w2q2" value="a"> A) Assigns the same task to multiple agents for voting</label>
-      <label><input type="radio" name="u5w2q2" value="b"> B) Executes independent tasks concurrently, reducing total investigation time</label>
-      <label><input type="radio" name="u5w2q2" value="c"> C) Creates parallel branches of the crew for A/B testing</label>
-      <label><input type="radio" name="u5w2q2" value="d"> D) Runs the same crew against multiple incidents simultaneously</label>
+      <label><input type="radio" name="u5w2q2" value="a"> A) handoffs=[] is for async agents; .as_tool() is for sync agents</label>
+      <label><input type="radio" name="u5w2q2" value="b"> B) handoffs=[] transfers conversation ownership to another agent; .as_tool() wraps an agent as a callable tool the orchestrator controls</label>
+      <label><input type="radio" name="u5w2q2" value="c"> C) They are identical; .as_tool() is just the newer API</label>
+      <label><input type="radio" name="u5w2q2" value="d"> D) handoffs=[] is for external agents; .as_tool() is for local agents</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w2q2')">Check Answer</button>
@@ -208,137 +210,296 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 </div>
 
 <div class="lab-section">
-  <h4> Lab Exercise: CrewAI Security Operations Team</h4>
-  <div class="lab-steps">
+  <h4>Lab Exercise: OpenAI Agents SDK SOC Investigation</h4>
+
     <div class="lab-step" id="step-u5w2-1">
       <label><input type="checkbox" onchange="toggleStep('u5w2-1',this.checked)">
-      <div class="step-content"><div class="step-title">Step 1: Install CrewAI</div></div></label>
-      <div class="code-block"><pre><code>pip install crewai crewai-tools
-mkdir -p ~/noctua-labs/unit5/week2 && cd ~/noctua-labs/unit5/week2</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="step-content">
+        <div class="step-title">Step 1: Install the SDK and define a SOC analyst agent</div>
+        <div class="step-desc">Install <code>openai-agents</code> and create <code>oai_soc_agent.py</code>. Define two function tools (IOC enrichment and log query) and a SOC analyst agent using the <code>@function_tool</code> decorator for automatic schema generation.</div>
+      </div></label>
+      <div class="code-block"><pre><code>pip install openai-agents</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>
+# oai_soc_agent.py
+from agents import Agent, Runner, function_tool
+
+@function_tool
+def enrich_ioc(indicator: str) -> str:
+    """Look up threat intel for an IP, domain, or hash."""
+    # Implement with your preferred threat intel source
+    # e.g., VirusTotal API, AbuseIPDB, local feed
+    return f"[IOC enrichment result for {indicator}]"
+
+@function_tool
+def query_logs(query: str, time_range: str = "1h") -> str:
+    """Search SIEM logs for a given query string."""
+    # Implement with your SIEM or log source
+    return f"[Log query results for: {query} over {time_range}]"
+
+soc_agent = Agent(
+    name="SOC Analyst",
+    instructions="""You are a senior SOC analyst. When given a security alert:
+1. Enrich all IoCs (IPs, domains, hashes) using the enrich_ioc tool
+2. Query logs for related activity using the query_logs tool
+3. Apply CCT analysis: identify TTPs, generate 3 hypotheses with probabilities
+4. Produce a structured incident report: severity, TTPs, hypotheses, recommendations""",
+    model="gpt-4o",
+    tools=[enrich_ioc, query_logs],
+)
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w2-2">
       <label><input type="checkbox" onchange="toggleStep('u5w2-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Define the SOC Investigation Crew (3 agents)</div>
-        <div class="step-desc">Create <code>soc_crew.py</code> defining three agents: (1) Threat Intelligence Analyst (goal: enrich IoCs from threat intel feeds), (2) Log Forensics Specialist (goal: analyze log patterns for TTPs), (3) Incident Commander (goal: synthesize findings and recommend containment). Each agent has a role, goal, backstory, and tools list.</div>
+        <div class="step-title">Step 2: Run sync and then add streaming</div>
+        <div class="step-desc">Run the agent synchronously first to verify output, then switch to streaming to see events as they arrive. Compare the streaming event types to what you'll see from Claude Managed Agents in Week 3.</div>
       </div></label>
-      <div class="code-block"><pre><code># Claude Code prompt:
-# "Build a CrewAI SOC investigation crew with 3 agents:
-# 1. threat_intel_analyst - enriches IoCs using available tools
-# 2. log_forensics_specialist - identifies attack TTPs in log data
-# 3. incident_commander - synthesizes findings, recommends containment
-# Use Process.sequential. The commander runs last, after the other two complete.
-# Each agent should use claude-sonnet-4-6 via LLM config."
-claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>
+# Synchronous — simplest path
+from agents import Runner
+
+result = Runner.run_sync(soc_agent, meridian_incident_text)
+print(result.final_output)
+
+# Streaming — see events as they arrive
+import asyncio
+
+async def run_streamed(alert: str):
+    result = Runner.run_streamed(soc_agent, alert)
+    async for event in result.stream_events():
+        if event.type == "raw_response_event":
+            continue
+        print(f"[{event.type}]", flush=True)
+    print(result.final_output)
+
+asyncio.run(run_streamed(meridian_incident_text))
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w2-3">
       <label><input type="checkbox" onchange="toggleStep('u5w2-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Define the three investigation tasks</div>
-        <div class="step-desc">Create Task objects: (1) IoC Enrichment Task (assigned to threat_intel_analyst, expected_output: structured IoC JSON), (2) Log Analysis Task (assigned to log_forensics, expected_output: MITRE ATT&CK TTP mapping), (3) Synthesis Task (assigned to incident_commander, depends on 1+2, expected_output: incident report with recommendations).</div>
+        <div class="step-title">Step 3: Add multi-agent handoffs</div>
+        <div class="step-desc">Build a triage agent that routes alerts to specialists using <code>handoffs=[]</code>. Then try the manager pattern using <code>.as_tool()</code>. Note the difference: handoffs transfer conversation ownership; <code>as_tool()</code> keeps the orchestrator in control.</div>
       </div></label>
+      <div class="code-block"><pre><code>
+from agents import Agent, Runner
+
+malware_agent = Agent(
+    name="Malware Analyst",
+    instructions="Specialize in malware behavior analysis, hash lookups, and sandbox report interpretation.",
+    tools=[enrich_ioc],
+)
+
+# Pattern 1: Handoff — triage routes, specialist takes over
+triage_agent = Agent(
+    name="Triage",
+    instructions="Analyze alert type. Route network/phishing alerts to soc_agent. Route malware/hash alerts to malware_agent.",
+    handoffs=[soc_agent, malware_agent],
+)
+
+result = Runner.run_sync(triage_agent, alert_text)
+print(result.final_output)
+
+# Pattern 2: as_tool — orchestrator invokes specialist, stays in control
+orchestrator = Agent(
+    name="Orchestrator",
+    instructions="Coordinate investigation. Use soc_analyst for network alerts, malware_analyst for hash/file alerts.",
+    tools=[
+        soc_agent.as_tool(
+            tool_name="soc_analyst",
+            tool_description="Run a full SOC investigation on a network or phishing alert"
+        ),
+        malware_agent.as_tool(
+            tool_name="malware_analyst",
+            tool_description="Analyze malware samples, hashes, or sandbox reports"
+        ),
+    ],
+)
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w2-4">
       <label><input type="checkbox" onchange="toggleStep('u5w2-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Run the crew against a test incident and measure performance</div>
-        <div class="step-desc">Execute <code>crew.kickoff(inputs={'incident': meridian_incident_text})</code>. Record: total execution time, cost (token usage), quality of final output. Compare to your Semester 1 three-agent system. Does CrewAI's abstraction add or remove value?</div>
+        <div class="step-title">Step 4: Run the test suite and record metrics</div>
+        <div class="step-desc">Run your OpenAI Agents SDK implementation against all 10 test incidents from <code>docs/data/incident-data.md</code>. Record for each: pass/fail for severity classification, latency (seconds), token cost, output completeness score (1–5). Add results to your comparison spreadsheet — this is the same test suite you'll run against Claude Managed Agents in Week 3.</div>
       </div></label>
+      <div class="callout callout-tip"><strong>Tip:</strong> Use <code>Runner.run_sync()</code> in a loop and time each call with <code>time.perf_counter()</code>. OpenAI usage data is in <code>result.raw_responses[-1].usage</code>.</div>
     </div>
 
     <div class="lab-step" id="step-u5w2-5">
       <label><input type="checkbox" onchange="toggleStep('u5w2-5',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Add parallel execution for the first two tasks</div>
-        <div class="step-desc">Modify to use Process.parallel for the IoC Enrichment and Log Analysis tasks (they're independent). Keep the Synthesis sequential after both complete. Measure the speedup: how much faster is parallel vs sequential?</div>
+        <div class="step-title">Step 5: Document the developer experience trade-offs</div>
+        <div class="step-desc">Add an "OpenAI Agents SDK" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. Claude SDK, (2) what you control — Runner runs in your process, tools are your functions, full visibility into inputs/outputs, (3) cross-provider implications — does portability matter for your SOC deployment?, (4) when you'd choose this over Claude Managed Agents in a real production environment.</div>
       </div></label>
     </div>
-  </div>
+
 </div>
 <hr>
 
 <!-- ======== WEEK 3 ======== -->
-<h2 id="week-3">Week 3 — LangGraph for Stateful Security Workflows</h2>
-<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: LangGraph Incident Response State Machine</span></div>
+<h2 id="week-3">Week 3 — Claude Managed Agents</h2>
+<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: Anthropic-Hosted Agent Execution</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement the same SOC investigation pipeline from Week 1 using Claude Managed Agents — Anthropic's hosted agent harness. Compare the development experience and operational characteristics against the custom SDK approach you already built.</p></div>
 
 <div class="quiz-block" id="quiz-u5w3">
   <h4> Knowledge Check — Week 3</h4>
 
-  <div class="quiz-question" data-qid="u5w3q1" data-answer="d" data-explain="LangGraph represents workflows as directed graphs where nodes are agent functions (with access to shared state) and edges define control flow between nodes — either unconditional (always go to next node) or conditional (route based on state evaluation). This enables complex workflows with loops, branching, and human checkpoints.">
-    <p class="q-text">1. In LangGraph, what are nodes and edges?</p>
+  <div class="quiz-question" data-qid="u5w3q1" data-answer="b" data-explain="In Claude Managed Agents, the agent loop runs on Anthropic's orchestration layer and tools execute inside an Anthropic-provisioned container — you are not executing tool calls in your own process. In the custom Claude Agent SDK pattern from Week 1, your Python code owns the loop: you call the API, detect tool_use blocks, execute tools yourself, and send results back. Both use the same underlying model; what differs is who runs the infrastructure.">
+    <p class="q-text">1. What is the fundamental difference between Claude Managed Agents and the custom SDK supervisor from Week 1?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w3q1" value="a"> A) Nodes are LLM prompts; edges are tool calls</label>
-      <label><input type="radio" name="u5w3q1" value="b"> B) Nodes are databases; edges are API connections</label>
-      <label><input type="radio" name="u5w3q1" value="c"> C) Nodes are Python classes; edges are inheritance relationships</label>
-      <label><input type="radio" name="u5w3q1" value="d"> D) Nodes are agent functions that read/write shared state; edges define conditional or unconditional control flow between nodes</label>
+      <label><input type="radio" name="u5w3q1" value="a"> A) Managed Agents uses a different Claude model than the SDK</label>
+      <label><input type="radio" name="u5w3q1" value="b"> B) With Managed Agents, Anthropic runs the agent loop and tool execution in a hosted container; with the SDK, your code owns the loop and tool execution</label>
+      <label><input type="radio" name="u5w3q1" value="c"> C) Managed Agents only supports bash tools; SDK supports all tool types</label>
+      <label><input type="radio" name="u5w3q1" value="d"> D) SDK is for single-agent; Managed Agents is required for multi-agent</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w3q1')">Check Answer</button>
   </div>
-
-  <div class="quiz-question" data-qid="u5w3q2" data-answer="b" data-explain="Conditional edges in LangGraph enable dynamic routing: after the triage node runs, a conditional edge can route to 'escalate_to_human' if severity is critical, 'automated_containment' if severity is high, or 'monitor' if severity is low. This is the mechanism for building human-in-the-loop checkpoints.">
-    <p class="q-text">2. How do conditional edges enable human-in-the-loop in LangGraph incident response?</p>
-    <div class="quiz-opts">
-      <label><input type="radio" name="u5w3q2" value="a"> A) They pause all agent execution until a human clicks 'approve'</label>
-      <label><input type="radio" name="u5w3q2" value="b"> B) After a triage node, they route to different handling paths (human escalation vs automated) based on severity or confidence in state</label>
-      <label><input type="radio" name="u5w3q2" value="c"> C) They require human approval for every node transition</label>
-      <label><input type="radio" name="u5w3q2" value="d"> D) They replace agents with human decision makers</label>
-    </div>
-    <div class="quiz-feedback"></div>
-    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q2')">Check Answer</button>
-  </div>
 </div>
 
 <div class="lab-section">
-  <h4> Lab Exercise: LangGraph Incident Response Workflow</h4>
+  <h4> Lab Exercise: SOC Investigator as a Managed Agent</h4>
+  <div class="scenario-box"><strong>Reuse pattern:</strong> The agent logic you built in Weeks 1–2 (classify alert → enrich IoCs → analyze TTPs → report) stays identical. What changes is the infrastructure layer: instead of your Python process managing the loop, Anthropic hosts it. You stream events back via SSE.</div>
+
   <div class="lab-steps">
     <div class="lab-step" id="step-u5w3-1">
       <label><input type="checkbox" onchange="toggleStep('u5w3-1',this.checked)">
-      <div class="step-content"><div class="step-title">Step 1: Install LangGraph</div></div></label>
-      <div class="code-block"><pre><code>pip install langgraph langchain-anthropic
-mkdir -p ~/noctua-labs/unit5/week3 && cd ~/noctua-labs/unit5/week3</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="step-content">
+        <div class="step-title">Step 1: Create the agent config (one-time setup)</div>
+        <div class="step-desc">Create a setup script <code>managed_agent_setup.py</code>. The agent config holds model, system prompt, and tools — create it once and save the returned ID. The agent is a versioned, persistent object: you reference it by ID for every session.</div>
+      </div></label>
+      <div class="code-block"><pre><code>import anthropic, os
+
+client = anthropic.Anthropic()
+
+# Create the agent (run once — save agent.id to .env or config file)
+agent = client.beta.agents.create(
+    name="SOC Investigator",
+    model="claude-sonnet-4-6",
+    system="""You are a senior SOC analyst conducting incident investigations.
+Given a security alert:
+1. Extract and enrich all IoCs (IPs, domains, file hashes) using web search
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a structured JSON report followed by a concise narrative summary""",
+    tools=[{"type": "agent_toolset_20260401"}],  # includes bash, read, write, grep, web_search
+)
+
+# Create the environment (run once — save environment.id)
+environment = client.beta.environments.create(
+    name="soc-investigation-env",
+    config={"type": "cloud", "networking": {"type": "unrestricted"}},
+)
+
+print(f"AGENT_ID={agent.id}")
+print(f"AGENT_VERSION={agent.version}")
+print(f"ENVIRONMENT_ID={environment.id}")
+print("Save these to your .env file — do not re-create on each run")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w3-2">
       <label><input type="checkbox" onchange="toggleStep('u5w3-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Define the IR State schema</div>
-        <div class="step-desc">Create a TypedDict for the incident response state: alert_text, severity (Literal['critical','high','medium','low']), iocs (list), triage_complete (bool), containment_action (str), human_review_required (bool), final_report (str). State is shared across all nodes.</div>
+        <div class="step-title">Step 2: Build the per-investigation session runner</div>
+        <div class="step-desc">Create <code>managed_agent_runner.py</code>. This script starts a session, opens the event stream, sends the alert as a user message, and processes events until the agent goes idle. Save the session ID for audit — it gives you the full event history.</div>
       </div></label>
+      <div class="code-block"><pre><code>import anthropic, os, json
+
+client = anthropic.Anthropic()
+
+AGENT_ID = os.environ["AGENT_ID"]
+ENVIRONMENT_ID = os.environ["ENVIRONMENT_ID"]
+
+def investigate(alert_text: str, title: str = "SOC Investigation") -> dict:
+    """Run a Managed Agent investigation and return the structured report."""
+    session = client.beta.sessions.create(
+        agent=AGENT_ID,
+        environment_id=ENVIRONMENT_ID,
+        title=title,
+    )
+    print(f"Session: {session.id}")
+
+    report_text = []
+    with client.beta.sessions.events.stream(session.id) as stream:
+        # Send the alert — stream must be open before sending
+        client.beta.sessions.events.send(
+            session.id,
+            events=[{"type": "user.message", "content": [
+                {"type": "text", "text": alert_text}
+            ]}],
+        )
+        for event in stream:
+            if event.type == "agent.message":
+                for block in event.content:
+                    if hasattr(block, "text"):
+                        print(block.text, end="", flush=True)
+                        report_text.append(block.text)
+            elif event.type == "agent.tool_use":
+                print(f"\n[Tool: {event.name}]", flush=True)
+            elif event.type == "session.status_idle":
+                print("\n── Investigation complete ──")
+                break
+
+    return {"session_id": session.id, "report": "".join(report_text)}
+
+# Test with the Meridian Financial incident
+with open("test_incidents.json") as f:
+    incidents = json.load(f)
+
+result = investigate(incidents[0]["alert_text"], title=incidents[0]["id"])
+print(f"\nSession ID for audit: {result['session_id']}")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w3-3">
       <label><input type="checkbox" onchange="toggleStep('u5w3-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Build the state machine nodes and conditional routing</div>
-        <div class="step-desc">Build the IR workflow: triage_node → conditional_edge (critical → human_review_node; high/medium → automated_containment_node → report_node; low → monitor_node). Use Claude Code to implement each node function.</div>
+        <div class="step-title">Step 3: Run the full test suite and record metrics</div>
+        <div class="step-desc">Run the Managed Agent against all 10 incidents from your <code>test_incidents.json</code>. Record the same metrics you captured for Week 1–2 frameworks: severity classification accuracy, latency (wall-clock per session), token cost (from <code>span.model_request_end</code> events), and report completeness. Add Managed Agents as a third column in your comparison spreadsheet.</div>
       </div></label>
-      <div class="code-block"><pre><code># Claude Code prompt:
-# "Build a LangGraph incident response workflow with:
-# - State: {alert, severity, iocs, containment_action, human_required, report}
-# - Nodes: triage, human_review, auto_containment, monitor, final_report
-# - Conditional routing: critical → human_review, high → auto_containment, low → monitor
-# - All nodes use Claude API via langchain-anthropic
-# - Graph should compile and execute with StateGraph + .compile()"
-claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>import time, json
+
+results = []
+for incident in incidents:
+    start = time.time()
+    result = investigate(incident["alert_text"], title=incident["id"])
+    elapsed = time.time() - start
+
+    # Evaluate output
+    report = result["report"]
+    results.append({
+        "id": incident["id"],
+        "framework": "managed_agents",
+        "latency_s": round(elapsed, 1),
+        "severity_correct": incident["expected_severity"].lower() in report.lower(),
+        "ioc_count_found": sum(1 for ioc in incident["expected_iocs"] if ioc in report),
+        "session_id": result["session_id"],  # audit trail
+    })
+
+with open("results_managed_agents.json", "w") as f:
+    json.dump(results, f, indent=2)
+
+print(f"Accuracy: {sum(r['severity_correct'] for r in results)}/{len(results)}")
+print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w3-4">
       <label><input type="checkbox" onchange="toggleStep('u5w3-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Test all routing paths</div>
-        <div class="step-desc">Create four test alerts: critical (ransomware detection), high (data exfiltration attempt), medium (suspicious scan), low (failed login spike). Verify each routes to the correct handling path. Capture and display the state at each node transition.</div>
+        <div class="step-title">Step 4: Document the developer experience trade-offs</div>
+        <div class="step-desc">Add a "Managed Agents" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. custom SDK, (2) what you can and can't control (tool execution happens server-side — you see events, not raw tool calls), (3) the setup-vs-runtime split (agent and environment are one-time; sessions are per-run), (4) when you'd choose this over a custom orchestrator in a real SOC deployment.</div>
       </div></label>
     </div>
 
     <div class="lab-step" id="step-u5w3-5">
       <label><input type="checkbox" onchange="toggleStep('u5w3-5',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Add persistence with checkpointing</div>
-        <div class="step-desc">Configure LangGraph's MemorySaver to persist state between node executions. This enables: (1) resuming interrupted workflows, (2) human-in-the-loop where a human can inject decisions into the state before the workflow continues. Test with a simulated human approval.</div>
+        <div class="step-title">Step 5: Compare event streams — Managed Agents vs. OpenAI Agents SDK</div>
+        <div class="step-desc">Both frameworks stream events, but the information available differs. With Managed Agents, tool execution is server-side: you receive <code>agent.tool_use</code> events with the tool name, but full tool inputs and outputs are in the server-side container. With OpenAI Agents SDK, tools run in your process: you have complete visibility. Document in your comparison report: what observability does each approach give you? How does this affect your ability to audit, debug, and detect misuse in a SOC context?</div>
       </div></label>
     </div>
   </div>
@@ -380,7 +541,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('u5w4-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Run all three frameworks against the test suite</div>
-        <div class="step-desc">Execute your Claude Agent SDK system, CrewAI SOC team, and LangGraph workflow against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
+        <div class="step-desc">Execute your Claude Agent SDK system, OpenAI Agents SDK implementation, and Claude Managed Agents implementation against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
       </div></label>
     </div>
 
@@ -413,7 +574,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <li>Hallucination rate in threat attribution: when the system attributed a threat, how often was the attribution incorrect?</li>
         <li>Latency under load (P95): can the system handle real alert volume?</li>
       </ul>
-      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply to each of 3 security scenarios.</p>
+      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply all three frameworks to each of 3 security scenarios.</p>
       <p><strong>5. What These Numbers Don't Capture</strong> <em>(required — this section cannot be omitted)</em>: What would a different evaluator find? What failure modes did your test set not cover? What adversarial inputs did you not test? This section demonstrates CCT Pillar 1 (Empirical Inquiry) applied to your own evaluation.</p>
       <p><strong>Appendix: AIUC-1 Self-Audit</strong>: For the framework you recommend, complete a brief AIUC-1 check: what domains are in scope, what controls exist, what gaps remain. This connects your Unit 3 learning to your Unit 5 recommendation.</p>
       <p><strong>Conversation starter before writing:</strong><br>
@@ -476,14 +637,14 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="deliverables">
   <h5>Unit 5 Major Deliverable</h5>
   <ul>
-    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Agent SDK, CrewAI, and LangGraph with test suite results, visualizations, and justified recommendations</li>
+    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Agent SDK, OpenAI Agents SDK, and Claude Managed Agents with test suite results, visualizations, and justified recommendations</li>
     <li><strong>All three framework implementations</strong> — working code repositories for each</li>
   </ul>
 </div>
 
 <div class="callout callout-tip">
   <strong>Your Comparison Doesn't Exist Publicly Yet — Post It</strong>
-  <p>There is no rigorous, hands-on comparison of Claude Agent SDK vs CrewAI vs LangGraph for security operations available publicly. The practitioner making this decision next month will be searching for exactly what you built. Open source the test suite, publish the results as a GitHub repo, and write a README summarizing your findings and recommendations.</p>
+  <p>The practitioner deciding between Claude Managed Agents and OpenAI Agents SDK for a production SOC deployment next month will be searching for exactly what you built. Open source the test suite, publish the results as a GitHub repo, and write a README summarizing your findings and recommendations.</p>
   <p>The security community — including hobbyists, junior engineers, and teams at organizations that can't afford consultants — makes better decisions when practitioners share real evaluations. You ran the experiment. Share the results. Be the resource you wished existed when you started this unit.</p>
 </div>
 
@@ -508,7 +669,9 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution, Claude Managed Agents.",tags:["unit5","multi-agent","openai agents sdk","a2a","managed agents"],url:"s2-unit5.html"},
+    {t:"Claude Managed Agents",d:"Anthropic-hosted agent harness. Agent (create once, versioned config) → Session (per run, provisioned container). agent_toolset_20260401 enables bash/file/web tools server-side. Stream-first pattern: open stream, then send user.message event.",tags:["managed agents","anthropic","session","agent","stream","hosted"],url:"s2-unit5.html#week-3"},
+    {t:"OpenAI Agents SDK",d:"Runner-managed agent loop in your process. Agent + @function_tool decorator. handoffs=[] for delegation, .as_tool() for orchestration. Runner.run_sync() or run_streamed().",tags:["openai","agents sdk","runner","handoffs","function_tool"],url:"s2-unit5.html#week-2"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

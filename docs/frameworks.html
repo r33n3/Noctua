@@ -206,7 +206,7 @@ Built on HTTP, SSE, and JSON-RPC with four core capabilities:</p>
 <li>IBM Cloud integration primary deployment target</li>
 </ul>
 <p><strong>Purpose</strong>
-Cross-framework interoperability — enables agents built with different frameworks (LangChain, CrewAI, Claude Agent SDK, custom implementations) to collaborate without requiring framework-specific glue code.</p>
+Cross-framework interoperability — enables agents built with different frameworks (Claude Managed Agents, OpenAI Agents SDK, AutoGen, custom implementations) to collaborate without requiring framework-specific glue code.</p>
 <p><strong>Architecture</strong>
 Brokered model with three primary roles:</p>
 <ol><li><strong>Agent Clients</strong></li><li><strong>ACP Servers</strong><ul><li>
@@ -360,7 +360,7 @@ Uses decentralized technologies for trust:</p>
 <ol>
 <li><strong>MCP</strong> connects your agents to tools: security tools, APIs, data sources, threat intelligence feeds</li>
 <li><strong>A2A</strong> connects your agents to other agents: SOC agents delegate to incident response agents, investigation agents coordinate with remediation agents</li>
-<li><strong>ACP</strong> bridges different frameworks: your Anthropic-based security agent collaborates with a vendor's CrewAI-based threat hunting agent</li>
+<li><strong>ACP</strong> bridges different frameworks: your Claude Managed Agent collaborates with a vendor's OpenAI Agents SDK-based threat hunting agent</li>
 <li><strong>ANP</strong> enables discovery of external services: discovering third-party threat intelligence agents, crowd-sourced threat analysis agents, or cooperative defensive network agents</li>
 </ol>
 <p>Example workflow:</p>
@@ -1031,87 +1031,36 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <li>Tight integration with MCP for tool access</li>
 </ul>
 <hr/>
-<h3 id="crewai">CrewAI</h3>
-<p><strong>Developer</strong>: CrewAI Team
-<strong>GitHub Stars</strong>: 44,000+ (as of 2026)
-<strong>Status</strong>: Mature, most popular open-source agent framework</p>
-<p><strong>Core Philosophy</strong>
-Role-based multi-agent orchestration: each agent has a specific role, goal, and set of tools.</p>
-<p><strong>Architecture</strong></p>
+<h3 id="managed-agents">Claude Managed Agents</h3>
+<p><strong>Developer:</strong> Anthropic</p>
+<p>Anthropic-hosted agent harness. You define an Agent (model + system prompt + tools) and an Environment (container config) once. Each task creates a Session — Anthropic provisions a container, runs the agent loop, and executes tools server-side. You receive an event stream.</p>
+<p><strong>Core pattern:</strong> Agent → Environment → Session → Event stream</p>
+<p><strong>Key objects:</strong></p>
 <ul>
-<li><strong>Agents</strong>: Role-specific entities with backstories and expertise</li>
-<li><strong>Tasks</strong>: Work items assigned to agents</li>
-<li><strong>Crew</strong>: Orchestration layer that manages agent collaboration</li>
-<li><strong>Tools</strong>: Standardized tool interface</li>
-<li><strong>Processes</strong>: Hierarchical and sequential execution patterns</li>
+  <li><strong>Agent</strong> — versioned config: model, system prompt, tools. Created once, referenced by ID.</li>
+  <li><strong>Environment</strong> — container template with networking config. Created once.</li>
+  <li><strong>Session</strong> — per-task run. Provisions a container. Stream-first: open stream before sending message.</li>
 </ul>
-<p><strong>Key Strengths</strong></p>
-<ul>
-<li><strong>Rapid Development</strong>: Fastest time-to-production for standard business workflows</li>
-<li><strong>Multi-agent Patterns</strong>: Built-in patterns for common multi-agent scenarios</li>
-<li><strong>Extensibility</strong>: Easy to add custom agents, tasks, and tools</li>
-<li><strong>Community</strong>: Large ecosystem of pre-built agents and tools</li>
-</ul>
-<p><strong>CrewAI Studio</strong> (Released 2025)</p>
-<ul>
-<li>No-code agent building for non-developers</li>
-<li>Visual workflow editor</li>
-<li>Templates for common scenarios</li>
-</ul>
-<p><strong>Security Considerations</strong></p>
-<ul>
-<li>Multi-agent coordination without built-in A2A support (pre-dates A2A standardization)</li>
-<li>Tool execution sandboxing depends on implementation</li>
-<li>No built-in audit logging (requires custom instrumentation)</li>
-</ul>
-<p><strong>Course Relevance</strong></p>
-<ul>
-<li>Semester 2 Week 2: Comparative framework analysis</li>
-<li>Understanding how different frameworks approach multi-agent problems</li>
-<li>Potential comparative evaluation for capstone projects</li>
-</ul>
-<p><strong>Reference</strong>: https://crewai.com/</p>
+<p><strong>Built-in toolset:</strong> <code>{"type": "agent_toolset_20260401"}</code> enables bash, read, write, edit, glob, grep, web_fetch, web_search — all server-side.</p>
+<p><strong>When to use:</strong> When you want Anthropic to manage the execution environment. Tools run in a hosted container — you see events, not raw tool calls. Ideal for SOC workflows where you need reproducible, isolated execution per investigation.</p>
+<p><strong>Key constraint:</strong> Tool execution is server-side and opaque to your code. You receive <code>agent.tool_use</code> events with tool name but not necessarily full input/output. Design your observability around the event stream.</p>
+<p><strong>Reference:</strong> Anthropic documentation — Managed Agents overview</p>
 <hr/>
-<h3 id="langgraph">LangGraph</h3>
-<p><strong>Developer</strong>: LangChain
-<strong>Status</strong>: v1.0 released late 2025, production-ready
-<strong>Design Philosophy</strong>: Stateful agent workflows using explicit state machines</p>
-<p><strong>Architecture</strong></p>
+<h3 id="openai-agents-sdk">OpenAI Agents SDK</h3>
+<p><strong>Developer:</strong> OpenAI (openai-agents-python)</p>
+<p>Python SDK for building agents where the loop runs in your process. Define an Agent with instructions and tools, then use Runner to execute. Multi-agent coordination via handoffs or as_tool() patterns.</p>
+<p><strong>Core pattern:</strong> Agent + Runner → result</p>
+<p><strong>Key concepts:</strong></p>
 <ul>
-<li><strong>Graphs</strong>: Directed acyclic graphs (DAGs) representing agent workflows</li>
-<li><strong>Nodes</strong>: Units of computation (agent steps, tool calls)</li>
-<li><strong>Edges</strong>: Transitions between nodes with conditional logic</li>
-<li><strong>State</strong>: Explicit state object passed between nodes</li>
-<li><strong>Interrupts</strong>: Support for human-in-the-loop at specified points</li>
+  <li><strong>Agent</strong> — instructions, model, tools list, optional handoffs</li>
+  <li><strong>Runner</strong> — executes the agent loop. <code>Runner.run_sync()</code> for sync, <code>Runner.run_streamed()</code> for streaming.</li>
+  <li><strong>@function_tool</strong> — decorator that turns any Python function into a tool with automatic schema generation</li>
+  <li><strong>Handoffs</strong> — <code>handoffs=[agent_b]</code> lets Agent A delegate conversation to Agent B</li>
+  <li><strong>Sessions</strong> — persistent state via SQLiteSession, RedisSession, or conversation_id</li>
 </ul>
-<p><strong>Key Strengths</strong></p>
-<ul>
-<li><strong>Explicit Control Flow</strong>: No implicit sequencing — all transitions are explicit</li>
-<li><strong>Lowest Latency</strong>: Optimized for minimal overhead per agent step</li>
-<li><strong>Deterministic Behavior</strong>: State machine model leads to predictable agent behavior</li>
-<li><strong>Debugging</strong>: Easy to inspect and debug agent execution paths</li>
-<li><strong>Streaming</strong>: Full support for streaming outputs</li>
-</ul>
-<p><strong>Use Cases</strong></p>
-<ul>
-<li>High-performance agent systems where latency is critical</li>
-<li>Complex workflows requiring explicit state transitions</li>
-<li>Debugging and introspection of agent behavior</li>
-</ul>
-<p><strong>Security Considerations</strong></p>
-<ul>
-<li>Explicit state management makes audit trailing easier</li>
-<li>Graph visualization aids in security analysis</li>
-<li>State mutations need careful handling</li>
-<li>Requires explicit error handling at each node</li>
-</ul>
-<p><strong>Course Relevance</strong></p>
-<ul>
-<li>Semester 2 Week 3: Comparative framework analysis</li>
-<li>Understanding state machine approach to agent control</li>
-<li>Performance-critical applications</li>
-</ul>
-<p><strong>Reference</strong>: https://langchain.com/langgraph</p>
+<p><strong>When to use:</strong> When you need cross-provider flexibility (LiteLLM backend), client-side tool execution, or want to host your own compute. Runner runs in your process — you have full visibility into tool inputs and outputs.</p>
+<p><strong>Key distinction from Managed Agents:</strong> You run the loop (Runner in your process). With Managed Agents, Anthropic runs the loop on their infrastructure.</p>
+<p><strong>Reference:</strong> openai.github.io/openai-agents-python</p>
 <hr/>
 <h3 id="autogen-ag2">AutoGen / AG2</h3>
 <p><strong>Developer</strong>: Microsoft Research
@@ -1151,135 +1100,59 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 </ul>
 <p><strong>Reference</strong>: https://microsoft.github.io/autogen/</p>
 <hr/>
-<h3 id="openai-agents-sdk">OpenAI Agents SDK</h3>
-<p><strong>Developer</strong>: OpenAI
-<strong>Status</strong>: Production-ready (2025 update)
-<strong>Primary Use Case</strong>: Agents built on GPT-4 models</p>
-<p><strong>Core Features</strong></p>
-<ul>
-<li><strong>Tool Use</strong>: Standardized interface for agents to invoke tools</li>
-<li><strong>Handoffs</strong>: Built-in patterns for passing work between agents</li>
-<li><strong>Guardrails</strong>: Content filtering and safety constraints</li>
-<li><strong>Function Calling</strong>: Structured tool invocation</li>
-</ul>
-<p><strong>Architecture</strong></p>
-<ul>
-<li><strong>Simple API</strong>: Minimal configuration required for basic use cases</li>
-<li><strong>Model Selection</strong>: Agents can use different model versions for different tasks</li>
-<li><strong>Streaming</strong>: Real-time output streaming</li>
-</ul>
-<p><strong>Security Features</strong></p>
-<ul>
-<li>Built-in content filters (can be customized)</li>
-<li>Tool access restrictions</li>
-<li>Rate limiting capabilities</li>
-</ul>
-<p><strong>Considerations</strong></p>
-<ul>
-<li>Proprietary model dependency (lock-in to OpenAI)</li>
-<li>Less granular control than some alternatives</li>
-<li>Less mature multi-agent patterns compared to CrewAI or AutoGen</li>
-</ul>
-<p><strong>Course Relevance</strong></p>
-<ul>
-<li>Semester 2 Week 5: Multi-vendor exposure and framework comparison</li>
-<li>Understanding proprietary vs. open-source trade-offs</li>
-<li>Model lock-in considerations for production systems</li>
-</ul>
-<p><strong>Reference</strong>: https://platform.openai.com/</p>
 <hr/>
 <h3 id="framework-comparison-matrix">Framework Comparison Matrix</h3>
 <table>
 <thead>
 <tr>
-<th>Feature</th>
-<th>Claude Agent SDK</th>
-<th>CrewAI</th>
-<th>LangGraph</th>
-<th>AutoGen</th>
-<th>OpenAI SDK</th>
+<th>Dimension</th>
+<th>Claude SDK (custom)</th>
+<th>Claude Managed Agents</th>
+<th>OpenAI Agents SDK</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Language</strong></td>
-<td>Python, TypeScript</td>
-<td>Python</td>
-<td>Python, JS</td>
-<td>Python, Java, Go, JS</td>
-<td>Python</td>
+<td><strong>Loop runs where</strong></td>
+<td>Your code</td>
+<td>Anthropic infrastructure</td>
+<td>Your process (Runner)</td>
 </tr>
 <tr>
-<td><strong>Multi-agent Support</strong></td>
-<td>Native</td>
-<td>Built-in (role-based)</td>
-<td>State machines</td>
-<td>Conversation-based</td>
-<td>Handoffs</td>
+<td><strong>Tool execution</strong></td>
+<td>Your code</td>
+<td>Server-side container</td>
+<td>Your code</td>
 </tr>
 <tr>
-<td><strong>MCP Support</strong></td>
-<td>Native</td>
-<td>Via tools</td>
-<td>Via tools</td>
-<td>Via tools</td>
-<td>Via tools</td>
+<td><strong>State management</strong></td>
+<td>You manage</td>
+<td>Per-session container</td>
+<td>Session object (SQLite/Redis)</td>
 </tr>
 <tr>
-<td><strong>A2A Support</strong></td>
-<td>Planned</td>
-<td>Not built-in</td>
-<td>Not built-in</td>
-<td>Not built-in</td>
-<td>Not built-in</td>
+<td><strong>Multi-agent</strong></td>
+<td>Manual orchestration</td>
+<td>Server-side orchestration</td>
+<td>handoffs + as_tool()</td>
 </tr>
 <tr>
-<td><strong>Model Flexibility</strong></td>
-<td>Anthropic focus</td>
-<td>Model-agnostic</td>
-<td>Model-agnostic</td>
-<td>Model-agnostic</td>
-<td>OpenAI focus</td>
+<td><strong>Built-in tools</strong></td>
+<td>None</td>
+<td>agent_toolset_20260401</td>
+<td>Code interpreter, file search, web search</td>
 </tr>
 <tr>
-<td><strong>Performance</strong></td>
-<td>Sub-50ms</td>
-<td>Moderate</td>
-<td>Lowest latency</td>
-<td>Moderate</td>
-<td>Depends on model</td>
+<td><strong>Cross-provider</strong></td>
+<td>Claude only</td>
+<td>Claude only</td>
+<td>Yes (LiteLLM backend)</td>
 </tr>
 <tr>
-<td><strong>Maturity</strong></td>
-<td>Production-ready</td>
-<td>Production-ready</td>
-<td>v1.0 (2025)</td>
-<td>v0.4 (2025)</td>
-<td>Production-ready</td>
-</tr>
-<tr>
-<td><strong>Complexity</strong></td>
-<td>Low-to-moderate</td>
-<td>Low</td>
-<td>Moderate-to-high</td>
-<td>Low-to-moderate</td>
-<td>Very low</td>
-</tr>
-<tr>
-<td><strong>Community</strong></td>
-<td>Growing</td>
-<td>44k+ stars</td>
-<td>LangChain ecosystem</td>
-<td>MSR backing</td>
-<td>Large proprietary</td>
-</tr>
-<tr>
-<td><strong>Open Source</strong></td>
-<td>Proprietary</td>
-<td>Open source</td>
-<td>Open source</td>
-<td>Open source</td>
-<td>Proprietary</td>
+<td><strong>Observability</strong></td>
+<td>Full (you own it)</td>
+<td>Event stream only</td>
+<td>Full (you own it)</td>
 </tr>
 </tbody>
 </table>
@@ -1302,7 +1175,7 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 </ul>
 <p><strong>Layer 3: Cross-Framework Integration (ACP)</strong></p>
 <ul>
-<li>Anthropic-based SOC agent integrates with vendor's CrewAI-based threat intelligence agent</li>
+<li>Claude Managed Agent integrates with vendor's OpenAI Agents SDK-based threat intelligence agent</li>
 <li>Registry maintains current list of available agents and their capabilities</li>
 </ul>
 <p><strong>Layer 4: External Intelligence (ANP)</strong></p>
@@ -1333,7 +1206,7 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 9. Claude Agent SDK documentation</p>
 <p><strong>Semester 2 (Application)</strong>
 1. Agent-to-Agent Protocol (A2A)
-2. Multi-agent frameworks (CrewAI, LangGraph, AutoGen, OpenAI)
+2. Multi-agent frameworks (Claude Managed Agents, OpenAI Agents SDK, AutoGen)
 3. Agent Communication Protocol (ACP)
 4. MITRE ATLAS and threat modeling
 5. NIST Cyber AI Profile
@@ -1390,10 +1263,9 @@ Role-based multi-agent orchestration: each agent has a specific role, goal, and 
 <p><strong>Framework Documentation</strong></p>
 <ul>
 <li>Claude Agent SDK: https://anthropic.com/docs/build-effective-agents</li>
-<li>CrewAI: https://crewai.com/</li>
-<li>LangGraph: https://langchain.com/langgraph</li>
+<li>Claude Managed Agents: Anthropic documentation — Managed Agents overview</li>
+<li>OpenAI Agents SDK: https://openai.github.io/openai-agents-python</li>
 <li>AutoGen: https://microsoft.github.io/autogen/</li>
-<li>OpenAI API: https://platform.openai.com/</li>
 </ul>
 <p><strong>Course AI Security Tools (Production Approaches)</strong></p>
 <ul>
@@ -1549,7 +1421,7 @@ prod (production)
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, parallel vs sequential execution.",tags:["unit5","multi-agent","managed agents","openai agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
@@ -1581,6 +1453,8 @@ prod (production)
     {t:"Lab Setup Guide",d:"Environment setup: Claude Code install, API keys, MCP servers, Python environment, git config.",tags:["setup","lab","install","environment"],url:"lab-setup.html"},
     {t:"Reading List",d:"Week-by-week assigned readings: OWASP docs, Claude docs, research papers, dark factory reference.",tags:["reading","resources","papers"],url:"reading.html"},
     {t:"Frameworks & Protocols",d:"Full reference: OWASP Top 10 LLM, OWASP NHI, Agentic Apps, MCP spec, A2A spec, AIUC-1.",tags:["frameworks","protocols","reference","owasp"],url:"frameworks.html"},
+    {t:"Claude Managed Agents",d:"Anthropic-hosted agent harness. Agent (create once) + Environment → Session per run. agent_toolset_20260401 enables server-side bash/file/web tools. Stream-first pattern.",tags:["managed agents","anthropic","session","agent"],url:"frameworks.html#managed-agents"},
+    {t:"OpenAI Agents SDK",d:"Runner-managed agent loop in your process. Agent + @function_tool + handoffs. Cross-provider via LiteLLM. Runner.run_sync() or run_streamed().",tags:["openai","agents","runner","handoffs","cross-provider"],url:"frameworks.html#openai-agents-sdk"},
     {t:"CCT — Collaborative Critical Thinking",d:"5-pillar framework: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance. Adapted from Seth Jaeger's 5 Habits of Mind.",tags:["cct","critical thinking","jaeger","habits","pillars"],url:"s1-unit1.html"},
     {t:"Semi-Formal Reasoning",d:"Structured evidence chains (premises → trace → divergence → conclusion) improving AI accuracy from 78% to 88–93%. Ugare & Chandra, arXiv:2603.01896v2.",tags:["semi-formal","reasoning","accuracy","evidence chains","meta"],url:"s1-unit2.html"},
     {t:"Cedar Policy Language",d:"Formal policy language for agent context injection and gate/elevation governance. Used in PeaRL for allowance profile enforcement.",tags:["cedar","policy","governance","pearl"],url:"s1-unit2.html"},

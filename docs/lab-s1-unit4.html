@@ -34,7 +34,7 @@
 <div class="callout callout-key">
   <strong>Tool-agnostic framing: worktrees and multi-agent patterns</strong>
   <p><strong>Worktrees</strong> are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.</p>
-  <p><strong>Orchestrator + specialized worker</strong> is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), LangGraph, AutoGen, or CrewAI — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.</p>
+  <p><strong>Orchestrator + specialized worker</strong> is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), Claude Managed Agents, OpenAI Agents SDK, or AutoGen — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.</p>
 </div>
 
 <div class="quiz-block" id="quiz-w13">
@@ -89,7 +89,7 @@
 /worktree-setup three-agent SOC system: recon-agent, analysis-agent, reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
-<div class="callout callout-key"><p><strong>What you're learning here transfers beyond Claude Code.</strong> Worktrees are a git feature — not a Claude Code invention. The <code>git worktree add</code> command works in any git repository, with any development tool. Agent orchestration patterns (supervisor → specialist, parallel fanout, sequential pipeline) appear in LangGraph, AutoGen, CrewAI, and the Claude Agent SDK with different syntax but identical architecture. The mental model you build this week — how to decompose a complex task into a supervised multi-agent pipeline — is framework-independent. The syntax is not.</p>
+<div class="callout callout-key"><p><strong>What you're learning here transfers beyond Claude Code.</strong> Worktrees are a git feature — not a Claude Code invention. The <code>git worktree add</code> command works in any git repository, with any development tool. Agent orchestration patterns (supervisor → specialist, parallel fanout, sequential pipeline) appear in Claude Managed Agents, OpenAI Agents SDK, AutoGen, and the Claude Agent SDK with different syntax but identical architecture. The mental model you build this week — how to decompose a complex task into a supervised multi-agent pipeline — is framework-independent. The syntax is not.</p>
 </div>
 
 <div class="lab-section">
@@ -179,6 +179,62 @@ claude
       </div></label>
     </div>
   </div>
+</div>
+
+<div class="callout callout-info">
+  <strong>Alternative: Claude Managed Agents</strong>
+  <p>The system you just built manages the orchestration loop in Python — your code calls each agent in sequence, handles errors, and wires results together. <strong>Claude Managed Agents</strong> is Anthropic's hosted version of this pattern: you define the agent config once, start a session per investigation, and stream events. The container, tools, and agent loop run on Anthropic's infrastructure.</p>
+  <p>The same SOC investigation, rebuilt as a Managed Agent:</p>
+  <div class="code-block"><pre><code>import anthropic
+
+client = anthropic.Anthropic()
+
+# ── ONE-TIME SETUP (run once, save the IDs) ──────────────────────────────────
+agent = client.beta.agents.create(
+    name="SOC Analyst",
+    model="claude-sonnet-4-6",
+    system="""You are a senior SOC analyst. When given a security alert:
+1. Enrich all IoCs (IPs, domains, hashes) using available tools
+2. Apply CCT analysis: identify TTPs, generate 3 hypotheses with probabilities
+3. Produce a structured incident report in JSON + narrative summary""",
+    tools=[{"type": "agent_toolset_20260401"}],  # bash, read/write, web_search all included
+)
+environment = client.beta.environments.create(
+    name="soc-env",
+    config={"type": "cloud", "networking": {"type": "unrestricted"}},
+)
+# Save agent.id and environment.id — reuse across all investigations
+
+# ── PER-INVESTIGATION (run for each new alert) ────────────────────────────────
+session = client.beta.sessions.create(
+    agent=agent.id,
+    environment_id=environment.id,
+    title="Meridian Financial Incident",
+)
+
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": meridian_incident_text}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="")
+        elif event.type == "agent.tool_use":
+            print(f"\n[Tool: {event.name}]")
+        elif event.type == "session.status_idle":
+            print("\n── Investigation complete ──")
+            break</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p><strong>Custom orchestrator vs. Managed Agents — when to choose:</strong></p>
+  <ul>
+    <li><strong>Custom SDK orchestrator</strong> (this lab): use when you need custom tool execution on your own infrastructure, approval gates before sensitive actions, or fine-grained control over every agent call.</li>
+    <li><strong>Claude Managed Agents</strong>: use when you want Anthropic to host the container and run the loop — ideal for long-running investigations, file-heavy work, and teams that don't want to manage agent infrastructure.</li>
+  </ul>
+  <p>The orchestrator pattern you designed this week transfers directly to Managed Agents. The agent's reasoning logic (recon → analysis → report) lives in the system prompt; what changes is who runs the infrastructure underneath it. You'll evaluate both approaches quantitatively in Unit 5.</p>
 </div>
 
 <div class="deliverables">
@@ -811,7 +867,7 @@ Reason: [one sentence]</code></pre><button class="copy-btn" onclick="copyCode(th
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

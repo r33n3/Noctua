@@ -579,7 +579,7 @@ Return format:
 <thead><tr><th>Course Concept</th><th>Claude Code</th><th>Strands / AWS</th><th>Defense Layer</th></tr></thead>
 <tbody>
 <tr><td>Project context</td><td>CLAUDE.md</td><td>System prompt (agent constructor)</td><td>L1 GUIDANCE</td></tr>
-<tr><td>Security constraints</td><td>CLAUDE.md rules</td><td>System prompt + Bedrock Guardrails</td><td>L1→L2</td></tr>
+<tr><td>Security constraints</td><td>CLAUDE.md rules</td><td>System prompt + NeMo Guardrails / output validation</td><td>L1→L2</td></tr>
 <tr><td>Tool access control</td><td>settings.json allow/deny</td><td>IAM policies + <code>@tool</code> decorator</td><td>L2-3 ENFORCEMENT</td></tr>
 <tr><td>Pre-execution hooks</td><td>PreToolUse hooks (bash)</td><td><code>@tool</code> decorator with validation</td><td>L3 ENFORCEMENT</td></tr>
 <tr><td>Credential management</td><td>noctua-keystore</td><td>AWS Secrets Manager / SSM</td><td>L4 INFRASTRUCTURE</td></tr>
@@ -606,9 +606,18 @@ Return format:
 <p>The Control Translation Matrix above maps your Claude Code patterns to AWS equivalents. Apply the same discipline: noctua-keystore → Secrets Manager handles secrets; agent conversation state → session-scoped memory with explicit persistence gates handles everything else.</p>
 </div>
 <h3 id="strands-sdk-introduction">Strands SDK: Same Concepts, Production Runtime</h3>
-<p>Students already understand agents, tools, prompts, and the agentic loop from Semester 1. Strands is the same concepts with a production runtime:</p>
+<p>Students already understand agents, tools, prompts, and the agentic loop from Semester 1. Strands is the same concepts with a production runtime. In this course, agents call Claude directly via the Anthropic SDK — the API key is retrieved from AWS Secrets Manager at runtime, never hardcoded:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">tool</span>
-<span class="kn">from</span> <span class="nn">strands.models</span> <span class="kn">import</span> <span class="n">BedrockModel</span>
+<span class="kn">import</span> <span class="nn">anthropic</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># Retrieve ANTHROPIC_API_KEY from AWS Secrets Manager (production pattern)</span>
+<span class="k">def</span> <span class="nf">get_api_key</span><span class="p">():</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'secretsmanager'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s1">'us-east-1'</span><span class="p">)</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="s1">'noctua/soc-agent/api-keys'</span><span class="p">)[</span><span class="s1">'SecretString'</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">secret</span><span class="p">[</span><span class="s1">'ANTHROPIC_API_KEY'</span><span class="p">]</span>
 
 <span class="c1"># A tool is a Python function with a docstring — same concept as an MCP tool definition</span>
 <span class="nd">@tool</span>
@@ -620,9 +629,11 @@ Return format:
     <span class="c1"># Implementation here — same logic as your MCP server</span>
     <span class="o">...</span>
 
-<span class="c1"># An agent is a model + tools + system prompt — same as Claude Code</span>
+<span class="c1"># Claude API client — key retrieved from Secrets Manager, not environment</span>
+<span class="n">claude</span> <span class="o">=</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">get_api_key</span><span class="p">())</span>
+
+<span class="c1"># An agent is tools + system prompt — same as Claude Code</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">model</span><span class="o">=</span><span class="n">BedrockModel</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="s2">"anthropic.claude-sonnet-4-6-20250514-v1:0"</span><span class="p">),</span>
     <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">lookup_cve</span><span class="p">,</span> <span class="n">search_logs</span><span class="p">,</span> <span class="n">generate_finding</span><span class="p">],</span>
     <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"""You are a security triage agent.
     Analyze incoming alerts, look up relevant CVEs, correlate with log data,
@@ -644,7 +655,7 @@ Return format:
 
 <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">mcp_client</span><span class="p">],</span> <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"..."</span><span class="p">)</span>
 <span class="c1"># MCP protocol is the same — tools are portable across runtimes</span></code></pre></div>
-<div class="callout callout-tip"><p><strong>Why Strands for this course:</strong> (1) MCP-native — your Week 3–4 servers plug in without modification. (2) Model-driven — the LLM handles orchestration like Claude Code, lower learning curve. (3) AWS-native — AgentCore, Secrets Manager, Bedrock Guardrails, CloudWatch all integrate natively. (4) OpenTelemetry built-in — production observability without extra work. (5) Apache 2.0 open source — inspect the source, understand the internals.</p></div>
+<div class="callout callout-tip"><p><strong>Why Strands for this course:</strong> (1) MCP-native — your Week 3–4 servers plug in without modification. (2) Model-driven — the LLM handles orchestration like Claude Code, lower learning curve. (3) AWS-native — Secrets Manager, ECS, CloudWatch all integrate natively. (4) OpenTelemetry built-in — production observability without extra work. (5) Apache 2.0 open source — inspect the source, understand the internals.</p></div>
 <h4 id="the-non-human-identity-crisis">The Non-Human Identity Crisis</h4>
 <p><strong>The Numbers:</strong></p>
 <ul>
@@ -2170,28 +2181,65 @@ SLO values: 95% success rate, 80% accuracy. Adjust if needed.
 <li>Build operational runbooks for production agentic systems</li>
 <li>Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance</li>
 </ul>
-<div class="callout callout-key"><p><strong>Primary Deployment Target: AWS AgentCore</strong><br/>
-For the capstone, AWS AgentCore is the primary deployment path. It is the managed runtime that handles what you'd otherwise configure manually:</p>
+<div class="callout callout-key"><p><strong>Primary Deployment Target: AWS ECS on Fargate</strong><br/>
+For the capstone, ECS on Fargate is the primary deployment path. It provides the managed container runtime with the infrastructure controls you need:</p>
 <ul>
-<li>IAM role per agent — enforced by the runtime, not your code</li>
-<li>Bedrock Guardrails — applied at the API layer, outside the reasoning loop</li>
-<li>Secrets Manager integration — no environment variables, no keystore in production</li>
-<li>OpenTelemetry → CloudWatch — automatic, no instrumentation code required</li>
+<li>IAM role per ECS task — your agent gets its own identity, enforced by the runtime</li>
+<li>Secrets Manager integration — ANTHROPIC_API_KEY injected at launch, never in the image</li>
+<li>VPC + security group egress rules — restrict outbound to api.anthropic.com and known domains only</li>
+<li>OpenTelemetry → CloudWatch — instrument your agent code with OTel; CloudWatch receives the spans</li>
 <li>MCP server connections — native Strands <code>MCPClient</code> support</li>
 </ul>
-<p><strong>Pre-capstone checkpoint (before Week 13):</strong> Verify your AWS account has Bedrock model access enabled and can run a basic <code>Agent(model=BedrockModel(...))</code> call. Bedrock access approval can take 24–48 hours — do not leave this for Week 13 lab time.</p>
-<p>Lambda is the fallback path if Bedrock/AgentCore access is delayed. The Strands code is identical — only the deployment target changes.</p></div>
-<h4 id="bedrock-guardrails">Bedrock Guardrails: Layer 2 Enforcement in Production</h4>
-<p>Guardrails check both input (what reaches the agent) and output (what the agent produces). They operate at the API layer — the agent cannot bypass them because they run outside the reasoning loop.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands.models</span> <span class="kn">import</span> <span class="n">BedrockModel</span>
+<p><strong>Architecture pattern:</strong> Your container retrieves ANTHROPIC_API_KEY from Secrets Manager on startup, instantiates an <code>anthropic.Anthropic(api_key=...)</code> client, and calls <code>client.messages.create()</code> for each agent turn. All AWS infrastructure (IAM, networking, observability) is provider-agnostic — swap the SDK and key to use a different provider without touching any infrastructure config.</p>
+<p>Lambda is a valid fallback for low-volume or event-triggered deployments. The agent code is identical — only the container entrypoint and scaling model change.</p></div>
+<h4 id="claude-api-deployment-patterns">Claude API Deployment Patterns: Key Management, Rate Limiting &amp; Cost Monitoring</h4>
+<p>Calling Claude directly via the Anthropic SDK gives you full control over key management, retry behavior, and cost tracking. Apply these patterns in production:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">anthropic</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">BedrockModel</span><span class="p">(</span>
-    <span class="n">model_id</span><span class="o">=</span><span class="s2">"anthropic.claude-sonnet-4-6-20250514-v1:0"</span><span class="p">,</span>
-    <span class="n">guardrail_id</span><span class="o">=</span><span class="s2">"your-guardrail-id"</span><span class="p">,</span>
-    <span class="n">guardrail_version</span><span class="o">=</span><span class="s2">"1"</span>
-<span class="p">)</span>
-<span class="c1"># Configure in Bedrock console: block PII in output, block credential patterns,</span>
-<span class="c1"># content filtering for prompt injection, topic restrictions (security domain only)</span></code></pre></div>
+<span class="c1"># Pattern 1: Key management via Secrets Manager</span>
+<span class="c1"># Never read from os.environ in production — always from the vault</span>
+<span class="k">def</span> <span class="nf">get_claude_client</span><span class="p">():</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'secretsmanager'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s1">'us-east-1'</span><span class="p">)</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+        <span class="n">sm</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="s1">'noctua/soc-agent/api-keys'</span><span class="p">)[</span><span class="s1">'SecretString'</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">secret</span><span class="p">[</span><span class="s1">'ANTHROPIC_API_KEY'</span><span class="p">])</span>
+
+<span class="c1"># Pattern 2: Retry with exponential backoff for rate limit errors</span>
+<span class="k">def</span> <span class="nf">call_claude_with_retry</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="s2">"claude-sonnet-4-6"</span><span class="p">,</span>
+                <span class="n">max_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="n">messages</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">RateLimitError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="n">wait</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>  <span class="c1"># 1s, 2s, 4s</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rate limited — retrying in </span><span class="si">{</span><span class="n">wait</span><span class="si">}</span><span class="s2">s (attempt </span><span class="si">{</span><span class="n">attempt</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait</span><span class="p">)</span>
+
+<span class="c1"># Pattern 3: Cost monitoring — track token usage per call</span>
+<span class="k">def</span> <span class="nf">call_with_cost_tracking</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">call_claude_with_retry</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">usage</span>
+    <span class="c1"># Emit as OTel metric for CloudWatch cost dashboard</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"claude_api_call"</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"agent_id"</span><span class="p">:</span> <span class="n">agent_id</span><span class="p">,</span>
+        <span class="s2">"input_tokens"</span><span class="p">:</span> <span class="n">usage</span><span class="o">.</span><span class="n">input_tokens</span><span class="p">,</span>
+        <span class="s2">"output_tokens"</span><span class="p">:</span> <span class="n">usage</span><span class="o">.</span><span class="n">output_tokens</span><span class="p">,</span>
+        <span class="s2">"model"</span><span class="p">:</span> <span class="s2">"claude-sonnet-4-6"</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">response</span>
+<span class="c1"># Output filtering (Layer 2 enforcement) is applied in agent code, not at</span>
+<span class="c1"># the API layer. Use NeMo Guardrails or a PostToolUse hook to check</span>
+<span class="c1"># responses for PII, credential patterns, and off-topic content.</span></code></pre></div>
 <h4 id="deployment-architectures-for-agents">Deployment Architectures for Agents</h4>
 <p>Choose based on your operational requirements:</p>
 <table>
@@ -4096,7 +4144,7 @@ Phase 4: Implementation
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
-    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
+    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps. Deploys Claude API via Secrets Manager on ECS.",tags:["unit7","production","security","nhi","spiffe","claude api","ecs"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
     // Key topics
     {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},

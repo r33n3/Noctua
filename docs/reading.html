@@ -73,7 +73,7 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 <ul>
 <li><strong>"How LinkedIn Improved AI Coding Agent Adoption Through Knowledge Bases"</strong> — The New Stack (2025). After implementing an agentic knowledge base encoding internal systems, frameworks, and practices, LinkedIn saw 20% increase in AI coding adoption and approximately 70% reduction in issue triage time. Demonstrates that out-of-the-box agents fail not because of model capability but because of missing institutional context. https://thenewstack.io/</li>
 <li><strong>"A Survey on the Memory Mechanism of Large Language Model based Agents"</strong> (arXiv:2404.13501). Comprehensive taxonomy of agent memory: sensory (in-context), short-term (working), long-term (external storage), and episodic vs. semantic distinctions. Core framework for understanding what agents can and cannot remember across sessions. https://arxiv.org/abs/2404.13501</li>
-<li><strong>Memory in AI Agents</strong> — LangChain Blog (2024). Practical breakdown of four memory types for production agents: in-context storage (fast, bounded by window), external storage (databases, vector stores), episodic memory (past experiences), semantic memory (facts and knowledge). https://blog.langchain.dev/memory-for-agents/</li>
+<li><strong>Memory in AI Agents</strong> — LangChain Blog (2024). Practical breakdown of four memory types for production agents: in-context storage (fast, bounded by window), external storage (databases, vector stores), episodic memory (past experiences), semantic memory (facts and knowledge). Useful taxonomy independent of framework choice. https://blog.langchain.dev/memory-for-agents/</li>
 </ul>
 <h3 id="agent-kb-expanded">Expanded</h3>
 <ul>
@@ -234,8 +234,8 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 <h2 id="framework-and-platform-documentation">Framework and Platform Documentation</h2>
 <ul>
 <li><strong>Claude Agent SDK</strong> — https://platform.claude.com/docs/en/agent-sdk/overview</li>
-<li><strong>CrewAI</strong> — https://docs.crewai.com/</li>
-<li><strong>LangGraph</strong> — https://langchain-ai.github.io/langgraph/</li>
+<li><strong>Claude Managed Agents</strong> (Anthropic) — https://docs.anthropic.com/en/docs/agents</li>
+<li><strong>OpenAI Agents SDK</strong> (openai-agents-python) — https://github.com/openai/openai-agents-python</li>
 <li><strong>AutoGen/AG2</strong> — https://microsoft.github.io/autogen/</li>
 <li><strong>Ollama</strong> — https://ollama.ai/</li>
 <li><strong>Garak</strong> (NVIDIA) — https://github.com/NVIDIA/garak</li>
@@ -416,12 +416,12 @@ Credit: The agentic engineering patterns taught in this course build on foundati
 <tr>
 <td>2</td>
 <td>Orchestration Frameworks</td>
-<td>CrewAI Documentation (full)</td>
+<td>Anthropic — Claude Managed Agents documentation (full); OpenAI Agents SDK README and quickstart</td>
 </tr>
 <tr>
 <td>3</td>
 <td>Workflow &amp; State</td>
-<td>LangGraph Documentation (full); NIST Incident Response Lifecycle</td>
+<td>Anthropic — Claude Managed Agents: subagent patterns and orchestration; NIST Incident Response Lifecycle</td>
 </tr>
 <tr>
 <td>4</td>
@@ -494,7 +494,7 @@ Credit: The agentic engineering patterns taught in this course build on foundati
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude managed agents","openai agents sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
