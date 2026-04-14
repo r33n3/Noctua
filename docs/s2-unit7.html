@@ -576,19 +576,19 @@ Return format:
 <p>Everything you built in Semester 1 runs in Claude Code on your machine. In production, your agent runs on infrastructure you configure, with credentials you manage, on networks you control, serving requests you monitor. Every decision you deferred in development becomes a security decision in production.</p>
 <div class="callout callout-key"><p><strong>Control Translation Matrix</strong></p>
 <table>
-<thead><tr><th>Course Concept</th><th>Claude Code</th><th>Strands / AWS</th><th>Defense Layer</th></tr></thead>
+<thead><tr><th>Course Concept</th><th>Claude Code</th><th>Production (Managed Agents / Container)</th><th>Defense Layer</th></tr></thead>
 <tbody>
-<tr><td>Project context</td><td>CLAUDE.md</td><td>System prompt (agent constructor)</td><td>L1 GUIDANCE</td></tr>
+<tr><td>Project context</td><td>CLAUDE.md</td><td>System prompt (agent YAML / constructor)</td><td>L1 GUIDANCE</td></tr>
 <tr><td>Security constraints</td><td>CLAUDE.md rules</td><td>System prompt + NeMo Guardrails / output validation</td><td>L1→L2</td></tr>
-<tr><td>Tool access control</td><td>settings.json allow/deny</td><td>IAM policies + <code>@tool</code> decorator</td><td>L2-3 ENFORCEMENT</td></tr>
-<tr><td>Pre-execution hooks</td><td>PreToolUse hooks (bash)</td><td><code>@tool</code> decorator with validation</td><td>L3 ENFORCEMENT</td></tr>
-<tr><td>Credential management</td><td>noctua-keystore</td><td>AWS Secrets Manager / SSM</td><td>L4 INFRASTRUCTURE</td></tr>
-<tr><td>Network isolation</td><td>N/A (local machine)</td><td>Security groups + VPC + egress rules</td><td>L4 INFRASTRUCTURE</td></tr>
-<tr><td>Observability</td><td>/cost, /context</td><td>OpenTelemetry → CloudWatch/Grafana</td><td>L2-3</td></tr>
-<tr><td>Agent identity</td><td>Session-based</td><td>IAM role per agent</td><td>L2 ENFORCEMENT</td></tr>
-<tr><td>Failure caps</td><td><code>--max-turns</code> flag</td><td><code>max_iterations</code> parameter</td><td>L3 ENFORCEMENT</td></tr>
-<tr><td>Multi-agent</td><td>Subagents + Agent Teams</td><td>Graph / Swarm / Workflow patterns</td><td>Architecture</td></tr>
-<tr><td>Deployment isolation</td><td>Git worktrees</td><td>Separate Lambda / containers per agent</td><td>L4 INFRASTRUCTURE</td></tr>
+<tr><td>Tool access control</td><td>settings.json allow/deny</td><td>Agent YAML tool scope + <code>agent-identities.yaml</code> allowed_tools</td><td>L2-3 ENFORCEMENT</td></tr>
+<tr><td>Pre-execution hooks</td><td>PreToolUse hooks (bash)</td><td>Input validation in tool handler / MCP server</td><td>L3 ENFORCEMENT</td></tr>
+<tr><td>Credential management</td><td>noctua-keystore</td><td>GitHub Secrets / environment variable — never hardcoded</td><td>L4 INFRASTRUCTURE</td></tr>
+<tr><td>Network isolation</td><td>N/A (local machine)</td><td>Managed Agents: Anthropic-hosted container; Custom: container networking</td><td>L4 INFRASTRUCTURE</td></tr>
+<tr><td>Observability</td><td>/cost, /context</td><td>OpenTelemetry + session events stream → Grafana / dashboard of choice</td><td>L2-3</td></tr>
+<tr><td>Agent identity</td><td>Session-based</td><td>Persistent agent_id (Managed Agents) or container identity</td><td>L2 ENFORCEMENT</td></tr>
+<tr><td>Failure caps</td><td><code>--max-turns</code> flag</td><td><code>max_iterations</code> parameter / session timeout</td><td>L3 ENFORCEMENT</td></tr>
+<tr><td>Multi-agent</td><td>Subagents + Agent Teams</td><td>Multiple agents with distinct agent_ids and scoped tool sets</td><td>Architecture</td></tr>
+<tr><td>Deployment isolation</td><td>Git worktrees</td><td>Separate Managed Agent per role / separate containers per agent</td><td>L4 INFRASTRUCTURE</td></tr>
 </tbody>
 </table>
 <p><strong>Key teaching point:</strong> Layer 1 controls (CLAUDE.md → system prompts) remain GUIDANCE in both environments. Layer 3-4 controls change implementation but stay ENFORCEMENT. The External Enforcement Principle is runtime-agnostic.</p></div>
@@ -603,59 +603,44 @@ Return format:
 <li><strong>Scratchpad files (plans/)</strong> — explicit write path, subject to retention policy; delete after project closes</li>
 <li><strong>Vector DB / external memory</strong> — highest risk; requires classification at write time and right-to-erasure implementation path (GDPR Art. 17)</li>
 </ul>
-<p>The Control Translation Matrix above maps your Claude Code patterns to AWS equivalents. Apply the same discipline: noctua-keystore → Secrets Manager handles secrets; agent conversation state → session-scoped memory with explicit persistence gates handles everything else.</p>
+<p>The Control Translation Matrix above maps your Claude Code patterns to their production equivalents. Apply the same discipline: noctua-keystore → GitHub Secrets handles credentials; agent conversation state → session-scoped memory with explicit persistence gates handles everything else.</p>
 </div>
-<h3 id="strands-sdk-introduction">Strands SDK: Same Concepts, Production Runtime</h3>
-<p>Students already understand agents, tools, prompts, and the agentic loop from Semester 1. Strands is the same concepts with a production runtime. In this course, agents call Claude directly via the Anthropic SDK — the API key is retrieved from AWS Secrets Manager at runtime, never hardcoded:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">tool</span>
-<span class="kn">import</span> <span class="nn">anthropic</span>
-<span class="kn">import</span> <span class="nn">boto3</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<h3 id="production-runtime-options">Production Runtime: Managed Agents vs. Container</h3>
+<p>Everything you built in Semester 1 runs in Claude Code on your machine. In production you have two paths — both use the same system prompt, same agent logic, same Anthropic SDK:</p>
+<div class="callout callout-key"><p><strong>Path A — Claude Managed Agents</strong>: Anthropic hosts the loop and tool execution. You deployed this in Unit 4 Week 15. The agent_id is the persistent production identity. Sessions run in Anthropic's container — you never manage a server. Credential management is just <code>ANTHROPIC_API_KEY</code> in your environment.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">anthropic</span><span class="p">,</span> <span class="nn">json</span><span class="p">,</span> <span class="nn">os</span>
 
-<span class="c1"># Retrieve ANTHROPIC_API_KEY from AWS Secrets Manager (production pattern)</span>
-<span class="k">def</span> <span class="nf">get_api_key</span><span class="p">():</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'secretsmanager'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s1">'us-east-1'</span><span class="p">)</span>
-    <span class="n">secret</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="s1">'noctua/soc-agent/api-keys'</span><span class="p">)[</span><span class="s1">'SecretString'</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">secret</span><span class="p">[</span><span class="s1">'ANTHROPIC_API_KEY'</span><span class="p">]</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">()</span>  <span class="c1"># ANTHROPIC_API_KEY from environment</span>
 
-<span class="c1"># A tool is a Python function with a docstring — same concept as an MCP tool definition</span>
-<span class="nd">@tool</span>
-<span class="k">def</span> <span class="nf">lookup_cve</span><span class="p">(</span><span class="n">cve_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="s2">"""Look up a CVE by ID from the National Vulnerability Database.
-    Use this when you need details about a specific vulnerability
-    including severity, affected products, and description.
-    Do NOT use this for general threat intelligence searches."""</span>
-    <span class="c1"># Implementation here — same logic as your MCP server</span>
-    <span class="o">...</span>
+<span class="c1"># Load the agent deployed in Unit 4 Week 15</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"managed_agent_ids.json"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-<span class="c1"># Claude API client — key retrieved from Secrets Manager, not environment</span>
-<span class="n">claude</span> <span class="o">=</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">get_api_key</span><span class="p">())</span>
+<span class="c1"># Run a production investigation</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">agent</span><span class="o">=</span><span class="n">ids</span><span class="p">[</span><span class="s2">"agent_id"</span><span class="p">],</span>
+    <span class="n">environment_id</span><span class="o">=</span><span class="n">ids</span><span class="p">[</span><span class="s2">"environment_id"</span><span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Production Investigation"</span><span class="p">,</span>
+<span class="p">)</span></code></pre></div>
+</div>
+<div class="callout callout-key"><p><strong>Path B — Container</strong>: You own the compute. The Anthropic SDK runs in your container; the key comes from the environment. Push to GitHub Container Registry, deploy to any runtime (local Docker, any cloud provider's container service).</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">anthropic</span><span class="p">,</span> <span class="nn">os</span>
 
-<span class="c1"># An agent is tools + system prompt — same as Claude Code</span>
-<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
-    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">lookup_cve</span><span class="p">,</span> <span class="n">search_logs</span><span class="p">,</span> <span class="n">generate_finding</span><span class="p">],</span>
-    <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"""You are a security triage agent.
-    Analyze incoming alerts, look up relevant CVEs, correlate with log data,
-    and produce structured findings. NEVER execute remediation actions — only report.
-    All findings MUST include evidence and severity classification."""</span>
-<span class="p">)</span>
+<span class="c1"># Key from environment — same in dev and prod, never hardcoded</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">()</span>
 
-<span class="c1"># Run — same agentic loop you learned in Semester 1</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">agent</span><span class="p">(</span><span class="s2">"Analyze alert: suspicious outbound traffic to 185.x.x.x on port 4444"</span><span class="p">)</span></code></pre></div>
-<p>Your MCP servers from Weeks 3–4 work directly with Strands — no modification needed:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">strands</span> <span class="kn">import</span> <span class="n">Agent</span>
-<span class="kn">from</span> <span class="nn">strands.tools.mcp</span> <span class="kn">import</span> <span class="n">MCPClient</span>
-
-<span class="n">mcp_client</span> <span class="o">=</span> <span class="n">MCPClient</span><span class="p">(</span>
-    <span class="n">command</span><span class="o">=</span><span class="s2">"node"</span><span class="p">,</span>
-    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s2">"./servers/cve-lookup/index.js"</span><span class="p">],</span>
-    <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s2">"NVD_API_KEY"</span><span class="p">:</span> <span class="s2">"${NVD_KEY}"</span><span class="p">}</span>
-<span class="p">)</span>
-
-<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">mcp_client</span><span class="p">],</span> <span class="n">system_prompt</span><span class="o">=</span><span class="s2">"..."</span><span class="p">)</span>
-<span class="c1"># MCP protocol is the same — tools are portable across runtimes</span></code></pre></div>
-<div class="callout callout-tip"><p><strong>Why Strands for this course:</strong> (1) MCP-native — your Week 3–4 servers plug in without modification. (2) Model-driven — the LLM handles orchestration like Claude Code, lower learning curve. (3) AWS-native — Secrets Manager, ECS, CloudWatch all integrate natively. (4) OpenTelemetry built-in — production observability without extra work. (5) Apache 2.0 open source — inspect the source, understand the internals.</p></div>
+<span class="c1"># Your MCP servers from Unit 2 connect here — protocol is unchanged</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"claude-sonnet-4-6"</span><span class="p">,</span>
+    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">8096</span><span class="p">,</span>
+    <span class="n">system</span><span class="o">=</span><span class="s2">"""You are a security triage agent.
+    Analyze incoming alerts, correlate with threat intelligence,
+    and produce structured findings. NEVER execute remediation — only report."""</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="n">your_mcp_tools</span><span class="p">,</span>
+    <span class="n">messages</span><span class="o">=</span><span class="n">conversation</span><span class="p">,</span>
+<span class="p">)</span></code></pre></div>
+</div>
+<div class="callout callout-tip"><p><strong>Which path for Unit 7?</strong> Both. Week 10 governs your Managed Agent as an NHI. Week 12 containerizes your agent and pushes it to GitHub Container Registry. By the end of Unit 7 you have two production artifacts — and understand the tradeoffs between them. The capstone uses whichever fits the system you're building.</p></div>
 <h4 id="the-non-human-identity-crisis">The Non-Human Identity Crisis</h4>
 <p><strong>The Numbers:</strong></p>
 <ul>
@@ -2181,33 +2166,28 @@ SLO values: 95% success rate, 80% accuracy. Adjust if needed.
 <li>Build operational runbooks for production agentic systems</li>
 <li>Apply patterns from PeaRL's environment hierarchy and MASS's compliance mapping approach to design your own deployment governance</li>
 </ul>
-<div class="callout callout-key"><p><strong>Primary Deployment Target: AWS ECS on Fargate</strong><br/>
-For the capstone, ECS on Fargate is the primary deployment path. It provides the managed container runtime with the infrastructure controls you need:</p>
+<div class="callout callout-key"><p><strong>Two Production Paths for the Capstone</strong><br/>
+Unit 7 Week 12 produces two deployment artifacts. Choose based on operational requirements:</p>
 <ul>
-<li>IAM role per ECS task — your agent gets its own identity, enforced by the runtime</li>
-<li>Secrets Manager integration — ANTHROPIC_API_KEY injected at launch, never in the image</li>
-<li>VPC + security group egress rules — restrict outbound to api.anthropic.com and known domains only</li>
-<li>OpenTelemetry → CloudWatch — instrument your agent code with OTel; CloudWatch receives the spans</li>
-<li>MCP server connections — native Strands <code>MCPClient</code> support</li>
+<li><strong>Path A — Managed Agents:</strong> Anthropic hosts the loop. Your <code>agent_id</code> from <code>managed_agent_ids.json</code> is the persistent NHI identity. <code>ANTHROPIC_API_KEY</code> lives in GitHub Secrets, never in source. No container to maintain.</li>
+<li><strong>Path B — Container (GitHub Container Registry):</strong> You control the runtime. Push to <code>ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</code> and run anywhere Docker runs. <code>ANTHROPIC_API_KEY</code> injected as an environment variable at launch, never baked into the image.</li>
 </ul>
-<p><strong>Architecture pattern:</strong> Your container retrieves ANTHROPIC_API_KEY from Secrets Manager on startup, instantiates an <code>anthropic.Anthropic(api_key=...)</code> client, and calls <code>client.messages.create()</code> for each agent turn. All AWS infrastructure (IAM, networking, observability) is provider-agnostic — swap the SDK and key to use a different provider without touching any infrastructure config.</p>
-<p>Lambda is a valid fallback for low-volume or event-triggered deployments. The agent code is identical — only the container entrypoint and scaling model change.</p></div>
+<p><strong>Common controls:</strong> API key in GitHub Secrets (never in image or repo), OpenTelemetry instrumentation for observability, non-root user in container, TruffleHog + Trivy security gates in the pipeline.</p>
+<p>Path A is recommended for students who completed the Managed Agent deployment in S1 Unit 4. Path B is the right choice when you need full control over the runtime or are deploying to a customer environment.</p></div>
 <h4 id="claude-api-deployment-patterns">Claude API Deployment Patterns: Key Management, Rate Limiting &amp; Cost Monitoring</h4>
 <p>Calling Claude directly via the Anthropic SDK gives you full control over key management, retry behavior, and cost tracking. Apply these patterns in production:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">anthropic</span>
-<span class="kn">import</span> <span class="nn">boto3</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="c1"># Pattern 1: Key management via Secrets Manager</span>
-<span class="c1"># Never read from os.environ in production — always from the vault</span>
+<span class="c1"># Pattern 1: Key management via GitHub Secrets / environment variable</span>
+<span class="c1"># In GitHub Actions: secrets.ANTHROPIC_API_KEY is injected as an env var.</span>
+<span class="c1"># In a container: pass -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY at run time.</span>
+<span class="c1"># Never hardcode the key or bake it into the image.</span>
 <span class="k">def</span> <span class="nf">get_claude_client</span><span class="p">():</span>
-    <span class="n">sm</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'secretsmanager'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s1">'us-east-1'</span><span class="p">)</span>
-    <span class="n">secret</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
-        <span class="n">sm</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">(</span><span class="n">SecretId</span><span class="o">=</span><span class="s1">'noctua/soc-agent/api-keys'</span><span class="p">)[</span><span class="s1">'SecretString'</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">secret</span><span class="p">[</span><span class="s1">'ANTHROPIC_API_KEY'</span><span class="p">])</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"ANTHROPIC_API_KEY"</span><span class="p">]</span>  <span class="c1"># raises KeyError if missing — fail fast</span>
+    <span class="k">return</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
 
 <span class="c1"># Pattern 2: Retry with exponential backoff for rate limit errors</span>
 <span class="k">def</span> <span class="nf">call_claude_with_retry</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
@@ -2229,7 +2209,7 @@ For the capstone, ECS on Fargate is the primary deployment path. It provides the
 <span class="k">def</span> <span class="nf">call_with_cost_tracking</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">call_claude_with_retry</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span>
     <span class="n">usage</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">usage</span>
-    <span class="c1"># Emit as OTel metric for CloudWatch cost dashboard</span>
+    <span class="c1"># Emit as OTel metric — your OTel collector receives the spans</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"claude_api_call"</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">"agent_id"</span><span class="p">:</span> <span class="n">agent_id</span><span class="p">,</span>
         <span class="s2">"input_tokens"</span><span class="p">:</span> <span class="n">usage</span><span class="o">.</span><span class="n">input_tokens</span><span class="p">,</span>
@@ -2283,7 +2263,7 @@ For the capstone, ECS on Fargate is the primary deployment path. It provides the
 <p><strong>Production Deployment Topology:</strong></p>
 <div class="codehilite"><pre><span></span><code>CloudFront / API Gateway (Authentication, Rate Limiting)
            ↓
-    FastAPI Backend Service (Running in ECS on EC2/Fargate)
+    FastAPI Backend Service (Container: GHCR image, any Docker runtime)
            ↓
     ┌──────────────────────────────────────────────────┐
     │                                                  │
@@ -2299,7 +2279,7 @@ For the capstone, ECS on Fargate is the primary deployment path. It provides the
     └──────────────┴─────────────────┴──────────────┘
 </code></pre></div>
 <p><strong>Why This Architecture:</strong></p>
-<ol><li><strong>Separation of Concerns:</strong> Core business logic is isolated from AI integration. The MCP server is a thin translation layer—it calls REST endpoints, nothing more.</li><li><strong>Multiple Consumers:</strong> The same FastAPI service serves:<ul><li>Agents via MCP server (calls <code>/api/v1/scan</code>, <code>/api/v1/enrich-alert</code>, etc.)</li><li>Dashboards via REST API directly</li><li>CI/CD pipelines via webhook triggers</li><li>Future protocols without rewriting core logic</li></ul></li><li><strong>Production Security:</strong> Authentication, rate limiting, audit logging, and compliance are enforced at the API boundary—not scattered across tools.</li><li><strong>Observability &amp; Cost:</strong> The containerized FastAPI service becomes your deployable artifact. You push it to ECR, deploy to ECS, and monitoring hooks into CloudWatch and X-Ray automatically.</li><li><strong>Rapid Iteration:</strong> When OWASP Top 10 changes or a new threat emerges, you update the business logic in the API. The MCP server continues calling the same endpoints—no agent code changes needed.</li></ol>
+<ol><li><strong>Separation of Concerns:</strong> Core business logic is isolated from AI integration. The MCP server is a thin translation layer—it calls REST endpoints, nothing more.</li><li><strong>Multiple Consumers:</strong> The same FastAPI service serves:<ul><li>Agents via MCP server (calls <code>/api/v1/scan</code>, <code>/api/v1/enrich-alert</code>, etc.)</li><li>Dashboards via REST API directly</li><li>CI/CD pipelines via webhook triggers</li><li>Future protocols without rewriting core logic</li></ul></li><li><strong>Production Security:</strong> Authentication, rate limiting, audit logging, and compliance are enforced at the API boundary—not scattered across tools.</li><li><strong>Observability &amp; Cost:</strong> The containerized FastAPI service becomes your deployable artifact. You push it to GHCR, run it anywhere Docker is available, and OTel instrumentation routes spans to Grafana Tempo or any compatible collector.</li><li><strong>Rapid Iteration:</strong> When OWASP Top 10 changes or a new threat emerges, you update the business logic in the API. The MCP server continues calling the same endpoints—no agent code changes needed.</li></ol>
 <p><strong>Key Design Pattern: The FastAPI Microservice</strong></p>
 <p>Each agentic security capability becomes a FastAPI microservice:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">RateLimiter</span>
@@ -2387,52 +2367,47 @@ For the capstone, ECS on Fargate is the primary deployment path. It provides the
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </code></pre></div>
-<p><strong>ECS Deployment with IaC:</strong></p>
-<p>The FastAPI service containerizes and deploys as an ECS task:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># CloudFormation / Terraform manages infrastructure as code</span><span class="w"></span>
-<span class="nt">ECSTaskDefinition</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Image</span><span class="p">:</span><span class="w"> </span><span class="s">"123456789012.dkr.ecr.us-east-1.amazonaws.com/threat-analysis:1.0.0"</span><span class="w"></span>
-<span class="w">  </span><span class="nt">PortMappings</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ContainerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1024</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DATABASE_URL</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Value</span><span class="p">:</span><span class="w"> </span><span class="kt">!Sub</span><span class="w"> </span><span class="s">"postgresql://${RDSEndpoint}/threatdb"</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOG_LEVEL</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Value</span><span class="p">:</span><span class="w"> </span><span class="s">"info"</span><span class="w"></span>
+<p><strong>Container Deployment (Path B) — GitHub Container Registry:</strong></p>
+<p>The FastAPI service containerizes and publishes to GHCR. No cloud account needed — GHCR is built into GitHub.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Build, tag, and push to GitHub Container Registry</span><span class="w"></span>
+<span class="c1"># Run these from your terminal (or in the CI pipeline)</span><span class="w"></span>
 
-<span class="nt">ECSService</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">DesiredCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">  </span><span class="c1"># 3 instances for high availability</span><span class="w"></span>
-<span class="w">  </span><span class="nt">DeploymentStrategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rolling</span><span class="w">  </span><span class="c1"># Update one at a time</span><span class="w"></span>
-<span class="w">  </span><span class="nt">HealthCheck</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">HttpEndpoint</span><span class="p">:</span><span class="w"> </span><span class="s">"/health"</span><span class="w"></span>
-<span class="w">    </span><span class="nt">IntervalSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"></span>
-<span class="w">    </span><span class="nt">TimeoutSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="c1"># Step 1: Authenticate to GHCR using a GitHub Personal Access Token (PAT)</span><span class="w"></span>
+<span class="c1">#   Set GITHUB_TOKEN in your environment: export GITHUB_TOKEN=ghp_...</span><span class="w"></span>
+<span class="nt">Login</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">echo</span><span class="w"> </span><span class="s">$GITHUB_TOKEN</span><span class="w"> </span><span class="s">|</span><span class="w"> </span><span class="s">docker</span><span class="w"> </span><span class="s">login</span><span class="w"> </span><span class="s">ghcr.io</span><span class="w"> </span><span class="s">-u</span><span class="w"> </span><span class="s">YOUR_GITHUB_USERNAME</span><span class="w"> </span><span class="s">--password-stdin</span>
 
-<span class="nt">CloudWatchLogs</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">LogGroup</span><span class="p">:</span><span class="w"> </span><span class="s">"/ecs/threat-analysis"</span><span class="w"></span>
-<span class="w">  </span><span class="nt">RetentionInDays</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
-<span class="w">  </span><span class="nt">Alarms</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">MetricName</span><span class="p">:</span><span class="w"> </span><span class="s">"ErrorRate"</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5%</span><span class="w">  </span><span class="c1"># Alert if &gt; 5% errors</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">MetricName</span><span class="p">:</span><span class="w"> </span><span class="s">"LatencyP99"</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000ms</span><span class="w">  </span><span class="c1"># Alert if p99 latency &gt; 2 sec</span><span class="w"></span>
+<span class="c1"># Step 2: Build and tag the image</span><span class="w"></span>
+<span class="nt">Build</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">docker</span><span class="w"> </span><span class="s">build</span><span class="w"> </span><span class="s">-t</span><span class="w"> </span><span class="s">ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</span><span class="w"> </span><span class="s">.</span>
+
+<span class="c1"># Step 3: Scan for vulnerabilities before pushing</span><span class="w"></span>
+<span class="nt">Scan</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">trivy</span><span class="w"> </span><span class="s">image</span><span class="w"> </span><span class="s">--severity</span><span class="w"> </span><span class="s">CRITICAL</span><span class="w"> </span><span class="s">ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</span>
+
+<span class="c1"># Step 4: Push to GHCR (blocks if Trivy found CRITICAL CVEs)</span><span class="w"></span>
+<span class="nt">Push</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">docker</span><span class="w"> </span><span class="s">push</span><span class="w"> </span><span class="s">ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</span>
+
+<span class="c1"># Step 5: Run anywhere Docker is available</span><span class="w"></span>
+<span class="c1">#   ANTHROPIC_API_KEY is injected at run time — never baked into the image</span><span class="w"></span>
+<span class="nt">Run</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">docker</span><span class="w"> </span><span class="s">run</span><span class="w"> </span><span class="s">-e</span><span class="w"> </span><span class="s">ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY</span><span class="w"> </span><span class="s">ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</span>
 </code></pre></div>
 <p><strong>DevSecOps Pipeline:</strong></p>
-<p>The deployment pipeline ensures security gates:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># GitHub Actions / GitLab CI</span><span class="w"></span>
+<p>The deployment pipeline enforces security gates at every stage:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># GitHub Actions pipeline — security gates at every stage</span><span class="w"></span>
 <span class="nt">DeploymentPipeline</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">stages</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run pytest, bandit (security linting), and dependency checks</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build and scan Docker image with Trivy</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Push to ECR with vulnerability check gate</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deploy_staging</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy to staging ECS cluster</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">approval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Human approval required before prod</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deploy_prod</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Blue-green deployment to production ECS</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">observe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CloudWatch alarms monitor error rate and latency</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Push to GHCR with vulnerability check gate (blocks on CRITICAL)</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deploy_staging</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull from GHCR and run in staging environment</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">approval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Human approval required before prod (GitHub Environments)</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">deploy_prod</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pull latest image tag from GHCR and redeploy</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">observe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OTel spans + container stdout/stderr for error rate and latency</span><span class="w"></span>
 </code></pre></div>
-<p><strong>Key Principle:</strong> The FastAPI backend is what gets containerized, deployed, monitored, and scaled. The MCP server is a stateless client that calls it. If the MCP protocol changes in the future, you update the MCP server code—the API and core logic remain untouched. This is the hallmark of production-ready architecture.</p>
+<p><strong>Key Principle:</strong> The FastAPI backend is what gets containerized, published to GHCR, and run. The MCP server is a stateless client that calls it. If the MCP protocol changes, you update the MCP server code — the API and core logic remain untouched. This is the hallmark of production-ready architecture.</p>
 <h4 id="docker-best-practices-for-ai-applications">Docker Best Practices for AI Applications</h4>
 <div class="codehilite"><pre><span></span><code><span class="c"># Multi-stage build for minimal image size</span>
 <span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">builder</span>
@@ -3786,8 +3761,8 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <div class="codehilite"><pre><span></span><code><span class="n">Local</span><span class="w"> </span><span class="n">Dev</span><span class="w">                  </span><span class="n">CI</span><span class="o">/</span><span class="n">CD</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Gates</span><span class="w">         </span><span class="n">Container</span><span class="w"> </span><span class="n">Registry</span><span class="w">      </span><span class="n">Production</span><span class="w"></span>
 <span class="p">(</span><span class="n">Prototype</span><span class="p">)</span><span class="w">                                             </span><span class="p">(</span><span class="n">Signed</span><span class="w"> </span><span class="n">Images</span><span class="p">)</span><span class="w">         </span><span class="p">(</span><span class="n">Observed</span><span class="p">)</span><span class="w"></span>
 <span class="err">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span><span class="w"></span>
-<span class="n">Dockerfile</span><span class="w">        </span><span class="n">PR</span><span class="w"> </span><span class="n">Review</span><span class="w">        </span><span class="n">Container</span><span class="w"> </span><span class="n">Image</span><span class="w">      </span><span class="n">ECR</span><span class="w">                     </span><span class="n">ECS</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IaC</span><span class="w"></span>
-<span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="w">    </span><span class="n">SAST</span><span class="w"> </span><span class="n">Scan</span><span class="w">        </span><span class="n">Scanning</span><span class="w">            </span><span class="n">Verification</span><span class="w">            </span><span class="p">(</span><span class="n">CloudFormation</span><span class="p">)</span><span class="w"></span>
+<span class="n">Dockerfile</span><span class="w">        </span><span class="n">PR</span><span class="w"> </span><span class="n">Review</span><span class="w">        </span><span class="n">Container</span><span class="w"> </span><span class="n">Image</span><span class="w">      </span><span class="n">GHCR</span><span class="w">                    </span><span class="n">Container</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IaC</span><span class="w"></span>
+<span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="w">    </span><span class="n">SAST</span><span class="w"> </span><span class="n">Scan</span><span class="w">        </span><span class="n">Scanning</span><span class="w">            </span><span class="n">Verification</span><span class="w">            </span><span class="p">(</span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">)</span><span class="w"></span>
 <span class="n">GitHub</span><span class="w"> </span><span class="n">Commit</span><span class="w">     </span><span class="n">Build</span><span class="w"> </span><span class="n">Scanning</span><span class="w">   </span><span class="n">Supply</span><span class="w"> </span><span class="n">Chain</span><span class="w">         </span><span class="n">Image</span><span class="w"> </span><span class="n">Signing</span><span class="w">           </span><span class="n">PeaRL</span><span class="w"> </span><span class="n">Gates</span><span class="w"></span>
 <span class="n">SBOM</span><span class="w"> </span><span class="n">Gen</span><span class="w">          </span><span class="n">SBOM</span><span class="w"> </span><span class="n">Upload</span><span class="w">      </span><span class="n">Attestation</span><span class="w">         </span><span class="n">Registry</span><span class="w"> </span><span class="n">Policy</span><span class="w">         </span><span class="n">Observability</span><span class="w"></span>
 </code></pre></div>
@@ -3824,7 +3799,7 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <td><strong>Registry</strong></td>
 <td>Image signing (Cosign), SLSA provenance, supply chain policy</td>
 <td>Prove image integrity</td>
-<td>ECR access control, blocks pull</td>
+<td>GHCR access control, blocks pull</td>
 </tr>
 <tr>
 <td><strong>Deploy</strong></td>
@@ -3863,65 +3838,30 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
     class C preprodStyle
     class D prodStyle
 </div>
-<p><strong>Containerized Artifacts &amp; IaC:</strong></p>
-<p>When your prototype is selected for production (Week 14-15), you push the container to ECR and deploy using ECS with CloudFormation/Terraform:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># CloudFormation example: ECS task definition for containerized agent</span><span class="w"></span>
-<span class="nt">AWSTemplateFormatVersion</span><span class="p">:</span><span class="w"> </span><span class="s">'2010-09-09'</span><span class="w"></span>
-<span class="nt">Description</span><span class="p">:</span><span class="w"> </span><span class="s">'Agent</span><span class="nv"> </span><span class="s">System</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Production</span><span class="nv"> </span><span class="s">Deployment'</span><span class="w"></span>
+<p><strong>Containerized Artifacts — GitHub Container Registry:</strong></p>
+<p>When your prototype is ready for production (Week 12), you publish the container to GHCR. No cloud provider account needed — GHCR is built into GitHub and works with any Docker-compatible runtime.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># docker-compose.yml — production deployment descriptor</span><span class="w"></span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">'3.8'</span><span class="w"></span>
 
-<span class="nt">Resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">AgentTaskDefinition</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWS::ECS::TaskDefinition</span><span class="w"></span>
-<span class="w">    </span><span class="nt">Properties</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Family</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent-system</span><span class="w"></span>
-<span class="w">      </span><span class="nt">NetworkMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awsvpc</span><span class="w"></span>
-<span class="w">      </span><span class="nt">RequiresCompatibilities</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FARGATE</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Cpu</span><span class="p">:</span><span class="w"> </span><span class="s">'512'</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Memory</span><span class="p">:</span><span class="w"> </span><span class="s">'1024'</span><span class="w"></span>
-<span class="w">      </span><span class="nt">ExecutionRoleArn</span><span class="p">:</span><span class="w"> </span><span class="kt">!GetAtt</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AgentTaskExecutionRole.Arn</span><span class="w"></span>
-<span class="w">      </span><span class="nt">TaskRoleArn</span><span class="p">:</span><span class="w"> </span><span class="kt">!GetAtt</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AgentTaskRole.Arn</span><span class="w"></span>
-<span class="w">      </span><span class="nt">ContainerDefinitions</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent-system</span><span class="w"></span>
-<span class="w">          </span><span class="nt">Image</span><span class="p">:</span><span class="w"> </span><span class="kt">!Sub</span><span class="w"> </span><span class="s">'${AWS.AccountId}.dkr.ecr.${AWS.Region}.amazonaws.com/agent-system:latest'</span><span class="w"></span>
-<span class="w">          </span><span class="nt">Essential</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">          </span><span class="nt">LogConfiguration</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">LogDriver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awslogs</span><span class="w"></span>
-<span class="w">            </span><span class="nt">Options</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="nt">awslogs-group</span><span class="p">:</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AgentLogGroup</span><span class="w"></span>
-<span class="w">              </span><span class="nt">awslogs-region</span><span class="p">:</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWS.Region</span><span class="w"></span>
-<span class="w">              </span><span class="nt">awslogs-stream-prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent</span><span class="w"></span>
-<span class="w">          </span><span class="nt">Environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ENVIRONMENT</span><span class="w"></span>
-<span class="w">              </span><span class="nt">Value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OTEL_EXPORTER_OTLP_ENDPOINT</span><span class="w"></span>
-<span class="w">              </span><span class="nt">Value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://otel-collector.prod.example.com</span><span class="w"></span>
-
-<span class="w">  </span><span class="nt">AgentService</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWS::ECS::Service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">DependsOn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoadBalancerListener</span><span class="w"></span>
-<span class="w">    </span><span class="nt">Properties</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">ServiceName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent-system-svc</span><span class="w"></span>
-<span class="w">      </span><span class="nt">Cluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod-cluster</span><span class="w"></span>
-<span class="w">      </span><span class="nt">TaskDefinition</span><span class="p">:</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AgentTaskDefinition</span><span class="w"></span>
-<span class="w">      </span><span class="nt">DesiredCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
-<span class="w">      </span><span class="nt">DeploymentConfiguration</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">MaximumPercent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
-<span class="w">        </span><span class="nt">MinimumHealthyPercent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
-<span class="w">      </span><span class="nt">NetworkConfiguration</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">AwsvpcConfiguration</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">Subnets</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PrivateSubnet1</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PrivateSubnet2</span><span class="w"></span>
-<span class="w">          </span><span class="nt">SecurityGroups</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AgentSecurityGroup</span><span class="w"></span>
-<span class="w">      </span><span class="nt">LoadBalancers</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ContainerName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">agent-system</span><span class="w"></span>
-<span class="w">          </span><span class="nt">ContainerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span><span class="w"></span>
-<span class="w">          </span><span class="nt">TargetGroupArn</span><span class="p">:</span><span class="w"> </span><span class="kt">!Ref</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TargetGroup</span><span class="w"></span>
+<span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">agent-system</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># ANTHROPIC_API_KEY is injected at run time — never baked into the image</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ENVIRONMENT=production</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OTEL_EXPORTER_OTLP_ENDPOINT=https://otel-collector.prod.example.com</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"8000:8000"</span><span class="w"></span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span><span class="w"></span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"curl"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"-f"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"http://localhost:8000/health"</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
 </code></pre></div>
 <p><strong>GitHub Actions CI/CD Example:</strong></p>
-<p>The CI/CD pipeline implements all the security gates:</p>
+<p>The CI/CD pipeline implements all the security gates. ANTHROPIC_API_KEY is stored as a GitHub Secret — never in the workflow YAML or the image.</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DevSecOps Pipeline</span><span class="w"></span>
 
 <span class="nt">on</span><span class="p">:</span><span class="w"></span>
@@ -3945,31 +3885,32 @@ A senior engineer says: "Here's my vetted CI/CD template. It includes security g
 <span class="w">      </span><span class="c1"># Build: Container scanning</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build &amp; Scan Container</span><span class="w"></span>
 <span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">docker build -t agent-system:${{ github.sha }} .</span><span class="w"></span>
-<span class="w">          </span><span class="no">trivy image --severity CRITICAL agent-system:${{ github.sha }} || exit 1</span><span class="w"></span>
+<span class="w">          </span><span class="no">docker build -t ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }} .</span><span class="w"></span>
+<span class="w">          </span><span class="no">trivy image --severity CRITICAL ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }} || exit 1</span><span class="w"></span>
 
 <span class="w">      </span><span class="c1"># Registry: Generate SBOM</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generate SBOM</span><span class="w"></span>
 <span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">syft dir:. -o cyclonedx-json &gt; sbom.json</span><span class="w"></span>
 
-<span class="w">      </span><span class="c1"># Registry: Sign image</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sign &amp; Push to ECR</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># Registry: Sign image and push to GHCR</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sign &amp; Push to GHCR</span><span class="w"></span>
 <span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">          </span><span class="no">echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin</span><span class="w"></span>
+<span class="w">          </span><span class="no">docker push ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }}</span><span class="w"></span>
 <span class="w">          </span><span class="no">cosign sign --key ${{ secrets.COSIGN_KEY }} \</span><span class="w"></span>
-<span class="w">            </span><span class="no">${{ secrets.ECR_REGISTRY }}/agent-system:${{ github.sha }}</span><span class="w"></span>
+<span class="w">            </span><span class="no">ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }}</span><span class="w"></span>
 
-<span class="w">      </span><span class="c1"># Deploy: Approval gate (manual)</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># Deploy: Approval gate (manual — GitHub Environments)</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Request Approval for Production</span><span class="w"></span>
 <span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.ref == 'refs/heads/main'</span><span class="w"></span>
 <span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trstringer/manual-approval@v1</span><span class="w"></span>
 
-<span class="w">      </span><span class="c1"># Deploy: Push to ECS</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy to ECS</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># Deploy: Pull latest image from GHCR and run</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy (docker compose)</span><span class="w"></span>
 <span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">success()</span><span class="w"></span>
 <span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">aws ecs update-service --cluster prod \</span><span class="w"></span>
-<span class="w">            </span><span class="no">--service agent-system-svc \</span><span class="w"></span>
-<span class="w">            </span><span class="no">--force-new-deployment</span><span class="w"></span>
+<span class="w">          </span><span class="no">docker compose pull</span><span class="w"></span>
+<span class="w">          </span><span class="no">docker compose up -d --remove-orphans</span><span class="w"></span>
 </code></pre></div>
 <div class="callout callout-tip"><p><strong>Pro Tip:</strong> Each security gate is a <strong>decision point</strong> where humans can intervene. In dev/pilot, gates are "warnings." In production, gates are "hard blocks." This graduated enforcement prevents developer frustration while ensuring production safety.</p>
 </div>
@@ -4144,7 +4085,7 @@ Phase 4: Implementation
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
-    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps. Deploys Claude API via Secrets Manager on ECS.",tags:["unit7","production","security","nhi","spiffe","claude api","ecs"],url:"s2-unit7.html"},
+    {t:"Unit 7: Production Security",d:"NHI governance via Managed Agents, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps. Deploys via GHCR or Claude Managed Agents.",tags:["unit7","production","security","nhi","spiffe","claude api","managed agents","ghcr"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
     // Key topics
     {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},

@@ -14,7 +14,7 @@
 
 <h1>Lab Guide: Unit 7 — Production Security Engineering</h1>
 <p><strong>CSEC 602 | Weeks 9–12 | Semester 2</strong></p>
-<p>Transform your agentic systems from proof-of-concept to production-grade: supply chain security, NHI governance, observability, and containerized deployment with CI/CD. Deploy a Claude API-powered security agent to AWS infrastructure using ECS, Secrets Manager, and VPC network controls.</p>
+<p>Transform your agentic systems from proof-of-concept to production-grade: supply chain security, NHI governance, observability, and containerized deployment with CI/CD security gates. Your deployed Managed Agent becomes the system you govern, instrument, and ship.</p>
 
 <div class="callout callout-tip">
   <strong>Claude as your governance reviewer:</strong> Use Claude to review your governance artifacts before filing them. Paste your AIUC-1 assessment and ask: "What risk did I underestimate?" Production regrets are expensive.
@@ -360,93 +360,105 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <div class="lab-step" id="step-u7w10-6">
       <label><input type="checkbox" onchange="toggleStep('u7w10-6',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 6: Translate agent-identities.yaml → IAM policies (Strands)</div>
-        <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is <em>allowed</em> to do in your local system. In production (Strands + AWS), this translates directly to IAM policies. Each agent gets its own IAM role with only the permissions it needs. Install Strands and write an IAM policy document for your triage agent that mirrors its allowed_tools list from Step 1.</div>
+        <div class="step-title">Step 6: Apply your NHI governance to your deployed Managed Agent</div>
+        <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is allowed to do. Your Managed Agent (deployed in Unit 4 Week 15) is already a non-human identity — it has a persistent agent ID, authenticates via API key, and has a defined tool scope. Map your governance model to what's already deployed: verify the API key is stored as a GitHub Secret (not hardcoded), confirm the tool scope in the agent YAML matches your <code>allowed_tools</code> list, and document the agent ID as the NHI entry in your registry.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-collapsed="true" data-label="Strands Agent IAM Policy Setup"><pre><code>pip install strands-agents strands-agents-tools
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="NHI Governance — Managed Agent Mapping"><pre><code># Your Managed Agent IS an NHI. Map your agent-identities.yaml to it:
 
-# Each agent in Strands gets its own IAM role — not shared credentials
-# IAM policy for soc-recon-001 (threat intelligence analyst):
-# Allow: secretsmanager:GetSecretValue on noctua/soc-agent/* (for ANTHROPIC_API_KEY)
-# Allow: execute-api:Invoke on threat-intel-api/* (NVD, IP reputation)
-# Allow: logs:PutLogEvents (for audit trail)
-# Deny: everything else (s3:*, iam:*, ec2:*, database writes)
-#
-# Note: Direct API keys to external providers are simpler to permission
-# than managed AI services — no service-specific IAM actions needed,
-# just standard Secrets Manager read permissions.
+# 1. Verify ANTHROPIC_API_KEY is in GitHub Secrets, not hardcoded
+#    GitHub repo → Settings → Secrets and variables → Actions
+#    Secret name: ANTHROPIC_API_KEY
+#    Never appears in logs or code. Rotation = update the secret value.
 
-# Write the JSON IAM policy for your recon agent:
-cat > iam-policy-recon.json << 'EOF'
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["secretsmanager:GetSecretValue"],
-      "Resource": "arn:aws:secretsmanager:*:*:secret:noctua/soc-agent/*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": ["logs:PutLogEvents", "logs:CreateLogGroup", "logs:CreateLogStream"],
-      "Resource": "*"
-    }
-  ]
+# 2. Load your deployed agent IDs
+import json
+with open("managed_agent_ids.json") as f:
+    ids = json.load(f)
+print(f"NHI Identity: agent_id={ids['agent_id']}")
+# This agent_id IS the NHI identifier — persistent, named, auditable
+
+# 3. Verify tool scope in the agent YAML matches allowed_tools from Step 1
+#    tools/mass/claude-managed-agents/01-orchestrator.yaml:
+#      tools: [{"type": "agent_toolset_20260401"}]
+#    For your custom agent, list only the tools this role needs:
+#    tools:
+#      - type: bash          # only if this agent needs shell access
+#      - type: web_search    # only if this agent needs web access
+#    Omitting a tool type = denying it — this is your least-privilege enforcement
+
+# 4. Add your Managed Agent to the NHI registry:
+nhi_entry = {
+    "agent_id": ids["agent_id"],
+    "role": "soc-analyst",
+    "credential": "ANTHROPIC_API_KEY (GitHub Secret)",
+    "credential_rotation_days": 90,
+    "tool_scope": ["bash", "web_search"],  # match your agent YAML
+    "session_isolation": True,  # each session is fresh — no cross-investigation state
+    "audit_trail": "session events stream (agent.tool_use events)",
+    "revocation": "delete agent via API or rotate ANTHROPIC_API_KEY"
 }
-EOF
-# Question: How does this IAM policy enforce the same constraints as
-# your JWT token's allowed_tools list from Step 3?</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+print(json.dumps(nhi_entry, indent=2))</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w10-7">
       <label><input type="checkbox" onchange="toggleStep('u7w10-7',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 7: Build your first Strands agent with IAM role</div>
-        <div class="step-desc">Migrate one tool from your NHI registry into a Strands agent. Connect your existing MCP server — no modification needed. Run it locally first, verify the output matches your Claude Code version, then verify the <code>@tool</code> decorator enforces the same input validation as your PreToolUse hook did.</div>
+        <div class="step-title">Step 7: Verify NHI controls via the session events stream</div>
+        <div class="step-desc">Run your deployed agent against a test alert and capture the session events stream. Verify that <code>agent.tool_use</code> events match only the tools in your <code>allowed_tools</code> list from Step 1. This stream is your live NHI audit trail — every tool invocation is recorded with agent identity, tool name, and timestamp. Compare it against your Step 5 audit log format.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-collapsed="true" data-label="Strands Triage Agent with MCP + Tool Validation"><pre><code>from strands import Agent, tool
-from strands.tools.mcp import MCPClient
-import anthropic
-import boto3
-import json
-import os
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="NHI Audit — Session Events as Audit Trail"><pre><code>import anthropic, json
+from datetime import datetime
 
-# Retrieve ANTHROPIC_API_KEY from AWS Secrets Manager
-def get_secret(secret_name: str) -> str:
-    client = boto3.client('secretsmanager', region_name='us-east-1')
-    response = client.get_secret_value(SecretId=secret_name)
-    return json.loads(response['SecretString'])['ANTHROPIC_API_KEY']
+client = anthropic.Anthropic()
 
-# Connect your existing MCP server — same protocol, no changes needed
-mcp_client = MCPClient(
-    command="node",
-    args=["./servers/cve-lookup/index.js"]
+with open("managed_agent_ids.json") as f:
+    ids = json.load(f)
+
+# Run a test session and capture the NHI audit trail
+session = client.beta.sessions.create(
+    agent=ids["agent_id"],
+    environment_id=ids["environment_id"],
+    title=f"NHI Audit Test — {datetime.utcnow().isoformat()}",
 )
 
-# @tool decorator = PreToolUse hook equivalent
-@tool
-def validate_alert_input(alert_data: dict) -> dict:
-    """Validate incoming alert data before processing.
-    Required fields: source, timestamp, severity (LOW/MED/HIGH/CRITICAL).
-    Returns validated alert or raises ValueError."""
-    required = ["source", "timestamp", "severity"]
-    missing = [f for f in required if f not in alert_data]
-    if missing:
-        raise ValueError(f"Missing required alert fields: {missing}")
-    return alert_data
+audit_records = []
+test_alert = "Analyze: suspicious outbound traffic to 185.220.101.x on port 4444"
 
-# Direct Claude API call using key from Secrets Manager
-api_key = get_secret("noctua/soc-agent/api-keys")
-claude_client = anthropic.Anthropic(api_key=api_key)
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(session.id, events=[{
+        "type": "user.message",
+        "content": [{"type": "text", "text": test_alert}]
+    }])
+    for event in stream:
+        if event.type == "agent.tool_use":
+            # This IS the NHI audit trail — agent.tool_use = what the agent DID
+            record = {
+                "timestamp": datetime.utcnow().isoformat(),
+                "agent_id": ids["agent_id"],
+                "tool_name": event.name,
+                "session_id": session.id,
+            }
+            audit_records.append(record)
+            print(f"[TOOL] {event.name}")
+        elif event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "session.status_idle":
+            break
 
-agent = Agent(
-    tools=[mcp_client, validate_alert_input],
-    system_prompt="""You are a security triage agent.
-    NEVER execute remediation — only report findings with evidence."""
-)
+# Verify: every tool_name in audit_records is in your allowed_tools list
+allowed = {"bash", "web_search", "text_editor"}  # from your agent YAML
+violations = [r for r in audit_records if r["tool_name"] not in allowed]
+print(f"\n\nAudit: {len(audit_records)} tool calls, {len(violations)} violations")
+if violations:
+    print("VIOLATION — tool called outside allowed scope:", violations)
+else:
+    print("PASS — all tool calls within defined scope")
 
-result = agent("Analyze CVE-2024-1234 and assess impact on our environment")
-print(result)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Save audit log
+with open("nhi-audit-session.json", "w") as f:
+    json.dump(audit_records, f, indent=2)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
   </div>
 </div>
@@ -566,8 +578,8 @@ with tracer.start_as_current_span("recon_agent") as span:
 <h2 id="week-12">Week 12 — Deploying Agentic Security Systems</h2>
 <div class="week-header"><span class="week-badge">WEEK 12</span><span class="week-sub">Lab: Dockerfile, Container Scanning &amp; CI/CD Security Gates</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production via AWS AgentCore.</p></div>
-<div class="callout callout-warn"><p><strong>Pre-capstone checkpoint — do this now:</strong> Your Unit 8 capstone requires a live deployment on AWS ECS. Verify your ANTHROPIC_API_KEY is stored in AWS Secrets Manager and your container can retrieve it before Week 13 starts. Run the test below. If it fails, check your IAM role permissions on the Secrets Manager secret.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Package your SOC agent system as a hardened container image. Build a GitHub Actions CI/CD pipeline with security gates (secrets detection, SAST, container scanning, SBOM generation). Implement a multi-stage promotion pipeline: dev → staging → production. Your container and your Managed Agent are both production artifacts — the pipeline governs both.</p></div>
+<div class="callout callout-warn"><p><strong>Pre-capstone checkpoint — do this now:</strong> Your Unit 8 capstone requires a live deployed agent. Verify your Managed Agent is reachable and your <code>ANTHROPIC_API_KEY</code> is stored as a GitHub Secret (not hardcoded). Run the test below. If it fails, check that your agent IDs are correct and the API key is valid.</p></div>
 
 <div class="quiz-block" id="quiz-u7w12">
   <h4> Knowledge Check — Week 12</h4>
@@ -699,86 +711,71 @@ jobs:
     <div class="lab-step" id="step-u7w12-6">
       <label><input type="checkbox" onchange="toggleStep('u7w12-6',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 6: Verify Claude API access via Secrets Manager — pre-capstone checkpoint</div>
-        <div class="step-desc">Confirm your AWS Secrets Manager secret is accessible from your container environment and that the ANTHROPIC_API_KEY it contains is valid. This is required before Week 13. If this fails, check your IAM role's Secrets Manager permissions — do not wait.</div>
+        <div class="step-title">Step 6: Verify your deployed agent is reachable — pre-capstone checkpoint</div>
+        <div class="step-desc">Confirm your Managed Agent is deployed and the <code>ANTHROPIC_API_KEY</code> resolves correctly from your environment. This is required before Week 13. If it fails, verify <code>managed_agent_ids.json</code> exists and the key in your environment is valid. Do not wait.</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install anthropic boto3
+      <div class="code-block"><pre><code>import anthropic, json, os
 
-# Test Claude API access via Secrets Manager — run this now
-python3 - << 'EOF'
-import anthropic
-import boto3
-import json
+# Verify ANTHROPIC_API_KEY is set (from env, not hardcoded)
+assert os.environ.get("ANTHROPIC_API_KEY"), "ANTHROPIC_API_KEY not set — add to GitHub Secrets"
 
-try:
-    # Retrieve key from Secrets Manager (same path as production)
-    sm = boto3.client('secretsmanager', region_name='us-east-1')
-    secret = json.loads(sm.get_secret_value(SecretId='noctua/soc-agent/api-keys')['SecretString'])
-    api_key = secret['ANTHROPIC_API_KEY']
+client = anthropic.Anthropic()
 
-    client = anthropic.Anthropic(api_key=api_key)
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=64,
-        messages=[{"role": "user", "content": "Respond with 'Claude API access confirmed.' only."}]
-    )
-    print("SUCCESS:", response.content[0].text)
-except Exception as e:
-    print("FAILED — check IAM role Secrets Manager permissions:", e)
-EOF</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+with open("managed_agent_ids.json") as f:
+    ids = json.load(f)
+
+# Quick smoke test — one session, one message
+session = client.beta.sessions.create(
+    agent=ids["agent_id"],
+    environment_id=ids["environment_id"],
+    title="Pre-capstone checkpoint",
+)
+
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(session.id, events=[{
+        "type": "user.message",
+        "content": [{"type": "text", "text": "Respond with 'Agent deployment confirmed.' only."}]
+    }])
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print("SUCCESS:", block.text)
+        elif event.type == "session.status_idle":
+            break</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w12-7">
       <label><input type="checkbox" onchange="toggleStep('u7w12-7',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 7: Deploy your agent to AWS ECS with Secrets Manager</div>
-        <div class="step-desc">Deploy the triage agent you built in Week 10 Step 7 as a containerized ECS task. ECS handles the managed runtime — you configure the IAM role, Secrets Manager secret, and VPC network controls. This is the production version of your Claude Code prototype.</div>
+        <div class="step-title">Step 7: Push your container to GitHub Container Registry</div>
+        <div class="step-desc">Your hardened container image is a production artifact alongside your Managed Agent. Push it to GitHub Container Registry — no cloud provider account required. Your CI/CD pipeline (Step 3) will automate this on every merge to main. The container can be pulled and run anywhere: local Docker, any cloud provider's container service, or as a sidecar alongside your Managed Agent sessions.</div>
       </div></label>
-      <div class="code-block" data-collapsible data-collapsed="true" data-label="ECS Deployment — Secrets Manager + IAM + VPC"><pre><code># Store ANTHROPIC_API_KEY in AWS Secrets Manager
-aws secretsmanager create-secret \
-  --name "noctua/soc-agent/api-keys" \
-  --secret-string '{"ANTHROPIC_API_KEY": "your-key-here", "NVD_API_KEY": "your-key-here"}'
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Push to GitHub Container Registry"><pre><code># Authenticate to GitHub Container Registry
+echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 
-# Create IAM role for the agent (use the policy from Week 10 Step 6)
-aws iam create-role \
-  --role-name NoctuaSOCReconRole \
-  --assume-role-policy-document file://trust-policy.json
+# Tag your image
+docker tag soc-agent:latest ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest
 
-aws iam put-role-policy \
-  --role-name NoctuaSOCReconRole \
-  --policy-name ReconLeastPrivilege \
-  --policy-document file://iam-policy-recon.json
+# Push
+docker push ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest
 
-# Register ECS task definition — inject secret as environment variable
-# at launch time (never stored in the image or task config in plaintext)
-aws ecs register-task-definition \
-  --cli-input-json file://task-definition.json
-# task-definition.json includes:
-# "secrets": [{"name": "ANTHROPIC_API_KEY",
-#              "valueFrom": "arn:aws:secretsmanager:...:noctua/soc-agent/api-keys:ANTHROPIC_API_KEY::"}]
+# Verify it's accessible
+docker pull ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest
 
-# Deploy ECS service into your VPC
-aws ecs create-service \
-  --cluster noctua-soc \
-  --service-name soc-recon \
-  --task-definition soc-recon:1 \
-  --desired-count 1 \
-  --launch-type FARGATE \
-  --network-configuration "awsvpcConfiguration={subnets=[subnet-xxx],securityGroups=[sg-xxx]}"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    </div>
-
-    <div class="callout callout-tip">
-      <strong>This pattern is provider-agnostic.</strong> You're deploying a container that calls an external API via a key in Secrets Manager. Swap the SDK and the key to use OpenAI, Google, or any other provider. The IAM policies, networking, ECS task definition, and deployment pipeline are identical.
+# Run from the registry (same as local — key from environment, never in image)
+docker run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="callout callout-key">
-      <strong>Deployment Options — Managed Runtime vs. Serverless</strong>
-      <p>The AgentCore deployment you just completed is one of two primary production patterns:</p>
+      <strong>Two production artifacts — one governance standard</strong>
+      <p>You now have two ways to run your security agent in production:</p>
       <ul>
-        <li><strong>AgentCore (managed persistent runtime)</strong> — always-on, stateful. Agent process persists between invocations — enables in-memory state, warm model connections, lower per-invocation latency. Cost model: pay for uptime regardless of request volume.</li>
-        <li><strong>Lambda (serverless)</strong> — event-triggered, stateless. Each invocation starts fresh. No cost when idle. Cold-start latency on first invocation. State must be externalized (DynamoDB, S3).</li>
+        <li><strong>Claude Managed Agents</strong> — Anthropic hosts the loop and tool execution. Deploy once, run as sessions. Best for long-running investigations, file-heavy work, and teams that don't want to manage compute.</li>
+        <li><strong>Container (GitHub Container Registry → any runtime)</strong> — you own the compute. Pull the image and run it on any cloud provider, on-prem server, or local Docker. Best for air-gapped environments, custom runtime requirements, or cost optimization at scale.</li>
       </ul>
-      <p>The decision point: <strong>alert volume and state requirements</strong>. At low alert volumes (&lt;100/day), Lambda is cheaper. At sustained volume or when agents maintain session state between invocations, AgentCore is the right choice.</p>
+      <p>Both use the same system prompt and agent logic. Both pull <code>ANTHROPIC_API_KEY</code> from the environment — never hardcoded. The NHI governance model from Week 10 applies to both: one identity, one credential, one audit trail.</p>
     </div>
 
     <div class="lab-step" id="step-u7w12-8">
@@ -788,15 +785,16 @@ aws ecs create-service \
         <div class="step-desc">Complete the PeaRL Delegated Autonomous promotion gate checklist for your deployed agent. This is the governance evidence required for your Unit 8 capstone submission.</div>
       </div></label>
       <div class="code-block"><pre><code># PeaRL Delegated Autonomous promotion gate — verify each item:
-# [ ] Agent has its own IAM role (not shared with other agents)
-# [ ] No hardcoded credentials (ANTHROPIC_API_KEY in Secrets Manager, not image)
-# [ ] Egress filtered (security group allows only api.anthropic.com and known API domains)
+# [ ] Agent has its own identity (unique agent_id, not shared with other agents)
+# [ ] No hardcoded credentials (ANTHROPIC_API_KEY in GitHub Secrets / env var, not in code or image)
+# [ ] Tool scope defined (agent YAML lists only the tools this role needs)
+# [ ] Session isolation confirmed (each session starts fresh — no cross-investigation state)
 # [ ] Output validation active (NeMo Guardrails or equivalent — applied in agent code)
-# [ ] CloudWatch dashboard shows agent operations (OTel → CloudWatch)
-# [ ] max_iterations configured on the agent (failure cap)
+# [ ] OTel instrumentation active (agent.tool_use events captured and logged)
+# [ ] max_iterations / failure cap configured on the agent
 # [ ] dependencies hash-pinned (requirements-pinned.txt present)
 # [ ] SBOM generated (from Week 9)
-# [ ] Tool calls logged with agent_id and timestamp
+# [ ] Tool calls logged with agent_id and timestamp (nhi-audit-session.json from Week 10)
 # [ ] OWASP Agentic Top 10 risks assessed (or documented as accepted)
 
 # Document each item with evidence: screenshot, config file, or CLI output
@@ -905,7 +903,7 @@ aws ecs create-service \
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
-    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps. Deploys Claude API via Secrets Manager on ECS.",tags:["unit7","production","security","nhi","spiffe","claude api","ecs"],url:"s2-unit7.html"},
+    {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, supply chain, observability, CI/CD security gates. Managed Agent as NHI — session events as audit trail, GitHub Secrets for credential management.",tags:["unit7","production","security","nhi","spiffe","claude api","managed agents","cicd"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
     // Key topics
     {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},

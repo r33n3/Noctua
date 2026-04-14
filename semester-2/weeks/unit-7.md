@@ -2520,7 +2520,7 @@ The **production pattern** for agentic security tools follows the API-first arch
 ```
 CloudFront / API Gateway (Authentication, Rate Limiting)
            ↓
-    FastAPI Backend Service (Running in ECS on EC2/Fargate)
+    FastAPI Backend Service (Container: GHCR image, any Docker runtime)
            ↓
     ┌──────────────────────────────────────────────────┐
     │                                                  │
@@ -2545,7 +2545,7 @@ CloudFront / API Gateway (Authentication, Rate Limiting)
    - CI/CD pipelines via webhook triggers
    - Future protocols without rewriting core logic
 3. **Production Security:** Authentication, rate limiting, audit logging, and compliance are enforced at the API boundary—not scattered across tools.
-4. **Observability & Cost:** The containerized FastAPI service becomes your deployable artifact. You push it to ECR, deploy to ECS, and monitoring hooks into CloudWatch and X-Ray automatically.
+4. **Observability & Cost:** The containerized FastAPI service becomes your deployable artifact. You push it to GHCR, run it anywhere Docker is available, and OTel instrumentation routes spans to Grafana Tempo or any compatible collector.
 5. **Rapid Iteration:** When OWASP Top 10 changes or a new threat emerges, you update the business logic in the API. The MCP server continues calling the same endpoints—no agent code changes needed.
 
 **Key Design Pattern: The FastAPI Microservice**
@@ -2643,60 +2643,50 @@ class ThreatAnalysisMCPServer:
         return response.json()
 ```
 
-**ECS Deployment with IaC:**
+**Container Deployment (Path B) — GitHub Container Registry:**
 
-The FastAPI service containerizes and deploys as an ECS task:
+The FastAPI service containerizes and publishes to GHCR. No cloud account needed — GHCR is built into GitHub and works with any Docker-compatible runtime.
 
 ```yaml
-# CloudFormation / Terraform manages infrastructure as code
-ECSTaskDefinition:
-  Image: "123456789012.dkr.ecr.us-east-1.amazonaws.com/threat-analysis:1.0.0"
-  PortMappings:
-    - ContainerPort: 8000
-  Memory: 2048
-  Cpu: 1024
-  Environment:
-    - Name: DATABASE_URL
-      Value: !Sub "postgresql://${RDSEndpoint}/threatdb"
-    - Name: LOG_LEVEL
-      Value: "info"
+# docker-compose.yml — production deployment descriptor
+version: '3.8'
 
-ECSService:
-  DesiredCount: 3  # 3 instances for high availability
-  DeploymentStrategy: rolling  # Update one at a time
-  HealthCheck:
-    HttpEndpoint: "/health"
-    IntervalSeconds: 30
-    TimeoutSeconds: 5
-
-CloudWatchLogs:
-  LogGroup: "/ecs/threat-analysis"
-  RetentionInDays: 90
-  Alarms:
-    - MetricName: "ErrorRate"
-      Threshold: 5%  # Alert if > 5% errors
-    - MetricName: "LatencyP99"
-      Threshold: 2000ms  # Alert if p99 latency > 2 sec
+services:
+  agent-system:
+    image: ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest
+    environment:
+      # ANTHROPIC_API_KEY is injected at run time — never baked into the image
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ENVIRONMENT=production
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://otel-collector.prod.example.com
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 ```
 
 **DevSecOps Pipeline:**
 
-The deployment pipeline ensures security gates:
+The deployment pipeline enforces security gates at every stage. ANTHROPIC_API_KEY is stored as a GitHub Secret — never in the workflow YAML or the image.
 
 ```yaml
-# GitHub Actions / GitLab CI
+# GitHub Actions pipeline
 DeploymentPipeline:
   stages:
     - test: Run pytest, bandit (security linting), and dependency checks
     - build: Build and scan Docker image with Trivy
-    - push: Push to ECR with vulnerability check gate
-    - deploy_staging: Deploy to staging ECS cluster
-    - approval: Human approval required before prod
-    - deploy_prod: Blue-green deployment to production ECS
-    - observe: CloudWatch alarms monitor error rate and latency
+    - push: Push to GHCR with vulnerability check gate (blocks on CRITICAL)
+    - deploy_staging: Pull from GHCR and run in staging environment
+    - approval: Human approval required before prod (GitHub Environments)
+    - deploy_prod: Pull latest image tag from GHCR and redeploy
+    - observe: OTel spans + container stdout/stderr for error rate and latency
 ```
 
-**Key Principle:** The FastAPI backend is what gets containerized, deployed, monitored, and scaled. The MCP server is a stateless client that calls it. If the MCP protocol changes in the future, you update the MCP server code—the API and core logic remain untouched. This is the hallmark of production-ready architecture.
+**Key Principle:** The FastAPI backend is what gets containerized, published to GHCR, and run. The MCP server is a stateless client that calls it. If the MCP protocol changes in the future, you update the MCP server code — the API and core logic remain untouched. This is the hallmark of production-ready architecture.
 
 #### Docker Best Practices for AI Applications
 
@@ -3734,11 +3724,11 @@ kubectl get hpa agent-system -w
 
 ---
 
-> **🧠 Domain Assist:** Infrastructure as Code (Terraform, CloudFormation), container orchestration (ECS, Kubernetes), and CI/CD pipeline design are specialized skills. If you've never written a Dockerfile or a Terraform template, you're not alone — most security professionals haven't.
+> **🧠 Domain Assist:** Docker, GitHub Actions CI/CD pipeline design, and container registry workflows are specialized skills. If you've never written a Dockerfile or a GitHub Actions workflow, you're not alone — most security professionals haven't.
 >
 > Get oriented before building:
 >
-> "I'm a security engineer who needs to containerize and deploy a multi-agent security system. I've never written Terraform or a Dockerfile. Help me understand: 1) What is a Dockerfile — conceptually, what am I doing when I write one? 2) What is Terraform — what problem does it solve and what does a basic template look like? 3) What's the difference between ECS and Kubernetes, and which is simpler for a first deployment? 4) What does a CI/CD pipeline look like for an AI agent system — what steps should it include? 5) What are the security-specific concerns when containerizing AI agents?"
+> "I'm a security engineer who needs to containerize and deploy a multi-agent security system. I've never written a Dockerfile or a GitHub Actions workflow. Help me understand: 1) What is a Dockerfile — conceptually, what am I doing when I write one? 2) What is GitHub Container Registry (GHCR) and how does it compare to other registries? 3) What does a GitHub Actions CI/CD pipeline look like for an AI agent system — what steps should it include? 4) What are the security-specific concerns when containerizing AI agents? 5) How do I safely inject an API key like ANTHROPIC_API_KEY into a container without baking it into the image?"
 
 ---
 
@@ -4350,8 +4340,8 @@ In Unit 4, you learned to containerize prototypes from Day 1. In Units 7, you're
 Local Dev                  CI/CD Security Gates         Container Registry      Production
 (Prototype)                                             (Signed Images)         (Observed)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Dockerfile        PR Review        Container Image      ECR                     ECS + IaC
-docker-compose    SAST Scan        Scanning            Verification            (CloudFormation)
+Dockerfile        PR Review        Container Image      GHCR                    Container + IaC
+docker-compose    SAST Scan        Scanning            Verification            (docker-compose)
 GitHub Commit     Build Scanning   Supply Chain         Image Signing           PeaRL Gates
 SBOM Gen          SBOM Upload      Attestation         Registry Policy         Observability
 ```
@@ -4363,7 +4353,7 @@ SBOM Gen          SBOM Upload      Attestation         Registry Policy         O
 | **Pre-Commit** | Secrets detection (TruffleHog), linting | Prevent creds in repo | Local hook, blocks commit |
 | **PR Review** | GitHub security scanning, SAST (Bandit/Semgrep), dependency audit | Code quality + vuln scanning | PR status check, blocks merge |
 | **Build** | Unit/integration tests, container image scan (Trivy), SBOM generation | Catch CVEs before registry | Pipeline stage, blocks promotion |
-| **Registry** | Image signing (Cosign), SLSA provenance, supply chain policy | Prove image integrity | ECR access control, blocks pull |
+| **Registry** | Image signing (Cosign), SLSA provenance, supply chain policy | Prove image integrity | GHCR access control, blocks pull |
 | **Deploy** | PeaRL promotion gates (dev → pilot → preprod → prod), approval workflows | Governance enforcement | Manual approval, audit logging |
 | **Production** | Observability + anomaly detection (AGP patterns), alerting, incident IR | Runtime governance | Hard gates, auto-escalation |
 
@@ -4393,70 +4383,35 @@ graph LR
     class D prodStyle
 ```
 
-**Containerized Artifacts & IaC:**
+**Containerized Artifacts — GitHub Container Registry:**
 
-When your prototype is selected for production (Week 14-15), you push the container to ECR and deploy using ECS with CloudFormation/Terraform:
+When your prototype is ready for production (Week 12), you publish the container to GHCR. No cloud provider account needed — GHCR is built into GitHub and works with any Docker-compatible runtime.
 
 ```yaml
-# CloudFormation example: ECS task definition for containerized agent
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Agent System - Production Deployment'
+# docker-compose.yml — production deployment descriptor
+version: '3.8'
 
-Resources:
-  AgentTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: agent-system
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-        - FARGATE
-      Cpu: '512'
-      Memory: '1024'
-      ExecutionRoleArn: !GetAtt AgentTaskExecutionRole.Arn
-      TaskRoleArn: !GetAtt AgentTaskRole.Arn
-      ContainerDefinitions:
-        - Name: agent-system
-          Image: !Sub '${AWS.AccountId}.dkr.ecr.${AWS.Region}.amazonaws.com/agent-system:latest'
-          Essential: true
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-group: !Ref AgentLogGroup
-              awslogs-region: !Ref AWS.Region
-              awslogs-stream-prefix: agent
-          Environment:
-            - Name: ENVIRONMENT
-              Value: production
-            - Name: OTEL_EXPORTER_OTLP_ENDPOINT
-              Value: https://otel-collector.prod.example.com
-
-  AgentService:
-    Type: AWS::ECS::Service
-    DependsOn: LoadBalancerListener
-    Properties:
-      ServiceName: agent-system-svc
-      Cluster: prod-cluster
-      TaskDefinition: !Ref AgentTaskDefinition
-      DesiredCount: 3
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          Subnets:
-            - !Ref PrivateSubnet1
-            - !Ref PrivateSubnet2
-          SecurityGroups:
-            - !Ref AgentSecurityGroup
-      LoadBalancers:
-        - ContainerName: agent-system
-          ContainerPort: 8000
-          TargetGroupArn: !Ref TargetGroup
+services:
+  agent-system:
+    image: ghcr.io/YOUR_GITHUB_USERNAME/soc-agent:latest
+    environment:
+      # ANTHROPIC_API_KEY is injected at run time — never baked into the image
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ENVIRONMENT=production
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://otel-collector.prod.example.com
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 ```
 
 **GitHub Actions CI/CD Example:**
 
-The CI/CD pipeline implements all the security gates:
+The CI/CD pipeline implements all the security gates. ANTHROPIC_API_KEY is stored as a GitHub Secret — never in the workflow YAML or the image.
 
 ```yaml
 name: DevSecOps Pipeline
@@ -4482,31 +4437,32 @@ jobs:
       # Build: Container scanning
       - name: Build & Scan Container
         run: |
-          docker build -t agent-system:${{ github.sha }} .
-          trivy image --severity CRITICAL agent-system:${{ github.sha }} || exit 1
+          docker build -t ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }} .
+          trivy image --severity CRITICAL ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }} || exit 1
 
       # Registry: Generate SBOM
       - name: Generate SBOM
         run: syft dir:. -o cyclonedx-json > sbom.json
 
-      # Registry: Sign image
-      - name: Sign & Push to ECR
+      # Registry: Sign image and push to GHCR
+      - name: Sign & Push to GHCR
         run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }}
           cosign sign --key ${{ secrets.COSIGN_KEY }} \
-            ${{ secrets.ECR_REGISTRY }}/agent-system:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/soc-agent:${{ github.sha }}
 
-      # Deploy: Approval gate (manual)
+      # Deploy: Approval gate (manual — GitHub Environments)
       - name: Request Approval for Production
         if: github.ref == 'refs/heads/main'
         uses: trstringer/manual-approval@v1
 
-      # Deploy: Push to ECS
-      - name: Deploy to ECS
+      # Deploy: Pull latest image from GHCR and run
+      - name: Deploy (docker compose)
         if: success()
         run: |
-          aws ecs update-service --cluster prod \
-            --service agent-system-svc \
-            --force-new-deployment
+          docker compose pull
+          docker compose up -d --remove-orphans
 ```
 
 > **💡 Pro Tip:** Each security gate is a **decision point** where humans can intervene. In dev/pilot, gates are "warnings." In production, gates are "hard blocks." This graduated enforcement prevents developer frustration while ensuring production safety.
