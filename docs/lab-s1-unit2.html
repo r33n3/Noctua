@@ -80,6 +80,8 @@
   </div>
 </div>
 
+<div class="callout callout-tip"><p><strong>Memory Architecture:</strong> Tool call results returned through MCP are in-context memory — they exist for this conversation only and disappear when the session ends. Everything you build in Weeks 5–7 is stateless by default. Week 8 introduces an external memory layer (MemPalace) that persists across conversations and supports the L0–L3 retrieval budget. <em>(Forward reference: Week 8 — Production Memory with MemPalace)</em></p></div>
+
 <div class="lab-section">
   <h4> Lab Exercise: CVE Lookup MCP Server</h4>
   <div class="callout callout-tip" style="margin-bottom:14px;"><p><strong>Architecture note:</strong> You are building an MCP <em>server</em> — a Python process that Claude Code connects to. Claude becomes the <em>client</em>. The server wraps the NVD API and exposes it as the <code>query_cve</code> tool. Claude never calls the NVD API directly.</p></div>

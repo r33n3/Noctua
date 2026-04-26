@@ -325,6 +325,8 @@ print('Minimal RAG store ready')</code></pre><button class="copy-btn" onclick="c
       </div></label>
     </div>
 
+    <div class="callout callout-tip"><p><strong>Memory Architecture:</strong> Memory is an attack surface. Injecting a false entry into an agent's RAG corpus, diary store, or knowledge graph changes future behavior without touching code — a persistent, silent attack that survives session resets. The diary poisoning exercise in Unit 5 Week 4 demonstrates exactly this threat. Defenses must be designed at the memory layer, not just the model output layer. <em>(Demonstrated: Unit 5 Week 4, Step 5 — Diary Poisoning Attack)</em></p></div>
+
     <div class="lab-step" id="step-u6w6-5">
       <label><input type="checkbox" onchange="toggleStep('u6w6-5',this.checked)">
       <div class="step-content">

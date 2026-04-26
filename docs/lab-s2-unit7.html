@@ -552,6 +552,7 @@ with open("nhi-audit-session.json", "w") as f:
   opentelemetry-instrumentation-requests
 mkdir -p ~/noctua-labs/unit7/week11 && cd ~/noctua-labs/unit7/week11</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
+    <div class="callout callout-tip"><p><strong>Memory Architecture:</strong> In production, memory freshness is a security control. Stale threat intel returned by a RAG system is worse than no memory — the agent acts on false data with high confidence and no indication to the user that the source is outdated. Define TTL and staleness re-verification policies for every memory store in your production architecture. <em>(Applied: your memory architecture from Unit 2 Week 8)</em></p></div>
 
     <div class="lab-step" id="step-u7w11-2">
       <label><input type="checkbox" onchange="toggleStep('u7w11-2',this.checked)">

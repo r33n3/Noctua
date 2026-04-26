@@ -170,6 +170,7 @@ print(f"  Environment: {environment.id}")</code></pre><button class="copy-btn" o
         <p>Add <code>.env.agents</code> to your <code>.gitignore</code> — it contains live agent IDs. Keep a copy somewhere safe; losing them doesn't break anything (you can list agents via the API) but it's inconvenient.</p>
       </div>
     </div>
+    <div class="callout callout-tip"><p><strong>Memory Architecture:</strong> The Managed Agent environment provides server-side state persistence within a session — the platform manages in-session memory so you do not have to pass full conversation history manually. Cross-session memory and cross-agent memory require an external store. You will wire that external layer in Week 4 using MemPalace agent diaries. <em>(Applied: Week 4 — Cross-Team Memory with Agent Diaries)</em></p></div>
 
     <div class="lab-step" id="step-u5w1-3">
       <label><input type="checkbox" onchange="toggleStep('u5w1-3',this.checked)">
