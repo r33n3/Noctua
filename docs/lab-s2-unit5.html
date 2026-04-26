@@ -14,7 +14,7 @@
 
 <h1>Lab Guide: Unit 5 — Multi-Agent Orchestration for Security</h1>
 <p><strong>CSEC 602 | Weeks 1–4 | Semester 2</strong></p>
-<p>Build, compare, and evaluate multi-agent security systems using Claude Agent SDK, OpenAI Agents SDK, and Claude Managed Agents. Produce a quantitative framework comparison for your midyear report.</p>
+<p>Build, compare, and evaluate multi-agent security systems using Claude Managed Agents and OpenAI Agents SDK. Produce a quantitative framework comparison for your midyear report.</p>
 
 <div class="callout callout-tip">
   <strong>Claude as your agent swarm designer:</strong> Use Claude to design your agent swarm before you build it. Describe the system you want, then ask: "What can go wrong when these agents interact?" You'll surface failure modes before they're bugs.
@@ -27,55 +27,14 @@
 <hr>
 
 <!-- ======== WEEK 1 ======== -->
-<h2 id="week-1">Week 1 — Multi-Agent Architecture Patterns</h2>
-<div class="week-header"><span class="week-badge">WEEK 1</span><span class="week-sub">Lab: Pattern Mapping &amp; Supervisor Implementation</span></div>
+<h2 id="week-1">Week 1 — Platform Setup &amp; Your First Managed Agent</h2>
+<div class="week-header"><span class="week-badge">WEEK 1</span><span class="week-sub">Lab: Console Onboarding &amp; First Agent Deployment</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement the Supervisor pattern in Python using the Claude Agent SDK. Map four architecture patterns to concrete security scenarios. Measure coordination overhead vs. single-agent baseline.</p></div>
-
-<div class="quiz-block" id="quiz-u5w1">
-  <h4> Knowledge Check — Week 1</h4>
-
-  <div class="quiz-question" data-qid="u5w1q1" data-answer="b" data-explain="The Supervisor pattern has one central agent routing tasks to specialists and aggregating results. Best for incident response because it mirrors real-world command hierarchy (incident commander → specialists). The supervisor maintains situational awareness while specialists focus on their domain.">
-    <p class="q-text">1. When is the Supervisor pattern most appropriate for security operations?</p>
-    <div class="quiz-opts">
-      <label><input type="radio" name="u5w1q1" value="a"> A) When all agents need access to the same data simultaneously</label>
-      <label><input type="radio" name="u5w1q1" value="b"> B) When a clear hierarchy exists with a coordinator routing to specialists — mirrors incident command structure</label>
-      <label><input type="radio" name="u5w1q1" value="c"> C) When agents must operate fully independently without communication</label>
-      <label><input type="radio" name="u5w1q1" value="d"> D) When the problem can be solved by a single agent</label>
-    </div>
-    <div class="quiz-feedback"></div>
-    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q1')">Check Answer</button>
-  </div>
-
-  <div class="quiz-question" data-qid="u5w1q2" data-answer="d" data-explain="The Expert Swarm pattern is ideal when a problem benefits from multiple diverse analytical perspectives simultaneously. In threat hunting, different agent perspectives (network, endpoint, behavioral, threat intel) may catch different evidence. High-confidence detections emerge when multiple experts agree; divergence signals areas needing investigation.">
-    <p class="q-text">2. Which pattern is best for threat hunting where diverse analytical perspectives are valuable?</p>
-    <div class="quiz-opts">
-      <label><input type="radio" name="u5w1q2" value="a"> A) Pipeline pattern — sequential processing ensures thoroughness</label>
-      <label><input type="radio" name="u5w1q2" value="b"> B) Supervisor pattern — central coordinator ensures quality</label>
-      <label><input type="radio" name="u5w1q2" value="c"> C) Peer-to-peer — equal agents build on each other's work</label>
-      <label><input type="radio" name="u5w1q2" value="d"> D) Expert Swarm — parallel diverse analysis with coordinator synthesis highlights consensus and disagreement</label>
-    </div>
-    <div class="quiz-feedback"></div>
-    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q2')">Check Answer</button>
-  </div>
-
-  <div class="quiz-question" data-qid="u5w1q3" data-answer="a" data-explain="Multi-agent overhead (inter-agent communication, coordination, synthesis) means that for simple tasks, a single well-prompted agent often wins. The rule: add agents when you have coordination bottlenecks, need true parallelism, benefit from specialization, or have hard complexity limits on a single context window.">
-    <p class="q-text">3. When should you NOT use a multi-agent architecture?</p>
-    <div class="quiz-opts">
-      <label><input type="radio" name="u5w1q3" value="a"> A) When a single well-prompted agent can solve the problem — coordination overhead exceeds the benefit</label>
-      <label><input type="radio" name="u5w1q3" value="b"> B) When you need high accuracy on security tasks</label>
-      <label><input type="radio" name="u5w1q3" value="c"> C) When the task involves multiple security domains</label>
-      <label><input type="radio" name="u5w1q3" value="d"> D) When team size is larger than two developers</label>
-    </div>
-    <div class="quiz-feedback"></div>
-    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q3')">Check Answer</button>
-  </div>
-</div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Set up your Anthropic platform access, create your first Managed Agent, and run a live streaming session against the Meridian Financial incident you know from Semester 1. By end of this week you'll have the 3-object model (Agent → Environment → Session) working end-to-end.</p></div>
 
 <div class="callout callout-info">
-  <strong>S1 connection: you've already done this</strong>
-  <p>In Week 15 of Semester 1 you deployed your hardened Sprint II agent to Claude Managed Agents — <code>client.beta.agents.create()</code>, <code>client.beta.environments.create()</code>, and a streaming session loop. That's one of the three harnesses you'll compare this unit.</p>
-  <p>This week's lab implements the same <em>pattern</em> (Supervisor + specialists) but in the Claude Agent SDK — your own Python loop, not Anthropic's hosted loop. Weeks 2 and 3 add the OpenAI Agents SDK and Managed Agents sides of the comparison. By Week 4 you'll have run the same security workload through all three and have real numbers.</p>
+  <strong>S1 bridge: what changes, what doesn't</strong>
+  <p>In Semester 1 you built custom subagents as YAML files inside Claude Code and ran agent teams — all locally, on your Claude subscription. The agentic loop concept is the same: Claude receives a prompt, calls tools, gets results, repeats until done. What changes in Semester 2 is <em>who runs the infrastructure</em>. With Claude Managed Agents, Anthropic hosts the loop, provisions the container, and executes tools server-side. You define the agent once, start a session per task, and stream events. The mental model you built in S1 Unit 4 Week 13 transfers directly.</p>
 </div>
 
 <div class="callout callout-key">
@@ -83,89 +42,203 @@
   <p>This system makes consequential recommendations — containment actions, escalations, account lockouts. Before writing code, answer these questions in <code>unit5/aiuc1-precheck.md</code>:</p>
   <ol>
     <li><strong>What data does this system process?</strong> Security alerts likely contain IP addresses, usernames, system names — potentially PII. How will you handle it?</li>
-    <li><strong>Who is affected by an incorrect decision?</strong> A false positive containment recommendation triggers unnecessary lockouts or isolation. A false negative misses a real threat. Who bears the cost?</li>
+    <li><strong>Who is affected by an incorrect decision?</strong> A false positive triggers unnecessary lockouts; a false negative misses a real threat. Who bears the cost?</li>
     <li><strong>Which AIUC-1 domains are in scope?</strong> (B: Security, D: Reliability, E: Accountability — at minimum)</li>
     <li><strong>What human oversight exists for high-severity recommendations?</strong> Does a "P1 — isolate host" recommendation execute automatically, or does a human review it first?</li>
   </ol>
-  <p>The full AIUC-1 audit of this system happens in Unit 7. This pre-check ensures your architecture doesn't build in gaps that will surface there.</p>
+  <p>The full AIUC-1 audit happens in Unit 7. This pre-check surfaces design decisions you would otherwise have to reverse later.</p>
+</div>
+
+<div class="quiz-block" id="quiz-u5w1">
+  <h4> Knowledge Check — Week 1</h4>
+
+  <div class="quiz-question" data-qid="u5w1q1" data-answer="c" data-explain="Agent and Environment are one-time setup objects — create them once, save the IDs, reuse across all sessions. Session is per-task: you create a new session for each investigation, attach it to the saved Agent and Environment, and stream events. Re-creating Agent or Environment on every run is a common mistake that wastes setup time and creates orphaned objects.">
+    <p class="q-text">1. In the Managed Agents object model, which objects are created once vs. per task?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q1" value="a"> A) All three (Agent, Environment, Session) are created fresh for each investigation</label>
+      <label><input type="radio" name="u5w1q1" value="b"> B) Agent is per-task; Environment and Session are reused</label>
+      <label><input type="radio" name="u5w1q1" value="c"> C) Agent and Environment are created once and reused; Session is created per task</label>
+      <label><input type="radio" name="u5w1q1" value="d"> D) Only Session is created; Agent and Environment are implicit</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w1q2" data-answer="b" data-explain="The stream must be opened before sending events to avoid a race condition: if the agent starts responding before your stream is open, you miss the first events. The pattern is always: open stream → send user.message → iterate events → break on session.status_idle.">
+    <p class="q-text">2. Why must you open the event stream BEFORE sending a user.message?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q2" value="a"> A) The API requires authentication before sending messages</label>
+      <label><input type="radio" name="u5w1q2" value="b"> B) If the agent starts responding before your stream is open, you miss the first events — race condition</label>
+      <label><input type="radio" name="u5w1q2" value="c"> C) Sending before streaming causes the session to terminate</label>
+      <label><input type="radio" name="u5w1q2" value="d"> D) The stream sets up the container before the agent can run</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w1q3" data-answer="a" data-explain="agent_toolset_20260401 gives the agent access to bash, read, write, edit, glob, grep, web_fetch, and web_search — the full Claude Code tool set. You don't implement these tools; they run server-side in Anthropic's container. You see agent.tool_use events with the tool name but not the raw tool inputs/outputs, since execution is server-side.">
+    <p class="q-text">3. What does <code>{"type": "agent_toolset_20260401"}</code> provide to a Managed Agent?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w1q3" value="a"> A) The full Claude Code tool set (bash, file read/write/edit, glob, grep, web_fetch, web_search) running server-side in Anthropic's container</label>
+      <label><input type="radio" name="u5w1q3" value="b"> B) Access to your local filesystem and running processes</label>
+      <label><input type="radio" name="u5w1q3" value="c"> C) A set of custom tools you define in your Python code</label>
+      <label><input type="radio" name="u5w1q3" value="d"> D) Read-only web search — no file or bash access</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w1q3')">Check Answer</button>
+  </div>
 </div>
 
 <div class="lab-section">
-  <h4> Lab Exercise: Supervisor Pattern SOC System</h4>
+  <h4> Lab Exercise: First Managed Agent</h4>
   <div class="lab-steps">
     <div class="lab-step" id="step-u5w1-0">
-  <label><input type="checkbox" onchange="toggleStep('u5w1-0', this.checked)">
-    <div class="step-content">
-      <div class="step-title">Step 0: AIUC-1 pre-check — run before writing code</div>
-      <div class="step-desc">Run <code>/audit-aiuc1</code> on your planned system architecture. Focus on Domains B (Security), D (Reliability), and E (Accountability) at minimum. Save the output as <code>unit5/aiuc1-precheck.md</code> — this is a graded deliverable. The full audit happens in Unit 7; this pre-check surfaces design decisions you would otherwise have to reverse later.</div>
+      <label><input type="checkbox" onchange="toggleStep('u5w1-0', this.checked)">
+        <div class="step-content">
+          <div class="step-title">Step 0: AIUC-1 pre-check — run before writing code</div>
+          <div class="step-desc">Run <code>/audit-aiuc1</code> on your planned system. Focus on Domains B (Security), D (Reliability), E (Accountability). Save as <code>unit5/aiuc1-precheck.md</code> — this is a graded deliverable.</div>
+        </div>
+      </label>
     </div>
-  </label>
-</div>
-<div class="callout callout-tip">
-  <strong>Finding the skill</strong>
-  <p>The <code>/audit-aiuc1</code> skill is included in the course skills bundle. The skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
-</div>
 
     <div class="lab-step" id="step-u5w1-1">
       <label><input type="checkbox" onchange="toggleStep('u5w1-1',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 1: Install Claude Agent SDK</div>
+        <div class="step-title">Step 1: Set up platform access</div>
+        <div class="step-desc">Choose your setup path and configure your environment. All three paths produce the same result: a working <code>ANTHROPIC_API_KEY</code> environment variable.</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install anthropic
-mkdir -p ~/noctua-labs/unit5/week1 && cd ~/noctua-labs/unit5/week1
-# SDK uses: from anthropic import Anthropic</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key">
+        <strong>Which setup path describes you?</strong>
+        <p><strong>A — Self-guided (using Noctua on your own):</strong> Create a free account at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Add API credits (Settings → Billing). Set a spend limit so there are no surprises. Create an API key (API Keys → Create Key). Copy it now — it won't show again.</p>
+        <p><strong>B — Instructor-provisioned:</strong> Your instructor has shared an <code>ANTHROPIC_API_KEY</code> and possibly an <code>ENVIRONMENT_ID</code>. Set them as shown below and skip to Step 2.</p>
+        <p><strong>C — Enterprise cloud (Bedrock / Vertex):</strong> Set <code>CLAUDE_CODE_USE_BEDROCK=1</code> or <code>CLAUDE_CODE_USE_VERTEX=1</code> and configure your cloud credentials. The Python code below is identical; only auth differs.</p>
+      </div>
+      <div class="code-block"><pre><code># Set your API key — never commit this to git
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+# Verify the SDK is installed (done in S1 Unit 4):
+python3 -c "import anthropic; print('SDK ready:', anthropic.__version__)"
+
+# Create your working directory:
+mkdir -p ~/noctua-labs/unit5/week1 && cd ~/noctua-labs/unit5/week1</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w1-2">
       <label><input type="checkbox" onchange="toggleStep('u5w1-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Implement the Supervisor Agent</div>
-        <div class="step-desc">Build <code>supervisor.py</code> using Claude Agent SDK. The supervisor receives an alert, analyzes which specialist to route to (threat_analyst, containment_advisor, compliance_checker), calls that specialist as a subagent, and returns a synthesized decision.</div>
+        <div class="step-title">Step 2: Create your agent and environment (one-time setup)</div>
+        <div class="step-desc">Create <code>setup.py</code>. Run it once, save the returned IDs — you reference them in every subsequent session. Do not re-run this on every investigation; that creates orphaned objects.</div>
       </div></label>
-      <div class="code-block"><pre><code># Claude Code prompt:
-# "Build a Supervisor agent using the Anthropic SDK that:
-# 1. Receives a security alert as input
-# 2. Routes to one of three specialists: threat_analyst, containment_advisor, compliance
-# 3. Each specialist is a separate Claude call with a specialized system prompt
-# 4. Supervisor synthesizes specialist output into final recommendation
-# 5. Returns structured JSON: {routing, specialist_output, synthesis, confidence}"
-claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    </div>
+      <div class="code-block"><pre><code>import anthropic, json
 
-    <div class="callout callout-key">
-      <p><strong>These tools are mocks — and that's intentional.</strong> The tools in this lab simulate the output of your Unit 2 MCP server (<code>query_cve</code>, <code>query_asset_exposure</code>, <code>generate_incident_report</code>). The architecture is identical to what you built: an agent calls a tool, the tool returns structured data, the agent reasons about it. Only the transport changes. In Unit 7 (Hardening), these mock tools get replaced with calls to your actual MCP server via MCP client. Build the agent architecture correctly here — the tool swap in Unit 7 is a one-line configuration change, not a rewrite.</p>
-    </div>
+client = anthropic.Anthropic()
 
-    <div class="callout callout-tip">
-      <p><strong>Lab vs. production architecture.</strong> In this lab, the supervisor agent receives simulated alert data passed directly to the triage function. In a production SOC, the equivalent input comes from a SIEM stream, Kafka topic, webhook, or security data pipeline — not a manual function call. The detection and triage logic you're writing is identical; only the data ingestion layer differs. When you deploy this in a real environment (Unit 8 capstone), the input wiring is what changes — the agent logic does not.</p>
-    </div>
+# Agent: model + system prompt + tools. Created once, versioned.
+agent = client.beta.agents.create(
+    name="SOC Investigator",
+    model="claude-sonnet-4-6",
+    system="""You are a senior SOC analyst conducting incident investigations.
+Given a security alert:
+1. Extract and enumerate all IoCs: IPs, domains, file hashes, usernames
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
+3. Assess severity (Critical / High / Medium / Low) with written justification
+4. Produce a structured JSON report followed by a concise narrative summary
+Always flag low-confidence assessments. Never fabricate enrichment data.""",
+    tools=[{"type": "agent_toolset_20260401"}],
+)
 
-    <div class="callout callout-remember">
-      <p><strong>Add model attribution to your outputs.</strong> Every agent output that goes downstream — to another agent, to a human analyst, to an audit log — should declare how it was produced. Add a <code>pipeline_metadata</code> field to your triage output:</p>
-      <div class="code-block"><pre><code>"pipeline_metadata": {
-    "classifier_model": "claude-haiku-4-5-20251001",
-    "enricher_invoked": True,
-    "report_model": "claude-sonnet-4-6",
-    "total_duration_ms": elapsed_ms,
-    "pipeline_version": "1.0"
-}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <p>When a recommendation is wrong, you need to know which stage produced the error. Without attribution, you're debugging blind. This is the audit record for agentic pipelines.</p>
+# Environment: container config. Created once, reused across sessions.
+environment = client.beta.environments.create(
+    name="soc-investigation-env",
+    config={"type": "cloud", "networking": {"type": "unrestricted"}},
+)
+
+ids = {"agent_id": agent.id, "agent_version": agent.version, "environment_id": environment.id}
+with open(".env.agents", "w") as f:
+    for k, v in ids.items():
+        f.write(f"{k.upper()}={v}\n")
+
+print("Setup complete. IDs saved to .env.agents")
+print(f"  Agent:       {agent.id}  (version {agent.version})")
+print(f"  Environment: {environment.id}")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip">
+        <p>Add <code>.env.agents</code> to your <code>.gitignore</code> — it contains live agent IDs. Keep a copy somewhere safe; losing them doesn't break anything (you can list agents via the API) but it's inconvenient.</p>
+      </div>
     </div>
 
     <div class="lab-step" id="step-u5w1-3">
       <label><input type="checkbox" onchange="toggleStep('u5w1-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Test with the Meridian Financial incident</div>
-        <div class="step-desc">Run the Supervisor system against the incident from Semester 1. Compare: (1) Does routing make sense? (2) Does the specialist response differ from a generalist? (3) What is the coordination overhead vs. single-agent?</div>
+        <div class="step-title">Step 3: Build the session runner</div>
+        <div class="step-desc">Create <code>runner.py</code>. This is the per-investigation script: load saved IDs → create session → open stream → send alert → process events until idle.</div>
       </div></label>
+      <div class="code-block"><pre><code>import anthropic, os
+
+client = anthropic.Anthropic()
+
+# Load IDs saved during setup
+AGENT_ID = os.environ.get("AGENT_ID") or open(".env.agents").read().split("\n")[0].split("=")[1]
+ENV_ID   = os.environ.get("ENVIRONMENT_ID") or open(".env.agents").read().split("\n")[2].split("=")[1]
+
+def investigate(alert_text: str, title: str = "SOC Investigation") -> str:
+    session = client.beta.sessions.create(
+        agent=AGENT_ID,
+        environment_id=ENV_ID,
+        title=title,
+    )
+    print(f"Session: {session.id}\n")
+
+    output = []
+    # Open stream BEFORE sending — avoids race condition
+    with client.beta.sessions.events.stream(session.id) as stream:
+        client.beta.sessions.events.send(
+            session.id,
+            events=[{"type": "user.message", "content": [
+                {"type": "text", "text": alert_text}
+            ]}],
+        )
+        for event in stream:
+            if event.type == "agent.message":
+                for block in event.content:
+                    if hasattr(block, "text"):
+                        print(block.text, end="", flush=True)
+                        output.append(block.text)
+            elif event.type == "agent.tool_use":
+                print(f"\n[Tool: {event.name}]", flush=True)
+            elif event.type == "session.status_idle":
+                print("\n\n── Investigation complete ──")
+                break
+
+    return "".join(output)
+
+if __name__ == "__main__":
+    meridian_alert = """
+    ALERT: Unusual authentication pattern detected
+    Time: 2024-01-15 03:42:17 UTC
+    Source IP: 185.220.101.47 (Tor exit node)
+    Target: finance-workstation-07 (user: j.morrison@meridianfinancial.com)
+    Event: 47 failed RDP attempts followed by successful login
+    Post-auth: PowerShell execution, LSASS memory access detected
+    """
+    result = investigate(meridian_alert, title="Meridian — Week 1 Test")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w1-4">
       <label><input type="checkbox" onchange="toggleStep('u5w1-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Document pattern selection rationale</div>
-        <div class="step-desc">Create <code>pattern-analysis.md</code> mapping all five patterns (Supervisor, Hierarchical, Peer-to-Peer, Expert Swarm, Pipeline) to specific security use cases with pros/cons. This document becomes part of your Unit 5 Framework Comparison Report.</div>
+        <div class="step-title">Step 4: Run it and observe the event stream</div>
+        <div class="step-desc">Run your runner against the Meridian alert. Watch the event stream: <code>agent.tool_use</code> events show tool calls (but not raw inputs — those execute server-side), <code>agent.message</code> events stream the response text, <code>session.status_idle</code> signals completion. Answer the reflection questions in <code>week1-notes.md</code>.</div>
       </div></label>
+      <div class="code-block"><pre><code>python3 runner.py</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key">
+        <strong>Reflection questions — record answers in week1-notes.md</strong>
+        <ul>
+          <li>How many <code>agent.tool_use</code> events did you see? What tools did the agent use?</li>
+          <li>You can see the tool <em>name</em> but not the raw inputs/outputs — they execute in Anthropic's container. How does this affect your ability to audit what the agent did?</li>
+          <li>Compare to your S1 Week 13 subagent: the system prompt is almost identical. What changed structurally? (Answer: who runs the loop and where tools execute)</li>
+          <li>What would you need to add to the system prompt to make this agent production-ready for a real SOC?</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
@@ -174,52 +247,404 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
   <strong>A2A vs. MCP — Two Protocols, Two Jobs</strong>
   <p>Two protocols appear in agentic system architecture. They solve different problems:</p>
   <ul>
-    <li><strong>MCP (Model Context Protocol)</strong> — how an agent calls a tool. Defines the interface between an agent and external capabilities: APIs, databases, file systems.</li>
+    <li><strong>MCP (Model Context Protocol)</strong> — how an agent calls a tool. Defines the interface between an agent and external capabilities: APIs, databases, file systems. You built an MCP server in S1 Unit 2.</li>
     <li><strong>A2A (Agent-to-Agent Protocol)</strong> — how agents communicate with each other. Defines message passing, task delegation, and result handoff between agents in a multi-agent system.</li>
   </ul>
-  <p>A production multi-agent system needs both: MCP to connect agents to tools, A2A to connect agents to each other. They operate at different trust boundaries — tool calls and inter-agent messages have different authentication and authorization requirements. The Claude Agent SDK used in this lab handles inter-agent communication natively; A2A is the standardized protocol for this layer when interoperability across agent frameworks is required.</p>
+  <p>A production multi-agent system needs both: MCP to connect agents to tools, A2A to connect agents to each other. In Managed Agents, <code>callable_agents[]</code> handles A2A at one delegation level (coordinator → subagent). MCP is how each agent accesses tools — yours from Unit 2 included.</p>
 </div>
 <hr>
 
 <!-- ======== WEEK 2 ======== -->
-<h2 id="week-2">Week 2 — OpenAI Agents SDK</h2>
-<div class="week-header"><span class="week-badge">WEEK 2</span><span class="week-sub">Lab: Cross-Provider Agent Design</span></div>
+<h2 id="week-2">Week 2 — Managed Agents: Memory, Networking &amp; Your MCP Server</h2>
+<div class="week-header"><span class="week-badge">WEEK 2</span><span class="week-sub">Lab: Production Hardening &amp; Tool Integration</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a SOC investigation agent using the OpenAI Agents SDK. Compare the Runner-managed loop pattern (your process, client-side tools) against Claude Managed Agents (Anthropic infrastructure, server-side tools). Run against the same 10-incident test suite you'll use all unit.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Extend the Managed Agent you deployed in Week 1 with three production features: persistent memory across sessions, network isolation via <code>limited</code> mode, and your S1 Unit 2 MCP server wired as a custom tool. By end of this week your agent will carry context across investigations, have a locked-down network surface, and be able to call your local threat-intelligence tools from a cloud-hosted session.</p></div>
 
 <div class="quiz-block" id="quiz-u5w2">
   <h4>Knowledge Check — Week 2</h4>
 
-  <div class="quiz-question" data-qid="u5w2q1" data-answer="c" data-explain="The fundamental difference: with OpenAI Agents SDK, Runner executes in your process and tools run in your code (client-side). With Claude Managed Agents, Anthropic runs the loop on their infrastructure and tools execute in a server-side container. Both abstract the agent loop — the question is who hosts the execution environment.">
-    <p class="q-text">1. What is the fundamental architectural difference between OpenAI Agents SDK and Claude Managed Agents?</p>
+  <div class="quiz-question" data-qid="u5w2q1" data-answer="c" data-explain="With read_write access, a successful prompt injection can write malicious content into the memory store — for example, a poisoned threat-intel result could instruct all future sessions to misclassify alerts. Use read_only for any store the agent does not need to modify, and be especially cautious when the agent processes untrusted external input like fetched web pages or user-supplied data.">
+    <p class="q-text">1. Why is <code>read_write</code> memory access a security risk when the agent processes untrusted input?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w2q1" value="a"> A) OpenAI Agents SDK only supports GPT models; Managed Agents only supports Claude</label>
-      <label><input type="radio" name="u5w2q1" value="b"> B) OpenAI Agents SDK requires more code; Managed Agents is simpler</label>
-      <label><input type="radio" name="u5w2q1" value="c"> C) Runner executes in your process with client-side tools; Managed Agents runs on Anthropic infrastructure with server-side tools</label>
-      <label><input type="radio" name="u5w2q1" value="d"> D) OpenAI Agents SDK is synchronous only; Managed Agents supports streaming</label>
+      <label><input type="radio" name="u5w2q1" value="a"> A) read_write increases token costs for every session</label>
+      <label><input type="radio" name="u5w2q1" value="b"> B) read_write prevents memory versions from being created</label>
+      <label><input type="radio" name="u5w2q1" value="c"> C) A successful prompt injection could write malicious content that poisons all future sessions reading the same store</label>
+      <label><input type="radio" name="u5w2q1" value="d"> D) read_write access expires after 30 days, breaking long-running sessions</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w2q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="u5w2q2" data-answer="b" data-explain="handoffs=[] lets an agent delegate the entire conversation to another agent — the receiving agent takes over. .as_tool() wraps an agent as a callable tool so the orchestrator invokes it and gets a result back, maintaining control. The distinction matters: handoffs transfer ownership; as_tool() is a subordinate call.">
-    <p class="q-text">2. What is the difference between handoffs=[] and .as_tool() in OpenAI Agents SDK?</p>
+  <div class="quiz-question" data-qid="u5w2q2" data-answer="b" data-explain="limited networking restricts outbound traffic to an explicit allowed_hosts whitelist — anything not on the list is blocked at the network layer. This follows the principle of least privilege: a SOC investigation agent only needs to reach specific threat-intel APIs and your SIEM, not the entire internet. unrestricted is acceptable for development but should never reach production with sensitive data.">
+    <p class="q-text">2. What does switching an environment from <code>unrestricted</code> to <code>limited</code> networking enforce?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w2q2" value="a"> A) handoffs=[] is for async agents; .as_tool() is for sync agents</label>
-      <label><input type="radio" name="u5w2q2" value="b"> B) handoffs=[] transfers conversation ownership to another agent; .as_tool() wraps an agent as a callable tool the orchestrator controls</label>
-      <label><input type="radio" name="u5w2q2" value="c"> C) They are identical; .as_tool() is just the newer API</label>
-      <label><input type="radio" name="u5w2q2" value="d"> D) handoffs=[] is for external agents; .as_tool() is for local agents</label>
+      <label><input type="radio" name="u5w2q2" value="a"> A) The agent can only use bash tools, not web_search or web_fetch</label>
+      <label><input type="radio" name="u5w2q2" value="b"> B) Outbound traffic is restricted to the domains in <code>allowed_hosts</code> — everything else is blocked at the network layer</label>
+      <label><input type="radio" name="u5w2q2" value="c"> C) Session duration is limited to 30 minutes</label>
+      <label><input type="radio" name="u5w2q2" value="d"> D) The agent cannot write to the filesystem</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w2q2')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w2q3" data-answer="d" data-explain="Managed Agents runs in Anthropic's cloud — it cannot reach a server on your localhost directly. The solution is the custom tool pattern: define the tool schema in the agent config so Claude knows when to call it; the session emits agent.custom_tool_use and pauses; your local runner.py receives the event, calls your local MCP server, and sends back user.custom_tool_result. The cloud agent gets the result without ever having direct network access to your machine.">
+    <p class="q-text">3. Your S1 Unit 2 MCP server runs on localhost:3000. How does a cloud-hosted Managed Agent call it?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w2q3" value="a"> A) Add localhost:3000 to the environment's allowed_hosts list</label>
+      <label><input type="radio" name="u5w2q3" value="b"> B) Expose the MCP server on a public URL and set allow_mcp_servers: true</label>
+      <label><input type="radio" name="u5w2q3" value="c"> C) Use the agent_toolset_20260401 bash tool to curl localhost:3000 from inside the container</label>
+      <label><input type="radio" name="u5w2q3" value="d"> D) Define the tool as a custom tool in the agent config; handle agent.custom_tool_use events in your local runner and call the MCP server yourself, returning results via user.custom_tool_result</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w2q3')">Check Answer</button>
+  </div>
+</div>
+
+<div class="lab-section">
+  <h4>Lab Exercise: Memory, Networking &amp; MCP Integration</h4>
+
+    <div class="lab-step" id="step-u5w2-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1: Create a memory store and attach it to a session</div>
+        <div class="step-desc">Create a memory store for your SOC investigation agent. Seed it with standing SOC context (escalation thresholds, known-safe IPs, reporting conventions). Then start a session with <code>read_write</code> access so the agent can record its own findings. After the session completes, inspect what the agent wrote to the store.</div>
+      </div></label>
+      <div class="code-block"><pre><code># memory_setup.py — run once, save MEMORY_STORE_ID
+import anthropic, os
+
+client = anthropic.Anthropic()
+
+store = client.beta.memory_stores.create(
+    name="soc-investigation-memory",
+    description="Standing SOC context, escalation thresholds, and cross-session investigation findings.",
+)
+print(f"MEMORY_STORE_ID={store.id}")
+
+# Seed with reference material the agent should always have
+client.beta.memory_stores.memories.create(
+    store.id,
+    path="/context/escalation-thresholds.md",
+    content="""# Escalation Thresholds
+- Critical: isolate host within 15 minutes, page on-call
+- High: assign ticket within 1 hour, notify team lead
+- Medium: ticket within 4 hours
+- Low: batch review daily
+- Known-safe IPs (never escalate): 10.0.0.0/8, 192.168.0.0/16
+""",
+)
+print("Memory store seeded.")
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code># session_with_memory.py
+import anthropic, os
+
+client = anthropic.Anthropic()
+
+AGENT_ID = os.environ["AGENT_ID"]
+ENVIRONMENT_ID = os.environ["ENVIRONMENT_ID"]
+MEMORY_STORE_ID = os.environ["MEMORY_STORE_ID"]
+
+session = client.beta.sessions.create(
+    agent=AGENT_ID,
+    environment_id=ENVIRONMENT_ID,
+    title="Meridian Investigation — Session 1",
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": MEMORY_STORE_ID,
+            "access": "read_write",
+            "instructions": "SOC context and prior findings. Check /context/ before starting. Write your findings to /findings/{incident_id}.md when done.",
+        }
+    ],
+)
+
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "Investigate the Meridian incident. Check memory for escalation thresholds before assessing severity. Record your findings in memory when done."}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "session.status_idle":
+            print("\n── Session complete ──")
+            break
+
+# Inspect what the agent wrote
+page = client.beta.memory_stores.memories.list(MEMORY_STORE_ID, path_prefix="/findings/")
+for mem in page.data:
+    print(f"Written: {mem.path}")
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 2: Verify persistence across sessions</div>
+        <div class="step-desc">Start a second session referencing the same memory store. Ask the agent about a different incident — but also ask whether it recalls anything from the previous investigation. Confirm the agent reads findings the first session wrote. This demonstrates the audit trail and cross-session continuity that makes Managed Agents viable for production SOC workflows.</div>
+      </div></label>
+      <div class="code-block"><pre><code># session_2.py — new session, same memory store
+session2 = client.beta.sessions.create(
+    agent=AGENT_ID,
+    environment_id=ENVIRONMENT_ID,
+    title="Follow-up Investigation — Session 2",
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": MEMORY_STORE_ID,
+            "access": "read_write",
+            "instructions": "Check /findings/ for prior investigation results before starting.",
+        }
+    ],
+)
+
+with client.beta.sessions.events.stream(session2.id) as stream:
+    client.beta.sessions.events.send(
+        session2.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "We have a new alert: outbound traffic spike from the same host range as the Meridian incident. Check your memory for prior findings on Meridian before you analyze this one."}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "session.status_idle":
+            break
+
+# Inspect memory versions — immutable audit trail
+versions = client.beta.memory_stores.memory_versions.list(
+    MEMORY_STORE_ID, memory_id="&lt;mem_id_from_step_1&gt;"
+)
+for v in versions:
+    print(f"Version {v.id}: operation={v.operation}")
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip"><strong>Reflection:</strong> In your <code>week2-notes.md</code>, answer: Did the agent reference prior findings unprompted? What would happen if you used <code>read_only</code> access — what would change?</div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3: Switch to production networking — <code>limited</code> mode</div>
+        <div class="step-desc">Create a new environment with <code>limited</code> networking. Specify only the threat-intel APIs your agent actually needs. Re-run the Meridian investigation using this hardened environment and verify that blocked requests fail at the network layer — the agent's tool calls to non-allowed domains should fail or return connection errors.</div>
+      </div></label>
+      <div class="code-block"><pre><code># Create a production-hardened environment
+env_hardened = client.beta.environments.create(
+    name="soc-env-production",
+    config={
+        "type": "cloud",
+        "packages": {
+            "pip": ["requests"],
+        },
+        "networking": {
+            "type": "limited",
+            "allowed_hosts": [
+                "api.virustotal.com",
+                "api.shodan.io",
+                "otx.alienvault.com",
+                # Add your threat-intel sources here
+                # Do NOT add general internet access
+            ],
+            "allow_mcp_servers": True,   # needed for Step 4
+            "allow_package_managers": False,
+        },
+    },
+)
+print(f"ENVIRONMENT_ID_PROD={env_hardened.id}")
+
+# Test: run a session that tries to reach a non-allowed domain
+# The agent's web_search/web_fetch for blocked domains should fail
+# This confirms least-privilege is enforced at the network layer, not just in policy
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-warn"><strong>Security principle:</strong> Every domain you add to <code>allowed_hosts</code> is an attack surface — an agent processing malicious input could be manipulated into exfiltrating data to any allowed host. Keep the list to the minimum your workflow requires and audit it periodically.</div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-4">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 4: Wire your S1 Unit 2 MCP server as a custom tool</div>
+        <div class="step-desc">Your local MCP server runs on <code>localhost:3000</code> — the Anthropic cloud can't reach it directly. Use the <strong>custom tool</strong> pattern: define the tool schema in the agent config so Claude knows when to call it. When the agent calls it, the session emits <code>agent.custom_tool_use</code> and pauses. Your local runner calls the MCP server and returns the result via <code>user.custom_tool_result</code>. The agent gets the result without any direct network path between Anthropic's cloud and your machine.</div>
+      </div></label>
+      <div class="code-block"><pre><code># agent_with_mcp_tool.py — create a new agent version with the MCP tool defined
+agent_v2 = client.beta.agents.create(
+    name="SOC Investigator v2",
+    model="claude-sonnet-4-6",
+    system="""You are a senior SOC analyst. For every investigation:
+1. Use the soc_intel_lookup tool to check your local threat-intel MCP server for IOCs
+2. Use web_search for external enrichment (only against allowed hosts)
+3. Apply CCT analysis and produce a structured JSON report""",
+    tools=[
+        {"type": "agent_toolset_20260401"},
+        {
+            "type": "custom",
+            "name": "soc_intel_lookup",
+            "description": """Query the local SOC threat-intelligence MCP server for enrichment data on an indicator of compromise.
+Use this tool FIRST before any external lookup. The MCP server has access to your internal SIEM, known-bad feeds, and asset inventory.
+Input: indicator (string) — an IP address, domain, file hash, or URL.
+Returns: JSON with reputation score, associated campaigns, first/last seen dates, and any internal asset matches.""",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "indicator": {
+                        "type": "string",
+                        "description": "The IOC to look up: IP address, domain, file hash (MD5/SHA256), or URL",
+                    }
+                },
+                "required": ["indicator"],
+            },
+        },
+    ],
+)
+print(f"AGENT_V2_ID={agent_v2.id}")
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code># runner_with_custom_tool.py — handle agent.custom_tool_use events
+import anthropic, os, json, subprocess
+
+client = anthropic.Anthropic()
+
+MCP_SERVER_URL = "http://localhost:3000"
+
+def call_mcp_server(tool_name: str, arguments: dict) -> str:
+    """Call your local MCP server and return the result as a string."""
+    import urllib.request
+    payload = json.dumps({"tool": tool_name, "arguments": arguments}).encode()
+    req = urllib.request.Request(
+        f"{MCP_SERVER_URL}/call",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        return resp.read().decode()
+
+def investigate_with_mcp(alert_text: str) -> str:
+    session = client.beta.sessions.create(
+        agent=os.environ["AGENT_V2_ID"],
+        environment_id=os.environ["ENVIRONMENT_ID_PROD"],
+        resources=[{
+            "type": "memory_store",
+            "memory_store_id": os.environ["MEMORY_STORE_ID"],
+            "access": "read_write",
+            "instructions": "Check /context/ for thresholds. Write findings to /findings/.",
+        }],
+    )
+
+    events_by_id = {}
+    report_parts = []
+
+    with client.beta.sessions.events.stream(session.id) as stream:
+        client.beta.sessions.events.send(
+            session.id,
+            events=[{"type": "user.message", "content": [
+                {"type": "text", "text": alert_text}
+            ]}],
+        )
+        for event in stream:
+            events_by_id[event.id] = event
+
+            if event.type == "agent.message":
+                for block in event.content:
+                    if hasattr(block, "text"):
+                        print(block.text, end="", flush=True)
+                        report_parts.append(block.text)
+            elif event.type == "agent.custom_tool_use":
+                print(f"\n[Custom tool: {event.name}({event.input})]", flush=True)
+            elif event.type == "session.status_idle":
+                stop = event.stop_reason
+                if stop and stop.type == "requires_action":
+                    # Agent called a custom tool — execute locally and return result
+                    for event_id in stop.event_ids:
+                        tool_event = events_by_id[event_id]
+                        result = call_mcp_server(tool_event.name, tool_event.input)
+                        client.beta.sessions.events.send(
+                            session.id,
+                            events=[{
+                                "type": "user.custom_tool_result",
+                                "custom_tool_use_id": event_id,
+                                "content": [{"type": "text", "text": result}],
+                            }],
+                        )
+                elif stop and stop.type == "end_turn":
+                    print("\n── Investigation complete ──")
+                    break
+
+    return "".join(report_parts)
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-info"><strong>Architecture note:</strong> Your local runner process is the bridge. Anthropic's cloud calls your custom tool; your code executes it against <code>localhost:3000</code> and returns the result. The session's <code>allow_mcp_servers: true</code> flag in the environment is for MCP servers reachable directly from the container — a different pattern for publicly-accessible MCP endpoints.</div>
+    </div>
+
+    <div class="lab-step" id="step-u5w2-5">
+      <label><input type="checkbox" onchange="toggleStep('u5w2-5',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 5: End-to-end test and production-hardening writeup</div>
+        <div class="step-desc">Run <code>investigate_with_mcp()</code> against the Meridian incident using your hardened environment. Confirm: (1) the agent checks memory for prior context, (2) <code>soc_intel_lookup</code> is called before external enrichment, (3) blocked network requests fail at the container layer, (4) findings are written to the memory store. Then document your production-hardening decisions in <code>week2-notes.md</code>.</div>
+      </div></label>
+      <div class="callout callout-tip"><strong>What to cover in <code>week2-notes.md</code>:</strong>
+        <ul>
+          <li>Which memory access level (<code>read_write</code> vs <code>read_only</code>) would you use for a shared reference knowledge base versus a per-case findings store? Why?</li>
+          <li>What domains did you add to <code>allowed_hosts</code>? What's your justification for each?</li>
+          <li>How does the custom tool pattern compare to the YAML-based MCP server you configured in S1 Unit 2? What's the same, what's different?</li>
+          <li>Sketch a threat model: who could manipulate what in this system (memory store, custom tool results, network routing)?</li>
+        </ul>
+      </div>
+      <div class="deliverables">
+        <h4>Week 2 Deliverables</h4>
+        <ul>
+          <li><code>memory_setup.py</code> — memory store creation and seeding</li>
+          <li><code>session_with_memory.py</code> — session runner with memory mount</li>
+          <li><code>session_2.py</code> — cross-session persistence verification</li>
+          <li><code>agent_with_mcp_tool.py</code> — agent config with custom tool definition</li>
+          <li><code>runner_with_custom_tool.py</code> — runner handling <code>agent.custom_tool_use</code> events</li>
+          <li><code>week2-notes.md</code> — production-hardening decisions and threat model sketch</li>
+        </ul>
+      </div>
+    </div>
+
+</div>
+<hr>
+
+<!-- ======== WEEK 3 ======== -->
+<h2 id="week-3">Week 3 — OpenAI Agents SDK</h2>
+<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: Cross-Provider Agent Design</span></div>
+
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a SOC investigation agent using the OpenAI Agents SDK. Compare the Runner-managed loop pattern (your process, client-side tools) against Claude Managed Agents (Anthropic infrastructure, server-side tools) you built in Weeks 1–2. Run both against the same 10-incident test suite and record quantitative metrics for your Week 4 comparison report.</p></div>
+
+<div class="quiz-block" id="quiz-u5w3">
+  <h4>Knowledge Check — Week 3</h4>
+
+  <div class="quiz-question" data-qid="u5w3q1" data-answer="c" data-explain="The fundamental difference: with OpenAI Agents SDK, Runner executes in your process and tools run in your code (client-side). With Claude Managed Agents, Anthropic runs the loop on their infrastructure and tools execute in a server-side container. Both abstract the agent loop — the question is who hosts the execution environment.">
+    <p class="q-text">1. What is the fundamental architectural difference between OpenAI Agents SDK and Claude Managed Agents?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w3q1" value="a"> A) OpenAI Agents SDK only supports GPT models; Managed Agents only supports Claude</label>
+      <label><input type="radio" name="u5w3q1" value="b"> B) OpenAI Agents SDK requires more code; Managed Agents is simpler</label>
+      <label><input type="radio" name="u5w3q1" value="c"> C) Runner executes in your process with client-side tools; Managed Agents runs on Anthropic infrastructure with server-side tools</label>
+      <label><input type="radio" name="u5w3q1" value="d"> D) OpenAI Agents SDK is synchronous only; Managed Agents supports streaming</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q1')">Check Answer</button>
+  </div>
+
+  <div class="quiz-question" data-qid="u5w3q2" data-answer="b" data-explain="handoffs=[] lets an agent delegate the entire conversation to another agent — the receiving agent takes over. .as_tool() wraps an agent as a callable tool so the orchestrator invokes it and gets a result back, maintaining control. The distinction matters: handoffs transfer ownership; as_tool() is a subordinate call.">
+    <p class="q-text">2. What is the difference between <code>handoffs=[]</code> and <code>.as_tool()</code> in OpenAI Agents SDK?</p>
+    <div class="quiz-opts">
+      <label><input type="radio" name="u5w3q2" value="a"> A) handoffs=[] is for async agents; .as_tool() is for sync agents</label>
+      <label><input type="radio" name="u5w3q2" value="b"> B) handoffs=[] transfers conversation ownership to another agent; .as_tool() wraps an agent as a callable tool the orchestrator controls</label>
+      <label><input type="radio" name="u5w3q2" value="c"> C) They are identical; .as_tool() is just the newer API</label>
+      <label><input type="radio" name="u5w3q2" value="d"> D) handoffs=[] is for external agents; .as_tool() is for local agents</label>
+    </div>
+    <div class="quiz-feedback"></div>
+    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q2')">Check Answer</button>
   </div>
 </div>
 
 <div class="lab-section">
   <h4>Lab Exercise: OpenAI Agents SDK SOC Investigation</h4>
 
-    <div class="lab-step" id="step-u5w2-1">
-      <label><input type="checkbox" onchange="toggleStep('u5w2-1',this.checked)">
+    <div class="lab-step" id="step-u5w3-1">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Install the SDK and define a SOC analyst agent</div>
         <div class="step-desc">Install <code>openai-agents</code> and create <code>oai_soc_agent.py</code>. Define two function tools (IOC enrichment and log query) and a SOC analyst agent using the <code>@function_tool</code> decorator for automatic schema generation.</div>
@@ -255,11 +680,11 @@ soc_agent = Agent(
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
-    <div class="lab-step" id="step-u5w2-2">
-      <label><input type="checkbox" onchange="toggleStep('u5w2-2',this.checked)">
+    <div class="lab-step" id="step-u5w3-2">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Run sync and then add streaming</div>
-        <div class="step-desc">Run the agent synchronously first to verify output, then switch to streaming to see events as they arrive. Compare the streaming event types to what you'll see from Claude Managed Agents in Week 3.</div>
+        <div class="step-desc">Run the agent synchronously first to verify output, then switch to streaming to see events as they arrive. Compare the streaming event types to what you saw from Claude Managed Agents in Weeks 1–2.</div>
       </div></label>
       <div class="code-block"><pre><code>
 # Synchronous — simplest path
@@ -283,10 +708,10 @@ asyncio.run(run_streamed(meridian_incident_text))
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
-    <div class="lab-step" id="step-u5w2-3">
-      <label><input type="checkbox" onchange="toggleStep('u5w2-3',this.checked)">
+    <div class="lab-step" id="step-u5w3-3">
+      <label><input type="checkbox" onchange="toggleStep('u5w3-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Add multi-agent handoffs</div>
+        <div class="step-title">Step 3: Add multi-agent handoffs and the manager pattern</div>
         <div class="step-desc">Build a triage agent that routes alerts to specialists using <code>handoffs=[]</code>. Then try the manager pattern using <code>.as_tool()</code>. Note the difference: handoffs transfer conversation ownership; <code>as_tool()</code> keeps the orchestrator in control.</div>
       </div></label>
       <div class="code-block"><pre><code>
@@ -326,189 +751,23 @@ orchestrator = Agent(
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
-    <div class="lab-step" id="step-u5w2-4">
-      <label><input type="checkbox" onchange="toggleStep('u5w2-4',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 4: Run the test suite and record metrics</div>
-        <div class="step-desc">Run your OpenAI Agents SDK implementation against all 10 test incidents from <code>docs/data/incident-data.md</code>. Record for each: pass/fail for severity classification, latency (seconds), token cost, output completeness score (1–5). Add results to your comparison spreadsheet — this is the same test suite you'll run against Claude Managed Agents in Week 3.</div>
-      </div></label>
-      <div class="callout callout-tip"><strong>Tip:</strong> Use <code>Runner.run_sync()</code> in a loop and time each call with <code>time.perf_counter()</code>. OpenAI usage data is in <code>result.raw_responses[-1].usage</code>.</div>
-    </div>
-
-    <div class="lab-step" id="step-u5w2-5">
-      <label><input type="checkbox" onchange="toggleStep('u5w2-5',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 5: Document the developer experience trade-offs</div>
-        <div class="step-desc">Add an "OpenAI Agents SDK" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. Claude SDK, (2) what you control — Runner runs in your process, tools are your functions, full visibility into inputs/outputs, (3) cross-provider implications — does portability matter for your SOC deployment?, (4) when you'd choose this over Claude Managed Agents in a real production environment.</div>
-      </div></label>
-    </div>
-
-</div>
-<hr>
-
-<!-- ======== WEEK 3 ======== -->
-<h2 id="week-3">Week 3 — Claude Managed Agents</h2>
-<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: Anthropic-Hosted Agent Execution</span></div>
-
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement the same SOC investigation pipeline from Week 1 using Claude Managed Agents — Anthropic's hosted agent harness. Compare the development experience and operational characteristics against the custom SDK approach you already built.</p></div>
-
-<div class="quiz-block" id="quiz-u5w3">
-  <h4> Knowledge Check — Week 3</h4>
-
-  <div class="quiz-question" data-qid="u5w3q1" data-answer="b" data-explain="In Claude Managed Agents, the agent loop runs on Anthropic's orchestration layer and tools execute inside an Anthropic-provisioned container — you are not executing tool calls in your own process. In the custom Claude Agent SDK pattern from Week 1, your Python code owns the loop: you call the API, detect tool_use blocks, execute tools yourself, and send results back. Both use the same underlying model; what differs is who runs the infrastructure.">
-    <p class="q-text">1. What is the fundamental difference between Claude Managed Agents and the custom SDK supervisor from Week 1?</p>
-    <div class="quiz-opts">
-      <label><input type="radio" name="u5w3q1" value="a"> A) Managed Agents uses a different Claude model than the SDK</label>
-      <label><input type="radio" name="u5w3q1" value="b"> B) With Managed Agents, Anthropic runs the agent loop and tool execution in a hosted container; with the SDK, your code owns the loop and tool execution</label>
-      <label><input type="radio" name="u5w3q1" value="c"> C) Managed Agents only supports bash tools; SDK supports all tool types</label>
-      <label><input type="radio" name="u5w3q1" value="d"> D) SDK is for single-agent; Managed Agents is required for multi-agent</label>
-    </div>
-    <div class="quiz-feedback"></div>
-    <button class="quiz-check-btn" onclick="checkQuestion('u5w3q1')">Check Answer</button>
-  </div>
-</div>
-
-<div class="lab-section">
-  <h4> Lab Exercise: SOC Investigator as a Managed Agent</h4>
-  <div class="scenario-box"><strong>Reuse pattern:</strong> The agent logic you built in Weeks 1–2 (classify alert → enrich IoCs → analyze TTPs → report) stays identical. What changes is the infrastructure layer: instead of your Python process managing the loop, Anthropic hosts it. You stream events back via SSE.</div>
-
-  <div class="lab-steps">
-    <div class="lab-step" id="step-u5w3-1">
-      <label><input type="checkbox" onchange="toggleStep('u5w3-1',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 1: Create the agent config (one-time setup)</div>
-        <div class="step-desc">Create a setup script <code>managed_agent_setup.py</code>. The agent config holds model, system prompt, and tools — create it once and save the returned ID. The agent is a versioned, persistent object: you reference it by ID for every session.</div>
-      </div></label>
-      <div class="code-block"><pre><code>import anthropic, os
-
-client = anthropic.Anthropic()
-
-# Create the agent (run once — save agent.id to .env or config file)
-agent = client.beta.agents.create(
-    name="SOC Investigator",
-    model="claude-sonnet-4-6",
-    system="""You are a senior SOC analyst conducting incident investigations.
-Given a security alert:
-1. Extract and enrich all IoCs (IPs, domains, file hashes) using web search
-2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
-3. Assess severity (Critical/High/Medium/Low) with justification
-4. Produce a structured JSON report followed by a concise narrative summary""",
-    tools=[{"type": "agent_toolset_20260401"}],  # includes bash, read, write, grep, web_search
-)
-
-# Create the environment (run once — save environment.id)
-environment = client.beta.environments.create(
-    name="soc-investigation-env",
-    config={"type": "cloud", "networking": {"type": "unrestricted"}},
-)
-
-print(f"AGENT_ID={agent.id}")
-print(f"AGENT_VERSION={agent.version}")
-print(f"ENVIRONMENT_ID={environment.id}")
-print("Save these to your .env file — do not re-create on each run")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    </div>
-
-    <div class="lab-step" id="step-u5w3-2">
-      <label><input type="checkbox" onchange="toggleStep('u5w3-2',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 2: Build the per-investigation session runner</div>
-        <div class="step-desc">Create <code>managed_agent_runner.py</code>. This script starts a session, opens the event stream, sends the alert as a user message, and processes events until the agent goes idle. Save the session ID for audit — it gives you the full event history.</div>
-      </div></label>
-      <div class="code-block"><pre><code>import anthropic, os, json
-
-client = anthropic.Anthropic()
-
-AGENT_ID = os.environ["AGENT_ID"]
-ENVIRONMENT_ID = os.environ["ENVIRONMENT_ID"]
-
-def investigate(alert_text: str, title: str = "SOC Investigation") -> dict:
-    """Run a Managed Agent investigation and return the structured report."""
-    session = client.beta.sessions.create(
-        agent=AGENT_ID,
-        environment_id=ENVIRONMENT_ID,
-        title=title,
-    )
-    print(f"Session: {session.id}")
-
-    report_text = []
-    with client.beta.sessions.events.stream(session.id) as stream:
-        # Send the alert — stream must be open before sending
-        client.beta.sessions.events.send(
-            session.id,
-            events=[{"type": "user.message", "content": [
-                {"type": "text", "text": alert_text}
-            ]}],
-        )
-        for event in stream:
-            if event.type == "agent.message":
-                for block in event.content:
-                    if hasattr(block, "text"):
-                        print(block.text, end="", flush=True)
-                        report_text.append(block.text)
-            elif event.type == "agent.tool_use":
-                print(f"\n[Tool: {event.name}]", flush=True)
-            elif event.type == "session.status_idle":
-                print("\n── Investigation complete ──")
-                break
-
-    return {"session_id": session.id, "report": "".join(report_text)}
-
-# Test with the Meridian Financial incident
-with open("test_incidents.json") as f:
-    incidents = json.load(f)
-
-result = investigate(incidents[0]["alert_text"], title=incidents[0]["id"])
-print(f"\nSession ID for audit: {result['session_id']}")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    </div>
-
-    <div class="lab-step" id="step-u5w3-3">
-      <label><input type="checkbox" onchange="toggleStep('u5w3-3',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 3: Run the full test suite and record metrics</div>
-        <div class="step-desc">Run the Managed Agent against all 10 incidents from your <code>test_incidents.json</code>. Record the same metrics you captured for Week 1–2 frameworks: severity classification accuracy, latency (wall-clock per session), token cost (from <code>span.model_request_end</code> events), and report completeness. Add Managed Agents as a third column in your comparison spreadsheet.</div>
-      </div></label>
-      <div class="code-block"><pre><code>import time, json
-
-results = []
-for incident in incidents:
-    start = time.time()
-    result = investigate(incident["alert_text"], title=incident["id"])
-    elapsed = time.time() - start
-
-    # Evaluate output
-    report = result["report"]
-    results.append({
-        "id": incident["id"],
-        "framework": "managed_agents",
-        "latency_s": round(elapsed, 1),
-        "severity_correct": incident["expected_severity"].lower() in report.lower(),
-        "ioc_count_found": sum(1 for ioc in incident["expected_iocs"] if ioc in report),
-        "session_id": result["session_id"],  # audit trail
-    })
-
-with open("results_managed_agents.json", "w") as f:
-    json.dump(results, f, indent=2)
-
-print(f"Accuracy: {sum(r['severity_correct'] for r in results)}/{len(results)}")
-print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    </div>
-
     <div class="lab-step" id="step-u5w3-4">
       <label><input type="checkbox" onchange="toggleStep('u5w3-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Document the developer experience trade-offs</div>
-        <div class="step-desc">Add a "Managed Agents" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. custom SDK, (2) what you can and can't control (tool execution happens server-side — you see events, not raw tool calls), (3) the setup-vs-runtime split (agent and environment are one-time; sessions are per-run), (4) when you'd choose this over a custom orchestrator in a real SOC deployment.</div>
+        <div class="step-title">Step 4: Run the test suite and record metrics</div>
+        <div class="step-desc">Run your OpenAI Agents SDK implementation against all 10 test incidents from <code>docs/data/incident-data.md</code>. Record for each: pass/fail for severity classification, latency (seconds), token cost, output completeness score (1–5). Add results to your comparison spreadsheet alongside the Managed Agents results from Weeks 1–2.</div>
       </div></label>
+      <div class="callout callout-tip"><strong>Tip:</strong> Use <code>Runner.run_sync()</code> in a loop and time each call with <code>time.perf_counter()</code>. OpenAI usage data is in <code>result.raw_responses[-1].usage</code>.</div>
     </div>
 
     <div class="lab-step" id="step-u5w3-5">
       <label><input type="checkbox" onchange="toggleStep('u5w3-5',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Compare event streams — Managed Agents vs. OpenAI Agents SDK</div>
-        <div class="step-desc">Both frameworks stream events, but the information available differs. With Managed Agents, tool execution is server-side: you receive <code>agent.tool_use</code> events with the tool name, but full tool inputs and outputs are in the server-side container. With OpenAI Agents SDK, tools run in your process: you have complete visibility. Document in your comparison report: what observability does each approach give you? How does this affect your ability to audit, debug, and detect misuse in a SOC context?</div>
+        <div class="step-title">Step 5: Document the developer experience trade-offs</div>
+        <div class="step-desc">Add an "OpenAI Agents SDK" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. Managed Agents, (2) what you control — Runner runs in your process, tools are your functions, full visibility into inputs/outputs, (3) cross-provider implications — does portability matter for your SOC deployment?, (4) observability difference: with OAI SDK your tools run locally so you see all inputs/outputs; with Managed Agents tools execute server-side so you only see event types. How does that affect your ability to audit agent behavior in a SOC context?</div>
       </div></label>
     </div>
-  </div>
+
 </div>
 <hr>
 
@@ -546,8 +805,8 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")<
     <div class="lab-step" id="step-u5w4-2">
       <label><input type="checkbox" onchange="toggleStep('u5w4-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Run all three frameworks against the test suite</div>
-        <div class="step-desc">Execute your Claude Agent SDK system, OpenAI Agents SDK implementation, and Claude Managed Agents implementation against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
+        <div class="step-title">Step 2: Run both frameworks against the test suite</div>
+        <div class="step-desc">Execute your Claude Managed Agents implementation and OpenAI Agents SDK implementation against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
       </div></label>
     </div>
 
@@ -580,7 +839,7 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")<
         <li>Hallucination rate in threat attribution: when the system attributed a threat, how often was the attribution incorrect?</li>
         <li>Latency under load (P95): can the system handle real alert volume?</li>
       </ul>
-      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply all three frameworks to each of 3 security scenarios.</p>
+      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply both frameworks to each of 3 security scenarios.</p>
       <p><strong>5. What These Numbers Don't Capture</strong> <em>(required — this section cannot be omitted)</em>: What would a different evaluator find? What failure modes did your test set not cover? What adversarial inputs did you not test? This section demonstrates CCT Pillar 1 (Empirical Inquiry) applied to your own evaluation.</p>
       <p><strong>Appendix: AIUC-1 Self-Audit</strong>: For the framework you recommend, complete a brief AIUC-1 check: what domains are in scope, what controls exist, what gaps remain. This connects your Unit 3 learning to your Unit 5 recommendation.</p>
       <p><strong>Conversation starter before writing:</strong><br>
@@ -643,8 +902,8 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")<
 <div class="deliverables">
   <h5>Unit 5 Major Deliverable</h5>
   <ul>
-    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Agent SDK, OpenAI Agents SDK, and Claude Managed Agents with test suite results, visualizations, and justified recommendations</li>
-    <li><strong>All three framework implementations</strong> — working code repositories for each</li>
+    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Managed Agents and OpenAI Agents SDK with test suite results, visualizations, and justified recommendations</li>
+    <li><strong>Both framework implementations</strong> — working code for Claude Managed Agents (Weeks 1–2) and OpenAI Agents SDK (Week 3)</li>
   </ul>
 </div>
 
@@ -657,7 +916,7 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")<
 <hr>
 <div class="unit-complete">
   <h3> Unit 5 Complete</h3>
-  <p>You have built multi-agent systems in three frameworks and produced a quantitative comparison report.</p>
+  <p>You have built multi-agent systems across two frameworks, hardened a Managed Agent for production, and produced a quantitative comparison report.</p>
   <p style="margin-top:8px;"><a href="lab-s2-unit6.html">Next: Unit 6 Lab — AI Attacker vs. AI Defender &rarr;</a></p>
 </div>
 

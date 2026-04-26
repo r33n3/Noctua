@@ -18,7 +18,7 @@
 <p><a href="semester2.html">← Back to Semester 2 Overview</a></p>
 <hr/>
 <h2 id="unit-overview">Unit Overview</h2>
-<p>In Semester 1, you built multi-agent systems using Claude Code worktrees and subagents (Week 13) and shipped production-hardened security tools through the rapid prototype sprint (Weeks 14–15). In Unit 5, you scale that foundation by comparing three orchestration approaches — Claude SDK custom loops, Claude Managed Agents, and OpenAI Agents SDK — across security operations workloads. You'll tackle state machines, parallel execution, evaluation pipelines, and agent-to-agent communication via A2A. By the end of the unit, you'll have built a production-grade SOC triage system, an automated incident response engine, and the evaluation framework to benchmark them.</p>
+<p>In Semester 1, you built custom subagents and agent teams using Claude Code (Week 13) and shipped production-hardened security tools through the rapid prototype sprint (Weeks 14–15). In Unit 5, you scale that foundation by deploying and comparing two production-grade orchestration platforms — <strong>Claude Managed Agents</strong> (Anthropic-hosted execution, Weeks 1–2) and the <strong>OpenAI Agents SDK</strong> (your-process Runner, Week 3) — evaluated head-to-head against SOC operations workloads in Week 4. You'll tackle the 3-object model, persistent memory, network isolation, A2A protocol, and agent evaluation rigor. By the end of the unit, you'll have a production-hardened Managed Agent running with memory and limited networking, a cross-provider OAI SDK implementation, and a quantitative framework comparison report.</p>
 <blockquote>
 <p><strong>Methodology:</strong> This unit applies this course's agentic development methodology and the <strong>Core Four Pillars</strong> (Prompt, Model, Context, Tools) and <strong>Think → Spec → Build → Retro cycle</strong> to multi-agent security orchestration. You'll think critically about agent architectures, spec clear responsibilities, build rapidly using Claude Code, and review through comparative evaluation. The Orchestrator and Expert Swarm patterns form the backbone of multi-agent design in this course.</p>
 </blockquote>
@@ -257,12 +257,13 @@ when { principal.api_key_valid &amp;&amp; principal.authorized_tools.contains(re
 <h3 id="day-2-hands-on-lab">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives">Lab Objectives</h3>
 <ul>
-<li>Build a four-agent SOC triage system using the Claude Agent SDK</li>
-<li>Implement supervisor orchestration with task delegation</li>
-<li>Design inter-agent communication using shared state and direct calls</li>
-<li>Handle multi-step workflows with error recovery</li>
-<li>Test the system on realistic alert scenarios</li>
+<li>Set up Anthropic platform access and create your first Managed Agent using the 3-object model (Agent → Environment → Session)</li>
+<li>Stream events from a live investigation session (agent.message, agent.tool_use, session.status_idle)</li>
+<li>Complete the AIUC-1 pre-check for a system that makes consequential SOC recommendations</li>
+<li>Apply the raw API agentic loop concepts from this lecture to understand what Managed Agents abstracts for you</li>
+<li>Test the agent on the Meridian Financial incident from Semester 1</li>
 </ul>
+<div class="callout callout-info"><p><strong>Theory ↔ Lab mapping:</strong> This lecture teaches the raw API agentic loop — the foundation of all agent systems. The <strong>lab</strong> starts with Claude Managed Agents (Weeks 1–2, platform setup + memory/networking/MCP), then the OpenAI Agents SDK (Week 3), then evaluation (Week 4). Understanding the raw loop from this lecture gives you the mental model to understand what Managed Agents is abstracting when you encounter it in the lab.</p></div>
 <hr/>
 <h3 id="setup">Setup</h3>
 <p>Install dependencies:</p>
@@ -1711,7 +1712,7 @@ Then answer in your deliverable:
 <h3 id="day-2-hands-on-lab_3">Day 2 — Hands-On Lab</h3>
 <h3 id="lab-objectives_3">Lab Objectives</h3>
 <ul>
-<li>Build an evaluation harness for all three SOC systems (Week 1-3)</li>
+<li>Build an evaluation harness for both framework implementations (Claude Managed Agents from Weeks 1–2, OpenAI Agents SDK from Week 3)</li>
 <li>Generate 20-25 realistic test cases with ground truth labels</li>
 <li>Run each framework on all test cases (5 runs each)</li>
 <li>Collect metrics and compare frameworks</li>
