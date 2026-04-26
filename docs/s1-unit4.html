@@ -490,7 +490,7 @@ Show working Python code with error handling.
 <li><strong>Deployment/Delivery (Units 7–8):</strong> The hardened tool goes into production security operations with security gates and IaC.</li>
 </ol>
 <p>The key insight: <strong>Don't waste time hardening prototypes that won't be used.</strong> Rapid prototyping identifies which ideas have merit. Only prototypes that leadership selects move to hardening. This is fundamentally different from traditional software development, where you build once and hope it's right.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> <strong>Containerize from Day 1.</strong> The moment you write your first line of code, wrap it in a Dockerfile and docker-compose.yml. This means the path from your laptop to production is already paved. When leadership selects your prototype for delivery, you're not rewriting for containers—you're adding security gates (pre-commit hooks, build scanning), IaC (CloudFormation/Terraform for ECS), and observability. Containerization from Day 1 eliminates the "containerize for production" bottleneck that derails most projects.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> <strong>Containerize from Day 1.</strong> The moment you write your first line of code, wrap it in a Dockerfile and docker-compose.yml. This means the path from your laptop to production is already paved. When leadership selects your prototype for delivery, you're not rewriting for containers—you're adding security gates (pre-commit hooks, build scanning), IaC (CloudFormation/Terraform for docker run), and observability. Containerization from Day 1 eliminates the "containerize for production" bottleneck that derails most projects.</p>
 </div>
 <p><strong>Prototyping vs. Production Architecture: When to Use the API-First Pattern</strong></p>
 <p>When rapidly prototyping (Week 14), it's OK to build the MCP server directly—speed matters more than architectural elegance. Your goal is to answer "Does this approach work?"</p>
@@ -501,7 +501,7 @@ Show working Python code with error handling.
 </code></pre></div>
 <p><strong>Week 15+ Production (Hardened):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nv">Claude</span> <span class="nv">Agent</span> → <span class="nv">MCP</span> <span class="nv">Server</span> → <span class="nv">FastAPI</span> <span class="nv">Backend</span> → <span class="nv">Database</span>
-<span class="ss">(</span><span class="nv">Properly</span> <span class="nv">decoupled</span>, <span class="nv">ready</span> <span class="k">for</span> <span class="nv">ECS</span> <span class="nv">deployment</span><span class="ss">)</span>
+<span class="ss">(</span><span class="nv">Properly</span> <span class="nv">decoupled</span>, <span class="nv">ready</span> <span class="k">for</span> <span class="nv">production</span> <span class="nv">deployment</span><span class="ss">)</span>
 </code></pre></div>
 <p><strong>Why the refactor matters:</strong> A prototype might call a database directly from the MCP server. That works for testing. But when you containerize for production, you need:</p>
 <ul>
@@ -514,7 +514,7 @@ Show working Python code with error handling.
 <p>The refactor takes 2–4 hours: extract the business logic into FastAPI endpoints, make the MCP server call those endpoints, and you've transformed a prototype into a production artifact. This is the prototype-to-production acceleration pipeline mentioned in Unit 2.</p>
 <p><strong>The Five Metrics for Security Tools</strong></p>
 <p>When you build a security tool, measure yourself against these:</p>
-<ol><li><strong>MTTS — Mean Time To Spot/Triage:</strong> How long from alert to "we understand what this is?"<ul><li>Example: Recon subagent identifies malicious IP in 4.2 seconds</li><li>
+<ol><li><strong>MTTS — Mean Time To Suppress:</strong> How long from alert to "we understand what this is?"<ul><li>Example: Recon subagent identifies malicious IP in 4.2 seconds</li><li>
 <p>In a sprint: Can your prototype identify the threat in &lt; 10 sec?</p>
 </li></ul></li><li>
 <p><strong>MTTP — Mean Time To Protect:</strong> How long from understanding to taking protective action?</p>
@@ -525,7 +525,7 @@ Show working Python code with error handling.
 <ul><li>Example: Threat removed, system hardened, new monitoring in place</li><li>
 <p>In a sprint: Not always achievable; aim for MTTS + MTTP</p>
 </li></ul></li><li>
-<p><strong>MTTI — Mean Time To Isolate:</strong> How long to stop lateral movement?</p>
+<p><strong>MTTI — Mean Time To Investigate:</strong> How long to stop lateral movement?</p>
 <ul><li>Critical metric for ransomware, APTs</li><li>
 <p>In a sprint: Does your tool enable rapid isolation?</p>
 </li></ul></li><li>
@@ -598,11 +598,11 @@ Show working Python code with error handling.
 <li>Repeat until the evaluator's judgment aligns with yours</li>
 </ol>
 <p><strong>Practical tip:</strong> Save 3–5 "reference assessments" where you graded the output manually. Use these as ground truth to test whether the evaluator agrees with your judgment. If it doesn't, adjust the prompt. If it does, you have a calibrated evaluator you can trust on new outputs. This is V&amp;V applied to the evaluator itself — the verifier needs verification. <em>Source: Anthropic Engineering, "Harness design for long-running application development," March 2026.</em></p></div>
-<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
+<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTB (Mean Time to Build) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
 <ul>
-<li>MTTP tells you how fast you execute</li>
+<li>MTTB tells you how fast you execute</li>
 <li>MTTS tells you how fast you make design decisions</li>
-<li>If MTTP improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
+<li>If MTTB improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
 </ul>
 <p>The spec phase should not be rushed. It is where security decisions are made.</p>
 </div>
@@ -710,7 +710,7 @@ Show working Python code with error handling.
 <p><strong>Why Containerize Now?</strong></p>
 <p>Containers solve the "it works on my machine" problem and enable the DevSecOps promotion pipeline (Unit 7). A containerized prototype:</p>
 <ul>
-<li>Runs identically on your laptop, CI/CD pipeline, and production ECS</li>
+<li>Runs identically on your laptop, CI/CD pipeline, and production environment</li>
 <li>Allows security scanning in the build stage (no surprises at deployment time)</li>
 <li>Enables reproducible builds (dependencies pinned, outputs deterministic)</li>
 <li>Demonstrates "production-readiness" to stakeholders</li>
@@ -746,7 +746,7 @@ Show working Python code with error handling.
 <span class="w">      </span><span class="no">--output /output/report.json</span><span class="w"></span>
 </code></pre></div>
 <p><strong>Local Testing:</strong> <code>docker-compose up</code> — your prototype runs in a container exactly as it will in production.</p>
-<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Containerizing now means no "production rewrite." When your prototype gets selected for deployment, you simply add security gates to the build pipeline (container image scanning via Trivy, supply chain validation). The container already exists. You're just hardening the path to ECR and ECS, not refactoring code.</p>
+<div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Containerizing now means no "production rewrite." When your prototype gets selected for deployment, you simply add security gates to the build pipeline (container image scanning via Trivy, supply chain validation). The container already exists. You're just hardening the path to GHCR and docker run, not refactoring code.</p>
 </div>
 <p><strong>Context Engineering: System Prompt Design</strong></p>
 <p>The system prompt should be:</p>
@@ -1688,7 +1688,7 @@ mkdir -p ~/context-library/checklists/<span class="o">{</span>rapid-prototyping,
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, Claude Agent SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

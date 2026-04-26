@@ -1039,12 +1039,12 @@ curl -o ~/.claude/commands/check-antipatterns.md \<br>
               <td class="label">Claude Managed Agents</td>
             </tr>
             <tr>
-              <td>Cross-provider / Runner-managed loop</td>
-              <td class="label">OpenAI Agents SDK</td>
+              <td>Client-side loop, full observability, native MCP</td>
+              <td class="label">Claude Agent SDK</td>
             </tr>
           </tbody>
         </table>
-        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Pick the lowest surface that satisfies your requirements. Managed Agents and OpenAI SDK add infrastructure — don't use them when a direct API call will do.</div>
+        <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:4px;">Pick the lowest surface that satisfies your requirements. Managed Agents adds server-side infrastructure; Claude Agent SDK runs in your process with full observability — don't use either when a direct API call will do.</div>
       </div>
 
       <hr class="cs-divider">
@@ -1150,87 +1150,77 @@ curl -o ~/.claude/commands/check-antipatterns.md \<br>
 
     </div>
 
-    <!-- ── COL 3: OPENAI AGENTS SDK ── -->
+    <!-- ── COL 3: CLAUDE AGENT SDK ── -->
     <div class="cs-col col-gold">
 
       <div class="cs-section">
-        <div class="cs-section-title">OpenAI Agents SDK — Quick Reference</div>
-        <p style="font-size:10px;color:rgba(255,255,255,0.55);margin:0 0 8px;">Runner executes the agentic loop in your process. Tools are local Python functions decorated with <code>@function_tool</code>. Cross-provider: works with any OpenAI-compatible model endpoint.</p>
+        <div class="cs-section-title">Claude Agent SDK — Quick Reference</div>
+        <p style="font-size:10px;color:rgba(255,255,255,0.55);margin:0 0 8px;">Client-side async generator loop in your process. Events stream via <code>query()</code>. <code>ClaudeAgentOptions</code> configures model and tools. <code>AgentDefinition</code> spawns subagents. Native MCP support.</p>
 
-        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">ONE-TIME SETUP</div>
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">INSTALL</div>
         <div class="cs-code">
-          <span class="key">from</span> agents <span class="key">import</span> Agent, Runner, function_tool<br><br>
-          @function_tool<br>
-          <span class="key">def</span> scan_alert(alert_id: str) -> str:<br>
-          &nbsp;&nbsp;<span class="comment"># your tool logic here</span><br>
-          &nbsp;&nbsp;<span class="key">return</span> result<br><br>
-          analyst = Agent(<br>
-          &nbsp;&nbsp;<span class="key">name</span>=<span class="str">"SecurityAnalyst"</span>,<br>
-          &nbsp;&nbsp;<span class="key">instructions</span>=system_prompt,<br>
-          &nbsp;&nbsp;<span class="key">model</span>=<span class="str">"gpt-4o"</span>,<br>
-          &nbsp;&nbsp;<span class="key">tools</span>=[scan_alert]<br>
-          )
+          pip install claude-agent-sdk
         </div>
 
-        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">PER-RUN</div>
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">BASIC USAGE</div>
         <div class="cs-code">
-          <span class="comment"># Synchronous — blocks until done</span><br>
-          result = Runner.run_sync(analyst, <span class="str">"input"</span>)<br>
-          <span class="key">print</span>(result.final_output)<br><br>
-          <span class="comment"># Streamed — handle events as they arrive</span><br>
-          <span class="key">async with</span> Runner.run_streamed(<br>
-          &nbsp;&nbsp;analyst, <span class="str">"input"</span>) <span class="key">as</span> stream:<br>
-          &nbsp;&nbsp;<span class="key">async for</span> chunk <span class="key">in</span> stream:<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;handle(chunk)
-        </div>
-
-        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">MULTI-AGENT PATTERNS</div>
-        <div class="cs-code">
-          <span class="comment"># Handoff: analyst passes to escalation agent</span><br>
-          analyst = Agent(<br>
-          &nbsp;&nbsp;...,<br>
-          &nbsp;&nbsp;<span class="key">handoffs</span>=[escalation_agent]<br>
+          <span class="key">from</span> claude_agent_sdk <span class="key">import</span> query, ClaudeAgentOptions<br><br>
+          options = ClaudeAgentOptions(<br>
+          &nbsp;&nbsp;<span class="key">model</span>=<span class="str">"claude-sonnet-4-6"</span>,<br>
+          &nbsp;&nbsp;<span class="key">system_prompt</span>=<span class="str">"You are a security analyst."</span>,<br>
+          &nbsp;&nbsp;<span class="key">tools</span>=[]<br>
           )<br><br>
-          <span class="comment"># As tool: treat another agent as a callable</span><br>
-          triage = Agent(<br>
-          &nbsp;&nbsp;...,<br>
-          &nbsp;&nbsp;<span class="key">tools</span>=[escalation_agent.as_tool(<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">tool_name</span>=<span class="str">"escalate"</span>,<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">tool_description</span>=<span class="str">"Escalate to L2"</span><br>
-          &nbsp;&nbsp;)]<br>
-          )
+          <span class="key">async for</span> event <span class="key">in</span> query(<span class="str">"Analyze this alert..."</span>,<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">options</span>=options):<br>
+          &nbsp;&nbsp;<span class="key">if</span> hasattr(event, <span class="str">"text"</span>):<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">print</span>(event.text, end=<span class="str">""</span>, flush=<span class="val">True</span>)
         </div>
+
+        <div style="font-size:9px;font-weight:700;color:#fbbf24;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0 4px;">KEY CONCEPTS</div>
+        <table class="cs-table">
+          <tbody>
+            <tr><td class="label">query()</td><td>Async generator — yields events as the agent runs</td></tr>
+            <tr><td class="label">ClaudeAgentOptions</td><td><code>model, system_prompt, tools, mcp_servers</code></td></tr>
+            <tr><td class="label">AgentDefinition</td><td><code>name, system_prompt, model</code> — spawns a subagent</td></tr>
+            <tr><td class="label">mcp_servers</td><td>Native MCP support via <code>mcp_servers={}</code></td></tr>
+          </tbody>
+        </table>
 
         <hr class="cs-divider">
 
-        <div class="cs-section-title">Managed Agents vs OpenAI SDK — Key Difference</div>
+        <div class="cs-section-title">Managed Agents vs Claude Agent SDK — Key Difference</div>
         <table class="cs-table">
-          <thead><tr><th>Dimension</th><th>Claude Managed Agents</th><th>OpenAI Agents SDK</th></tr></thead>
+          <thead><tr><th>Dimension</th><th>Claude Managed Agents</th><th>Claude Agent SDK</th></tr></thead>
           <tbody>
             <tr>
-              <td class="label">Loop execution</td>
+              <td class="label">Loop runs in</td>
               <td>Anthropic infrastructure</td>
-              <td>Your process (client-side)</td>
+              <td>Caller's process (async generator)</td>
             </tr>
             <tr>
-              <td class="label">Tool execution</td>
-              <td>Server-side (remote)</td>
-              <td>Client-side (local)</td>
-            </tr>
-            <tr>
-              <td class="label">Model provider</td>
+              <td class="label">Model</td>
               <td>Anthropic only</td>
-              <td>Any OpenAI-compatible endpoint</td>
+              <td>Claude (any claude-* model)</td>
             </tr>
             <tr>
-              <td class="label">State management</td>
+              <td class="label">State</td>
               <td>Sessions managed by Anthropic</td>
-              <td>You manage state and retries</td>
+              <td>Stateless per call; you manage history</td>
             </tr>
             <tr>
-              <td class="label">When to use</td>
-              <td>Persistent, stateful agents; no local infra needed</td>
-              <td>Cross-provider; tools must run locally; full loop control</td>
+              <td class="label">MCP</td>
+              <td>Via agent toolset config</td>
+              <td>Native via <code>mcp_servers={}</code></td>
+            </tr>
+            <tr>
+              <td class="label">Observability</td>
+              <td>Via stream events</td>
+              <td>Full — every event in your process</td>
+            </tr>
+            <tr>
+              <td class="label">Install</td>
+              <td>anthropic SDK (beta)</td>
+              <td>pip install claude-agent-sdk</td>
             </tr>
           </tbody>
         </table>

@@ -58,7 +58,7 @@
 <li>Supply chain security (SBOM) in CycloneDX or SPDX format</li>
 </ul>
 </li>
-<li><strong>Infrastructure as Code (IaC)</strong> — CloudFormation or Terraform template showing how your system deploys to production (ECS task definition, Kubernetes manifests, or equivalent). IaC enables repeatable, versioned deployments.</li>
+<li><strong>Infrastructure as Code (IaC)</strong> — Terraform or docker-compose template showing how your system deploys to production (Kubernetes manifests, GHCR image pull configuration, or equivalent). IaC enables repeatable, versioned deployments.</li>
 <li><strong>CI/CD Pipeline</strong> — GitHub Actions workflow demonstrating the DevSecOps promotion pipeline:
 <ul>
 <li>Pre-commit: secrets detection</li>
@@ -70,10 +70,10 @@
 <li><strong>Deployment Plan</strong> — Documentation on how this system scales to production, including operational runbook, incident playbook, and observability setup.</li>
 </ol>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.</p>
-<p><strong>Production-Promotable Capstone:</strong> By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy to ECS/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a <strong>deployable artifact with full provenance, governance, and operational readiness</strong>. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.</p>
+<p><strong>Production-Promotable Capstone:</strong> By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy via GHCR/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a <strong>deployable artifact with full provenance, governance, and operational readiness</strong>. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.</p>
 </div>
 <div class="callout callout-warn"><p><strong>Deployment Target: Cloud Infrastructure (Required)</strong><br/>
-Your capstone system must be deployed to production infrastructure — not running locally on Claude Code. The primary stack is <strong>Claude SDK for custom agent logic + Claude Managed Agents for hosted execution</strong>, deployed via Docker/containers to cloud infrastructure (AWS ECS, Lambda, or equivalent).<br/><br/>
+Your capstone system must be deployed to production infrastructure — not running locally on Claude Code. The primary stack is <strong>Claude SDK for custom agent logic + Claude Managed Agents for hosted execution</strong>, deployed via Docker/containers to cloud infrastructure (GHCR + docker run, or equivalent).<br/><br/>
 <strong>Pre-capstone checkpoint (do before Week 13 starts):</strong> Verify your Anthropic API key is active and you can make a basic <code>client.messages.create(...)</code> call. Confirm your container registry and deployment pipeline are configured. Do not discover environment issues on the first day of Week 13.<br/><br/>
 If Claude Managed Agents hosted execution is not yet available in your region, deploy as containerized agents with the Claude SDK — the agent logic is identical; only the hosting boundary changes.</p></div>
 <h4 id="capstone-project-ideas">Capstone Project Ideas</h4>
@@ -139,7 +139,7 @@ If Claude Managed Agents hosted execution is not yet available in your region, d
 <li><strong>Open Source:</strong> PeaRL is open source because security should be open to anyone. Contribute improvements back to the project, or fork and build your own governance platform.</li>
 </ul>
 <div class="callout callout-discuss"><p><strong>Discussion Prompt:</strong> In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?</p>
-<p><strong>Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude SDK, Claude Managed Agents, OpenAI Agents SDK) and how they support multi-agent patterns.</p>
+<p><strong>Further Reading:</strong> Review <a href="frameworks.html">Framework documentation</a> to understand available agent frameworks (Claude Agent SDK, Claude Managed Agents) and how they support multi-agent patterns.</p>
 <p><strong>🔑 Key Concept:</strong> Both PeaRL and MASS are open source because their creator believes <strong>security should always be open to anyone to use</strong>. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?</p>
 </div>
 <h4 id="architecture-review-methodology">Architecture Review Methodology</h4>
@@ -206,7 +206,7 @@ If Claude Managed Agents hosted execution is not yet available in your region, d
 <li>Tools and data sources</li>
 <li>How it communicates with other agents</li>
 <li><strong>Orchestration:</strong> How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?</li>
-<li><strong>Framework choice:</strong> Which framework will you use? (Claude SDK, Claude Managed Agents, OpenAI Agents SDK?) Why is it the right fit?</li>
+<li><strong>Framework choice:</strong> Which framework will you use? (Claude Agent SDK, Claude Managed Agents?) Why is it the right fit?</li>
 </ul>
 <div class="callout callout-key"><p><strong>🔑 Key Concept:</strong> Good multi-agent design is about <strong>separation of concerns</strong>. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The <strong>Pit of Success</strong> principle from Agentic Engineering principles means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.</p>
 </div>
@@ -302,7 +302,7 @@ If Claude Managed Agents hosted execution is not yet available in your region, d
 <ol><li><strong>Capstone Proposal</strong> (500–1000 words)</li><li><strong>Architecture Document</strong> (1500–2500 words)<ul><li><strong>Presentation Slides</strong> (PDF)<ul><li><strong>Peer Review Feedback Summary</strong> (1 page: what did you learn? what did you change?)</li></ul></li></ul></li></ol>
 <h4 id="sources-tools">Sources &amp; Tools</h4>
 <ul>
-<li><a href="frameworks.html">Framework Documentation</a> — Claude SDK, Claude Managed Agents, OpenAI Agents SDK comparison</li>
+<li><a href="frameworks.html">Framework Documentation</a> — Claude Agent SDK, Claude Managed Agents comparison</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Getting your development environment ready</li>
 <li><a href="reading.html">Reading List</a> — MITRE ATLAS, agentic patterns, responsible AI</li>
 </ul>
@@ -921,7 +921,7 @@ Your context library is not academic. Every pattern was discovered and tested th
 <h2 id="key-resources">Key Resources</h2>
 <ul>
 <li><a href="reading.html">Reading List</a> — MITRE ATLAS, agent frameworks, security hardening, responsible AI</li>
-<li><a href="frameworks.html">Frameworks Documentation</a> — Claude SDK, Claude Managed Agents, OpenAI Agents SDK patterns</li>
+<li><a href="frameworks.html">Frameworks Documentation</a> — Claude Agent SDK, Claude Managed Agents patterns</li>
 <li><a href="lab-setup.html">Lab Setup Guide</a> — Environment configuration, deployment, debugging</li>
 </ul>
 <hr/>
@@ -938,7 +938,7 @@ Your context library is not academic. Every pattern was discovered and tested th
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Agent SDK, Claude Managed Agents, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

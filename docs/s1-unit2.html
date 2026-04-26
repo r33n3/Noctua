@@ -536,7 +536,7 @@ FastAPI/Flask REST API (with auth, rate limiting, structured responses)
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </code></pre></div>
-<p><strong>The Key Insight:</strong> The API is the stable contract. Authentication, rate limiting, audit logging, and data validation happen at the API boundary. The MCP server doesn't need to know about any of that—it just calls the API like any other client. When you deploy, you containerize the API, push to ECR, and run it on ECS. The MCP server (or future protocols) calls it without modification.</p>
+<p><strong>The Key Insight:</strong> The API is the stable contract. Authentication, rate limiting, audit logging, and data validation happen at the API boundary. The MCP server doesn't need to know about any of that—it just calls the API like any other client. When you deploy, you containerize the API, push to GHCR, and run it with docker run. The MCP server (or future protocols) calls it without modification.</p>
 <h4 id="input-validation-the-first-line-of-defense">Input Validation: The First Line of Defense</h4>
 <p>Consider a log query tool. The naive implementation:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">query_logs</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -2440,7 +2440,7 @@ This ensures consistency and alignment with my standards.
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, Claude Agent SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

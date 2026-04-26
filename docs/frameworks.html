@@ -206,7 +206,7 @@ Built on HTTP, SSE, and JSON-RPC with four core capabilities:</p>
 <li>IBM Cloud integration primary deployment target</li>
 </ul>
 <p><strong>Purpose</strong>
-Cross-framework interoperability — enables agents built with different frameworks (Claude Managed Agents, OpenAI Agents SDK, AutoGen, custom implementations) to collaborate without requiring framework-specific glue code.</p>
+Cross-framework interoperability — enables agents built with different frameworks (Claude Managed Agents, Claude Agent SDK, AutoGen, custom implementations) to collaborate without requiring framework-specific glue code.</p>
 <p><strong>Architecture</strong>
 Brokered model with three primary roles:</p>
 <ol><li><strong>Agent Clients</strong></li><li><strong>ACP Servers</strong><ul><li>
@@ -360,7 +360,7 @@ Uses decentralized technologies for trust:</p>
 <ol>
 <li><strong>MCP</strong> connects your agents to tools: security tools, APIs, data sources, threat intelligence feeds</li>
 <li><strong>A2A</strong> connects your agents to other agents: SOC agents delegate to incident response agents, investigation agents coordinate with remediation agents</li>
-<li><strong>ACP</strong> bridges different frameworks: your Claude Managed Agent collaborates with a vendor's OpenAI Agents SDK-based threat hunting agent</li>
+<li><strong>ACP</strong> bridges different frameworks: your Claude Managed Agent collaborates with systems built with the Claude Agent SDK or other frameworks via ACP</li>
 <li><strong>ANP</strong> enables discovery of external services: discovering third-party threat intelligence agents, crowd-sourced threat analysis agents, or cooperative defensive network agents</li>
 </ol>
 <p>Example workflow:</p>
@@ -1046,21 +1046,48 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <p><strong>Key constraint:</strong> Tool execution is server-side and opaque to your code. You receive <code>agent.tool_use</code> events with tool name but not necessarily full input/output. Design your observability around the event stream.</p>
 <p><strong>Reference:</strong> Anthropic documentation — Managed Agents overview</p>
 <hr/>
-<h3 id="openai-agents-sdk">OpenAI Agents SDK</h3>
-<p><strong>Developer:</strong> OpenAI (openai-agents-python)</p>
-<p>Python SDK for building agents where the loop runs in your process. Define an Agent with instructions and tools, then use Runner to execute. Multi-agent coordination via handoffs or as_tool() patterns.</p>
-<p><strong>Core pattern:</strong> Agent + Runner → result</p>
+<h3 id="claude-agent-sdk-week3">Claude Agent SDK</h3>
+<p><strong>Developer:</strong> Anthropic</p>
+<p><strong>Install:</strong> <code>pip install claude-agent-sdk</code></p>
+<p><strong>PyPI:</strong> <a href="https://pypi.org/project/claude-agent-sdk/" target="_blank">pypi.org/project/claude-agent-sdk</a></p>
+<p><strong>Model family:</strong> Claude (Anthropic)</p>
+<p><strong>Loop location:</strong> Caller's process — you own the event loop</p>
+<p>Python SDK for building agents where the loop runs in your process. Call <code>query()</code> — an async generator — and iterate it to receive events (<code>TextEvent</code>, <code>ToolUseEvent</code>, etc.). No runner infrastructure required; just your Python async loop.</p>
+<p><strong>Core pattern:</strong> <code>async for event in query(prompt, options=options)</code></p>
 <p><strong>Key concepts:</strong></p>
 <ul>
-  <li><strong>Agent</strong> — instructions, model, tools list, optional handoffs</li>
-  <li><strong>Runner</strong> — executes the agent loop. <code>Runner.run_sync()</code> for sync, <code>Runner.run_streamed()</code> for streaming.</li>
-  <li><strong>@function_tool</strong> — decorator that turns any Python function into a tool with automatic schema generation</li>
-  <li><strong>Handoffs</strong> — <code>handoffs=[agent_b]</code> lets Agent A delegate conversation to Agent B</li>
-  <li><strong>Sessions</strong> — persistent state via SQLiteSession, RedisSession, or conversation_id</li>
+  <li><strong>query()</strong> — async generator. Iterate it to receive a stream of typed events from the model.</li>
+  <li><strong>ClaudeAgentOptions</strong> — configures <code>model</code>, <code>system_prompt</code>, and <code>tools</code> for the agent.</li>
+  <li><strong>AgentDefinition</strong> — lets the orchestrator spawn named subagents during a run for multi-agent coordination.</li>
+  <li><strong>mcp_servers={}</strong> — native MCP server support built into the SDK.</li>
+  <li><strong>Full observability</strong> — every tool call and every event is visible in your process; no opaque server-side execution.</li>
 </ul>
-<p><strong>When to use:</strong> When you need cross-provider flexibility (LiteLLM backend), client-side tool execution, or want to host your own compute. Runner runs in your process — you have full visibility into tool inputs and outputs.</p>
-<p><strong>Key distinction from Managed Agents:</strong> You run the loop (Runner in your process). With Managed Agents, Anthropic runs the loop on their infrastructure.</p>
-<p><strong>Reference:</strong> openai.github.io/openai-agents-python</p>
+<pre><code class="language-python">from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
+import asyncio
+
+options = ClaudeAgentOptions(
+    model="claude-sonnet-4-6",
+    system_prompt="You are a security analyst.",
+    tools=[]
+)
+
+async def run():
+    async for event in query("Analyze this alert: ...", options=options):
+        if hasattr(event, "text"):
+            print(event.text, end="", flush=True)
+
+asyncio.run(run())</code></pre>
+<div class="callout callout-tip">
+<p><strong>When to choose Claude Agent SDK:</strong></p>
+<ul>
+  <li>You need full observability of every tool call and event</li>
+  <li>You want to run the loop in your own infrastructure</li>
+  <li>You need custom orchestration logic between agents</li>
+  <li>Cost-aware billing and token tracking matter</li>
+  <li>You want to spawn and coordinate subagents programmatically</li>
+</ul>
+</div>
+<p><strong>Key distinction from Managed Agents:</strong> You own the event loop (<code>query()</code> in your process). With Managed Agents, Anthropic runs the loop on their infrastructure and you receive an event stream.</p>
 <hr/>
 <h3 id="autogen-ag2">AutoGen / AG2</h3>
 <p><strong>Developer</strong>: Microsoft Research
@@ -1108,7 +1135,7 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <th>Dimension</th>
 <th>Claude SDK (custom)</th>
 <th>Claude Managed Agents</th>
-<th>OpenAI Agents SDK</th>
+<th>Claude Agent SDK</th>
 </tr>
 </thead>
 <tbody>
@@ -1116,7 +1143,7 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <td><strong>Loop runs where</strong></td>
 <td>Your code</td>
 <td>Anthropic infrastructure</td>
-<td>Your process (Runner)</td>
+<td>Caller's process (async generator)</td>
 </tr>
 <tr>
 <td><strong>Tool execution</strong></td>
@@ -1128,31 +1155,43 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <td><strong>State management</strong></td>
 <td>You manage</td>
 <td>Per-session container</td>
-<td>Session object (SQLite/Redis)</td>
+<td>Stateless per query() call; caller manages history</td>
 </tr>
 <tr>
 <td><strong>Multi-agent</strong></td>
 <td>Manual orchestration</td>
 <td>Server-side orchestration</td>
-<td>handoffs + as_tool()</td>
+<td>AgentDefinition spawns named subagents</td>
 </tr>
 <tr>
 <td><strong>Built-in tools</strong></td>
 <td>None</td>
 <td>agent_toolset_20260401</td>
-<td>Code interpreter, file search, web search</td>
+<td>None (tools passed via ClaudeAgentOptions)</td>
 </tr>
 <tr>
-<td><strong>Cross-provider</strong></td>
+<td><strong>MCP support</strong></td>
+<td>Via custom tools</td>
+<td>Native</td>
+<td>Native (mcp_servers={})</td>
+</tr>
+<tr>
+<td><strong>Model</strong></td>
 <td>Claude only</td>
 <td>Claude only</td>
-<td>Yes (LiteLLM backend)</td>
+<td>Claude (Anthropic)</td>
+</tr>
+<tr>
+<td><strong>Install</strong></td>
+<td>pip install anthropic</td>
+<td>Managed (no install)</td>
+<td>pip install claude-agent-sdk</td>
 </tr>
 <tr>
 <td><strong>Observability</strong></td>
 <td>Full (you own it)</td>
 <td>Event stream only</td>
-<td>Full (you own it)</td>
+<td>Full — every event visible in caller's process</td>
 </tr>
 </tbody>
 </table>
@@ -1175,7 +1214,7 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 </ul>
 <p><strong>Layer 3: Cross-Framework Integration (ACP)</strong></p>
 <ul>
-<li>Claude Managed Agent integrates with vendor's OpenAI Agents SDK-based threat intelligence agent</li>
+<li>Claude Managed Agent integrates with systems built with the Claude Agent SDK or other frameworks via ACP</li>
 <li>Registry maintains current list of available agents and their capabilities</li>
 </ul>
 <p><strong>Layer 4: External Intelligence (ANP)</strong></p>
@@ -1206,7 +1245,7 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 9. Claude Agent SDK documentation</p>
 <p><strong>Semester 2 (Application)</strong>
 1. Agent-to-Agent Protocol (A2A)
-2. Multi-agent frameworks (Claude Managed Agents, OpenAI Agents SDK, AutoGen)
+2. Multi-agent frameworks (Claude Managed Agents, Claude Agent SDK, AutoGen)
 3. Agent Communication Protocol (ACP)
 4. MITRE ATLAS and threat modeling
 5. NIST Cyber AI Profile
@@ -1264,7 +1303,7 @@ Agent systems that use LLMs inherently face generative AI risks:</p>
 <ul>
 <li>Claude Agent SDK: https://anthropic.com/docs/build-effective-agents</li>
 <li>Claude Managed Agents: Anthropic documentation — Managed Agents overview</li>
-<li>OpenAI Agents SDK: https://openai.github.io/openai-agents-python</li>
+<li>Claude Agent SDK: https://pypi.org/project/claude-agent-sdk/</li>
 <li>AutoGen: https://microsoft.github.io/autogen/</li>
 </ul>
 <p><strong>Course AI Security Tools (Production Approaches)</strong></p>
@@ -1421,7 +1460,7 @@ prod (production)
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, parallel vs sequential execution.",tags:["unit5","multi-agent","managed agents","openai agents","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, Claude Agent SDK, A2A protocol, parallel vs sequential execution.",tags:["unit5","multi-agent","managed agents","claude agent sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
@@ -1454,7 +1493,7 @@ prod (production)
     {t:"Reading List",d:"Week-by-week assigned readings: OWASP docs, Claude docs, research papers, dark factory reference.",tags:["reading","resources","papers"],url:"reading.html"},
     {t:"Frameworks & Protocols",d:"Full reference: OWASP Top 10 LLM, OWASP NHI, Agentic Apps, MCP spec, A2A spec, AIUC-1.",tags:["frameworks","protocols","reference","owasp"],url:"frameworks.html"},
     {t:"Claude Managed Agents",d:"Anthropic-hosted agent harness. Agent (create once) + Environment → Session per run. agent_toolset_20260401 enables server-side bash/file/web tools. Stream-first pattern.",tags:["managed agents","anthropic","session","agent"],url:"frameworks.html#managed-agents"},
-    {t:"OpenAI Agents SDK",d:"Runner-managed agent loop in your process. Agent + @function_tool + handoffs. Cross-provider via LiteLLM. Runner.run_sync() or run_streamed().",tags:["openai","agents","runner","handoffs","cross-provider"],url:"frameworks.html#openai-agents-sdk"},
+    {t:"Claude Agent SDK",d:"Client-side async generator loop in your process. query() yields events; ClaudeAgentOptions configures model and tools; AgentDefinition spawns subagents. PyPI: claude-agent-sdk. Install: pip install claude-agent-sdk.",tags:["claude agent sdk","query","ClaudeAgentOptions","AgentDefinition","async","pypi"],url:"frameworks.html#claude-agent-sdk-week3"},
     {t:"CCT — Collaborative Critical Thinking",d:"5-pillar framework: Evidence-Based Analysis, Inclusive Perspective, Strategic Connections, Adaptive Innovation, Ethical Governance. Adapted from Seth Jaeger's 5 Habits of Mind.",tags:["cct","critical thinking","jaeger","habits","pillars"],url:"s1-unit1.html"},
     {t:"Semi-Formal Reasoning",d:"Structured evidence chains (premises → trace → divergence → conclusion) improving AI accuracy from 78% to 88–93%. Ugare & Chandra, arXiv:2603.01896v2.",tags:["semi-formal","reasoning","accuracy","evidence chains","meta"],url:"s1-unit2.html"},
     {t:"Cedar Policy Language",d:"Formal policy language for agent context injection and gate/elevation governance. Used in PeaRL for allowance profile enforcement.",tags:["cedar","policy","governance","pearl"],url:"s1-unit2.html"},

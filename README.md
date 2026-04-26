@@ -131,7 +131,7 @@ The cybersecurity and AI landscape has shifted dramatically since 2023:
 
 - **Mature Security Frameworks** now exist for agentic systems: OWASP Top 10 for Agentic Apps (2026), NIST Cyber AI Profile (December 2025), and MITRE ATLAS cataloging 15 tactics and 66 techniques (including 46 sub-techniques, as of the October 2025 update; the framework is actively evolving).
 
-- **Multi-Agent Orchestration** is production-ready. Claude Managed Agents (Anthropic-hosted loop), the OpenAI Agents SDK (runner in your process), and the Claude Agent SDK provide mature platforms for building agent teams at scale.
+- **Multi-Agent Orchestration** is production-ready. Claude Managed Agents (Anthropic-hosted loop) and the Claude Agent SDK (caller-process execution, PyPI: claude-agent-sdk) provide the two Anthropic-native paradigms for building agent teams at scale.
 
 - **Non-Human Identities (NHIs)** outnumber human identities by ratios typically ranging from 25:1 to over 100:1, with some environments exceeding 500:1 (ManageEngine, 2026; Silverfort, 2025; Entro, 2025), creating new governance and security challenges.
 
@@ -163,7 +163,7 @@ Deep technical work: multi-agent systems, red teaming, adversarial AI, and produ
 
 | Unit | Weeks | Focus Area | Key Outcomes |
 |------|-------|-----------|--------------|
-| **Unit 5: Multi-Agent Orchestration** | 1-4 | Claude Agent SDK, Claude Managed Agents, OpenAI Agents SDK—designing and comparing agent harnesses for security operations | Build and evaluate multi-agent SOC and threat analysis systems; run a 3-framework comparison using MASS |
+| **Unit 5: Multi-Agent Orchestration** | 1-4 | Claude Managed Agents, Claude Agent SDK—designing and comparing hosted vs. client-side agent orchestration paradigms for security operations | Build and evaluate multi-agent SOC and threat analysis systems; run a 2-paradigm comparison using MASS |
 | **Unit 6: AI Attacker vs. AI Defender** | 5-8 | Red teaming AI agents, prompt injection, goal hijacking, tool misuse, adversarial ML, real-world case studies | Conduct adversarial testing; harden agents against known attack patterns |
 | **Unit 7: Production Security Engineering** | 9-12 | AI supply chain security, NHI governance, observability, cost management, deployment patterns | Design secure agent deployments; implement monitoring and audit trails |
 | **Unit 8: Capstone Projects** | 13-16 | Full agentic cybersecurity systems—built, tested, red-teamed, and presented | Deliver production-grade security agent system with documentation and threat assessment |
@@ -200,7 +200,7 @@ The lab stack is centered on **Claude Max subscription** capabilities, with mult
 
 ### Agent Orchestration Frameworks
 - **Claude Managed Agents** — Anthropic-hosted agent harness. Anthropic runs the loop and tool execution in a per-session container; you deploy once and run per-scan sessions. Used in Unit 5 and beyond.
-- **OpenAI Agents SDK** — Runner-managed loop in your process. `Agent` + `@function_tool` + `Runner.run_sync()`. Used in Unit 5 comparison exercises.
+- **Claude Agent SDK** — Client-side async generator loop in your process. `query()` yields events; `ClaudeAgentOptions` configures model and tools; `AgentDefinition` spawns subagents. PyPI: claude-agent-sdk. Used in Unit 5 Week 3.
 - **AutoGen/AG2** — Multi-agent conversation patterns (reference only; not a primary lab framework)
 
 ### Infrastructure & DevSecOps Pipeline
@@ -272,7 +272,7 @@ Noctua/
 │   └── mass/
 │       ├── README.md                  # Tool index, quick starts, where MASS appears per unit
 │       ├── claude-managed-agents/     # MASS 7-agent DAG — Anthropic-hosted implementation
-│       └── openai-sdk-agents/         # MASS 7-agent DAG — OpenAI Agents SDK implementation
+│       └── claude-agent-sdk-agents/   # MASS 7-agent DAG — Claude Agent SDK implementation
 │
 ├── resources/                         # Reference materials
 │
@@ -298,7 +298,7 @@ Admission to this course requires:
 
 **Required Platform Access (provided through course fees or institutional licensing):**
 - **Claude Max subscription** — Primary platform for Chat, Cowork, and Claude Code
-- **OpenAI Platform account** — Free tier sufficient; used for the Unit 5 OpenAI Agents SDK comparison week
+- **GitHub account with GHCR access** — free; used for container image pushes in Units 7-8
 
 **Required Hardware (student-provided laptop):**
 - Minimum: 8GB RAM, 4-core CPU, 50GB free storage
@@ -352,7 +352,7 @@ Admission to this course requires:
 - **Anthropic — "Effective Context Engineering for AI Agents"** — Managing context windows and semantic retrieval
 - **"Designing AI Agents"** (emerging body of work from multiple researchers) — Agent architecture patterns
 - **Anthropic — Managed Agents Documentation** (anthropic.com/docs/managed-agents) — Server-managed stateful agents with hosted tool execution
-- **OpenAI Agents SDK Documentation** (openai.github.io/openai-agents-python) — Runner-managed agent loop with handoffs and function tools
+- **Claude Agent SDK Documentation** (pypi.org/project/claude-agent-sdk) — Client-side async generator loop. `query()`, `ClaudeAgentOptions`, `AgentDefinition`. Install: `pip install claude-agent-sdk`
 
 ### AI Security & Adversarial Techniques
 - **OWASP Top 10 for Agentic Applications (2026)** — Web application security adapted for AI agents
