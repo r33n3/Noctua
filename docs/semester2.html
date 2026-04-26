@@ -27,7 +27,7 @@
 <h2 id="course-information">Course Information</h2>
 <h3 id="course-overview">Course Overview</h3>
 <p>By the end of Semester 2, you will be able to: assess a multi-agent system for security risks and architectural gaps; harden agents against adversarial manipulation and real-world attack patterns; and deploy observable, governed, production-ready systems. These are the skills that produce value in a company engagement — not just technically, but operationally.</p>
-<p>Building on CSEC 601 foundations, this semester scales from individual agents to orchestrated systems, from building to adversarial testing, and from prototype to production. The frameworks that enable this — Claude Agent SDK, CrewAI, LangGraph, and MCP — are taught as tools in service of those outcomes, not as ends in themselves.</p>
+<p>Building on CSEC 601 foundations, this semester scales from individual agents to orchestrated systems, from building to adversarial testing, and from prototype to production. The platforms that enable this — Claude Managed Agents, OpenAI Agents SDK, and MCP — are taught as tools in service of those outcomes, not as ends in themselves.</p>
 <h3 id="key-terminology">Key Terminology</h3>
 <ul>
 <li><strong>Collaborative Critical Thinking (CCT):</strong> The systematic application of structured reasoning to design robust agentic systems, considering agent interactions, failure modes, security boundaries, and ethical implications. This is distinct from "prompting" and represents deep architectural and design thinking.</li>
@@ -37,7 +37,7 @@
 <p>Semester 2 labs maximize the capabilities of Claude Max subscriptions and the cutting-edge agentic toolstack:</p>
 <ul>
 <li><strong>Claude Code and Agent SDK:</strong> Students leverage Claude's IDE, real-time code execution, worktrees for branch isolation, and the Agent SDK's subagent capabilities for orchestrating specialized agent teams.</li>
-<li><strong>Multi-Vendor Perspective:</strong> Beyond Claude's ecosystem, students gain hands-on experience with CrewAI, LangGraph, and AutoGen to understand architectural trade-offs across frameworks.</li>
+<li><strong>Multi-Platform Perspective:</strong> Beyond Claude's local tools, students deploy Claude Managed Agents (Anthropic-hosted execution) and the OpenAI Agents SDK (cross-provider, client-side loop) to understand architectural trade-offs between hosted and self-run agent infrastructure.</li>
 <li><strong>Autonomous Rapid Prototyping:</strong> By Semester 2, students are expected to be proficient with the agentic toolstack and are expected to prototype complex systems quickly, iterating on design through building rather than extensive planning.</li>
 <li><strong>Production Focus:</strong> Labs shift from "proof of concept" to "production-ready," incorporating observability, error handling, deployment strategies, and operational considerations.</li>
 </ul>
@@ -49,7 +49,7 @@
 <p><strong>Design and implement multi-agent architectures</strong> that orchestrate specialized agents for complex cybersecurity tasks, comparing supervisor, hierarchical, debate, and swarm patterns.</p>
 </li>
 <li>
-<p><strong>Evaluate and select appropriate agentic frameworks</strong> (Claude Agent SDK, CrewAI, LangGraph) based on security requirements, workflow characteristics, and operational constraints.</p>
+<p><strong>Evaluate and select appropriate agentic platforms</strong> (Claude Managed Agents, OpenAI Agents SDK) based on security requirements, workflow characteristics, and operational constraints.</p>
 </li>
 <li>
 <p><strong>Conduct Collaborative Critical Thinking analysis</strong> to design agent systems that are secure, efficient, and resilient to adversarial manipulation.</p>
@@ -120,12 +120,12 @@
 <td>Single-agent limitations and multi-agent patterns</td>
 </tr>
 <tr>
-<td><a href="s2-unit5.html#week-2-crewai-for-security-operations">Week 2: CrewAI for Security Operations</a></td>
-<td>Role-based multi-agent framework</td>
+<td><a href="lab-s2-unit5.html#week-2">Week 2: Managed Agents — Memory, Networking &amp; MCP</a></td>
+<td>Production hardening: memory stores, limited networking, custom tools</td>
 </tr>
 <tr>
-<td><a href="s2-unit5.html#week-3-langgraph-for-stateful-security-workflows">Week 3: LangGraph for Stateful Workflows</a></td>
-<td>State machines and incident response</td>
+<td><a href="lab-s2-unit5.html#week-3">Week 3: OpenAI Agents SDK</a></td>
+<td>Cross-provider Runner pattern, handoffs, .as_tool()</td>
 </tr>
 <tr>
 <td><a href="s2-unit5.html#week-4-agent-evaluation-and-benchmarking">Week 4: Agent Evaluation and Benchmarking</a></td>
@@ -247,7 +247,7 @@
 <td>Framework Comparison Report</td>
 <td>10%</td>
 <td>4</td>
-<td>Unit 5 evaluation comparing Claude Agent SDK, CrewAI, LangGraph</td>
+<td>Unit 5 evaluation comparing Claude Managed Agents and OpenAI Agents SDK</td>
 </tr>
 <tr>
 <td>Red Team Exercise</td>
@@ -352,10 +352,9 @@
 <h2 id="course-resources-and-readings">Course Resources and Readings</h2>
 <h3 id="required-texts-and-documentation">Required Texts and Documentation</h3>
 <ul>
-<li>Claude Agent SDK Documentation: https://docs.anthropic.com/agents</li>
+<li>Claude Managed Agents Documentation: https://platform.claude.com/docs/en/managed-agents/overview</li>
+<li>OpenAI Agents SDK: https://openai.github.io/openai-agents-python</li>
 <li>Model Context Protocol (MCP) Specification: https://modelcontextprotocol.io/</li>
-<li>CrewAI Documentation: https://docs.crewai.com/</li>
-<li>LangGraph Documentation: https://langchain-ai.github.io/langgraph/</li>
 <li>MITRE ATLAS Framework: https://atlas.mitre.org/</li>
 </ul>
 <h3 id="recommended-reading">Recommended Reading</h3>
@@ -374,9 +373,8 @@
 <h3 id="tools-and-frameworks">Tools and Frameworks</h3>
 <ul>
 <li>Claude Code (IDE and code execution)</li>
-<li>Claude Agent SDK (building agentic systems)</li>
-<li>CrewAI (role-based multi-agent framework)</li>
-<li>LangGraph (stateful workflow orchestration)</li>
+<li>Claude Managed Agents (Anthropic-hosted agent execution platform)</li>
+<li>OpenAI Agents SDK (cross-provider Runner-managed agent loop)</li>
 <li>OpenTelemetry (observability)</li>
 <li>Docker and containerization tools</li>
 <li>CI/CD platforms (GitHub Actions, GitLab CI, etc.)</li>
@@ -437,7 +435,7 @@
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Claude Managed Agents (memory, networking, MCP), OpenAI Agents SDK, A2A protocol, framework comparison.",tags:["unit5","multi-agent","managed agents","openai agents sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

@@ -668,8 +668,7 @@ docker-compose down</code></pre>
       <ul class="checklist">
         <li><label><input type="checkbox" class="lab-step" id="chk-mcp" onchange="toggleStep('chk-mcp', this.checked)"> MCP SDK installed (<code>pip list | grep mcp</code>)</label></li>
         <li><label><input type="checkbox" class="lab-step" id="chk-hello-mcp" onchange="toggleStep('chk-hello-mcp', this.checked)"> Hello World MCP server runs successfully (hello_mcp_server.py)</label></li>
-        <li><label><input type="checkbox" class="lab-step" id="chk-crewai" onchange="toggleStep('chk-crewai', this.checked)"> CrewAI installed — Semester 2 only</label></li>
-        <li><label><input type="checkbox" class="lab-step" id="chk-langgraph" onchange="toggleStep('chk-langgraph', this.checked)"> LangGraph installed — Semester 2 only</label></li>
+        <li><label><input type="checkbox" class="lab-step" id="chk-openai-agents" onchange="toggleStep('chk-openai-agents', this.checked)"> OpenAI Agents SDK installed — Semester 2 only (<code>pip install openai-agents</code>)</label></li>
         <li><label><input type="checkbox" class="lab-step" id="chk-autogen" onchange="toggleStep('chk-autogen', this.checked)"> AG2 (AutoGen) installed — Semester 2 only</label></li>
         <li><label><input type="checkbox" class="lab-step" id="chk-ollama" onchange="toggleStep('chk-ollama', this.checked)"> Ollama installed with at least one model (<code>ollama list</code>)</label></li>
         <li><label><input type="checkbox" class="lab-step" id="chk-openai" onchange="toggleStep('chk-openai', this.checked)"> OpenAI API account created — Semester 2 only</label></li>
@@ -839,7 +838,7 @@ ollama pull llama3.2</code></pre>
       </ul>
 
       <h3>All Other Tools</h3>
-      <p>Python, Node.js, Git, Docker Desktop, MCP SDK, CrewAI, LangGraph, AutoGen, Ollama, Wireshark, nmap — all free and open-source. Burp Suite Community is free; Pro is $399/year.</p>
+      <p>Python, Node.js, Git, Docker Desktop, MCP SDK, OpenAI Agents SDK, AutoGen, Ollama, Wireshark, nmap — all free and open-source. Burp Suite Community is free; Pro is $399/year.</p>
 
       <h3>Estimated Cost Per Student (Full Year)</h3>
       <ul>
@@ -882,7 +881,7 @@ ollama pull llama3.2</code></pre>
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, LangGraph, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","langgraph","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Claude Managed Agents (memory, networking, MCP), OpenAI Agents SDK, A2A protocol, framework comparison.",tags:["unit5","multi-agent","managed agents","openai agents sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
