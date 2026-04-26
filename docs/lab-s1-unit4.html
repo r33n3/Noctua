@@ -21,228 +21,235 @@
 </div>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 34 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 33 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
 
 <!-- ======== WEEK 13 ======== -->
-<h2 id="week-13">Week 13 — Multi-Agent Architecture Deep Dive</h2>
-<div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Multi-Agent SOC System with Worktrees</span></div>
+<h2 id="week-13">Week 13 — Your First Custom Agent</h2>
+<div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Subagent and Run Your First Agent Team</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a four-agent SOC system (Orchestrator + Recon Agent + Analysis Agent + Reporting Agent) using Claude Agent SDK, with worktrees for parallel development. Implement the Hierarchical orchestration pattern.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build two custom subagents as YAML files and invoke them inside Claude Code — no API key or billing needed. Then spawn a three-member agent team to parallelize a security analysis task. Everything this week runs on your Claude subscription.</p></div>
+
 <div class="callout callout-key">
-  <strong>Tool-agnostic framing: worktrees and multi-agent patterns</strong>
-  <p><strong>Worktrees</strong> are a git feature, not a Claude Code feature. Any IDE or terminal supports them. VS Code Multi-Root Workspaces, Cursor, and JetBrains all work with git worktrees. The Claude Code integration shown here is one way to use them.</p>
-  <p><strong>Orchestrator + specialized worker</strong> is a pattern, not a framework. Whether you use the Anthropic SDK (shown here), Claude Managed Agents, OpenAI Agents SDK, or AutoGen — the architecture is the same: one agent routes and coordinates, specialized agents execute with focused context and tool scope. The framework changes; the pattern doesn't.</p>
+  <strong>The agentic loop — what's actually happening</strong>
+  <p>Every agent system, from Claude Code to Managed Agents to OpenAI's SDK, runs the same underlying loop:</p>
+  <ol>
+    <li>Claude receives your prompt and a list of available tools</li>
+    <li>Claude either responds (done) or requests a tool call (<code>stop_reason: tool_use</code>)</li>
+    <li>Something — your code, Claude Code, or Anthropic's platform — executes the tool</li>
+    <li>The result is fed back to Claude as a new message</li>
+    <li>Steps 2–4 repeat until Claude decides it's finished (<code>stop_reason: end_turn</code>)</li>
+  </ol>
+  <p>In Claude Code, the loop runs automatically — you don't write it. When Claude uses <code>Bash</code>, <code>Read</code>, or <code>Edit</code>, Claude Code handles steps 2–4 invisibly. Subagents get their own isolated loop with their own context window. In Semester 2, you'll see how Claude Managed Agents hosts this loop on Anthropic's infrastructure instead of your machine.</p>
 </div>
 
 <div class="quiz-block" id="quiz-w13">
   <h4> Knowledge Check — Week 13</h4>
 
-  <div class="quiz-question" data-qid="w13q1" data-answer="c" data-explain="Git worktrees create parallel working directories on separate branches, enabling teammates to develop different components simultaneously without branch-switching conflicts. For agent development, this means one developer builds the recon agent while another builds the analysis agent — they merge when both are complete.">
-    <p class="q-text">1. Why do worktrees enable parallel agent development without conflicts?</p>
+  <div class="quiz-question" data-qid="w13q1" data-answer="b" data-explain="The agentic loop is: Claude receives prompt + tools → optionally calls a tool (stop_reason: tool_use) → tool executes → result returned to Claude → Claude continues → repeat until stop_reason: end_turn. The loop can run many iterations. In Claude Code, the platform manages this automatically so you don't write the loop yourself.">
+    <p class="q-text">1. What is the correct sequence of the agentic loop?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="w13q1" value="a"> A) They create copies of the repository in separate locations</label>
-      <label><input type="radio" name="w13q1" value="b"> B) They allow multiple users to share the same branch</label>
-      <label><input type="radio" name="w13q1" value="c"> C) They create parallel working directories on separate branches — developers work on different components simultaneously without stash/switch overhead</label>
-      <label><input type="radio" name="w13q1" value="d"> D) They automatically merge conflicting changes</label>
+      <label><input type="radio" name="w13q1" value="a"> A) Claude writes code → runs it → summarizes results → done</label>
+      <label><input type="radio" name="w13q1" value="b"> B) Claude receives prompt → optionally calls tool (stop_reason: tool_use) → tool executes → result returned → repeat until stop_reason: end_turn</label>
+      <label><input type="radio" name="w13q1" value="c"> C) User sends message → Claude responds once → user reviews → done</label>
+      <label><input type="radio" name="w13q1" value="d"> D) Claude reads all files first, then answers, then waits for confirmation</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('w13q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="w13q2" data-answer="d" data-explain="The Expert Swarm Pattern has multiple specialized agents attack the same problem in parallel from different analytical angles (network, behavioral, threat intel). A coordinator synthesizes results, flagging areas of agreement (high confidence) and disagreement (needs investigation). It's more powerful than routing because diversity catches what any single perspective misses.">
-    <p class="q-text">2. What distinguishes the Expert Swarm Pattern from Hierarchical orchestration?</p>
+  <div class="quiz-question" data-qid="w13q2" data-answer="c" data-explain="A subagent runs in its own context window with its own system prompt and tool restrictions. Only the final result returns to the main conversation — intermediate tool calls, search results, and file reads stay inside the subagent's context. This keeps your main conversation clean and reduces token consumption in the primary thread.">
+    <p class="q-text">2. What is the key benefit of running a task in a subagent instead of the main conversation?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="w13q2" value="a"> A) Swarm agents are cheaper than hierarchical agents</label>
-      <label><input type="radio" name="w13q2" value="b"> B) Hierarchical patterns are always faster</label>
-      <label><input type="radio" name="w13q2" value="c"> C) Swarms require more agents than hierarchical systems</label>
-      <label><input type="radio" name="w13q2" value="d"> D) Swarms have multiple agents analyze the SAME problem in parallel for diverse perspectives; hierarchical routes to ONE specialist at a time</label>
+      <label><input type="radio" name="w13q2" value="a"> A) Subagents are faster than the main agent</label>
+      <label><input type="radio" name="w13q2" value="b"> B) Subagents can use tools the main agent cannot</label>
+      <label><input type="radio" name="w13q2" value="c"> C) Intermediate results (tool calls, search outputs, file reads) stay inside the subagent's context — only the summary returns to the main conversation</label>
+      <label><input type="radio" name="w13q2" value="d"> D) Subagents run without API billing</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('w13q2')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="w13q3" data-answer="b" data-explain="Specialization reduces per-agent token cost because each agent's system prompt and context only includes what it needs for its specific role. A recon agent doesn't need reporting templates; a reporting agent doesn't need CVE lookup tools. Smaller, focused context = lower cost per invocation.">
-    <p class="q-text">3. Why can multiple specialized agents sometimes cost LESS than one large general agent?</p>
+  <div class="quiz-question" data-qid="w13q3" data-answer="d" data-explain="Use subagents when you need a focused task done and only the result matters — the subagent works independently and reports back. Use agent teams when teammates need to discuss findings with each other, share a task list, and coordinate their work in real time. Teams have higher token cost because each teammate is a full Claude session.">
+    <p class="q-text">3. When should you use an agent team instead of subagents?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="w13q3" value="a"> A) API pricing discounts for multi-agent architectures</label>
-      <label><input type="radio" name="w13q3" value="b"> B) Each specialized agent has a smaller system prompt and context, reducing tokens per invocation; specialization costs less than generalism at scale</label>
-      <label><input type="radio" name="w13q3" value="c"> C) Smaller models can replace larger ones in agent roles</label>
-      <label><input type="radio" name="w13q3" value="d"> D) Agent-to-agent communication avoids API billing</label>
+      <label><input type="radio" name="w13q3" value="a"> A) Always — teams are more capable than subagents</label>
+      <label><input type="radio" name="w13q3" value="b"> B) When the task can be done by a single agent</label>
+      <label><input type="radio" name="w13q3" value="c"> C) When you need the result quickly — teams are faster</label>
+      <label><input type="radio" name="w13q3" value="d"> D) When teammates need to share findings and coordinate directly with each other — not just report back to you</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('w13q3')">Check Answer</button>
   </div>
 </div>
 
-<div class="callout callout-tip">
-  <strong>Try <code>/worktree-setup</code> for Parallel Agent Development</strong>
-  <p>This lab has you building three agents simultaneously across isolated worktrees. The <code>/worktree-setup</code> skill generates the exact commands for your project — worktree create commands, directory map, and integration merge steps — based on your spec.</p>
-  <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
-    <a href="skills/worktree-setup.md" download="worktree-setup.md" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#0b0f19;font-weight:600;font-size:13px;padding:7px 16px;border-radius:4px;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#11123; Download worktree-setup.md</a>
-    <a href="skills/index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:13px;padding:7px 12px;border-radius:4px;text-decoration:none;border:1px solid rgba(45,212,191,0.3);transition:background 0.15s;" onmouseover="this.style.background='rgba(45,212,191,0.08)'" onmouseout="this.style.background='transparent'">&#128065; All Course Skills</a>
-  </div>
-  <div class="code-block"><pre><code>curl -o ~/.claude/commands/worktree-setup.md https://raw.githubusercontent.com/r33n3/Noctua/main/docs/skills/worktree-setup.md
-# Then in Claude Code, after your spec is ready:
-/worktree-setup three-agent SOC system: recon-agent, analysis-agent, reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-</div>
-
-<div class="callout callout-key"><p><strong>What you're learning here transfers beyond Claude Code.</strong> Worktrees are a git feature — not a Claude Code invention. The <code>git worktree add</code> command works in any git repository, with any development tool. Agent orchestration patterns (supervisor → specialist, parallel fanout, sequential pipeline) appear in Claude Managed Agents, OpenAI Agents SDK, AutoGen, and the Claude Agent SDK with different syntax but identical architecture. The mental model you build this week — how to decompose a complex task into a supervised multi-agent pipeline — is framework-independent. The syntax is not.</p>
-</div>
-
 <div class="lab-section">
-  <h4> Lab Exercise: Three-Agent SOC System</h4>
+  <h4> Lab Exercise: Build Your First Subagent and Agent Team</h4>
 
-  <div class="scenario-box"><strong>Architecture:</strong> Incident arrives → Orchestrator routes to Recon Agent (gathers IoC data via your MCP tools) → Analysis Agent (applies CCT framework to synthesize findings) → Reporting Agent (generates structured JSON + Markdown report). All three run under the Orchestrator's control.</div>
+  <div class="scenario-box"><strong>Context:</strong> You've been using Claude Code interactively for weeks. This week you define <em>reusable agent personas</em> — custom subagents with focused system prompts and tool restrictions that Claude invokes automatically when the task matches. Then you'll coordinate multiple agents working in parallel on the Meridian Financial incident.</div>
 
   <div class="lab-steps">
     <div class="lab-step" id="step-w13-1">
       <label><input type="checkbox" onchange="toggleStep('w13-1',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 1: Initialize worktrees for parallel development</div>
+        <div class="step-title">Step 1: Create your project agents directory</div>
       </div></label>
-      <div class="code-block"><pre><code>cd ~/noctua-labs
-git init soc-agent-system && cd soc-agent-system
-git commit --allow-empty -m "init"
-# Create worktrees for each agent component
-git worktree add ../soc-recon   -b feature/recon-agent
-git worktree add ../soc-analysis -b feature/analysis-agent
-git worktree add ../soc-reporting -b feature/reporting-agent</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>cd ~/noctua-labs/unit4
+mkdir -p .claude/agents
+# Subagent files in .claude/agents/ are project-scoped (checked into git)
+# Files in ~/.claude/agents/ are user-scoped (available in all projects)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w13-2">
       <label><input type="checkbox" onchange="toggleStep('w13-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Build the Recon Agent in its worktree</div>
-        <div class="step-desc">In <code>../soc-recon/</code>, use Claude Code to build <code>recon_agent.py</code>: a Claude-backed agent with access to your Unit 2 MCP tools (<code>query_cve</code>, <code>query_asset_exposure</code>, <code>generate_incident_report</code>, <code>search_security_kb</code>). Input: raw alert text. Output: structured reconnaissance JSON with all IoCs enriched.</div>
+        <div class="step-title">Step 2: Write your SOC analyst subagent</div>
+        <div class="step-desc">Create <code>.claude/agents/soc-analyst.md</code>. The YAML frontmatter configures the subagent. The body becomes its system prompt. Tools are restricted to read-only analysis — no file writes, no shell execution.</div>
       </div></label>
-      <div class="code-block"><pre><code>cd ~/soc-recon
-claude
-# Prompt: "Build a recon security agent in Python using the Anthropic SDK.
-# The agent receives raw alert text and must:
-# 1. Extract all IoCs (IPs, hashes, CVEs, domains)
-# 2. Use tool calls to enrich each IoC via the MCP tools
-# 3. Return structured JSON: {iocs: [{type, value, enrichment, severity}], summary}
-# Use claude-sonnet-4-6. Include error handling for failed tool calls."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>---
+name: soc-analyst
+description: Senior SOC analyst for incident investigation and alert triage. Use for security alerts, MTTI analysis, and threat hypothesis generation. Use proactively when analyzing security incidents.
+tools: Read, Bash, Glob, Grep
+model: inherit
+---
+
+You are a senior SOC analyst specializing in incident investigation.
+
+When given a security alert or incident:
+1. Extract all IoCs: IPs, domains, file hashes, usernames, process names
+2. Apply CCT analysis — map to MITRE ATT&CK, assess likelihood of each TTP
+3. Generate exactly 3 hypotheses ranked by probability with supporting evidence
+4. Assign severity (Critical / High / Medium / Low) with written justification
+5. Produce a structured investigation report:
+   - Incident summary (2 sentences)
+   - IoC inventory
+   - Top 3 hypotheses with probabilities
+   - Recommended immediate actions
+   - MTTI from alert timestamp to now
+
+Flag any low-confidence assessments explicitly. Never fabricate enrichment data.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w13-3">
       <label><input type="checkbox" onchange="toggleStep('w13-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Build the Analysis Agent</div>
-        <div class="step-desc">In <code>../soc-analysis/</code>, build <code>analysis_agent.py</code>: applies your CCT system prompt (from Week 4) to the Recon Agent's output. Applies 5-pillar CCT analysis, generates top-3 hypotheses with probabilities, and recommends next steps. System prompt is your <code>security-analyst-context-v2.md</code>.</div>
+        <div class="step-title">Step 3: Verify and invoke the subagent</div>
+        <div class="step-desc">Confirm Claude Code sees your new subagent, then run it two ways: via <code>/agents</code> interface and via @-mention in a prompt.</div>
       </div></label>
+      <div class="code-block"><pre><code># From terminal — list all configured subagents:
+claude agents
+# Should show: soc-analyst [project] .claude/agents/soc-analyst.md
+
+# From inside a Claude Code session — two invocation patterns:
+
+# Pattern 1: Let Claude decide (describe the task, Claude routes to soc-analyst)
+# "Investigate this security alert: [paste Meridian Financial alert text]"
+
+# Pattern 2: @-mention to guarantee delegation
+# "@soc-analyst investigate this alert: [paste alert text]"
+
+# Pattern 3: Explicit request
+# "Use the soc-analyst agent to triage this incident: [alert text]"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip">
+        <p>Subagents are loaded at session start. If you created the file while Claude Code is running, either restart the session or use <code>/agents</code> → Library to load it immediately.</p>
+      </div>
     </div>
 
     <div class="lab-step" id="step-w13-4">
       <label><input type="checkbox" onchange="toggleStep('w13-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Build the Reporting Agent</div>
-        <div class="step-desc">In <code>../soc-reporting/</code>, build <code>reporting_agent.py</code>: takes Analysis Agent output and generates a validated incident report (using your Week 5–6 schemas) in both JSON and Markdown formats. Calculates MTTI based on timestamps passed from the Orchestrator.</div>
+        <div class="step-title">Step 4: Create a specialist threat-enricher subagent</div>
+        <div class="step-desc">Create <code>.claude/agents/threat-enricher.md</code>. This agent specializes in MITRE ATT&CK mapping and threat actor attribution. Its tool scope and system prompt are narrower than the SOC analyst — it does one thing well.</div>
       </div></label>
+      <div class="code-block"><pre><code>---
+name: threat-enricher
+description: MITRE ATT&CK specialist for TTP mapping and threat actor attribution. Use after initial triage when you need detailed technique analysis or threat intel correlation.
+tools: Read, Grep, Glob
+model: inherit
+---
+
+You are a threat intelligence analyst specializing in MITRE ATT&CK mapping.
+
+When given IoCs or incident details:
+1. Map each observed behavior to specific ATT&CK techniques (Tactic → Technique → Sub-technique)
+2. Identify threat actor groups known to use these TTPs (with confidence level)
+3. Note technique prevalence: is this a common or rare TTP combination?
+4. Flag detection gaps: which TTPs lack corresponding detection coverage?
+5. Recommend 2–3 specific detections to add based on observed TTPs
+
+Output format:
+- ATT&CK mapping table: Tactic | Technique ID | Technique Name | Evidence
+- Threat actor candidates: Actor | Confidence | Overlapping TTPs
+- Detection gap analysis
+- Recommended detections
+
+Cite ATT&CK technique IDs precisely (e.g., T1566.001). Flag unknown techniques as "not mapped."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w13-5">
       <label><input type="checkbox" onchange="toggleStep('w13-5',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Build the Orchestrator</div>
-        <div class="step-desc">In the main <code>soc-agent-system/</code> branch, build <code>orchestrator.py</code>: receives the alert, calls Recon → Analysis → Reporting in sequence, handles timeouts (30s per agent), and implements graceful degradation (if Recon fails, Analysis works with partial data).</div>
+        <div class="step-title">Step 5: Chain the two subagents on the Meridian incident</div>
+        <div class="step-desc">Run the Meridian Financial incident through both subagents in sequence: soc-analyst produces the initial triage, then hand that output to threat-enricher for deep ATT&CK analysis. Observe how context stays isolated — the enricher doesn't see the analyst's tool calls, only its final report.</div>
       </div></label>
-      <div class="code-block"><pre><code>cd ~/noctua-labs/soc-agent-system
-claude
-# Prompt: "Build orchestrator.py that coordinates three agents in sequence.
-# Import: recon_agent.run(alert_text), analysis_agent.run(recon_json),
-# reporting_agent.run(analysis_json, start_ts)
-# Requirements:
-# - 30s asyncio timeout per agent via asyncio.wait_for()
-# - If recon times out: pass partial data to analysis with recon_status='timeout'
-# - If analysis fails: reporting still runs with error summary
-# - Return: {mtti_seconds, recon_status, analysis_status, report}
-# - Log each stage with timestamp to structured JSON log"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code># In Claude Code — chain the agents:
+# Step 1: Initial triage
+# "@soc-analyst investigate the Meridian Financial alert from your incident notes"
+
+# Step 2: Pass the report to the enricher
+# "@threat-enricher here is the SOC analyst's triage report: [paste output]
+# Provide deep ATT&CK mapping and threat actor attribution."
+
+# Observe: the enricher starts fresh — it has no memory of the analyst's tool calls.
+# Only the report text was passed. This is context isolation in practice.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w13-6">
       <label><input type="checkbox" onchange="toggleStep('w13-6',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 6: Merge and end-to-end test</div>
-        <div class="step-desc">Merge all three agent branches into main. Run the full system against the Meridian Financial incident. Verify: (1) Recon enriches all IoCs, (2) Analysis applies CCT and generates 3 hypotheses, (3) Reporting produces valid JSON + Markdown. Record end-to-end MTTI.</div>
+        <div class="step-title">Step 6: Spawn an agent team on the Meridian incident</div>
+        <div class="step-desc">Enable agent teams and ask Claude to create a team with two specialist teammates — one focused on network indicators, one on endpoint indicators — working in parallel. Observe how they coordinate through the shared task list, then synthesize findings.</div>
       </div></label>
+      <div class="code-block"><pre><code># In Claude Code settings (or shell):
+# export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+# or add to ~/.claude/settings.json:
+# { "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" } }
+
+# Then in Claude Code, prompt the lead:
+# "Create an agent team to analyze the Meridian Financial incident in parallel.
+# Spawn two teammates:
+# - network-analyst: investigate the network indicators (IPs, domains, C2 traffic patterns)
+# - endpoint-analyst: investigate the endpoint indicators (file hashes, process names, registry changes)
+# Have them share findings and produce a coordinated incident summary."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip">
+        <p>In in-process mode (default), press <strong>Shift+Down</strong> to cycle between the lead and teammates. You can message each teammate directly. Watch how they claim tasks from the shared list and message each other.</p>
+      </div>
     </div>
 
     <div class="lab-step" id="step-w13-7">
       <label><input type="checkbox" onchange="toggleStep('w13-7',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 7: Compare against Week 1 MTTI baseline</div>
-        <div class="step-desc">Record the multi-agent system's MTTI for the Meridian Financial incident. Compare to your Week 1 manual MTTI. Calculate the improvement ratio. Consider: what is the cost per investigation (token cost)? Is the improvement worth the cost?</div>
+        <div class="step-title">Step 7: Compare — subagents vs. agent team</div>
+        <div class="step-desc">Write a short comparison (one paragraph each) in your lab notes: (1) When did the subagent approach work better? (2) When did the agent team add value? (3) What was the coordination overhead — did the team finish faster or slower? Record your observations in <code>unit4/week13-notes.md</code>.</div>
       </div></label>
     </div>
   </div>
 </div>
 
-<div class="callout callout-info">
-  <strong>Alternative: Claude Managed Agents</strong>
-  <p>The system you just built manages the orchestration loop in Python — your code calls each agent in sequence, handles errors, and wires results together. <strong>Claude Managed Agents</strong> is Anthropic's hosted version of this pattern: you define the agent config once, start a session per investigation, and stream events. The container, tools, and agent loop run on Anthropic's infrastructure.</p>
-  <p>The same SOC investigation, rebuilt as a Managed Agent:</p>
-  <div class="code-block"><pre><code>import anthropic
-
-client = anthropic.Anthropic()
-
-# ── ONE-TIME SETUP (run once, save the IDs) ──────────────────────────────────
-agent = client.beta.agents.create(
-    name="SOC Analyst",
-    model="claude-sonnet-4-6",
-    system="""You are a senior SOC analyst. When given a security alert:
-1. Enrich all IoCs (IPs, domains, hashes) using available tools
-2. Apply CCT analysis: identify TTPs, generate 3 hypotheses with probabilities
-3. Produce a structured incident report in JSON + narrative summary""",
-    tools=[{"type": "agent_toolset_20260401"}],  # bash, read/write, web_search all included
-)
-environment = client.beta.environments.create(
-    name="soc-env",
-    config={"type": "cloud", "networking": {"type": "unrestricted"}},
-)
-# Save agent.id and environment.id — reuse across all investigations
-
-# ── PER-INVESTIGATION (run for each new alert) ────────────────────────────────
-session = client.beta.sessions.create(
-    agent=agent.id,
-    environment_id=environment.id,
-    title="Meridian Financial Incident",
-)
-
-with client.beta.sessions.events.stream(session.id) as stream:
-    client.beta.sessions.events.send(
-        session.id,
-        events=[{"type": "user.message", "content": [
-            {"type": "text", "text": meridian_incident_text}
-        ]}],
-    )
-    for event in stream:
-        if event.type == "agent.message":
-            for block in event.content:
-                if hasattr(block, "text"):
-                    print(block.text, end="")
-        elif event.type == "agent.tool_use":
-            print(f"\n[Tool: {event.name}]")
-        elif event.type == "session.status_idle":
-            print("\n── Investigation complete ──")
-            break</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-  <p><strong>Custom orchestrator vs. Managed Agents — when to choose:</strong></p>
-  <ul>
-    <li><strong>Custom SDK orchestrator</strong> (this lab): use when you need custom tool execution on your own infrastructure, approval gates before sensitive actions, or fine-grained control over every agent call.</li>
-    <li><strong>Claude Managed Agents</strong>: use when you want Anthropic to host the container and run the loop — ideal for long-running investigations, file-heavy work, and teams that don't want to manage agent infrastructure.</li>
-  </ul>
-  <p>The orchestrator pattern you designed this week transfers directly to Managed Agents. The agent's reasoning logic (recon → analysis → report) lives in the system prompt; what changes is who runs the infrastructure underneath it. You'll evaluate both approaches quantitatively in Unit 5.</p>
+<div class="callout callout-reading">
+  <strong>Coming in Semester 2 — Managed Agents</strong>
+  <p>Everything you built this week runs locally inside Claude Code on your Claude subscription. In Semester 2, Unit 5, you'll deploy the same agent logic to <strong>Claude Managed Agents</strong> — Anthropic's hosted platform where the agent loop, tool execution, and container all run on Anthropic infrastructure. You'll start with platform.claude.com setup and work up to memory stores, network isolation, and running your Unit 2 MCP server as a hosted tool. The mental model is identical to what you built here. Only the infrastructure changes.</p>
 </div>
 
 <div class="deliverables">
   <h5>Week 13 Deliverables</h5>
   <ul>
-    <li><strong>soc-agent-system/</strong> — complete multi-agent repository with all three agents and orchestrator</li>
-    <li><strong>Architecture Diagram</strong> — data flow diagram showing alert → Orchestrator → Recon → Analysis → Reporting → output</li>
-    <li><strong>MTTI Comparison</strong> — Week 1 manual vs. Week 13 automated, with cost analysis</li>
+    <li><strong>.claude/agents/soc-analyst.md</strong> — custom SOC analyst subagent with YAML frontmatter and system prompt</li>
+    <li><strong>.claude/agents/threat-enricher.md</strong> — specialist ATT&CK mapping subagent</li>
+    <li><strong>Chained analysis of Meridian incident</strong> — soc-analyst triage → threat-enricher ATT&CK mapping, saved to <code>unit4/meridian-analysis-w13.md</code></li>
+    <li><strong>week13-notes.md</strong> — comparison of subagent chaining vs. agent team: when each worked better and what coordination overhead felt like</li>
   </ul>
 </div>
 <hr>
@@ -543,80 +550,12 @@ class JSONFormatter(logging.Formatter):
 # Target: READY status (no CRITICAL or HIGH)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
-    <div class="lab-step" id="step-w15-8">
-      <label><input type="checkbox" onchange="toggleStep('w15-8',this.checked)">
-      <div class="step-content">
-        <div class="step-title">Step 8: Deploy your hardened agent to Claude Managed Agents — your S1 production milestone</div>
-        <div class="step-desc">
-          <p>Your agent is hardened, audited, and READY. Now deploy it. Claude Managed Agents is Anthropic's hosted harness — you deploy once, then run investigations as sessions. Anthropic runs the loop and tool execution in a container; you don't manage any server infrastructure.</p>
-          <p><strong>What this step teaches:</strong> The difference between "it runs on my laptop" and "it's deployed." Same agent logic, different runtime. This is the simplest path to production for a Claude agent.</p>
-        </div>
-      </div></label>
-      <div class="code-block"><pre><code>import anthropic, json, os
-
-client = anthropic.Anthropic()  # uses ANTHROPIC_API_KEY from env
-
-# ── STEP 1: Deploy the agent (run ONCE — save the IDs) ───────────────────────
-# Paste your Sprint II system prompt below:
-SYSTEM_PROMPT = """
-[Your hardened Sprint II system prompt here — the one that passed AIUC-1 audit]
-"""
-
-agent = client.beta.agents.create(
-    name="Unit 4 Sprint II — &lt;your tool name&gt;",
-    model="claude-sonnet-4-6",
-    system=SYSTEM_PROMPT,
-    tools=[{"type": "agent_toolset_20260401"}],  # bash, file ops, web_search included
-)
-environment = client.beta.environments.create(
-    name="unit4-sprint2-env",
-    config={"type": "cloud", "networking": {"type": "unrestricted"}},
-)
-
-# Save IDs — you'll reuse these for every session
-ids = {"agent_id": agent.id, "environment_id": environment.id}
-with open("managed_agent_ids.json", "w") as f:
-    json.dump(ids, f, indent=2)
-print(f"Deployed: {ids}")
-
-# ── STEP 2: Run a test session against your Sprint I test cases ───────────────
-with open("managed_agent_ids.json") as f:
-    ids = json.load(f)
-
-session = client.beta.sessions.create(
-    agent=ids["agent_id"],
-    environment_id=ids["environment_id"],
-    title="Test Session — Week 15",
-)
-
-test_input = "[Paste your Sprint I test case #1 here]"
-
-with client.beta.sessions.events.stream(session.id) as stream:
-    client.beta.sessions.events.send(session.id, events=[{
-        "type": "user.message",
-        "content": [{"type": "text", "text": test_input}]
-    }])
-    for event in stream:
-        if event.type == "agent.message":
-            for block in event.content:
-                if hasattr(block, "text"):
-                    print(block.text, end="", flush=True)
-        elif event.type == "agent.tool_use":
-            print(f"\n[Tool: {event.name}]", flush=True)
-        elif event.type == "session.status_idle":
-            print("\n\n── Session complete ──")
-            break</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <div class="callout callout-tip" style="margin-top:12px">
-        <strong>After deployment: answer these questions</strong>
-        <ul>
-          <li>Did your agent produce the same output as the local version? If not — why? (context window, tool availability, system prompt differences?)</li>
-          <li>How long did the session take vs. local execution? What drove the difference?</li>
-          <li>Your agent is now "live" — anyone with the session API and your agent ID can run it. What access controls would a production deployment need?</li>
-          <li>Look at <code>tools/mass/claude-managed-agents/</code> in this repo — that's the MASS scanner deployed the same way. Your Sprint II agent is structurally identical. In Unit 5 you'll compare this pattern against two others.</li>
-        </ul>
-      </div>
-    </div>
   </div>
+</div>
+
+<div class="callout callout-reading">
+  <strong>Coming in Semester 2 — platform deployment</strong>
+  <p>Your hardened prototype runs locally and is governed by AIUC-1. In Semester 2 Unit 5, you'll take this same agent logic and deploy it to <strong>Claude Managed Agents</strong> — Anthropic's hosted platform. That's where you'll set up your Console account, configure memory stores, restrict network access, and measure your agent against a standardized test suite. The system prompt you wrote this sprint is what you'll paste into <code>agents.create()</code>. Save it.</p>
 </div>
 
 <div class="callout callout-discuss">
@@ -635,7 +574,7 @@ with client.beta.sessions.events.stream(session.id) as stream:
     <li><strong>Hardened Prototype</strong> — complete code with error handling, validation, logging, and README</li>
     <li><strong>Sprint II AIUC-1 Governance Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
     <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
-    <li><strong>Managed Agent Deployment</strong> — <code>managed_agent_ids.json</code> proving a live deployment + answers to the 4 post-deployment questions</li>
+    <li><strong>Production Readiness Report</strong> — READY status confirmation from <code>/check-antipatterns</code> with Sprint I → Sprint II improvement delta</li>
   </ul>
 </div>
 

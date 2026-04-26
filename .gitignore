@@ -46,6 +46,9 @@ student-state/reflection-log.md
 # Internal planning docs (not student-facing)
 docs/superpowers/
 
+# Author research snapshots — not student-facing, not committed
+docs/research/
+
 # Author's local Claude Code config — students install skills from docs/skills/
 .claude/
 

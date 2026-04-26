@@ -607,33 +607,43 @@ def investigate_with_mcp(alert_text: str) -> str:
 <hr>
 
 <!-- ======== WEEK 3 ======== -->
-<h2 id="week-3">Week 3 — OpenAI Agents SDK</h2>
-<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: Cross-Provider Agent Design</span></div>
+<h2 id="week-3">Week 3 — Claude Agent SDK</h2>
+<div class="week-header"><span class="week-badge">WEEK 3</span><span class="week-sub">Lab: Client-Side Agentic Loop</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build a SOC investigation agent using the OpenAI Agents SDK. Compare the Runner-managed loop pattern (your process, client-side tools) against Claude Managed Agents (Anthropic infrastructure, server-side tools) you built in Weeks 1–2. Run both against the same 10-incident test suite and record quantitative metrics for your Week 4 comparison report.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Implement the same SOC investigation using the <strong>Claude Agent SDK</strong> — Anthropic's client-side library where the agentic loop runs in your process. This is the symmetric comparison to Weeks 1–2: same Claude model, same investigation task, different infrastructure paradigm. By end of this week you'll understand exactly what Managed Agents abstracts for you, and when you'd want to own the loop yourself.</p></div>
+
+<div class="callout callout-info">
+  <strong>Platform vs. SDK — the correct mental model</strong>
+  <p>Claude Managed Agents and Claude Agent SDK are two paradigms for running the same model:</p>
+  <ul>
+    <li><strong>Managed Agents</strong> (Weeks 1–2): Anthropic hosts the loop. Tools execute in a server-side container. You stream events. You don't see raw tool inputs/outputs.</li>
+    <li><strong>Claude Agent SDK</strong> (this week): The loop runs in your Python process via <code>query()</code>. Tools execute locally. You see everything — every tool call, every result, every turn. Full observability.</li>
+  </ul>
+  <p>OpenAI has the same split: <strong>Assistants API / Agent Builder</strong> (hosted platform, equivalent to Managed Agents) vs. <strong>OpenAI Agents SDK</strong> (client-side library, equivalent to Claude Agent SDK). The Week 4 comparison isolates the infrastructure variable: same model, same task, hosted vs. client-side.</p>
+</div>
 
 <div class="quiz-block" id="quiz-u5w3">
   <h4>Knowledge Check — Week 3</h4>
 
-  <div class="quiz-question" data-qid="u5w3q1" data-answer="c" data-explain="The fundamental difference: with OpenAI Agents SDK, Runner executes in your process and tools run in your code (client-side). With Claude Managed Agents, Anthropic runs the loop on their infrastructure and tools execute in a server-side container. Both abstract the agent loop — the question is who hosts the execution environment.">
-    <p class="q-text">1. What is the fundamental architectural difference between OpenAI Agents SDK and Claude Managed Agents?</p>
+  <div class="quiz-question" data-qid="u5w3q1" data-answer="b" data-explain="With Claude Agent SDK, query() runs the agentic loop in your Python process — tools execute locally and you receive every message, tool call, and result as it happens. With Managed Agents, Anthropic runs the loop on their infrastructure, tools execute server-side in a container, and you only receive an event stream (agent.message, agent.tool_use events — not raw tool inputs/outputs). Same model, different infrastructure ownership.">
+    <p class="q-text">1. What is the key observability difference between Claude Agent SDK and Claude Managed Agents?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w3q1" value="a"> A) OpenAI Agents SDK only supports GPT models; Managed Agents only supports Claude</label>
-      <label><input type="radio" name="u5w3q1" value="b"> B) OpenAI Agents SDK requires more code; Managed Agents is simpler</label>
-      <label><input type="radio" name="u5w3q1" value="c"> C) Runner executes in your process with client-side tools; Managed Agents runs on Anthropic infrastructure with server-side tools</label>
-      <label><input type="radio" name="u5w3q1" value="d"> D) OpenAI Agents SDK is synchronous only; Managed Agents supports streaming</label>
+      <label><input type="radio" name="u5w3q1" value="a"> A) Claude Agent SDK only supports haiku; Managed Agents supports all models</label>
+      <label><input type="radio" name="u5w3q1" value="b"> B) Claude Agent SDK runs in your process — you see all tool inputs, outputs, and turns; Managed Agents runs server-side — you only receive an event stream</label>
+      <label><input type="radio" name="u5w3q1" value="c"> C) Managed Agents has better latency because it runs closer to the model</label>
+      <label><input type="radio" name="u5w3q1" value="d"> D) Claude Agent SDK requires you to implement tool execution yourself; Managed Agents has built-in tools</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w3q1')">Check Answer</button>
   </div>
 
-  <div class="quiz-question" data-qid="u5w3q2" data-answer="b" data-explain="handoffs=[] lets an agent delegate the entire conversation to another agent — the receiving agent takes over. .as_tool() wraps an agent as a callable tool so the orchestrator invokes it and gets a result back, maintaining control. The distinction matters: handoffs transfer ownership; as_tool() is a subordinate call.">
-    <p class="q-text">2. What is the difference between <code>handoffs=[]</code> and <code>.as_tool()</code> in OpenAI Agents SDK?</p>
+  <div class="quiz-question" data-qid="u5w3q2" data-answer="c" data-explain="AgentDefinition's description field is what Claude reads to decide when to delegate to that subagent. Write it as 'when to use this agent' not 'what it does.' If the description is vague, Claude won't know when to invoke it. The prompt field is the subagent's system prompt — that defines its behavior. They serve different purposes: description is routing logic, prompt is identity.">
+    <p class="q-text">2. In Claude Agent SDK's <code>AgentDefinition</code>, what does the <code>description</code> field control?</p>
     <div class="quiz-opts">
-      <label><input type="radio" name="u5w3q2" value="a"> A) handoffs=[] is for async agents; .as_tool() is for sync agents</label>
-      <label><input type="radio" name="u5w3q2" value="b"> B) handoffs=[] transfers conversation ownership to another agent; .as_tool() wraps an agent as a callable tool the orchestrator controls</label>
-      <label><input type="radio" name="u5w3q2" value="c"> C) They are identical; .as_tool() is just the newer API</label>
-      <label><input type="radio" name="u5w3q2" value="d"> D) handoffs=[] is for external agents; .as_tool() is for local agents</label>
+      <label><input type="radio" name="u5w3q2" value="a"> A) The system prompt the subagent receives</label>
+      <label><input type="radio" name="u5w3q2" value="b"> B) The model version the subagent uses</label>
+      <label><input type="radio" name="u5w3q2" value="c"> C) When Claude decides to delegate to this subagent — Claude reads the description to decide which agent to invoke for a given task</label>
+      <label><input type="radio" name="u5w3q2" value="d"> D) The maximum number of turns the subagent can take</label>
     </div>
     <div class="quiz-feedback"></div>
     <button class="quiz-check-btn" onclick="checkQuestion('u5w3q2')">Check Answer</button>
@@ -641,134 +651,251 @@ def investigate_with_mcp(alert_text: str) -> str:
 </div>
 
 <div class="lab-section">
-  <h4>Lab Exercise: OpenAI Agents SDK SOC Investigation</h4>
+  <h4>Lab Exercise: Claude Agent SDK SOC Investigation</h4>
 
     <div class="lab-step" id="step-u5w3-1">
       <label><input type="checkbox" onchange="toggleStep('u5w3-1',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 1: Install the SDK and define a SOC analyst agent</div>
-        <div class="step-desc">Install <code>openai-agents</code> and create <code>oai_soc_agent.py</code>. Define two function tools (IOC enrichment and log query) and a SOC analyst agent using the <code>@function_tool</code> decorator for automatic schema generation.</div>
+        <div class="step-title">Step 1: Install the SDK and run your first query</div>
+        <div class="step-desc">Install <code>claude-agent-sdk</code> and run the Meridian incident through <code>query()</code>. The loop runs in your Python process — print every message as it arrives and observe what you receive compared to Weeks 1–2. You should see tool calls with full inputs and outputs, not just event type names.</div>
       </div></label>
-      <div class="code-block"><pre><code>pip install openai-agents</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>pip install claude-agent-sdk</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
       <div class="code-block"><pre><code>
-# oai_soc_agent.py
-from agents import Agent, Runner, function_tool
+# sdk_basic.py
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-@function_tool
-def enrich_ioc(indicator: str) -> str:
-    """Look up threat intel for an IP, domain, or hash."""
-    # Implement with your preferred threat intel source
-    # e.g., VirusTotal API, AbuseIPDB, local feed
-    return f"[IOC enrichment result for {indicator}]"
+SOC_SYSTEM_PROMPT = """You are a senior SOC analyst conducting incident investigations.
+Given a security alert:
+1. Extract and enrich all IoCs (IPs, domains, file hashes) using web search
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a structured JSON report followed by a concise narrative summary"""
 
-@function_tool
-def query_logs(query: str, time_range: str = "1h") -> str:
-    """Search SIEM logs for a given query string."""
-    # Implement with your SIEM or log source
-    return f"[Log query results for: {query} over {time_range}]"
+async def investigate(alert_text: str) -> str:
+    report_parts = []
+    tool_calls = []
 
-soc_agent = Agent(
-    name="SOC Analyst",
-    instructions="""You are a senior SOC analyst. When given a security alert:
-1. Enrich all IoCs (IPs, domains, hashes) using the enrich_ioc tool
-2. Query logs for related activity using the query_logs tool
-3. Apply CCT analysis: identify TTPs, generate 3 hypotheses with probabilities
-4. Produce a structured incident report: severity, TTPs, hypotheses, recommendations""",
-    model="gpt-4o",
-    tools=[enrich_ioc, query_logs],
-)
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt=SOC_SYSTEM_PROMPT,
+            allowed_tools=["WebSearch", "WebFetch", "Read", "Write"],
+        ),
+    ):
+        # Every message, tool call, and result is visible here
+        msg_type = type(message).__name__
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+                    report_parts.append(block.text)
+                elif getattr(block, "type", None) == "tool_use":
+                    # Full tool input visible client-side
+                    tool_calls.append({"name": block.name, "input": block.input})
+                    print(f"\n[Tool: {block.name}({block.input})]", flush=True)
+        if hasattr(message, "result"):
+            print(f"\n── Session complete ({len(tool_calls)} tool calls) ──")
+
+    return "".join(report_parts)
+
+with open("test_incidents.json") as f:
+    import json
+    incidents = json.load(f)
+
+result = asyncio.run(investigate(incidents[0]["alert_text"]))
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip"><strong>Compare now:</strong> Look at what you're printing. You have the full <code>tool.input</code> dict — the exact query string sent to web search, the exact URL fetched. In Weeks 1–2 with Managed Agents, you only received <code>agent.tool_use</code> with the tool name. That observability gap is the central trade-off you'll document in Week 4.</div>
     </div>
 
     <div class="lab-step" id="step-u5w3-2">
       <label><input type="checkbox" onchange="toggleStep('u5w3-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Run sync and then add streaming</div>
-        <div class="step-desc">Run the agent synchronously first to verify output, then switch to streaming to see events as they arrive. Compare the streaming event types to what you saw from Claude Managed Agents in Weeks 1–2.</div>
+        <div class="step-title">Step 2: Add SOC subagents for specialized investigation phases</div>
+        <div class="step-desc">Use <code>AgentDefinition</code> to create two specialist subagents — a recon agent (enrichment only, read-only tools) and an analysis agent (CCT analysis + report writing). The main <code>query()</code> orchestrates them. Note that subagents cannot spawn further subagents — delegation is one level deep.</div>
       </div></label>
       <div class="code-block"><pre><code>
-# Synchronous — simplest path
-from agents import Runner
-
-result = Runner.run_sync(soc_agent, meridian_incident_text)
-print(result.final_output)
-
-# Streaming — see events as they arrive
+# sdk_with_subagents.py
 import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 
-async def run_streamed(alert: str):
-    result = Runner.run_streamed(soc_agent, alert)
-    async for event in result.stream_events():
-        if event.type == "raw_response_event":
-            continue
-        print(f"[{event.type}]", flush=True)
-    print(result.final_output)
+async def investigate_with_subagents(alert_text: str):
+    async for message in query(
+        prompt=f"Conduct a full SOC investigation on this alert:\n\n{alert_text}",
+        options=ClaudeAgentOptions(
+            system_prompt="""You are a SOC investigation coordinator.
+For each alert: first use the ioc-recon agent to enrich all IoCs,
+then use the threat-analyst agent to perform CCT analysis and produce the final report.""",
+            allowed_tools=["Agent", "WebSearch"],  # Agent enables subagent delegation
+            agents={
+                "ioc-recon": AgentDefinition(
+                    description="IOC enrichment specialist. Use for looking up IPs, domains, file hashes, and URLs against threat intel sources. Use this FIRST before any analysis.",
+                    prompt="""You are an IOC enrichment specialist.
+For each indicator: search for reputation data, associated campaigns, geolocation, ASN, and first/last seen.
+Return a structured summary of findings for each IOC.""",
+                    tools=["WebSearch", "WebFetch"],  # read-only
+                    model="inherit",
+                ),
+                "threat-analyst": AgentDefinition(
+                    description="CCT analysis and report generation specialist. Use AFTER IOC enrichment to apply MITRE ATT&CK mapping, generate hypotheses, and produce the incident report.",
+                    prompt="""You are a senior threat analyst.
+Given enriched IOC data and alert context:
+1. Map to MITRE ATT&CK (technique IDs and names)
+2. Generate 3 hypotheses with probabilities (must sum to 100%)
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a JSON report: {severity, mitre_techniques, hypotheses, recommendations}
+5. Follow with a 2-paragraph narrative summary""",
+                    tools=["Write"],  # can write findings to disk
+                    model="inherit",
+                ),
+            },
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+        if hasattr(message, "result"):
+            print("\n── Investigation complete ──")
 
-asyncio.run(run_streamed(meridian_incident_text))
+asyncio.run(investigate_with_subagents(meridian_incident_text))
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w3-3">
       <label><input type="checkbox" onchange="toggleStep('u5w3-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Add multi-agent handoffs and the manager pattern</div>
-        <div class="step-desc">Build a triage agent that routes alerts to specialists using <code>handoffs=[]</code>. Then try the manager pattern using <code>.as_tool()</code>. Note the difference: handoffs transfer conversation ownership; <code>as_tool()</code> keeps the orchestrator in control.</div>
+        <div class="step-title">Step 3: Wire your S1 Unit 2 MCP server</div>
+        <div class="step-desc">Connect your local threat-intel MCP server from S1 Unit 2 using the <code>mcp_servers</code> parameter. Unlike the Managed Agents custom tool pattern from Week 2 (where you handled <code>agent.custom_tool_use</code> events manually), Claude Agent SDK wires MCP servers natively — Claude calls them the same way it calls built-in tools, with full input/output visibility in your event stream.</div>
       </div></label>
       <div class="code-block"><pre><code>
-from agents import Agent, Runner
+# sdk_with_mcp.py
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-malware_agent = Agent(
-    name="Malware Analyst",
-    instructions="Specialize in malware behavior analysis, hash lookups, and sandbox report interpretation.",
-    tools=[enrich_ioc],
-)
-
-# Pattern 1: Handoff — triage routes, specialist takes over
-triage_agent = Agent(
-    name="Triage",
-    instructions="Analyze alert type. Route network/phishing alerts to soc_agent. Route malware/hash alerts to malware_agent.",
-    handoffs=[soc_agent, malware_agent],
-)
-
-result = Runner.run_sync(triage_agent, alert_text)
-print(result.final_output)
-
-# Pattern 2: as_tool — orchestrator invokes specialist, stays in control
-orchestrator = Agent(
-    name="Orchestrator",
-    instructions="Coordinate investigation. Use soc_analyst for network alerts, malware_analyst for hash/file alerts.",
-    tools=[
-        soc_agent.as_tool(
-            tool_name="soc_analyst",
-            tool_description="Run a full SOC investigation on a network or phishing alert"
+async def investigate_with_mcp(alert_text: str):
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt="""You are a senior SOC analyst. For every investigation:
+1. Use the soc-intel MCP server first for internal threat intel lookup
+2. Use WebSearch for external enrichment
+3. Apply CCT analysis and produce a structured JSON report""",
+            allowed_tools=["WebSearch", "WebFetch"],
+            mcp_servers={
+                "soc-intel": {
+                    "command": "python3",
+                    "args": ["path/to/your/s1-unit2-mcp-server.py"],
+                    # Or if it runs as a persistent server:
+                    # "url": "http://localhost:3000"
+                }
+            },
         ),
-        malware_agent.as_tool(
-            tool_name="malware_analyst",
-            tool_description="Analyze malware samples, hashes, or sandbox reports"
-        ),
-    ],
-)
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "tool_use":
+                    # MCP tool calls visible here with full inputs
+                    print(f"\n[MCP tool: {block.name}({block.input})]")
+                elif getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+
+asyncio.run(investigate_with_mcp(meridian_incident_text))
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip"><strong>Compare with Week 2:</strong> In Week 2 you defined the MCP server as a custom tool schema and handled <code>agent.custom_tool_use</code> events yourself. Here, the SDK wires MCP natively — no event handling code needed. Both approaches give you the MCP tool result, but the SDK path shows you the full input automatically.</div>
     </div>
 
     <div class="lab-step" id="step-u5w3-4">
       <label><input type="checkbox" onchange="toggleStep('u5w3-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Run the test suite and record metrics</div>
-        <div class="step-desc">Run your OpenAI Agents SDK implementation against all 10 test incidents from <code>docs/data/incident-data.md</code>. Record for each: pass/fail for severity classification, latency (seconds), token cost, output completeness score (1–5). Add results to your comparison spreadsheet alongside the Managed Agents results from Weeks 1–2.</div>
+        <div class="step-title">Step 4: Run the 10-incident test suite and record metrics</div>
+        <div class="step-desc">Run your Claude Agent SDK implementation against all 10 test incidents. Record the same metrics you captured for Weeks 1–2: severity classification accuracy, latency (wall-clock), token cost, and report completeness. Add Claude Agent SDK as a third column in your comparison spreadsheet. Note: token cost here comes from the API calls the SDK makes — check usage from your Anthropic console or instrument with a <code>PostToolUse</code> hook.</div>
       </div></label>
-      <div class="callout callout-tip"><strong>Tip:</strong> Use <code>Runner.run_sync()</code> in a loop and time each call with <code>time.perf_counter()</code>. OpenAI usage data is in <code>result.raw_responses[-1].usage</code>.</div>
+      <div class="code-block"><pre><code>
+import asyncio, time, json
+from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher
+
+token_totals = {"input": 0, "output": 0}
+
+async def log_usage(input_data, tool_use_id, context):
+    # PostToolUse hook — fires after each tool execution
+    # Use this to track per-investigation usage
+    return {}
+
+async def run_test_suite(incidents: list) -> list:
+    results = []
+    for incident in incidents:
+        start = time.time()
+        report_parts = []
+
+        async for message in query(
+            prompt=incident["alert_text"],
+            options=ClaudeAgentOptions(
+                system_prompt=SOC_SYSTEM_PROMPT,
+                allowed_tools=["WebSearch", "WebFetch", "Write"],
+            ),
+        ):
+            if hasattr(message, "content") and message.content:
+                for block in message.content:
+                    if getattr(block, "type", None) == "text":
+                        report_parts.append(block.text)
+
+        elapsed = time.time() - start
+        report = "".join(report_parts)
+        results.append({
+            "id": incident["id"],
+            "framework": "claude_agent_sdk",
+            "latency_s": round(elapsed, 1),
+            "severity_correct": incident["expected_severity"].lower() in report.lower(),
+            "ioc_count_found": sum(1 for ioc in incident["expected_iocs"] if ioc in report),
+        })
+    return results
+
+with open("test_incidents.json") as f:
+    incidents = json.load(f)
+
+results = asyncio.run(run_test_suite(incidents))
+with open("results_claude_agent_sdk.json", "w") as f:
+    json.dump(results, f, indent=2)
+
+print(f"Accuracy: {sum(r['severity_correct'] for r in results)}/{len(results)}")
+print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u5w3-5">
       <label><input type="checkbox" onchange="toggleStep('u5w3-5',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Document the developer experience trade-offs</div>
-        <div class="step-desc">Add an "OpenAI Agents SDK" section to your <code>framework-comparison-report.md</code>. Cover: (1) lines of code to implement vs. Managed Agents, (2) what you control — Runner runs in your process, tools are your functions, full visibility into inputs/outputs, (3) cross-provider implications — does portability matter for your SOC deployment?, (4) observability difference: with OAI SDK your tools run locally so you see all inputs/outputs; with Managed Agents tools execute server-side so you only see event types. How does that affect your ability to audit agent behavior in a SOC context?</div>
+        <div class="step-title">Step 5: Document the trade-offs and write week3-notes.md</div>
+        <div class="step-desc">Add a "Claude Agent SDK" section to your <code>framework-comparison-report.md</code>. Cover: (1) what you own vs. what Managed Agents owns, (2) observability — can you audit every tool call for compliance? (3) MCP integration — native vs. custom-tool-event pattern from Week 2, (4) when you'd choose client-side ownership over hosted infrastructure in a real SOC deployment.</div>
       </div></label>
+      <div class="callout callout-tip"><strong>What to cover in <code>week3-notes.md</code>:</strong>
+        <ul>
+          <li>List every tool call the SDK showed you that Managed Agents hid. Is that visibility gap a security concern in your SOC context?</li>
+          <li>With client-side execution, your process is part of the attack surface — a malicious tool result could affect your runner. How would you defend against that?</li>
+          <li>Subagent delegation: did Claude invoke the right subagent automatically based on description? What would have happened with a vague description?</li>
+          <li>For your capstone architecture (Unit 8), would you choose Managed Agents or Claude Agent SDK? What's the deciding factor?</li>
+        </ul>
+      </div>
+      <div class="deliverables">
+        <h4>Week 3 Deliverables</h4>
+        <ul>
+          <li><code>sdk_basic.py</code> — basic query() investigation with full tool call inspection</li>
+          <li><code>sdk_with_subagents.py</code> — ioc-recon + threat-analyst subagent pipeline</li>
+          <li><code>sdk_with_mcp.py</code> — MCP server wired natively</li>
+          <li><code>results_claude_agent_sdk.json</code> — test suite results</li>
+          <li><code>week3-notes.md</code> — observability analysis and paradigm trade-off writeup</li>
+        </ul>
+      </div>
     </div>
 
 </div>
+
+<div class="callout callout-reading">
+  <strong>Stretch: OpenAI Agents SDK (cross-provider exposure)</strong>
+  <p>If you want exposure to a client-side SDK from a different provider: the <strong>OpenAI Agents SDK</strong> (<code>pip install openai-agents</code>) follows the same client-side paradigm as Claude Agent SDK — Runner executes in your process, tools are your functions, full observability. Key API differences: <code>Agent + Runner.run_sync()</code> instead of <code>query()</code>, <code>@function_tool</code> decorator for auto schema generation, <code>handoffs=[]</code> and <code>.as_tool()</code> for multi-agent delegation. You can use Claude as the backend via the OpenAI-compatible endpoint. Note: OpenAI also has a hosted platform (Assistants API / Agent Builder) that is architecturally equivalent to Claude Managed Agents — these are two separate products. The OpenAI Agents SDK is the client-side library comparable to Claude Agent SDK, not a comparable product to Claude Managed Agents.</p>
+</div>
+
 <hr>
 
 <!-- ======== WEEK 4 ======== -->
@@ -805,8 +932,8 @@ orchestrator = Agent(
     <div class="lab-step" id="step-u5w4-2">
       <label><input type="checkbox" onchange="toggleStep('u5w4-2',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 2: Run both frameworks against the test suite</div>
-        <div class="step-desc">Execute your Claude Managed Agents implementation and OpenAI Agents SDK implementation against all 10 test incidents. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
+        <div class="step-title">Step 2: Run both implementations against the test suite</div>
+        <div class="step-desc">Execute your Claude Managed Agents implementation (Weeks 1–2) and Claude Agent SDK implementation (Week 3) against all 10 test incidents. Same model, same task — the only variable is infrastructure paradigm. Record: pass/fail for severity classification, latency (seconds), token cost, and output completeness for each.</div>
       </div></label>
     </div>
 
@@ -839,7 +966,7 @@ orchestrator = Agent(
         <li>Hallucination rate in threat attribution: when the system attributed a threat, how often was the attribution incorrect?</li>
         <li>Latency under load (P95): can the system handle real alert volume?</li>
       </ul>
-      <p><strong>4. Framework-by-Framework Analysis</strong>: Apply both frameworks to each of 3 security scenarios.</p>
+      <p><strong>4. Infrastructure-by-Infrastructure Analysis</strong>: Apply both implementations (Managed Agents, Claude Agent SDK) to each of 3 security scenarios. Since both use the same Claude model, differences in output quality reveal infrastructure effects — not model effects.</p>
       <p><strong>5. What These Numbers Don't Capture</strong> <em>(required — this section cannot be omitted)</em>: What would a different evaluator find? What failure modes did your test set not cover? What adversarial inputs did you not test? This section demonstrates CCT Pillar 1 (Empirical Inquiry) applied to your own evaluation.</p>
       <p><strong>Appendix: AIUC-1 Self-Audit</strong>: For the framework you recommend, complete a brief AIUC-1 check: what domains are in scope, what controls exist, what gaps remain. This connects your Unit 3 learning to your Unit 5 recommendation.</p>
       <p><strong>Conversation starter before writing:</strong><br>
@@ -902,8 +1029,8 @@ orchestrator = Agent(
 <div class="deliverables">
   <h5>Unit 5 Major Deliverable</h5>
   <ul>
-    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Managed Agents and OpenAI Agents SDK with test suite results, visualizations, and justified recommendations</li>
-    <li><strong>Both framework implementations</strong> — working code for Claude Managed Agents (Weeks 1–2) and OpenAI Agents SDK (Week 3)</li>
+    <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Managed Agents vs. Claude Agent SDK: same model, different infrastructure paradigm. Test suite results, observability analysis, and justified recommendation for your capstone architecture.</li>
+    <li><strong>Both implementations</strong> — working code for Claude Managed Agents (Weeks 1–2) and Claude Agent SDK (Week 3)</li>
   </ul>
 </div>
 
@@ -916,7 +1043,7 @@ orchestrator = Agent(
 <hr>
 <div class="unit-complete">
   <h3> Unit 5 Complete</h3>
-  <p>You have built multi-agent systems across two frameworks, hardened a Managed Agent for production, and produced a quantitative comparison report.</p>
+  <p>You have deployed a production-hardened Managed Agent (memory, limited networking, MCP), implemented the same investigation using the Claude Agent SDK, and produced a quantitative infrastructure-paradigm comparison report.</p>
   <p style="margin-top:8px;"><a href="lab-s2-unit6.html">Next: Unit 6 Lab — AI Attacker vs. AI Defender &rarr;</a></p>
 </div>
 
