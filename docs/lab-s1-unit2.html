@@ -671,7 +671,7 @@ docker rm -f forge-nginx forge-postgres 2>/dev/null; true
 # Launch target containers — authorized localhost lab environment only
 docker run -d -p 8080:80 --name forge-nginx nginx:alpine
 docker run -d -p 5432:5432 --name forge-postgres \
-  -e POSTGRES_PASSWORD=labpassword postgres:15-alpine
+  -e POSTGRES_PASSWORD=labpassword postgres:17-alpine
 python3 -m http.server 9000 &amp;
 
 # Verify all three targets are reachable before proceeding
