@@ -1096,6 +1096,90 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
   </div>
 </div>
 
+<div class="callout callout-key"><p><strong>From prototype to production memory.</strong> Steps 1–7 built a RAG pipeline from scratch — you now understand every layer: chunking, embedding, vector storage, retrieval. Steps 8–11 introduce MemPalace, a production memory system that provides the same stack plus a Wing/Room/Drawer organizational model, an AAAK compression index, and a layered memory budget. The contrast is the lesson: when do you build, and when do you adopt? <em>(Theory: Week 8 Day 2 — Memory Architecture Decisions)</em></p></div>
+
+<div class="lab-section">
+  <h4>Lab Extension: Production Memory with MemPalace</h4>
+
+  <div class="lab-steps">
+    <div class="lab-step" id="step-w8-8">
+      <label><input type="checkbox" onchange="toggleStep('w8-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Install MemPalace and register the MCP server</div>
+        <div class="step-desc">MemPalace is a local-first verbatim memory system. It uses ChromaDB as its vector backend (same as Steps 1–4), adds a SQLite knowledge graph, and exposes all operations through MCP tools. No API keys. All data stays on your machine. <em>(Theory: Week 8 Day 2 — External vs. In-Context Memory)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Clone and install (URL provided by your instructor)
+git clone &lt;mempalace-repo-url&gt; ~/noctua-labs/mempalace
+cd ~/noctua-labs/mempalace
+pip install -e .
+
+# Initialize a palace for this lab
+mempalace init ~/noctua-labs/unit2/week8/security-palace
+
+# Register the MCP server with Claude Code
+claude mcp add mempalace -- python -m mempalace.mcp_server
+
+# Verify
+claude mcp list</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w8-9">
+      <label><input type="checkbox" onchange="toggleStep('w8-9',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 9: Mine your security-kb into the palace</div>
+        <div class="step-desc">MemPalace organizes memory as Wings (broad category), Rooms (time/topic grouping), and Drawers (verbatim content). Mine your <code>kb-docs/</code> directory into a <code>wing_security_kb</code>. Compare: in your ChromaDB from Step 3, every chunk is flat. In MemPalace, every chunk is addressable by wing and room — retrieval can be scoped. <em>(Theory: Week 8 Day 2 — Memory Scoping &amp; Retrieval Boundaries)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Mine your existing kb-docs into the palace
+mempalace mine ~/noctua-labs/unit2/week8/security-kb/kb-docs \
+  --wing security_kb \
+  --palace ~/noctua-labs/unit2/week8/security-palace
+
+# Confirm what was ingested
+mempalace status --palace ~/noctua-labs/unit2/week8/security-palace</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>Wing scoping is a security control, not just an organizational feature.</strong> When you restrict retrieval to <code>wing=security_kb</code>, a query about a different wing cannot return results from this wing — even if the embedding is similar. This is how you enforce retrieval boundaries between document classifications or team namespaces in a production memory system.</p></div>
+    </div>
+
+    <div class="lab-step" id="step-w8-10">
+      <label><input type="checkbox" onchange="toggleStep('w8-10',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 10: Experience the L0–L3 memory stack</div>
+        <div class="step-desc">MemPalace uses a layered memory budget to control how much context loads at startup vs. on demand. This is the core memory architecture decision every AI security system must make. <em>(Theory: Week 8 Day 2 — Memory Budgets &amp; Retrieval Cost)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># L0 + L1 wake-up: always-loaded identity + essential story (~600-900 tokens)
+mempalace wake-up --palace ~/noctua-labs/unit2/week8/security-palace
+
+# L2 on-demand recall: filtered by wing — loads only when the topic comes up
+# Run this from a Claude Code session with the mempalace MCP server active:
+# Tool: mempalace_search
+# {"query": "prompt injection defenses", "wing": "security_kb"}
+
+# L3 deep search: full semantic search, no wing filter
+# Tool: mempalace_search
+# {"query": "what are the escalation procedures for a P1 incident"}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key"><p><strong>Measure the token difference.</strong> L0+L1 wake-up is ~700 tokens. An L2 filtered recall adds ~300 tokens. An L3 full search adds variable context depending on result count. Your ChromaDB from Step 4 has no equivalent budget — every retrieval is equivalent to L3 with no scoping. For a security assistant processing hundreds of alerts per shift, this token budget is a cost and latency control.</p></div>
+    </div>
+
+    <div class="lab-step" id="step-w8-11">
+      <label><input type="checkbox" onchange="toggleStep('w8-11',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 11: Make the build vs. adopt decision</div>
+        <div class="step-desc">Answer the four production memory questions for both systems — your custom ChromaDB pipeline and MemPalace. This decision framework is what security architects use when evaluating memory infrastructure. <em>(Theory: Week 8 Day 2 — Build vs. Adopt Framework)</em></div>
+      </div></label>
+      <div class="callout callout-key">
+        <p><strong>Memory Architecture Decision Framework</strong></p>
+        <p>For each system (your custom ChromaDB pipeline + MemPalace), answer:</p>
+        <ol>
+          <li><strong>Retrieval scoping:</strong> Can you restrict retrieval to a classification boundary (e.g., only return documents tagged for this team)?</li>
+          <li><strong>Verbatim guarantee:</strong> Does the system return your exact stored text, or does it summarize or paraphrase?</li>
+          <li><strong>Staleness control:</strong> Can you expire, update, or remove individual entries without rebuilding the entire index?</li>
+          <li><strong>Memory budget:</strong> Can you control how many tokens load at startup vs. on demand?</li>
+        </ol>
+        <p>Document your answers in a 1-page <strong>Memory Architecture Decision</strong> document. Include: which system you would use for a production SOC memory store, why, and what the non-negotiable requirement is that drove the decision.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="callout callout-tip"><p><strong>Test your RAG failure modes before you trust your RAG success modes.</strong> Run three tests: (1) Query for something that does NOT exist in your index — does the agent hallucinate an answer or say it doesn't know? (2) Query with a typo or paraphrase — does retrieval still find the right chunks? (3) Query with an ambiguous question — does the agent ask for clarification or guess? A RAG system that doesn't fail gracefully is not production-ready. Document each test result in your RAG Failure Mode Report. The goal is not a RAG system that only works on expected queries — the goal is a system with predictable, safe behavior when inputs go outside expected bounds.</p>
 </div>
 <div class="callout callout-warn"><p><strong>Vector store security check:</strong> Before trusting your ChromaDB prototype, answer four questions: (1) can you restrict retrieval by metadata such as source, owner, or classification? (2) do retrieved chunks include enough provenance for a human to judge trustworthiness? (3) can you remove or re-index stale documents cleanly? (4) if a poisoned chunk enters the corpus, do you have a way to identify and delete every derived entry? If the answer is "no" to any of these, the system is a useful prototype but not a secure retrieval service.</p>
@@ -1108,6 +1192,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
     <li><strong>ingest.py</strong> + <strong>server.py</strong> (with search_security_kb tool) — fully working RAG pipeline</li>
     <li><strong>RAG Evaluation Report</strong> — side-by-side comparison of RAG vs. no-RAG responses, with accuracy and grounding analysis</li>
     <li><strong>RAG Failure Mode Report</strong> — documented results from Step 7 failure mode tests</li>
+    <li><strong>Memory Architecture Decision</strong> (Step 11) — 1-page comparison of your custom ChromaDB pipeline vs. MemPalace on the four production memory criteria, with a justified recommendation</li>
     <li><strong>Unit 2 Final Summary</strong> (1 page) — how your MCP server evolved from a single CVE tool into a multi-tool, RAG-powered security assistant</li>
   </ul>
 </div>
@@ -1138,7 +1223,8 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
   var IDX = [
     // Units
     {t:"Unit 1: CCT Foundations",d:"Claude Code Terminal basics, slash commands, hooks, context files, CLAUDE.md, MCP registration.",tags:["unit1","foundations"],url:"s1-unit1.html"},
-    {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
+    {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, RAG-based knowledge retrieval, and production memory architecture with MemPalace — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
+    {t:"MemPalace — Production Memory System",d:"Local-first verbatim memory. Wing/Room/Drawer architecture. L0-L3 memory budget stack. MCP tools: mempalace_search, mempalace_diary_write, mempalace_diary_read. Wing scoping as retrieval security boundary. Introduced in Unit 2 Week 8 extension.",tags:["mempalace","memory","rag","mcp","wing","drawer"],url:"s1-unit2.html#week-8"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
     {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","managed-agents","a2a"],url:"s2-unit5.html"},
