@@ -439,12 +439,12 @@ claude
 
 <div class="callout callout-discuss">
   <strong>Discussion (~10 min): The Cost of Being Thorough</strong>
-  <p><strong>Setup:</strong> The semi-formal approach took 2.8x more agent steps. Full harness runs cost $125–200 and took 4–6 hours. The quick version was $9 and took 20 minutes.</p>
+  <p><strong>Setup:</strong> The semi-formal approach took 2.8x more agent steps. In course testing, full harness runs on a 5-component security agent cost approximately $125–200 and took 4–6 hours; a quick single-pass check on the same system cost approximately $9 and took 20 minutes. <em>(Cost estimates from course harness runs — not from the Ugare &amp; Chandra paper.)</em></p>
   <p><strong>Discussion prompt:</strong> Your sprint has a token budget. Running /check-antipatterns with full semi-formal analysis costs 3x more than a quick scan. You have 5 components to assess. Do you run the thorough check on all 5? Or do you triage — run the quick check on everything, and the thorough check on the 2 highest-risk components? How do you decide WHICH components get the thorough check? What makes a component high-risk?</p>
   <p><strong>Key insight:</strong> Thoroughness is a budget allocation problem, not a binary choice. The answer is tiered verification: every commit gets quick checks (linting, basic /code-review); every PR gets standard checks (/code-review with confidence threshold); before deployment gets full semi-formal analysis (all three evaluators); high-risk components get additional manual review on top. The cost of a thorough assessment is always less than the cost of a missed vulnerability in production. But you can't run thorough assessments on everything — you'd never ship. Match the reasoning depth to the stakes of the decision.</p>
   <p><strong>Instructor note:</strong> Have students actually measure the cost difference. Run /check-antipatterns on a component and record the token cost. Then run it with explicit instructions to "trace every function call and provide file:line evidence for every finding." Compare costs. The difference makes the tradeoff concrete.</p>
   <p><strong>Course connection:</strong> /cost tracking, /effort levels, three-tier code review, sprint budget management. Students should track their actual token costs for quick vs thorough assessments across the sprint.</p>
-  <p><em>Source: Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
+  <p><em>Accuracy figures (78%→88% semi-formal gain): Ugare &amp; Chandra, "Agentic Code Reasoning," arXiv:2603.01896v2</em></p>
 </div>
 
 <div class="deliverables">
