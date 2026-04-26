@@ -112,6 +112,9 @@
         <p><strong>A — Self-guided (using Noctua on your own):</strong> Create a free account at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Add API credits (Settings → Billing). Set a spend limit so there are no surprises. Create an API key (API Keys → Create Key). Copy it now — it won't show again.</p>
         <p><strong>B — Instructor-provisioned:</strong> Your instructor has shared an <code>ANTHROPIC_API_KEY</code> and possibly an <code>ENVIRONMENT_ID</code>. Set them as shown below and skip to Step 2.</p>
         <p><strong>C — Enterprise cloud (Bedrock / Vertex):</strong> Set <code>CLAUDE_CODE_USE_BEDROCK=1</code> or <code>CLAUDE_CODE_USE_VERTEX=1</code> and configure your cloud credentials. The Python code below is identical; only auth differs.</p>
+        <div class="callout callout-warn" style="margin-top:8px;">
+          <strong>Note:</strong> <code>CLAUDE_CODE_USE_BEDROCK=1</code> routes the Claude Code CLI tool through Bedrock — it does NOT affect the <code>anthropic.Anthropic()</code> Python client used in these lab scripts. For Managed Agents via Bedrock, you need boto3-based authentication. Contact your cloud team for the full Bedrock SDK setup. For this lab, use Option A (direct API key) unless your organization has Bedrock integration configured.
+        </div>
       </div>
       <div class="code-block"><pre><code># Set your API key — never commit this to git
 export ANTHROPIC_API_KEY="sk-ant-..."
@@ -154,6 +157,8 @@ environment = client.beta.environments.create(
 )
 
 ids = {"agent_id": agent.id, "agent_version": agent.version, "environment_id": environment.id}
+# Note: MEMORY_STORE_ID is added here by memory_setup.py (Week 2 Step 1)
+# After running memory_setup.py, .env.agents will also contain MEMORY_STORE_ID
 with open(".env.agents", "w") as f:
     for k, v in ids.items():
         f.write(f"{k.upper()}={v}\n")
@@ -177,8 +182,19 @@ print(f"  Environment: {environment.id}")</code></pre><button class="copy-btn" o
 client = anthropic.Anthropic()
 
 # Load IDs saved during setup
-AGENT_ID = os.environ.get("AGENT_ID") or open(".env.agents").read().split("\n")[0].split("=")[1]
-ENV_ID   = os.environ.get("ENVIRONMENT_ID") or open(".env.agents").read().split("\n")[2].split("=")[1]
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+cfg = load_env_agents()
+AGENT_ID = os.environ.get("AGENT_ID") or cfg["AGENT_ID"]
+ENV_ID   = os.environ.get("ENVIRONMENT_ID") or cfg["ENVIRONMENT_ID"]
 
 def investigate(alert_text: str, title: str = "SOC Investigation") -> str:
     session = client.beta.sessions.create(
@@ -320,6 +336,10 @@ store = client.beta.memory_stores.create(
 )
 print(f"MEMORY_STORE_ID={store.id}")
 
+# Append MEMORY_STORE_ID to .env.agents so runner scripts can load it
+with open(".env.agents", "a") as f:
+    f.write(f"MEMORY_STORE_ID={store.id}\n")
+
 # Seed with reference material the agent should always have
 client.beta.memory_stores.memories.create(
     store.id,
@@ -387,6 +407,22 @@ for mem in page.data:
         <div class="step-desc">Start a second session referencing the same memory store. Ask the agent about a different incident — but also ask whether it recalls anything from the previous investigation. Confirm the agent reads findings the first session wrote. This demonstrates the audit trail and cross-session continuity that makes Managed Agents viable for production SOC workflows.</div>
       </div></label>
       <div class="code-block"><pre><code># session_2.py — new session, same memory store
+# Load IDs from .env.agents (written by setup.py + memory_setup.py)
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+cfg = load_env_agents()
+AGENT_ID = cfg["AGENT_ID"]
+ENVIRONMENT_ID = cfg["ENVIRONMENT_ID"]
+MEMORY_STORE_ID = cfg["MEMORY_STORE_ID"]  # written by memory_setup.py
+
 session2 = client.beta.sessions.create(
     agent=AGENT_ID,
     environment_id=ENVIRONMENT_ID,
@@ -417,11 +453,14 @@ with client.beta.sessions.events.stream(session2.id) as stream:
             break
 
 # Inspect memory versions — immutable audit trail
-versions = client.beta.memory_stores.memory_versions.list(
-    MEMORY_STORE_ID, memory_id="&lt;mem_id_from_step_1&gt;"
-)
-for v in versions:
-    print(f"Version {v.id}: operation={v.operation}")
+# List memories first to get their IDs, then inspect versions per memory
+memories_page = client.beta.memory_stores.memories.list(MEMORY_STORE_ID, path_prefix="/findings/")
+for mem in memories_page.data:
+    versions = client.beta.memory_stores.memory_versions.list(
+        MEMORY_STORE_ID, memory_id=mem.id  # loaded from .env.agents via MEMORY_STORE_ID
+    )
+    for v in versions:
+        print(f"Memory {mem.path} — Version {v.id}: operation={v.operation}")
 </code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
       <div class="callout callout-tip"><strong>Reflection:</strong> In your <code>week2-notes.md</code>, answer: Did the agent reference prior findings unprompted? What would happen if you used <code>read_only</code> access — what would change?</div>
     </div>
@@ -619,7 +658,7 @@ def investigate_with_mcp(alert_text: str) -> str:
     <li><strong>Managed Agents</strong> (Weeks 1–2): Anthropic hosts the loop. Tools execute in a server-side container. You stream events. You don't see raw tool inputs/outputs.</li>
     <li><strong>Claude Agent SDK</strong> (this week): The loop runs in your Python process via <code>query()</code>. Tools execute locally. You see everything — every tool call, every result, every turn. Full observability.</li>
   </ul>
-  <p>OpenAI has the same split: <strong>Assistants API / Agent Builder</strong> (hosted platform, equivalent to Managed Agents) vs. <strong>OpenAI Agents SDK</strong> (client-side library, equivalent to Claude Agent SDK). The Week 4 comparison isolates the infrastructure variable: same model, same task, hosted vs. client-side.</p>
+  <p>OpenAI has the same split: <strong>Assistants API</strong> (hosted platform, equivalent to Managed Agents) vs. <strong>OpenAI Agents SDK</strong> (client-side library, equivalent to Claude Agent SDK). The Week 4 comparison isolates the infrastructure variable: same model, same task, hosted vs. client-side.</p>
 </div>
 
 <div class="quiz-block" id="quiz-u5w3">
@@ -660,6 +699,10 @@ def investigate_with_mcp(alert_text: str) -> str:
         <div class="step-desc">Install <code>claude-agent-sdk</code> and run the Meridian incident through <code>query()</code>. The loop runs in your Python process — print every message as it arrives and observe what you receive compared to Weeks 1–2. You should see tool calls with full inputs and outputs, not just event type names.</div>
       </div></label>
       <div class="code-block"><pre><code>pip install claude-agent-sdk</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip">
+        <strong>Verify the install:</strong> <code>python3 -c 'from claude_agent_sdk import query, ClaudeAgentOptions; print("SDK ready")'</code><br>
+        Package: <a href="https://pypi.org/project/claude-agent-sdk/" target="_blank">https://pypi.org/project/claude-agent-sdk/</a> (v0.1.59+, April 2026)
+      </div>
       <div class="code-block"><pre><code>
 # sdk_basic.py
 import asyncio
@@ -719,6 +762,17 @@ result = asyncio.run(investigate(incidents[0]["alert_text"]))
 import asyncio
 from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 
+# Sample incident for testing — replace with your actual alert data
+meridian_incident_text = """
+ALERT: Suspicious outbound TLS connection detected
+Source: 10.0.4.23 (MERIDIAN-WS-042, Finance Workstation)
+Destination: 203.0.113.42:443
+Time: 2026-04-15T14:32:11Z
+Bytes transferred: 847,293 (unusually high for this endpoint)
+Certificate: self-signed, issued to 'updates.meridian-secure.com'
+Note: This domain was registered 3 days ago.
+"""
+
 async def investigate_with_subagents(alert_text: str):
     async for message in query(
         prompt=f"Conduct a full SOC investigation on this alert:\n\n{alert_text}",
@@ -773,6 +827,17 @@ asyncio.run(investigate_with_subagents(meridian_incident_text))
 import asyncio
 from claude_agent_sdk import query, ClaudeAgentOptions
 
+# Sample incident for testing — replace with your actual alert data
+meridian_incident_text = """
+ALERT: Suspicious outbound TLS connection detected
+Source: 10.0.4.23 (MERIDIAN-WS-042, Finance Workstation)
+Destination: 203.0.113.42:443
+Time: 2026-04-15T14:32:11Z
+Bytes transferred: 847,293 (unusually high for this endpoint)
+Certificate: self-signed, issued to 'updates.meridian-secure.com'
+Note: This domain was registered 3 days ago.
+"""
+
 async def investigate_with_mcp(alert_text: str):
     async for message in query(
         prompt=alert_text,
@@ -811,6 +876,14 @@ asyncio.run(investigate_with_mcp(meridian_incident_text))
         <div class="step-title">Step 4: Run the 10-incident test suite and record metrics</div>
         <div class="step-desc">Run your Claude Agent SDK implementation against all 10 test incidents. Record the same metrics you captured for Weeks 1–2: severity classification accuracy, latency (wall-clock), token cost, and report completeness. Add Claude Agent SDK as a third column in your comparison spreadsheet. Note: token cost here comes from the API calls the SDK makes — check usage from your Anthropic console or instrument with a <code>PostToolUse</code> hook.</div>
       </div></label>
+      <div class="callout callout-warn">
+        <strong>Note:</strong> <code>test_incidents.json</code> is created in Week 4 Step 1. For Week 3 testing, use the sample <code>meridian_incident_text</code> defined in Step 3 above, or create a simple ad-hoc test list:
+<pre style="margin:8px 0 0;"><code>test_incidents = [
+    {"id": "w3-test-1", "alert_text": meridian_incident_text,
+     "expected_severity": "high", "expected_iocs": ["10.0.4.23", "203.0.113.42"]}
+]  # Expand in Week 4 when you build the full suite</code></pre>
+        The full 10-incident suite and formal test runner are built in Week 4 Step 1.
+      </div>
       <div class="code-block"><pre><code>
 import asyncio, time, json
 from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher
@@ -893,7 +966,7 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
 
 <div class="callout callout-reading">
   <strong>Stretch: OpenAI Agents SDK (cross-provider exposure)</strong>
-  <p>If you want exposure to a client-side SDK from a different provider: the <strong>OpenAI Agents SDK</strong> (<code>pip install openai-agents</code>) follows the same client-side paradigm as Claude Agent SDK — Runner executes in your process, tools are your functions, full observability. Key API differences: <code>Agent + Runner.run_sync()</code> instead of <code>query()</code>, <code>@function_tool</code> decorator for auto schema generation, <code>handoffs=[]</code> and <code>.as_tool()</code> for multi-agent delegation. You can use Claude as the backend via the OpenAI-compatible endpoint. Note: OpenAI also has a hosted platform (Assistants API / Agent Builder) that is architecturally equivalent to Claude Managed Agents — these are two separate products. The OpenAI Agents SDK is the client-side library comparable to Claude Agent SDK, not a comparable product to Claude Managed Agents.</p>
+  <p>If you want exposure to a client-side SDK from a different provider: the <strong>OpenAI Agents SDK</strong> (<code>pip install openai-agents</code>) follows the same client-side paradigm as Claude Agent SDK — Runner executes in your process, tools are your functions, full observability. Key API differences: <code>Agent + Runner.run_sync()</code> instead of <code>query()</code>, <code>@function_tool</code> decorator for auto schema generation, <code>handoffs=[]</code> and <code>.as_tool()</code> for multi-agent delegation. You can use Claude as the backend via the OpenAI-compatible endpoint. Note: OpenAI also has a hosted platform (Assistants API) that is architecturally equivalent to Claude Managed Agents — these are two separate products. The OpenAI Agents SDK is the client-side library comparable to Claude Agent SDK, not a comparable product to Claude Managed Agents.</p>
 </div>
 
 <hr>
@@ -971,6 +1044,7 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
       <p><strong>Appendix: AIUC-1 Self-Audit</strong>: For the framework you recommend, complete a brief AIUC-1 check: what domains are in scope, what controls exist, what gaps remain. This connects your Unit 3 learning to your Unit 5 recommendation.</p>
       <p><strong>Conversation starter before writing:</strong><br>
       Ask Claude: "I'm writing a framework comparison report for multi-agent security systems evaluated on SOC operations. What metrics matter most for this use case, and what are the most common mistakes in framework comparison reports that security architects reject?"</p>
+      <p><em>Note: The syllabus assessment table has been updated to match — the comparison is Claude Managed Agents vs. Claude Agent SDK, same model, different infrastructure paradigm. Any prior references to OpenAI Agents SDK as the comparison target have been corrected.</em></p>
     </div>
   </div>
 </div>
@@ -980,7 +1054,7 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
 <h2 id="week-4-agents-md">Deep Agents Exercise — Build Your Institutional Knowledge Base</h2>
 <div class="week-header"><span class="week-badge">WEEK 4</span><span class="week-sub">Exercise: AGENTS.md Audit</span></div>
 
-<div class="callout callout-key"><p><strong>Exercise Goal:</strong> Write a human-curated AGENTS.md for your Unit 5 capstone system. Then audit it against the surgical test: every line must contain knowledge Claude cannot infer from reading 5 files in your codebase. If it can infer it, remove the line. Practitioner experience suggests human-written context files increase task success ~4%; LLM-generated files <em>reduce</em> it ~3%.</p></div>
+<div class="callout callout-key"><p><strong>Exercise Goal:</strong> Write a human-curated AGENTS.md for your Unit 5 capstone system. Then audit it against the surgical test: every line must contain knowledge Claude cannot infer from reading 5 files in your codebase. If it can infer it, remove the line. Practitioner experience suggests human-written context files that are specific, accurate, and current outperform LLM-generated context — the LLM doesn't know your actual system's constraints and history. Treat AGENTS.md like a code comment: it's only valuable if it reflects reality.</p></div>
 
 <div class="lab-section">
   <h4>Lab Exercise: AGENTS.md for Capstone System</h4>

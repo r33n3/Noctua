@@ -27,7 +27,7 @@
 <h2 id="course-information">Course Information</h2>
 <h3 id="course-overview">Course Overview</h3>
 <p>By the end of Semester 2, you will be able to: assess a multi-agent system for security risks and architectural gaps; harden agents against adversarial manipulation and real-world attack patterns; and deploy observable, governed, production-ready systems. These are the skills that produce value in a company engagement — not just technically, but operationally.</p>
-<p>Building on CSEC 601 foundations, this semester scales from individual agents to orchestrated systems, from building to adversarial testing, and from prototype to production. The platforms that enable this — Claude Managed Agents, OpenAI Agents SDK, and MCP — are taught as tools in service of those outcomes, not as ends in themselves.</p>
+<p>Building on CSEC 601 foundations, this semester scales from individual agents to orchestrated systems, from building to adversarial testing, and from prototype to production. The platforms that enable this — Claude Managed Agents (hosted platform), Claude Agent SDK (client-side library), and MCP — evaluated head-to-head against SOC operations workloads — are taught as tools in service of those outcomes, not as ends in themselves.</p>
 <h3 id="key-terminology">Key Terminology</h3>
 <ul>
 <li><strong>Collaborative Critical Thinking (CCT):</strong> The systematic application of structured reasoning to design robust agentic systems, considering agent interactions, failure modes, security boundaries, and ethical implications. This is distinct from "prompting" and represents deep architectural and design thinking.</li>
@@ -116,7 +116,7 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="s2-unit5.html#week-1-multi-agent-architecture-patterns">Week 1: Multi-Agent Architecture Patterns</a></td>
+<td><a href="lab-s2-unit5.html#week-1">Week 1: Multi-Agent Architecture Patterns</a></td>
 <td>Single-agent limitations and multi-agent patterns</td>
 </tr>
 <tr>
@@ -128,7 +128,7 @@
 <td>Client-side agentic loop, subagents, MCP native wiring, full observability</td>
 </tr>
 <tr>
-<td><a href="s2-unit5.html#week-4-agent-evaluation-and-benchmarking">Week 4: Agent Evaluation and Benchmarking</a></td>
+<td><a href="lab-s2-unit5.html#week-4">Week 4: Agent Evaluation and Benchmarking</a></td>
 <td>Quantitative metrics and testing</td>
 </tr>
 </tbody>
@@ -247,7 +247,7 @@
 <td>Framework Comparison Report</td>
 <td>10%</td>
 <td>4</td>
-<td>Unit 5 evaluation comparing Claude Managed Agents and OpenAI Agents SDK</td>
+<td>Unit 5 evaluation comparing Claude Managed Agents (Weeks 1–2) and Claude Agent SDK (Week 3) — same model, different infrastructure paradigm.</td>
 </tr>
 <tr>
 <td>Red Team Exercise</td>
@@ -352,7 +352,7 @@
 <h2 id="course-resources-and-readings">Course Resources and Readings</h2>
 <h3 id="required-texts-and-documentation">Required Texts and Documentation</h3>
 <ul>
-<li>Claude Managed Agents Documentation: https://platform.claude.com/docs/en/managed-agents/overview</li>
+<li>Claude Managed Agents Documentation: https://docs.anthropic.com/en/docs/agents</li>
 <li>OpenAI Agents SDK: https://openai.github.io/openai-agents-python</li>
 <li>Model Context Protocol (MCP) Specification: https://modelcontextprotocol.io/</li>
 <li>MITRE ATLAS Framework: https://atlas.mitre.org/</li>
@@ -374,6 +374,7 @@
 <ul>
 <li>Claude Code (IDE and code execution)</li>
 <li>Claude Managed Agents (Anthropic-hosted agent execution platform)</li>
+<li><code>claude-agent-sdk</code> — Claude Agent SDK (client-side agentic library, Week 3). PyPI: https://pypi.org/project/claude-agent-sdk/</li>
 <li>OpenAI Agents SDK (cross-provider Runner-managed agent loop)</li>
 <li>OpenTelemetry (observability)</li>
 <li>Docker and containerization tools</li>
@@ -435,13 +436,15 @@
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Claude Managed Agents (memory, networking, MCP), OpenAI Agents SDK, A2A protocol, framework comparison.",tags:["unit5","multi-agent","managed agents","openai agents sdk","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Claude Managed Agents (memory, networking, MCP), Claude Agent SDK, A2A protocol, framework comparison.",tags:["unit5","multi-agent","managed agents","claude agent sdk","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
     // Key topics
     {t:"MCP — Model Context Protocol",d:"Agent-to-tool communication. Register with `claude mcp add`. Used for all tool access across pipeline stages.",tags:["mcp","protocol","tools"],url:"s1-unit1.html"},
     {t:"A2A — Agent-to-Agent Protocol",d:"Inter-agent communication standard. Enables orchestrator ↔ worker messaging secured via mTLS.",tags:["a2a","protocol","multi-agent"],url:"s2-unit5.html"},
+    {t:"Claude Managed Agents",d:"Anthropic-hosted agent execution. Memory stores, limited networking, custom tools. Introduced in Week 1 of Unit 5.",tags:["managed agents","anthropic","hosted","unit5"],url:"lab-s2-unit5.html#week-1"},
+    {t:"Claude Agent SDK",d:"Client-side agentic library. query() function, ClaudeAgentOptions, AgentDefinition for subagents, native MCP via mcp_servers={}. Full tool observability — loop runs in your process.",tags:["claude-agent-sdk","agent-sdk","query","subagents","mcp"],url:"lab-s2-unit5.html#week-3"},
     {t:"OWASP Top 10 for LLMs",d:"LLM01–LLM10: prompt injection, insecure output handling, training data poisoning, model theft, and more.",tags:["owasp","llm","security"],url:"frameworks.html"},
     {t:"OWASP NHI Top 10",d:"NHI1–NHI10: improper offboarding, secret leakage, overprivileged NHI, long-lived secrets, NHI reuse.",tags:["owasp","nhi","identity","security"],url:"frameworks.html"},
     {t:"OWASP Agentic Apps",d:"Security considerations specific to agentic AI applications: tool misuse, orchestration risks, data leakage.",tags:["owasp","agentic","security"],url:"frameworks.html"},

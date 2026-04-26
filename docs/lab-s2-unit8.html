@@ -86,8 +86,8 @@
           <button class="quiz-check-btn" onclick="checkQuestion('u8w13q2')">Check Answer</button>
         </div>
 
-        <div class="quiz-question" data-qid="u8w13q3" data-answer="b" data-explain="The Pit of Success means designing your multi-agent system so that correct behavior—agents respecting role boundaries, escalating appropriately, handling failures gracefully—emerges naturally from the architecture itself, without requiring constant human supervision.">
-          <p class="q-text">3. The "Pit of Success" principle from <em>Agentic Engineering</em> means:</p>
+        <div class="quiz-question" data-qid="u8w13q3" data-answer="b" data-explain="The Pit of Success (from agentic systems design) means designing your multi-agent system so that correct behavior—agents respecting role boundaries, escalating appropriately, handling failures gracefully—emerges naturally from the architecture itself, without requiring constant human supervision. Safe defaults, clear scope boundaries, and explicit permission grants mean agents fall into correct behavior rather than having to be carefully guided away from incorrect behavior. (Course context: this principle is applied throughout our security-first agent design — explicit scope, least privilege, and human-in-the-loop gates all implement the Pit of Success pattern.)">
+          <p class="q-text">3. The "Pit of Success" principle (from agentic systems design: design your agent's default behavior so that doing the obvious thing is the correct thing — safe defaults, clear scope boundaries, explicit permission grants) means:</p>
           <div class="quiz-opts">
             <label><input type="radio" name="u8w13q3" value="b"> B) Right behavior emerges naturally from the architecture, not from constant oversight</label>
             <label><input type="radio" name="u8w13q3" value="a"> A) Agents should compete with each other to reach the best solution</label>
@@ -190,11 +190,11 @@ echo "*.pyc" >> .gitignore
 mkdir -p agents tests/unit tests/integration docs/architecture
 
 # Create initial files
-cat > docs/architecture/README.md << 'EOF'
-# Architecture Overview
+cat > docs/architecture/README.md << EOF
+# Architecture Documentation
+Generated: $(date +%Y-%m-%d)
 ## System: [Project Name]
 ## Team: [Names]
-## Date: $(date +%Y-%m-%d)
 
 ## Quick Start
 ## Agents
@@ -203,12 +203,17 @@ cat > docs/architecture/README.md << 'EOF'
 EOF
 
 cat > requirements.txt << 'EOF'
+# Default stack — add only what your capstone uses
 anthropic>=0.40.0
-openai-agents>=0.0.3  # OpenAI Agents SDK (alternative orchestration)
+# claude-agent-sdk>=0.1.0  # uncomment if using Claude Agent SDK
 opentelemetry-api>=1.20.0
 opentelemetry-sdk>=1.20.0
 cyclonedx-bom>=4.0.0
 pytest>=7.4.0
+
+# Optional: OpenAI Agents SDK (if choosing cross-provider orchestration)
+# openai-agents>=0.0.3
+# Note: Add openai-agents only if your capstone uses it. Default stack: anthropic + claude-agent-sdk.
 EOF
 
 git add .
@@ -326,7 +331,10 @@ echo "Repository initialized. Architecture locked — begin Sprint I on Monday."
 - Tools: [Tool 1, Tool 2, Tool 3]
 - Input: [What data/signals it receives]
 - Output: [What it produces]
-- Framework: anthropic Claude API (claude-sonnet-4-6)
+- Framework: [Claude Managed Agents | Claude Agent SDK | Direct Anthropic API]
+  # Specify your infrastructure paradigm, not just the underlying API.
+  # All three use the Anthropic API, but they differ in where the loop runs
+  # and what state is managed for you.
 
 ### Agent 2: [Name]
 - Role: [Primary responsibility]
@@ -455,23 +463,77 @@ class AnalysisAgent(BaseAgent):
         super().__init__("AnalysisAgent", "Input analysis and signal extraction", tools)
 
     def run(self, input_data: dict) -> dict:
+        """Execute the agent on a task, handling tool use correctly."""
         self._log("agent_start", {"input_keys": list(input_data.keys())})
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=2048,
-            tools=self.tools,
-            system=f"You are the {self.name}. {self.role}. Be thorough and structured.",
-            messages=[{
-                "role": "user",
-                "content": f"Analyze this input: {json.dumps(input_data)}"
-            }]
-        )
+        # This loop handles both text responses (end_turn) and tool use (tool_use) correctly.
+        # Never access response.content[0].text directly — when the model uses a tool,
+        # content[0] is a ToolUseBlock, not a TextBlock.
+        messages = [{"role": "user", "content": f"Analyze this input: {json.dumps(input_data)}"}]
+        total_input_tokens = 0
+        total_output_tokens = 0
+        system_prompt = f"You are the {self.name}. {self.role}. Be thorough and structured."
 
-        # Process tool calls and return structured output
-        result = {"agent": self.name, "analysis": response.content[0].text if response.content else ""}
-        self._log("agent_complete", {"output_keys": list(result.keys())})
-        return result
+        while True:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=4096,
+                system=system_prompt,
+                tools=self.tools,
+                messages=messages,
+            )
+
+            total_input_tokens += response.usage.input_tokens
+            total_output_tokens += response.usage.output_tokens
+
+            # Append assistant turn to conversation history
+            messages.append({"role": "assistant", "content": response.content})
+
+            if response.stop_reason == "end_turn":
+                # Extract text response safely
+                text = next(
+                    (block.text for block in response.content if hasattr(block, "text")),
+                    ""
+                )
+                result = {
+                    "agent": self.name,
+                    "analysis": text,
+                    "usage_input": total_input_tokens,
+                    "usage_output": total_output_tokens,
+                }
+                self._log("agent_complete", {"output_keys": list(result.keys())})
+                return result
+
+            elif response.stop_reason == "tool_use":
+                # Process all tool calls in this response
+                tool_results = []
+                for block in response.content:
+                    if block.type == "tool_use":
+                        try:
+                            tool_result = self._execute_tool(block.name, block.input)
+                        except Exception as e:
+                            tool_result = f"Tool error: {e}"
+                        tool_results.append({
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": str(tool_result),
+                        })
+                messages.append({"role": "user", "content": tool_results})
+
+            else:
+                # max_tokens or other stop reason
+                result = {
+                    "agent": self.name,
+                    "analysis": f"Agent stopped: {response.stop_reason}",
+                    "usage_input": total_input_tokens,
+                    "usage_output": total_output_tokens,
+                }
+                self._log("agent_complete", {"output_keys": list(result.keys())})
+                return result
+
+    def _execute_tool(self, tool_name: str, tool_input: dict) -> str:
+        """Dispatch tool calls by name. Override in subclass to add real tool logic."""
+        raise NotImplementedError(f"Tool '{tool_name}' not implemented in {self.name}")
 
 
 # orchestrator.py
@@ -605,17 +667,47 @@ echo "Sprint I complete. Begin Sprint II hardening on Monday."</code></pre>
         <h2>Sprint II — Production Hardening &amp; Peer Red Team</h2>
       </div>
 
-      <p>Sprint II finalizes your production deployment and runs the peer red team. Your system must be deployed to AWS AgentCore (or Lambda fallback) before the deployment freeze on Day 1. Peer teams attack your live production deployment — not your repository — using the full OWASP Agentic Top 10 methodology. You attack another team's deployment in return.</p>
-      <div class="callout callout-warn"><p><strong>Deployment freeze — Day 1 of Week 15:</strong> Finalize your production deployment before the freeze. After freeze, no changes until you receive the red team report. Your deployment must include: working 3-agent system on cloud infrastructure, IAM role per agent, guardrails layer (NeMo Guardrails or equivalent), observability dashboard, SBOM, hash-pinned dependencies, and documentation package (architecture diagram, controls matrix, AIUC-1 mapping). Provide the red team an access package: read-only observer role + instructor-scoped attacker role (limited to your team's sandbox).</p></div>
+      <p>Sprint II finalizes your production deployment and runs the peer red team. Your system must be deployed and frozen before the deployment freeze on Day 1. Peer teams attack your live production deployment — not your repository — using the full OWASP Agentic Top 10 methodology. You attack another team's deployment in return.</p>
+
+      <div class="callout callout-key">
+        <strong>Sprint II Deployment — GitHub Container Registry + Docker</strong>
+        <p>Your Unit 7 CI/CD pipeline already pushes your container to GHCR. For Sprint II, you're deploying that container as a running service.</p>
+
+        <p><strong>Step 1: Pull your latest container</strong></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code># Your image was pushed to GHCR by Unit 7's GitHub Actions pipeline
+docker pull ghcr.io/$(gh api user --jq .login)/soc-agent:latest</code></pre></div>
+
+        <p><strong>Step 2: Run in production mode</strong></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>docker run -d \
+  --name soc-agent-prod \
+  --restart unless-stopped \
+  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  -e ENVIRONMENT=production \
+  -p 8080:8080 \
+  ghcr.io/$(gh api user --jq .login)/soc-agent:latest</code></pre></div>
+
+        <p><strong>Step 3: Verify deployment</strong></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>docker ps | grep soc-agent-prod
+docker logs soc-agent-prod --tail 20
+curl http://localhost:8080/health  # if you expose a health endpoint</code></pre></div>
+
+        <p><strong>Step 4: Run your test suite against the deployed container</strong></p>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>python3 tests/test_deployed_agent.py --endpoint http://localhost:8080</code></pre></div>
+
+        <p>This is local production deployment. For cloud deployment (optional advanced), Docker Desktop supports pushing to cloud providers. Your Unit 7 pipeline already has the GHCR push wired — extend it with a deploy step if you want cloud hosting.</p>
+        <p><strong>Container isolation:</strong> Each agent runs as a separate container with its own environment — least-privilege isolation via container boundaries (no cross-container credential sharing).</p>
+      </div>
+
+      <div class="callout callout-warn"><p><strong>Deployment freeze — Day 1 of Week 15:</strong> Finalize your production deployment before the freeze. After freeze, no changes until you receive the red team report. Your deployment must include: working 3-agent system running as Docker containers, container isolation per agent (separate containers, separate env vars), guardrails layer (NeMo Guardrails or equivalent), observability dashboard, SBOM, hash-pinned dependencies, and documentation package (architecture diagram, controls matrix, AIUC-1 mapping). Provide the red team an access package describing your deployed endpoint and any credentials needed for the instructor-scoped attacker role (limited to your team's sandbox).</p></div>
 
       <!-- Knowledge Check -->
       <div class="quiz-block">
         <h3 class="quiz-title">Knowledge Check — Week 15</h3>
 
-        <div class="quiz-question" data-qid="u8w15q1" data-answer="a" data-explain="The capstone red team methodology uses the full OWASP Agentic Top 10 — all 10 risks tested against the live production deployment, not just the repository. Each finding gets an OWASP AIVSS severity score, OWASP Agentic risk number (#1–#10), defense layer classification (L1–L4), and a specific fix recommendation. Testing the live deployment (not just the code) is critical: a risk may be handled in code but misconfigured in the deployed infrastructure.">
+        <div class="quiz-question" data-qid="u8w15q1" data-answer="a" data-explain="The capstone red team methodology uses the full OWASP Agentic Top 10 — all 10 risks tested against the live production deployment, not just the repository. Each finding gets an OWASP AIVSS severity score, OWASP Agentic risk number (#1–#10), defense layer classification using the Unit 7 9-layer model (e.g. Input Validation Layer 1, Semantic Guardrails Layer 2, Tool Validation Layer 3, Output Filtering/Monitoring Layers 4–5, Infrastructure Controls Layers 6–9), and a specific fix recommendation. Testing the live deployment (not just the code) is critical: a risk may be handled in code but misconfigured in the deployed infrastructure.">
           <p class="q-text">9. During peer red team review, which sources define the attack techniques you must test?</p>
           <div class="quiz-opts">
-            <label><input type="radio" name="u8w15q1" value="a"> A) All 10 OWASP Agentic risks, tested systematically against the live production AgentCore deployment</label>
+            <label><input type="radio" name="u8w15q1" value="a"> A) All 10 OWASP Agentic risks, tested systematically against the live production deployment</label>
             <label><input type="radio" name="u8w15q1" value="b"> B) Any 5 techniques from OWASP Top 10 for LLMs that seem most applicable to the target system</label>
             <label><input type="radio" name="u8w15q1" value="c"> C) The top 5 MITRE ATLAS techniques identified in the target team's architecture threat model</label>
             <label><input type="radio" name="u8w15q1" value="d"> D) Whatever the red team considers most creative or interesting about the target system</label>
@@ -817,13 +909,17 @@ trivy image --format json --output trivy-report.json capstone:latest
 
 # Generate SBOM in CycloneDX format
 pip install cyclonedx-bom
-cyclonedx-py requirements requirements.txt > sbom.json
+# Check your cyclonedx-py version first:
+# cyclonedx-py --version
+# v4+ syntax:
+cyclonedx-py requirements -i requirements.txt -o sbom.json
+# Fallback for older versions: cyclonedx-py requirements requirements.txt > sbom.json
 
 # Validate SBOM
 python -c "import json; sbom = json.load(open('sbom.json')); print(f'SBOM: {len(sbom.get(\"components\", []))} components')"
 
 # Document findings
-cat > docs/security/container-scan-results.md << 'EOF'
+cat > docs/security/container-scan-results.md << EOF
 # Container Security Scan Results
 Date: $(date +%Y-%m-%d)
 Image: capstone:latest
@@ -908,7 +1004,8 @@ jobs:
       - name: Generate SBOM
         run: |
           pip install cyclonedx-bom
-          cyclonedx-py requirements requirements.txt > sbom.json
+          # v4+ syntax; fallback: cyclonedx-py requirements requirements.txt > sbom.json
+          cyclonedx-py requirements -i requirements.txt -o sbom.json
       - uses: actions/upload-artifact@v4
         with:
           name: security-artifacts
@@ -955,7 +1052,7 @@ jobs:
 ## Target: [Team Name] — [Project Name]
 ## Red Team: [Your Team Name]
 ## Date: $(date +%Y-%m-%d)
-## Target deployment: AgentCore / Lambda (circle one)
+## Target deployment: Docker (local) / Cloud (describe host)
 
 ## Executive Summary
 - Critical findings: [count]
@@ -985,7 +1082,9 @@ Testing performed against the deployed system — not the repository alone.
 ### Finding 1: [Short Title]
 - **OWASP Agentic Risk:** #A0X — [Risk Name]
 - **OWASP AIVSS Severity:** Critical / High / Medium / Low
-- **Defense Layer Exploited:** L1 GUIDANCE / L2 ENFORCEMENT / L3 ENFORCEMENT / L4 INFRASTRUCTURE
+- **Defense Layer Exploited:** Input Validation (Layer 1) / Semantic Guardrails (Layer 2) / Tool Validation (Layer 3) / Output Filtering / Monitoring (Layers 4–5) / Infrastructure Controls (Layers 6–9)
+  <!-- Use the 9-layer defense-in-depth model from Unit 7 for classification.
+       Layers 1–5 are agent-level controls; Layers 6–9 are infrastructure controls. -->
 - **Inside reasoning loop?** Yes / No
 - **Description:** What was tested and what was found
 - **Evidence:** Reproduction steps
@@ -1003,7 +1102,7 @@ Testing performed against the deployed system — not the repository alone.
 - Strongest security controls observed:
 - Most critical gaps found:
 - Recommended priority for remediation:
-- Supply chain assessment (A05): Are dependencies hash-pinned? (requirements.txt --require-hashes)</code></pre>
+- Supply chain assessment (A05): Are dependencies hash-pinned? Check for a `requirements-pinned.txt` generated by `pip-compile --generate-hashes`. Install with: `pip install --require-hashes -r requirements-pinned.txt`.</code></pre>
       </div>
 
       <div class="lab-step">
@@ -1013,10 +1112,10 @@ Testing performed against the deployed system — not the repository alone.
 
       <div class="lab-step">
         <input type="checkbox" id="step-u8-15-7" onchange="toggleStep('step-u8-15-7', this.checked)">
-        <label for="step-u8-15-7"><strong>Step 7:</strong> Create your IaC template (CloudFormation or Terraform) and operational runbook.</label>
+        <label for="step-u8-15-7"><strong>Step 7:</strong> Create your operational runbook. Your primary deployment is Docker (docker-compose.yml). If you choose to pursue optional cloud deployment, an IaC template (CloudFormation or Terraform) is shown below as a reference — it is not required for grading.</label>
       </div>
 
-      <div class="code-block" data-collapsible data-collapsed="true" data-label="CloudFormation ECS Task Definition">
+      <div class="code-block" data-collapsible data-collapsed="true" data-label="Optional: CloudFormation ECS Task Definition (advanced cloud deployment)">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre><code># infra/cloudformation.yaml — ECS Task Definition example
 AWSTemplateFormatVersion: '2010-09-09'
@@ -1075,8 +1174,8 @@ Resources:
           <li>Trivy container scan report + CVE mitigations documented</li>
           <li>SBOM in CycloneDX format (sbom.json)</li>
           <li>GitHub Actions CI/CD pipeline with 4 security gates</li>
-          <li>IaC template (CloudFormation or Terraform)</li>
-          <li>Red team report: full OWASP Agentic Top 10 coverage table + all confirmed findings with OWASP AIVSS scores</li>
+          <li>IaC template (CloudFormation or Terraform) — optional advanced; docker-compose.yml required</li>
+          <li>Red team report: full OWASP Agentic Top 10 coverage table + all confirmed findings with OWASP AIVSS scores and 9-layer defense classification</li>
           <li>Remediation report with patch evidence and retest results</li>
           <li>Git tag <code>sprint2-complete</code> — <strong>20% of capstone grade</strong></li>
         </ul>
@@ -1389,7 +1488,7 @@ echo "Congratulations — CSEC 602 complete."</code></pre>
             <tr><td style="padding:8px;">S1 U2</td><td style="padding:8px;">MCP + Context Engineering</td><td style="padding:8px;">Multi-tool MCP server with audit logging</td></tr>
             <tr><td style="padding:8px;">S1 U3</td><td style="padding:8px;">AI Security Governance</td><td style="padding:8px;">AI Security Policy + Fairness audit</td></tr>
             <tr><td style="padding:8px;">S1 U4</td><td style="padding:8px;">Rapid Prototyping</td><td style="padding:8px;">3-agent SOC system Sprint + presentation</td></tr>
-            <tr><td style="padding:8px;">S2 U5</td><td style="padding:8px;">Multi-Agent Orchestration</td><td style="padding:8px;">Framework comparison (Claude SDK/Claude Managed Agents/OpenAI Agents SDK)</td></tr>
+            <tr><td style="padding:8px;">S2 U5</td><td style="padding:8px;">Multi-Agent Orchestration</td><td style="padding:8px;">Framework comparison (Claude Agent SDK/Claude Managed Agents/OpenAI Agents SDK)</td></tr>
             <tr><td style="padding:8px;">S2 U6</td><td style="padding:8px;">AI Attacker vs Defender</td><td style="padding:8px;">Red/Blue wargame + MITRE ATLAS threat model</td></tr>
             <tr><td style="padding:8px;">S2 U7</td><td style="padding:8px;">Production Security Engineering</td><td style="padding:8px;">SBOM + NHI + OpenTelemetry + CI/CD pipeline</td></tr>
             <tr><td style="padding:8px;">S2 U8</td><td style="padding:8px;">Capstone Production Delivery</td><td style="padding:8px;">Production-ready agentic security system</td></tr>
@@ -1437,7 +1536,7 @@ echo "Congratulations — CSEC 602 complete."</code></pre>
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Agent SDK, Claude Managed Agents, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution.",tags:["unit5","multi-agent","claude-agent-sdk","managed-agents","a2a"],url:"s2-unit5.html"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},

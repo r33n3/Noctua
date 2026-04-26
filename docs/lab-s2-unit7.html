@@ -82,12 +82,24 @@
       <div class="code-block"><pre><code>pip install cyclonedx-bom
 mkdir -p ~/noctua-labs/unit7/week9 && cd ~/noctua-labs/unit7/week9
 
-# Generate SBOM for your SOC agent system (cyclonedx-bom v4+ syntax)
+# First, locate your S1 Unit 4 sprint requirements file:
+find ~/noctua-labs -name 'requirements.txt' 2>/dev/null
+# If not found, use your current Unit 5 work:
+find ~/noctua-labs/unit5 -name 'requirements.txt' 2>/dev/null
+# Substitute your actual path in the commands below.
+# The SBOM captures your agent system's dependency surface — use the
+# requirements file for your primary agent project.
+
+# Generate SBOM from requirements.txt
+# Syntax varies by version — try in order:
+cyclonedx-py requirements -i ~/noctua-labs/unit4/soc-agent-team/requirements.txt -o sbom.json
+# If that fails, try:
 cyclonedx-py requirements ~/noctua-labs/unit4/soc-agent-team/requirements.txt > sbom.json
+# Check your version: cyclonedx-py --version
+# Run `cyclonedx-py --help` to confirm the exact flags for your installed version.
 
 # Inspect: how many components? Any with known vulnerabilities?
-cat sbom.json | python3 -m json.tool | grep -c '"type"'
-# Note: if CLI flags differ on your version, run: cyclonedx-py --help</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+cat sbom.json | python3 -m json.tool | grep -c '"type"'</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w9-2">
@@ -132,7 +144,7 @@ models:
     temperature: 0.0
   fallback:
     provider: anthropic
-    model_id: claude-haiku-4-5-20251001
+    model_id: claude-haiku-4-5
     max_tokens: 1024
     temperature: 0.0
 
@@ -361,7 +373,7 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
       <label><input type="checkbox" onchange="toggleStep('u7w10-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Apply your NHI governance to your deployed Managed Agent</div>
-        <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is allowed to do. Your Managed Agent (deployed in Unit 4 Week 15) is already a non-human identity — it has a persistent agent ID, authenticates via API key, and has a defined tool scope. Map your governance model to what's already deployed: verify the API key is stored as a GitHub Secret (not hardcoded), confirm the tool scope in the agent YAML matches your <code>allowed_tools</code> list, and document the agent ID as the NHI entry in your registry.</div>
+        <div class="step-desc">Your <code>agent-identities.yaml</code> defines what each agent is allowed to do. Your Managed Agent (deployed in Unit 5 Week 1) is already a non-human identity — it has a persistent agent ID, authenticates via API key, and has a defined tool scope. Map your governance model to what's already deployed: verify the API key is stored as a GitHub Secret (not hardcoded), confirm the tool scope in the agent YAML matches your <code>allowed_tools</code> list, and document the agent ID as the NHI entry in your registry.</div>
       </div></label>
       <div class="code-block" data-collapsible data-collapsed="true" data-label="NHI Governance — Managed Agent Mapping"><pre><code># Your Managed Agent IS an NHI. Map your agent-identities.yaml to it:
 
@@ -370,16 +382,34 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 #    Secret name: ANTHROPIC_API_KEY
 #    Never appears in logs or code. Rotation = update the secret value.
 
-# 2. Load your deployed agent IDs
-import json
-with open("managed_agent_ids.json") as f:
-    ids = json.load(f)
-print(f"NHI Identity: agent_id={ids['agent_id']}")
-# This agent_id IS the NHI identifier — persistent, named, auditable
+# 2. Load your deployed agent IDs from .env.agents
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
 
-# 3. Verify tool scope in the agent YAML matches allowed_tools from Step 1
-#    tools/mass/claude-managed-agents/01-orchestrator.yaml:
-#      tools: [{"type": "agent_toolset_20260401"}]
+try:
+    ids = load_env_agents()
+    agent_id = ids.get("AGENT_ID")
+    env_id = ids.get("ENVIRONMENT_ID")
+    if agent_id and env_id:
+        print(f"NHI Identity: agent_id={agent_id[:8]}...")
+        print(f"Environment ID: {env_id[:8]}...")
+    else:
+        print("Missing AGENT_ID or ENVIRONMENT_ID in .env.agents")
+except FileNotFoundError:
+    print(".env.agents not found — run Unit 5 Week 1 setup.py first")
+# The AGENT_ID IS the NHI identifier — persistent, named, auditable
+
+# 3. Verify tool scope in the agent configuration matches allowed_tools from Step 1
+#    The agent configuration you defined in Unit 5 Week 1 (setup.py agent parameters)
+#    serves this role. Reference your AGENT_ID from .env.agents rather than a YAML
+#    config file — the Managed Agents API stores agent configuration server-side.
 #    For your custom agent, list only the tools this role needs:
 #    tools:
 #      - type: bash          # only if this agent needs shell access
@@ -388,7 +418,7 @@ print(f"NHI Identity: agent_id={ids['agent_id']}")
 
 # 4. Add your Managed Agent to the NHI registry:
 nhi_entry = {
-    "agent_id": ids["agent_id"],
+    "agent_id": agent_id,
     "role": "soc-analyst",
     "credential": "ANTHROPIC_API_KEY (GitHub Secret)",
     "credential_rotation_days": 90,
@@ -411,13 +441,22 @@ from datetime import datetime
 
 client = anthropic.Anthropic()
 
-with open("managed_agent_ids.json") as f:
-    ids = json.load(f)
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+ids = load_env_agents()
 
 # Run a test session and capture the NHI audit trail
 session = client.beta.sessions.create(
-    agent=ids["agent_id"],
-    environment_id=ids["environment_id"],
+    agent=ids["AGENT_ID"],
+    environment_id=ids["ENVIRONMENT_ID"],
     title=f"NHI Audit Test — {datetime.utcnow().isoformat()}",
 )
 
@@ -434,7 +473,7 @@ with client.beta.sessions.events.stream(session.id) as stream:
             # This IS the NHI audit trail — agent.tool_use = what the agent DID
             record = {
                 "timestamp": datetime.utcnow().isoformat(),
-                "agent_id": ids["agent_id"],
+                "agent_id": ids["AGENT_ID"],
                 "tool_name": event.name,
                 "session_id": session.id,
             }
@@ -448,7 +487,12 @@ with client.beta.sessions.events.stream(session.id) as stream:
             break
 
 # Verify: every tool_name in audit_records is in your allowed_tools list
-allowed = {"bash", "web_search", "text_editor"}  # from your agent YAML
+# Tools provided by agent_toolset_20260401 — the full set the agent is authorized to use
+allowed = {
+    "bash", "read", "write", "edit", "glob", "grep",
+    "web_fetch", "web_search", "agent"
+}
+# If you added custom tools to your agent config, add them here too
 violations = [r for r in audit_records if r["tool_name"] not in allowed]
 print(f"\n\nAudit: {len(audit_records)} tool calls, {len(violations)} violations")
 if violations:
@@ -530,8 +574,17 @@ with tracer.start_as_current_span("recon_agent") as span:
     span.set_attribute("agent.id", "soc-recon-001")
     span.set_attribute("model.id", "claude-sonnet-4-6")
     result = recon_agent.run(alert)
-    span.set_attribute("tokens.input", result.usage.input_tokens)
-    span.set_attribute("tokens.output", result.usage.output_tokens)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    # Safe usage extraction — handles both dict returns and object returns
+    if isinstance(result, dict):
+        input_tokens = result.get("usage_input", 0)
+        output_tokens = result.get("usage_output", 0)
+    else:
+        usage = getattr(result, "usage", None)
+        input_tokens = getattr(usage, "input_tokens", 0) if usage else 0
+        output_tokens = getattr(usage, "output_tokens", 0) if usage else 0
+
+    span.set_attribute("tokens.input", input_tokens)
+    span.set_attribute("tokens.output", output_tokens)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="callout callout-key">
@@ -551,8 +604,17 @@ with tracer.start_as_current_span("recon_agent") as span:
       <label><input type="checkbox" onchange="toggleStep('u7w11-3',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 3: Add cost tracking metrics</div>
-        <div class="step-desc">Implement an OTel Counter for token usage per agent per incident. Calculate cost: input tokens * $3/1M + output tokens * $15/1M (Claude Sonnet pricing). Track: total cost per incident, cost per agent role, running daily total. Export to console or Prometheus endpoint.</div>
+        <div class="step-desc">Implement an OTel Counter for token usage per agent per incident. Calculate cost using your actual model's current pricing — check https://anthropic.com/pricing for current rates. Hardcoded pricing figures become stale as pricing changes. A safer approach: set <code>INPUT_PRICE_PER_1M</code> and <code>OUTPUT_PRICE_PER_1M</code> from environment or config so you can update pricing without code changes. Track: total cost per incident, cost per agent role, running daily total. Export to console or Prometheus endpoint.</div>
       </div></label>
+      <div class="code-block"><pre><code>import os
+
+# Get actual usage and calculate dynamically
+# Input tokens * (input_price / 1_000_000) + output tokens * (output_price / 1_000_000)
+# Set INPUT_PRICE_PER_1M and OUTPUT_PRICE_PER_1M from environment or config
+# so you can update pricing without code changes
+input_price = float(os.getenv('INPUT_PRICE_PER_1M', '3.00'))
+output_price = float(os.getenv('OUTPUT_PRICE_PER_1M', '15.00'))
+cost = (input_tokens * input_price + output_tokens * output_price) / 1_000_000</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-u7w11-4">
@@ -631,8 +693,11 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY --chown=soc-agent:soc-agent . .
 USER soc-agent
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s CMD python3 -c "import anthropic; print('OK')"
+# Health check — verifies the Anthropic client can reach the API (meaningful liveness signal)
+# If you expose an HTTP endpoint, replace with: CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD python3 -c "import anthropic; c=anthropic.Anthropic(); c.models.list(); print('OK')" \
+  || exit 1
 EXPOSE 8080
 CMD ["python3", "orchestrator.py"]</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
@@ -669,7 +734,8 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          extra_args: --only-verified
+          # --only-verified would pass unverified secrets — in CI, fail on any secret detection
+          extra_args: --fail
 
   sast:
     runs-on: ubuntu-latest
@@ -688,7 +754,11 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: soc-agent:${{ github.sha }}
-          exit-code: 1   # Fail on HIGH/CRITICAL
+          # exit-code: 1 = block deployment on HIGH/CRITICAL CVEs (strict gate)
+          # Unit 8's devsecops.yml uses exit-code: 0 for the capstone (document, don't block)
+          # Choose based on your deployment maturity: new projects use strict (1),
+          # established projects with managed risk tolerance use permissive (0)
+          exit-code: 1
           severity: HIGH,CRITICAL</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
@@ -712,22 +782,43 @@ jobs:
       <label><input type="checkbox" onchange="toggleStep('u7w12-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 6: Verify your deployed agent is reachable — pre-capstone checkpoint</div>
-        <div class="step-desc">Confirm your Managed Agent is deployed and the <code>ANTHROPIC_API_KEY</code> resolves correctly from your environment. This is required before Week 13. If it fails, verify <code>managed_agent_ids.json</code> exists and the key in your environment is valid. Do not wait.</div>
+        <div class="step-desc">Confirm your Managed Agent is deployed and the <code>ANTHROPIC_API_KEY</code> resolves correctly from your environment. This is required before Week 13. If it fails, verify <code>.env.agents</code> exists (created by Unit 5 Week 1 <code>setup.py</code>) and contains valid <code>AGENT_ID</code> and <code>ENVIRONMENT_ID</code> values, and that the API key in your environment is valid. Do not wait.</div>
       </div></label>
-      <div class="code-block"><pre><code>import anthropic, json, os
+      <div class="code-block"><pre><code>import anthropic, os
 
 # Verify ANTHROPIC_API_KEY is set (from env, not hardcoded)
 assert os.environ.get("ANTHROPIC_API_KEY"), "ANTHROPIC_API_KEY not set — add to GitHub Secrets"
 
 client = anthropic.Anthropic()
 
-with open("managed_agent_ids.json") as f:
-    ids = json.load(f)
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+try:
+    ids = load_env_agents()
+    agent_id = ids.get("AGENT_ID")
+    env_id = ids.get("ENVIRONMENT_ID")
+    if agent_id and env_id:
+        print(f"✓ Agent ID: {agent_id[:8]}...")
+        print(f"✓ Environment ID: {env_id[:8]}...")
+    else:
+        print("✗ Missing AGENT_ID or ENVIRONMENT_ID in .env.agents")
+        raise SystemExit(1)
+except FileNotFoundError:
+    print("✗ .env.agents not found — run Unit 5 Week 1 setup.py first")
+    raise SystemExit(1)
 
 # Quick smoke test — one session, one message
 session = client.beta.sessions.create(
-    agent=ids["agent_id"],
-    environment_id=ids["environment_id"],
+    agent=agent_id,
+    environment_id=env_id,
     title="Pre-capstone checkpoint",
 )
 
@@ -784,7 +875,20 @@ docker run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
         <div class="step-title">Step 8: Verify the production controls checklist</div>
         <div class="step-desc">Complete the PeaRL Delegated Autonomous promotion gate checklist for your deployed agent. This is the governance evidence required for your Unit 8 capstone submission.</div>
       </div></label>
-      <div class="code-block"><pre><code># PeaRL Delegated Autonomous promotion gate — verify each item:
+      <div class="code-block"><pre><code># About this checklist: The PeaRL governance framework defines these gates as a structured
+# review process. You apply this checklist manually — evaluating each gate criteria against
+# your system's actual state. This is a judgment-based audit, not an automated scan.
+#
+# Optional: Run PeaRL locally via Docker Desktop — if you want to automate the gate
+# evaluation, PeaRL can be run as a local service:
+#   git clone https://github.com/r33n3/PeaRL
+#   cd PeaRL
+#   docker compose up --build
+#   # Then access the PeaRL UI at http://localhost:3000
+# Docker Desktop's model runner also allows you to run local LLMs alongside PeaRL
+# for offline evaluation.
+
+# PeaRL Delegated Autonomous promotion gate — verify each item:
 # [ ] Agent has its own identity (unique agent_id, not shared with other agents)
 # [ ] No hardcoded credentials (ANTHROPIC_API_KEY in GitHub Secrets / env var, not in code or image)
 # [ ] Tool scope defined (agent YAML lists only the tools this role needs)
