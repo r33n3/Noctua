@@ -176,9 +176,10 @@ async def query_cve(cve_id: str) -> dict:
         dict with keys: id, description, severity, cvss_score,
         affected_products (list), remediation (str)
 
-    Raises:
-        ValueError: if cve_id does not match the CVE format pattern
-        RuntimeError: if the NVD API is unreachable after retries
+    Returns on error:
+        dict with 'error': True and 'message': str describing the problem.
+        MCP tools should return structured error dicts, not raise exceptions —
+        this allows Claude to reason about the failure and retry or report gracefully.
 
     TODO: Implement this function.
     Hints:
@@ -295,7 +296,7 @@ else:
       <label><input type="checkbox" onchange="toggleStep('w5-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Register the server with Claude Code</div>
-        <div class="step-desc">Use <code>claude mcp add</code> to register your server. Use <code>--scope user</code> so the server is available in all your Claude Code sessions, not just the current project. <strong>Important:</strong> point to the venv Python, not system Python — that's where <code>mcp</code> and <code>httpx</code> are installed. <em>(Theory: Week 5 Day 1 — MCP Registration)</em></div>
+        <div class="step-desc">Use <code>claude mcp add</code> to register your server. The format is: <code>claude mcp add [--scope &lt;scope&gt;] &lt;name&gt; &lt;command&gt; [args...]</code>. Use <code>--scope user</code> so the server is available in all your Claude Code sessions, not just the current project. <strong>Important:</strong> point to the venv Python, not system Python — that's where <code>mcp</code> and <code>httpx</code> are installed. After registering, verify with <code>claude mcp list</code> to confirm the server appears. <em>(Theory: Week 5 Day 1 — MCP Registration)</em></div>
       </div></label>
       <div class="code-block"><pre><code># Register with Claude Code (user scope = available in all sessions)
 claude mcp add --scope user cve-lookup \
@@ -528,6 +529,17 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-desc">Try to trick Claude Code into passing a SQL injection payload as a CVE ID: "Look up CVE '2021-44228; DROP TABLE logs;--'." Verify your server's input validation blocks this before any backend operation. Check your audit log — was the blocked attempt recorded? <em>(Theory: Week 6 Day 1 — Parameter Injection &amp; Input Sanitization)</em></div>
       </div></label>
     </div>
+    <div class="callout callout-key">
+      <strong>GTG-1002: The Guided Task Generation Attack Pattern</strong>
+      <p>GTG-1002 describes a class of adversarial prompts where an attacker provides a plausible, legitimate-seeming task to guide an AI agent toward harmful capability amplification. The "GTG" prefix denotes "Guided Task Generation." Key characteristics:</p>
+      <ol>
+        <li>The request appears benign in isolation — no single tool call looks suspicious.</li>
+        <li>The harmful capability emerges only from the agent's expanded tool use or reasoning chain across multiple calls.</li>
+        <li>The attacker benefits from the agent completing normal-looking subtasks — reconnaissance appears as routine health checks, data exfiltration appears as legitimate reporting.</li>
+      </ol>
+      <p>GTG-1002 is used in this course as the canonical example of context manipulation and deceptive framing against AI agents. When you analyze an attack scenario and ask "what is the attacker actually trying to accomplish?" — that framing comes from GTG-1002.</p>
+    </div>
+
     <div class="lab-step" id="step-w6-7">
       <label><input type="checkbox" onchange="toggleStep('w6-7',this.checked)">
       <div class="step-content">
@@ -560,7 +572,12 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
         <div class="step-title">Step 8: Run production readiness audit on your multi-tool server</div>
         <div class="step-desc">Audit your expanded multi-tool server. Multi-tool servers introduce Layer 2 patterns: 2.1 (new DB connection per request vs. pool?), 2.2 (idempotency — if a handler fires twice, does it create duplicate records?), 2.3 (do response collections have size limits?). Also check Layer 3: does your server emit structured logs with a correlation ID so you can trace which tool call triggered each log entry? Include the production readiness report in your Week 6 deliverables alongside your threat model.</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit2/week6/multi-tool-server/
+      <div class="code-block"><pre><code># Copy your Week 5 server into a Week 6 working directory before extending it
+mkdir -p ~/noctua-labs/unit2/week6/multi-tool-server
+cp -r ~/noctua-labs/unit2/week5/cve-mcp/* ~/noctua-labs/unit2/week6/multi-tool-server/
+
+# Then audit the extended server
+/check-antipatterns ~/noctua-labs/unit2/week6/multi-tool-server/
 
 # Target: CONDITIONAL or READY before submitting
 # BLOCKED = fix CRITICAL findings first
@@ -597,13 +614,13 @@ claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</butto
 <div class="week-header"><span class="week-badge" style="background:#8b0000;">WEEK 6.5</span><span class="week-sub">Optional Extension: Red Team / Blue Team Lab Exercise</span></div>
 
 <div class="callout callout-warn">
-  <strong>Complete the Weeks 4–6 lab steps before starting Forge Fire.</strong> Forge Fire is a timed pressure test of a working system, not a debugging session for a broken one. Starting with broken tools will mean spending your entire session on setup instead of learning. Verify: your MCP server is running, all tools respond correctly, rate limiting is in place, and your Week 5 connectivity check passes.
+  <strong>Complete the Weeks 5–6 lab steps before starting Forge Fire.</strong> Forge Fire is a timed pressure test of a working system, not a debugging session for a broken one. Starting with broken tools will mean spending your entire session on setup instead of learning. Verify: your MCP server is running, all tools respond correctly, rate limiting is in place, and your Week 5 connectivity check passes.
 </div>
 
 <div class="callout callout-key">
   <strong>Lab Session: Operation Forge Fire</strong><br>
   <strong>Estimated time:</strong> 60–90 minutes<br>
-  <strong>Prerequisites:</strong> Working MCP server from Weeks 4–5 with at least 2 functional tools, Week 6 multi-tool extension complete<br>
+  <strong>Prerequisites:</strong> Working MCP server from Week 5 with at least 2 functional tools, Week 6 multi-tool extension complete<br>
   <strong>Deliverable:</strong> Completed Forge Fire report saved as <code>unit2/forge-fire-report.md</code><br>
   <strong>Session type:</strong> Timed exercise — complete this in one sitting
 </div>
@@ -795,7 +812,7 @@ forbid (
 
 <div class="callout callout-key"><p><strong>When a tool calls an AI model, you now have two latency budgets, two token costs, and two failure modes to manage.</strong> The outer agent's context window may include the inner model's full response. Design tool-calling chains the same way you design network calls: timeouts, retries, fallbacks, and circuit breakers. A tool that calls Claude internally and hangs for 30 seconds will stall your outer agent's entire reasoning loop. A tool that returns a 10,000-token response will silently inflate your outer agent's context on every call. Both problems are invisible until they're not.</p>
 </div>
-<div class="callout callout-tip"><p><strong>The schema you defined in Week 4 is enforced here.</strong> Every tool result that enters the agent's context is validated against that schema before the model sees it. If you skipped schema validation in Week 4, you will feel it now — malformed tool results are the #1 source of agent hallucination in production. Unvalidated tool output is just unstructured text wearing a JSON costume. The model pattern-matches against it, fills gaps with plausible-sounding values, and returns an answer that looks correct but isn't. Validate at the tool boundary. Every time.</p>
+<div class="callout callout-tip"><p><strong>Week 7 is where you define the formal schema.</strong> Every tool result that enters the agent's context will be validated against this schema before the model sees it. If you skip schema validation here, malformed tool results become the #1 source of agent hallucination in production. Unvalidated tool output is just unstructured text wearing a JSON costume. The model pattern-matches against it, fills gaps with plausible-sounding values, and returns an answer that looks correct but isn't. Validate at the tool boundary. Every time.</p>
 </div>
 
 <div class="quiz-block" id="quiz-w7">
@@ -833,7 +850,7 @@ forbid (
       <label><input type="checkbox" onchange="toggleStep('w7-1',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 1: Define the Incident Report JSON Schema</div>
-        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst. If you defined output schemas for <code>query_cve</code> or <code>query_asset_exposure</code> in Week 5–6, reuse those field names here for consistency — don't redefine what you've already validated. <em>(Theory: Week 7 Day 1 — Schema-Driven Decomposition)</em></div>
+        <div class="step-desc">Create <code>report-schema.json</code> defining the schema for a security incident report. Required fields: incident_id, severity (enum: critical/high/medium/low), summary, affected_systems (array), indicators (array of objects with type/value/confidence), timeline (array of events), recommendations (array with priority), created_at, analyst. Week 7 is where you formalize your output structure as a proper JSON Schema. The output template you used in Week 4 (listing fields like <code>evidence_summary</code>, <code>alternative_hypotheses</code>, etc.) is the starting point — now you will express it as a formal schema with types, required fields, and validation rules. Use field names from your <code>query_cve</code> and <code>query_asset_exposure</code> return dicts in Weeks 5–6 for consistency — you are formalizing those implicit fields, not reusing a pre-existing schema file. <em>(Theory: Week 7 Day 1 — Schema-Driven Decomposition)</em></div>
       </div></label>
     </div>
 
@@ -843,7 +860,7 @@ forbid (
       <div class="code-block"><pre><code>import anthropic
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 response = client.messages.create(
-    model="claude-haiku-4-5-20251001",
+    model="claude-haiku-4-5",
     max_tokens=1024,
     system="Return only valid JSON. No explanation.",
     messages=[{"role": "user", "content": prompt}]
@@ -852,7 +869,7 @@ text = response.content[0].text</code></pre><button class="copy-btn" onclick="co
       <p>For enforcing structured output: a system prompt instruction ("Return only valid JSON") is simpler at this stage than tool_use. Handle <code>anthropic.APIConnectionError</code>, <code>AuthenticationError</code>, and <code>RateLimitError</code> explicitly — don't let them surface as unhandled exceptions.</p>
     </div>
 
-    <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Connect to your Week 5–6 schemas — if you defined output fields for your CVE or asset tools, reuse those field names here rather than redefining. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
+    <div class="callout callout-tip"><p><strong>Pattern: when should a tool call Claude?</strong> Use this pattern when the tool needs to classify, extract, or generate structured content from unstructured input — threat classification, CVE severity reasoning, report drafting. Keep the Claude call focused: pass only the data this specific task needs, not the full conversation history. Use the field names from your <code>query_cve</code> and <code>query_asset_exposure</code> return dicts in Weeks 5–6 as your starting point for the formal schema. You are formalizing those implicit fields now — not reusing a pre-existing schema file. <em>(Theory: Week 7 Day 1 — Claude Calling Claude)</em></p></div>
 
     <div class="lab-step" id="step-w7-2">
       <label><input type="checkbox" onchange="toggleStep('w7-2',this.checked)">
@@ -960,7 +977,7 @@ print('Report is valid!')
 <div class="lab-section">
   <h4> Lab Exercise: Security Knowledge Base with ChromaDB + Claude</h4>
 
-  <div class="callout callout-tip"><p><strong>Starter corpus — download before Step 1.</strong> For this lab, use these three documents as your initial knowledge base: your <code>threat-model.md</code> from Week 6, the OWASP Agentic Top 10 summary, and the Meridian IR runbook from your context library. If you don't have these, ask Claude to help you generate brief placeholder versions. The corpus content matters less than the retrieval pipeline — focus on getting retrieval working correctly first. <em>(Theory: Week 8 Day 1 — MCP vs. RAG Decision)</em></p></div>
+  <div class="callout callout-tip"><p><strong>Starter corpus — build before Step 3.</strong> For this lab, use these documents as your initial knowledge base: your <code>threat-model.md</code> from Week 6, the OWASP Agentic Top 10 summary, and the Meridian IR runbook you will create in Step 1b. If you don't have the OWASP summary, ask Claude to generate a brief placeholder version. The corpus content matters less than the retrieval pipeline — focus on getting retrieval working correctly first. <em>(Theory: Week 8 Day 1 — MCP vs. RAG Decision)</em></p></div>
 
   <div class="lab-steps">
     <div class="lab-step" id="step-w8-1">
@@ -970,17 +987,53 @@ print('Report is valid!')
         <div class="step-desc"><em>(Theory: Week 8 Day 1 — RAG System Architecture)</em></div>
       </div></label>
       <div class="code-block"><pre><code>pip install chromadb anthropic sentence-transformers
+pip install torch --index-url https://download.pytorch.org/whl/cpu
 mkdir -p ~/noctua-labs/unit2/week8/security-kb
 cd ~/noctua-labs/unit2/week8/security-kb</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>sentence-transformers requires PyTorch as a backend.</strong> The CPU-only wheel is sufficient for this lab and avoids a large GPU download. If you already have PyTorch installed (e.g., from a prior ML course), skip the second install line — it will use your existing installation.</p></div>
     </div>
 
     <div class="callout callout-warn"><p><strong>sentence-transformers downloads model weights on first use (~90MB–400MB depending on model).</strong> This happens at runtime, not install time. On a slow connection or in a restricted network environment, the first call will appear to hang. Add a progress indicator or test with a small model first (<code>all-MiniLM-L6-v2</code> is the fastest to download). If your environment blocks outbound HTTP to Hugging Face, the download will fail silently and raise a cryptic error. Verify connectivity before this step: <code>curl -I https://huggingface.co</code>. The weights are cached after the first download — subsequent runs are instant.</p></div>
+
+    <div class="lab-step" id="step-w8-1b">
+      <label><input type="checkbox" onchange="toggleStep('w8-1b',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 1b: Create the Meridian IR runbook</div>
+        <div class="step-desc">This is a synthetic reference document for the RAG system — it represents the kind of institutional knowledge that belongs in a security knowledge base. Create it now so it is ready for ingestion in Step 3.</div>
+      </div></label>
+      <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit2/week8/security-kb/kb-docs
+cat &gt; ~/noctua-labs/unit2/week8/security-kb/kb-docs/meridian-ir-runbook.md &lt;&lt;'EOF'
+# Meridian Financial — Incident Response Runbook
+
+## Scope
+This runbook covers Meridian Financial's standard IR procedures for the SOC team.
+
+## Severity Tiers
+- P1 (Critical): Active data exfiltration, ransomware, complete system compromise
+- P2 (High): Lateral movement confirmed, credential theft, persistence established
+- P3 (Medium): Suspicious behavior, policy violations, unconfirmed IOCs
+- P4 (Low): Informational alerts, false positive candidates
+
+## Escalation Chain
+1. SOC Analyst -&gt; SOC Lead (P3+)
+2. SOC Lead -&gt; CISO (P2+)
+3. CISO -&gt; Legal and Executive Team (P1)
+
+## Containment Procedures
+[standard network isolation, account lockout, endpoint quarantine steps]
+
+## Communication Templates
+[stakeholder notification templates for each severity tier]
+EOF
+echo "Meridian IR runbook created."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p>This document represents Meridian's institutional knowledge — exactly the kind of static reference that belongs in a security knowledge base. Static runbooks like this are one of the highest-value RAG corpus entries: they encode procedures that don't change week-to-week but that analysts need to retrieve quickly during an incident.</p></div>
+    </div>
 
     <div class="lab-step" id="step-w8-2">
       <label><input type="checkbox" onchange="toggleStep('w8-2',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 2: Curate the security knowledge base documents</div>
-        <div class="step-desc">Create 5-10 security documents in <code>kb-docs/</code>: (1) your <code>threat-model.md</code> from Week 6, (2) OWASP Agentic Top 10 summary, (3) Meridian Financial IR runbook from your context library, (4) prompt injection defense guide, (5) NHI governance policy. If you don't have all of these, ask Claude to generate brief placeholder versions. <em>(Theory: Week 8 Day 1 — Corpus Design)</em></div>
+        <div class="step-desc">Create 5-10 security documents in <code>kb-docs/</code>: (1) your <code>threat-model.md</code> from Week 6, (2) OWASP Agentic Top 10 summary, (3) the Meridian Financial IR runbook you created in Step 1b, (4) prompt injection defense guide, (5) NHI governance policy. If you don't have all of these, ask Claude to generate brief placeholder versions. <em>(Theory: Week 8 Day 1 — Corpus Design)</em></div>
       </div></label>
     </div>
 

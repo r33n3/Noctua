@@ -205,10 +205,26 @@ cp ./data/incident-data.md ~/noctua-labs/unit1/week1/</code></pre><button class=
       <label><input type="checkbox" onchange="toggleStep('w1-4',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 4: Launch Claude Code and submit Phase 1 CCT prompt</div>
-        <div class="step-desc">Open Claude Code and paste the structured CCT analysis prompt from the Week 1 lecture (the prompt with all 5 pillars). Observe Claude work through each pillar systematically.</div>
+        <div class="step-desc">Open Claude Code and paste the CCT 5-pillar analysis prompt below. Observe Claude work through each pillar systematically.</div>
       </div></label>
-      <div class="code-block"><pre><code>claude
-# Then paste the CCT 5-pillar analysis prompt from the lecture material</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-block"><pre><code>claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <p style="margin:10px 0 6px;font-size:13px;color:var(--text-muted);">Then paste this prompt into your Claude Code session, replacing <code>[PASTE INCIDENT DATA HERE]</code> with the contents of <code>incident-data.md</code>:</p>
+      <div class="code-block"><pre><code>You are a critical security analyst applying the CCT (Critical Cognitive Thinking) framework.
+Analyze the following security incident using all five CCT pillars:
+
+1. EVIDENCE EVALUATION: What evidence exists? What is its quality and completeness?
+2. ALTERNATIVE HYPOTHESES: What other explanations fit the same evidence?
+3. BIAS CHECK: What assumptions am I making? What cognitive biases might affect my analysis?
+4. PROPORTIONALITY: Is my response proportional to the confirmed threat level?
+5. COMMUNICATION: How should findings be communicated to different stakeholders?
+
+Incident to analyze:
+[PASTE INCIDENT DATA HERE]
+
+Provide structured analysis for each pillar before drawing conclusions.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;">
+        <strong>Note:</strong> This prompt embeds the CCT 5-pillar structure. You'll refine it with system prompts in Week 4.
+      </div>
     </div>
 
     <div class="lab-step" id="step-w1-5">
@@ -448,7 +464,7 @@ Do NOT notify the contractor — they will destroy evidence.</code></pre><button
 <div class="week-header"><span class="week-badge">WEEK 3</span><span style="color:var(--text-muted);font-size:14px">Lab: Model Comparison &amp; Phishing Analysis</span></div>
 
 <div class="callout callout-key">
-<p><strong>Lab Goal:</strong> Empirically compare Claude Sonnet vs. Claude Haiku on a security analysis task. Build a model selection framework based on accuracy, cost, speed, and hallucination risk. Learn how context window size affects analysis quality.</p>
+<p><strong>Lab Goal:</strong> Empirically compare Claude Sonnet vs. Claude Haiku on a phishing analysis task. Build a model selection framework based on accuracy, cost, speed, and hallucination risk. Learn how context window size affects analysis quality.</p>
 </div>
 
 <div class="quiz-block" id="quiz-w3">
@@ -548,44 +564,61 @@ cd ~/noctua-labs/unit1/week3
     <div class="lab-step" id="step-w3-3">
       <label><input type="checkbox" onchange="toggleStep('w3-3',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 3: Run quick analysis with a minimal prompt (speed test)</div>
-        <div class="step-desc">Now submit the same email with only: <em>"Is this email phishing? Answer: yes/no, 3 indicators, confidence %."</em> Record how response quality changes.</div>
+        <div class="step-title">Step 3: Run the SAME detailed prompt against Claude Haiku (model comparison)</div>
+        <div class="step-desc">Run the identical detailed analysis prompt from Step 2 against <code>claude-haiku-4-5</code>. Record response time, indicator count, confidence score, and any differences in reasoning depth vs. Sonnet. This is the head-to-head comparison.</div>
       </div></label>
+      <div class="code-block"><pre><code>claude --model claude-haiku-4-5
+# Use the SAME prompt from Step 2:
+# "Analyze this email for phishing indicators. For each
+# indicator: type, severity, confidence (0-100%), and explanation.
+# Conclude with: is_phishing (true/false), confidence, user_action,
+# false_positive_risk. Format as JSON."
+# Paste the phishing-sample.txt content after the prompt.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w3-4">
       <label><input type="checkbox" onchange="toggleStep('w3-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 4: Build your model selection comparison matrix</div>
-        <div class="step-desc">Create <code>model-comparison.md</code> with columns: Approach | Indicators Found | Confidence Score | Response Length | False Positive Risk | Estimated Cost (per 1000 emails). Fill in rows for both prompts above.</div>
+        <div class="step-title">Step 4: Run quick analysis with a minimal prompt (speed test)</div>
+        <div class="step-desc">Submit the same email to Sonnet with only: <em>"Is this email phishing? Answer: yes/no, 3 indicators, confidence %."</em> Record how response quality changes versus the detailed prompt.</div>
       </div></label>
     </div>
 
-    <div class="lab-step" id="step-w3-5">
-      <label><input type="checkbox" onchange="toggleStep('w3-5',this.checked)">
+    <div class="lab-step" id="step-w3-5-compare">
+      <label><input type="checkbox" onchange="toggleStep('w3-5-compare',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 5: Test with a legitimate email (false positive check)</div>
-        <div class="step-desc">Create a legitimate-sounding email from your IT team (e.g., routine password reset reminder). Run the same detailed analysis. Does the model correctly identify it as legitimate? How does confidence score differ?</div>
+        <div class="step-title">Step 5: Build your model selection comparison matrix</div>
+        <div class="step-desc">Create <code>model-comparison.md</code> with columns: Model/Approach | Indicators Found | Confidence Score | Response Length | False Positive Risk | Estimated Cost (per 1000 emails). Fill in rows for: (1) Sonnet detailed prompt, (2) Haiku detailed prompt, (3) Sonnet minimal prompt. Include a row for your recommendation.</div>
       </div></label>
     </div>
 
     <div class="lab-step" id="step-w3-6">
       <label><input type="checkbox" onchange="toggleStep('w3-6',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 6: Calculate cost projections</div>
-        <div class="step-desc">Estimate API cost for your organization's email volume (assume 10,000 emails/day). Compare: detailed prompt vs. quick prompt. How does prompt engineering affect the cost-accuracy trade-off?</div>
+        <div class="step-title">Step 6: Test with a legitimate email (false positive check)</div>
+        <div class="step-desc">Create a legitimate-sounding email from your IT team (e.g., routine password reset reminder). Run the same detailed analysis against both Sonnet and Haiku. Do both models correctly identify it as legitimate? How does confidence score differ across models?</div>
       </div></label>
-      <div class="code-block"><pre><code># Claude Sonnet pricing (March 2026):
-# Input: $3.00 / 1M tokens | Output: $15.00 / 1M tokens
-# Estimate tokens per email analysis (input + output combined)
-# 10,000 emails/day * [tokens per analysis] * [price per token] = daily cost</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
     <div class="lab-step" id="step-w3-7">
       <label><input type="checkbox" onchange="toggleStep('w3-7',this.checked)">
       <div class="step-content">
-        <div class="step-title">Step 7: Write your model selection recommendation (1 page)</div>
-        <div class="step-desc">Based on your data: for a SOC phishing triage workflow, what is the right model + prompt combination? Justify using accuracy, cost, and CCT principles (specifically: what is the cost of a false positive? A false negative?).</div>
+        <div class="step-title">Step 7: Calculate cost projections for each model</div>
+        <div class="step-desc">Estimate API cost for your organization's email volume (assume 10,000 emails/day). Compare: Sonnet detailed vs. Haiku detailed vs. Sonnet minimal. How does model choice and prompt engineering affect the cost-accuracy trade-off?</div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Sonnet pricing (March 2026):
+# Input: $3.00 / 1M tokens | Output: $15.00 / 1M tokens
+# Claude Haiku pricing (March 2026):
+# Input: $0.80 / 1M tokens | Output: $4.00 / 1M tokens
+# Estimate tokens per email analysis (input + output combined)
+# 10,000 emails/day * [tokens per analysis] * [price per token] = daily cost</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-w3-8">
+      <label><input type="checkbox" onchange="toggleStep('w3-8',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 8: Write your model selection recommendation (1 page)</div>
+        <div class="step-desc">Based on your empirical data comparing Sonnet and Haiku: for a SOC phishing triage workflow, what is the right model + prompt combination? Justify using accuracy, cost, and CCT principles (specifically: what is the cost of a false positive? A false negative?). Reference your comparison matrix from Step 5.</div>
       </div></label>
     </div>
 
@@ -612,9 +645,9 @@ cd ~/noctua-labs/unit1/week3
 <div class="deliverables">
   <h5>Week 3 Deliverables</h5>
   <ul>
-    <li><strong>model-comparison.md</strong> — comparison matrix across approaches, including false positive test results</li>
-    <li><strong>Model Selection Recommendation</strong> (1 page) — justified recommendation with cost analysis</li>
-    <li><strong>CCT Journal Entry</strong> — how did testing force you to think more carefully about the cost of AI errors in security?</li>
+    <li><strong>model-comparison.md</strong> — comparison matrix with three rows: Sonnet (detailed), Haiku (detailed), Sonnet (minimal); includes false positive test results for both models</li>
+    <li><strong>Model Selection Recommendation</strong> (1 page) — justified recommendation with cost analysis comparing Sonnet vs. Haiku for phishing triage at scale</li>
+    <li><strong>CCT Journal Entry</strong> — how did the Sonnet vs. Haiku comparison force you to think more carefully about the cost of AI errors in security?</li>
   </ul>
 </div>
 
@@ -681,10 +714,13 @@ cd ~/noctua-labs/unit1/week3
         <div class="step-desc">Create <code>v1-system-prompt.md</code> with only: "You are a security analyst. Analyze security incidents and provide recommendations." Test this against the Meridian Financial incident from Week 1.</div>
       </div></label>
       <div class="code-block"><pre><code>mkdir -p ~/noctua-labs/unit1/week4
-# Create v1-system-prompt.md with minimal prompt
-# Test in Claude Code by starting with:
-claude
-# Then: "Using system prompt: [v1 text]. Now analyze: [incident data]"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+# Create v1-system-prompt.md with minimal prompt</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <p style="margin:10px 0 6px;font-size:13px;color:var(--text-muted);">In Claude Code, use the <code>--system-prompt</code> flag to set a system prompt for the session, OR add your system prompt to <code>.claude/CLAUDE.md</code> in your project directory. Example:</p>
+      <div class="code-block"><pre><code>claude --system-prompt 'You are a security analyst. Analyze security incidents and provide recommendations.'
+# Then in the session, paste your incident data as the user message.</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;">
+        <strong>Note:</strong> The system prompt configures how Claude behaves throughout the session. It is separate from the user message that contains your incident data. Pasting "Using system prompt: X" as a user message does <em>not</em> set a system prompt — it is just another user turn.
+      </div>
     </div>
 
     <div class="lab-step" id="step-w4-2">
@@ -808,6 +844,10 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   <p style="margin-top:8px;">Use CLAUDE.md for project-specific context. Use your context library for reusable analyst patterns and system prompts you want available anywhere.</p>
 </div>
 
+<div class="callout" style="margin-top:16px;">
+  <p><strong>What is CLAUDE.md?</strong> Claude Code automatically reads a file named <code>CLAUDE.md</code> in your project directory (and parent directories) at the start of every session. This file functions as a persistent system prompt — use it to capture your SOC analyst persona, tool preferences, and investigation methodology so you don't re-enter them every session.</p>
+</div>
+
 <div class="callout callout-key">
   <strong>Save Your Context Permanently — Create a CLAUDE.md</strong>
   <p>You now have a context library. Teach Claude Code to load it automatically. Create a <code>CLAUDE.md</code> file in your project root — Claude Code reads it at the start of every session before you type a single word. Put your context library references, working standards, and architectural preferences there. You'll never have to re-explain your style to a new session again.</p>
@@ -825,7 +865,7 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   <div class="callout callout-key" style="margin-top:20px;">
   <p><strong>Topics introduced this unit that return later:</strong></p>
   <ul>
-  <li><strong>Slash commands</strong> (/think, /build-spec, /worktree-setup, /retro, /harness-assess) — introduced briefly; full coverage in Unit 4</li>
+  <li><strong>Slash commands</strong> (/think, /build-spec, /worktree-setup, /retro, /harness-assess) — introduced here; use /worktree-setup and /harness-assess in your sprint workflows when you need isolated experiments or environment audits</li>
   <li><strong>MCP server configuration</strong> — you'll build your first MCP server in Unit 2</li>
   <li><strong>RAG and retrieval</strong> — introduced as a concept; you'll build a RAG system in Unit 2 Week 8</li>
   <li><strong>Open source model deployment</strong> — tradeoffs covered here; production deployment is a Semester 2 topic</li>
@@ -871,7 +911,7 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   </ul>
   <p><strong>What was introduced (returns in later units)</strong></p>
   <ul>
-  <li>Slash commands and Claude Code skills (Unit 4)</li>
+  <li>Slash commands and Claude Code skills — use them in your sprint workflows throughout the course</li>
   <li>MCP architecture and tool design (Unit 2)</li>
   <li>RAG and knowledge retrieval (Unit 2)</li>
   <li>Cedar policy enforcement (Unit 3)</li>
@@ -883,14 +923,17 @@ in progress, evidence of lateral movement, or data volume exceeds 1GB.</code></p
   <div class="callout callout-warn" style="margin-top:16px;">
   <p><strong>Before starting Unit 2 — verify your setup:</strong></p>
   <ul>
-  <li><label><input type="checkbox"> Python 3.10 or higher installed</label></li>
+  <li><label><input type="checkbox"> Python 3.10 or 3.11 installed</label></li>
   <li><label><input type="checkbox"> Claude Code installed and authenticated (<code>claude --version</code> works)</label></li>
   <li><label><input type="checkbox"> Anthropic API key configured in your environment</label></li>
   <li><label><input type="checkbox"> <code>uv</code> or <code>pip</code> available for package management</label></li>
   <li><label><input type="checkbox"> Git configured with your name and email</label></li>
   <li><label><input type="checkbox"> A code editor ready (VS Code recommended)</label></li>
   </ul>
-  <p>If any of these are missing, set them up before Week 5. Unit 2 Day 2 starts with running Python code.</p>
+  <div class="callout callout-warn" style="margin-top:10px;margin-bottom:0;">
+    <strong>&#9888; Python version warning:</strong> Install Python 3.10 or 3.11 specifically. The AIF360 fairness library (used in Unit 3, Week 11) has known compatibility issues with Python 3.12+. Python 3.13 (current stable) will cause AIF360 installation failures.
+  </div>
+  <p style="margin-top:10px;">If any of these are missing, set them up before Week 5. Unit 2 Day 2 starts with running Python code.</p>
   </div>
 
   <p style="margin-top:16px;">Next: <a href="lab-s1-unit2.html">Unit 2 Lab Guide — Agent Tool Architecture &rarr;</a></p>

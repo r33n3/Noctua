@@ -29,8 +29,8 @@
 <li>Bachelor's degree in Computer Science, Information Security, or related field — OR equivalent professional cybersecurity experience with instructor approval</li>
 <li>Intermediate Python proficiency (REST APIs, JSON, async, command-line scripting)</li>
 <li>Hands-on cybersecurity background: incident response, threat modeling, or security operations — OWASP Top 10 familiarity expected</li>
-<li>REST API development experience (you build MCP servers from Week 5)</li>
-<li>Basic Docker/container proficiency (required from Unit 4)</li>
+<li>Python development experience (you build MCP servers using the MCP Python SDK with stdio transport from Week 5)</li>
+<li>Basic Docker/container proficiency (required from Week 6 / Unit 2)</li>
 <li>Git proficiency — branching, pull requests, command-line usage</li>
 <li>Claude Max subscription (program-provided or course fee)</li>
 </ul>
@@ -57,7 +57,7 @@
 <p><strong>Build and deploy Model Context Protocol (MCP) servers</strong> that standardize agent-tool communication and enable auditable, secure AI agent access to external systems.</p>
 </li>
 <li>
-<p><strong>Evaluate AI security tools</strong> against established frameworks including NIST AI RMF, OWASP Top 10 for Agentic Applications, and the AIUC-1 Standard for AI agent security, safety, and reliability.</p>
+<p><strong>Evaluate AI security tools</strong> against established frameworks including NIST AI RMF, OWASP Top 10 for Agentic Applications, and the AIUC-1 Standard for AI agent security, safety, and reliability. <span style="font-weight:normal;">(AIUC-1 is a course-constructed governance framework modeled on NIST AI RMF principles — not a published external standard)</span></p>
 </li>
 <li>
 <p><strong>Identify and mitigate bias, fairness, and explainability issues</strong> in AI-powered security systems through hands-on bias detection and fairness engineering.</p>
@@ -72,7 +72,7 @@
 <p><strong>Compose and enforce AI security policies</strong> that govern data handling, model governance, agent permissions, and incident response for AI-driven security systems.</p>
 </li>
 <li>
-<p><strong>Measure AI-augmented security workflows</strong> using five key performance metrics: Mean Time to Triage (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Isolate (MTTI), and Augmented Mean Time to Respond (aMTTR).</p>
+<p><strong>Measure AI-augmented security workflows</strong> using five key performance metrics: Mean Time to Suppress (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Investigate (MTTI), and Augmented Mean Time to Respond (aMTTR).</p>
 </li>
 <li>
 <p><strong>Defend security decisions made by AI agents</strong> by providing explanations grounded in evidence, audit logs, and structured reasoning that satisfy both technical and non-technical stakeholders.</p>
@@ -232,7 +232,7 @@
 <tr>
 <td>CCT Journals</td>
 <td>10%</td>
-<td>Weekly reflection entries (Weeks 1–15, 14 entries). Must demonstrate deepening understanding of Collaborative Critical Thinking principles.</td>
+<td>Weekly reflection entries (Weeks 1–15, 15 entries). Must demonstrate deepening understanding of Collaborative Critical Thinking principles.</td>
 </tr>
 <tr>
 <td>Participation</td>
@@ -371,7 +371,7 @@
 </ul>
 <h3 id="external-resources">External Resources</h3>
 <ul>
-<li>Claude documentation (https://claude.ai/docs)</li>
+<li>Claude documentation (https://docs.anthropic.com)</li>
 <li>Model Context Protocol (https://modelcontextprotocol.io/)</li>
 <li>NIST Cyber AI Profile (https://csrc.nist.gov/)</li>
 <li>OWASP Top 10 for Agentic Applications (https://owasp.org/)</li>
@@ -444,7 +444,7 @@
 </tr>
 <tr>
 <td>9</td>
-<td>Responsible AI Principles</td>
+<td>AIUC-1 Governance Audit</td>
 <td>Ethics audit report</td>
 </tr>
 <tr>
@@ -516,10 +516,10 @@
 </ul>
 <hr />
 <h2 id="appendix-performance-metrics-definitions">Appendix: Performance Metrics Definitions</h2>
-<p><strong>MTTS (Mean Time to Triage):</strong> Time from alert generation to initial assessment of the alert's nature and severity. Measures how quickly the system (human + AI) understands the problem.</p>
-<p><strong>MTTP (Mean Time to Protect):</strong> Time from triage to implementation of protective measures (e.g., isolating a system, blocking traffic). Measures speed of protective response.</p>
+<p><strong>MTTS (Mean Time to Suppress):</strong> Time from incident confirmation to threat activity suppressed or contained. Measures how quickly the system (human + AI) neutralizes active threat behavior.</p>
+<p><strong>MTTP (Mean Time to Protect):</strong> Time to implement protective measures after suppression. Measures speed of post-suppression hardening. (Note: sprint velocity metrics use MTTB — Mean Time to Build — which is distinct from MTTP.)</p>
 <p><strong>MTTSol (Mean Time to Solve):</strong> Time from alert generation to complete resolution (root cause addressed, normal operations restored). Measures overall incident resolution speed.</p>
-<p><strong>MTTI (Mean Time to Isolate):</strong> Time from alert to containment (threat isolated, spread prevented). Measures containment speed.</p>
+<p><strong>MTTI (Mean Time to Investigate):</strong> Time to complete forensic and behavioral analysis of a confirmed incident. Measures depth and speed of post-confirmation investigation.</p>
 <p><strong>aMTTR (Augmented Mean Time to Respond):</strong> Overall time from alert generation to resolution, accounting for human decision time and AI analysis time. Demonstrates the efficiency gain from AI augmentation.</p>
 <hr />
 <p><strong>Course Last Updated:</strong> March 4, 2026</p>

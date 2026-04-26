@@ -30,7 +30,8 @@
 <h2 id="week-13">Week 13 — Your First Custom Agent</h2>
 <div class="week-header"><span class="week-badge">WEEK 13</span><span class="week-sub">Lab: Build a Subagent and Run Your First Agent Team</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build two custom subagents as YAML files and invoke them inside Claude Code — no API key or billing needed. Then spawn a three-member agent team to parallelize a security analysis task. Everything this week runs on your Claude subscription.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Build two custom subagents as YAML files and invoke them inside Claude Code. Then spawn a three-member agent team to parallelize a security analysis task.</p>
+<p><strong>Billing note:</strong> If you're using a Claude Max subscription, subagent invocations run on your subscription with no additional API charges. If you're using an Anthropic API key (pay-per-token), each subagent call consumes tokens at standard rates. Check your billing plan before running large multi-agent workflows.</p></div>
 
 <div class="callout callout-key">
   <strong>The agentic loop — what's actually happening</strong>
@@ -111,7 +112,8 @@ mkdir -p .claude/agents
       <div class="code-block"><pre><code>---
 name: soc-analyst
 description: Senior SOC analyst for incident investigation and alert triage. Use for security alerts, MTTI analysis, and threat hypothesis generation. Use proactively when analyzing security incidents.
-tools: Read, Bash, Glob, Grep
+tools: Read, Bash, Grep
+# Note: file glob/pattern searches are done via Bash (e.g., find . -name "*.log")
 model: inherit
 ---
 
@@ -136,11 +138,15 @@ Flag any low-confidence assessments explicitly. Never fabricate enrichment data.
       <label><input type="checkbox" onchange="toggleStep('w13-3',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 3: Verify and invoke the subagent</div>
-        <div class="step-desc">Confirm Claude Code sees your new subagent, then run it two ways: via <code>/agents</code> interface and via @-mention in a prompt.</div>
+        <div class="step-desc">Confirm your subagent file is in the correct location, then invoke it via @-mention in a Claude Code session.</div>
       </div></label>
-      <div class="code-block"><pre><code># From terminal — list all configured subagents:
-claude agents
-# Should show: soc-analyst [project] .claude/agents/soc-analyst.md
+      <div class="code-block"><pre><code># Verify your subagent file is in the correct location:
+ls -la .claude/agents/
+cat .claude/agents/soc-analyst.md | head -20
+
+# Claude Code loads subagent definitions from .claude/agents/ in your project directory
+# or ~/.claude/agents/ for user-global agents available across all projects.
+# There is no `claude agents list` command — verify by checking the directory directly.
 
 # From inside a Claude Code session — two invocation patterns:
 
@@ -166,7 +172,8 @@ claude agents
       <div class="code-block"><pre><code>---
 name: threat-enricher
 description: MITRE ATT&CK specialist for TTP mapping and threat actor attribution. Use after initial triage when you need detailed technique analysis or threat intel correlation.
-tools: Read, Grep, Glob
+tools: Read, Grep
+# Note: file pattern searches are done via Bash (e.g., find . -name "*.ioc")
 model: inherit
 ---
 
@@ -223,6 +230,10 @@ Cite ATT&CK technique IDs precisely (e.g., T1566.001). Flag unknown techniques a
 # - network-analyst: investigate the network indicators (IPs, domains, C2 traffic patterns)
 # - endpoint-analyst: investigate the endpoint indicators (file hashes, process names, registry changes)
 # Have them share findings and produce a coordinated incident summary."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-warn">
+        <p><strong>Note:</strong> Agent teams are an experimental feature. If <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> produces no change in behavior, the feature may not be available in your Claude Code version. As an alternative, you can coordinate multiple agents manually: run each subagent in a separate terminal window and pass outputs between them via files in a shared <code>handoff/</code> directory. The coordination pattern is the same; only the UI integration differs.</p>
+        <p>The <strong>Shift+Down</strong> shortcut to cycle between lead and teammates is specific to the experimental UI integration — verify it works in your version before relying on it.</p>
+      </div>
       <div class="callout callout-tip">
         <p>In in-process mode (default), press <strong>Shift+Down</strong> to cycle between the lead and teammates. You can message each teammate directly. Watch how they claim tasks from the shared list and message each other.</p>
       </div>
@@ -258,12 +269,12 @@ Cite ATT&CK technique IDs precisely (e.g., T1566.001). Flag unknown techniques a
 <h2 id="week-14">Week 14 — Rapid Prototyping Sprint I</h2>
 <div class="week-header"><span class="week-badge">WEEK 14</span><span class="week-sub">Lab: Concept to Working Demo in 3 Hours</span></div>
 
-<div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a time-boxed rapid prototyping sprint: 20 minutes for problem scoping and spec, 2 hours for building, 40 minutes for testing and demo prep. You will measure MTTS, MTTP, and MTTSol for your sprint. This prototype becomes the foundation of your midyear project.</p></div>
+<div class="callout callout-key"><p><strong>Lab Goal:</strong> Execute a time-boxed rapid prototyping sprint: 20 minutes for problem scoping and spec, 2 hours for building, 40 minutes for testing and demo prep. You will measure MTTS, MTTB, and MTTSol for your sprint. This prototype becomes the foundation of your midyear project.</p></div>
 
 <div class="quiz-block" id="quiz-w14">
   <h4> Knowledge Check — Week 14</h4>
 
-  <div class="quiz-question" data-qid="w14q1" data-answer="a" data-explain="MTTS (Mean Time to Suppress/Strategy) measures how quickly a team identifies the core security problem and strategic approach — from receiving a challenge to having a validated strategy. In sprint terms, this is your 20-minute scoping phase where you define the problem, solution approach, and agent architecture.">
+  <div class="quiz-question" data-qid="w14q1" data-answer="a" data-explain="MTTS (Mean Time to Suppress) is the time from incident confirmation to threat activity suppressed or contained. In the sprint context, it maps to your 20-minute scoping phase: from receiving the challenge to having a validated strategy and approach decision — the moment you have 'suppressed' ambiguity and committed to a direction.">
     <p class="q-text">1. In the sprint context, what does MTTS measure?</p>
     <div class="quiz-opts">
       <label><input type="radio" name="w14q1" value="a"> A) Time from challenge start to validated strategy/approach decision</label>
@@ -302,12 +313,13 @@ Cite ATT&CK technique IDs precisely (e.g., T1566.001). Flag unknown techniques a
 /build-spec phishing email triage pipeline — single sprint, Claude agent + MCP tools, 3-hour build window</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 </div>
 
-<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTP (Mean Time to Prototype) — time from "go" to working demo. Also track MTTS (Mean Time to Spec) — time from "go" to a written, signed-off spec. Why:</p>
+<div class="callout callout-key"><p><strong>Track two metrics, not one.</strong> Most students track MTTB (Mean Time to Build) — time from spec-complete to first working prototype. Also track MTTS (Mean Time to Suppress) — time from challenge start to validated strategy decision. Why:</p>
 <ul>
-<li>MTTP tells you how fast you execute</li>
+<li>MTTB tells you how fast you execute once you have a direction</li>
 <li>MTTS tells you how fast you make design decisions</li>
-<li>If MTTP improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
+<li>If MTTB improves by compressing MTTS (skipping the spec to start building faster), you've traded evaluation validity for speed</li>
 </ul>
+<p><strong>Note on naming:</strong> MTTP in this course's IR/security context means "Mean Time to Protect" — a different metric. The sprint build metric is called MTTB to avoid collision.</p>
 <p>The spec phase should not be rushed. It is where security decisions are made.</p>
 </div>
 
@@ -337,7 +349,12 @@ Cite ATT&CK technique IDs precisely (e.g., T1566.001). Flag unknown techniques a
   </label>
 </div>
 <div class="callout callout-tip">
-  <strong>Finding the skill</strong>
+  <strong>Setup: /audit-aiuc1 skill</strong>
+  <p>This slash command requires the AIUC-1 audit skill file. Verify it's installed:</p>
+  <div class="code-block"><pre><code>ls ~/.claude/commands/audit-aiuc1.md
+# or
+ls .claude/commands/audit-aiuc1.md</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <p>If the file is missing, you can use the manual audit matrix from Unit 3 Week 9 instead — the skill automates the same checklist. To install: copy the skill from <code>course-skills/audit-aiuc1.md</code> to <code>~/.claude/commands/audit-aiuc1.md</code>.</p>
   <p>The <code>/audit-aiuc1</code> skill is included in the course skills bundle. The skill file is at <code>.claude/skills/audit-aiuc1/SKILL.md</code>.</p>
 </div>
 
@@ -376,8 +393,8 @@ claude
     <div class="lab-step" id="step-w14-4">
       <label><input type="checkbox" onchange="toggleStep('w14-4',this.checked)">
       <div class="step-content">
-        <div class="step-title">Phase 2 — Build: Record MTTP (end of build = working plan)</div>
-        <div class="step-desc">When you have a working plan (the system does SOMETHING end-to-end, even if incomplete): MTTP = ___ minutes from start.</div>
+        <div class="step-title">Phase 2 — Build: Record MTTB (end of build = working prototype)</div>
+        <div class="step-desc">MTTB (Mean Time to Build): time from spec-complete to first working prototype. When the system does SOMETHING end-to-end, even if incomplete: MTTB = ___ minutes from spec sign-off.</div>
       </div></label>
     </div>
 
@@ -393,7 +410,7 @@ claude
       <label><input type="checkbox" onchange="toggleStep('w14-6',this.checked)">
       <div class="step-content">
         <div class="step-title">Phase 3 — Review: Record MTTSol and MTTI</div>
-        <div class="step-desc">MTTSol = Time from start to working tested prototype = ___ minutes. Record total token cost from Claude API usage. Create Sprint I metrics summary: MTTS / MTTP / MTTSol / Token Cost / Completion %.</div>
+        <div class="step-desc">MTTSol = Time from start to working tested prototype = ___ minutes. Record total token cost from Claude API usage. Create Sprint I metrics summary: MTTS / MTTB / MTTSol / Token Cost / Completion %.</div>
       </div></label>
     </div>
 
@@ -434,7 +451,7 @@ claude
   <h5>Week 14 Deliverables</h5>
   <ul>
     <li><strong>Sprint I Prototype</strong> — code repository with README, working end-to-end (even if incomplete)</li>
-    <li><strong>Sprint I Metrics</strong> — MTTS, MTTP, MTTSol, token cost, and completion percentage</li>
+    <li><strong>Sprint I Metrics</strong> — MTTS, MTTB, MTTSol, token cost, and completion percentage</li>
     <li><strong>5-Minute Demo Script</strong> — written and rehearsed presentation for Sprint I showcase</li>
     <li><strong>AI Methodology Note</strong> — 100-word description of how Claude Code was used in the sprint</li>
   </ul>
@@ -524,7 +541,7 @@ class JSONFormatter(logging.Formatter):
       <label><input type="checkbox" onchange="toggleStep('w15-5',this.checked)">
       <div class="step-content">
         <div class="step-title">Step 5: Write the README and architecture documentation</div>
-        <div class="step-desc">Create a README covering: what the system does, architecture diagram, setup instructions, usage examples (with expected outputs), known limitations, ethics compliance status, and performance metrics (MTTS/MTTP/MTTSol comparison Sprint I vs Sprint II).</div>
+        <div class="step-desc">Create a README covering: what the system does, architecture diagram, setup instructions, usage examples (with expected outputs), known limitations, ethics compliance status, and performance metrics (MTTS/MTTB/MTTSol comparison Sprint I vs Sprint II).</div>
       </div></label>
     </div>
 
@@ -542,7 +559,11 @@ class JSONFormatter(logging.Formatter):
         <div class="step-title">Sprint II close: achieve READY status on production readiness audit</div>
         <div class="step-desc">Run the full production readiness audit on your hardened prototype. Target: READY (no CRITICAL or HIGH findings). Layer 3 checklist: structured logging (3.1), correlation IDs (3.2), health check endpoint (3.3), graceful SIGTERM shutdown (3.4), metrics emission (3.5). Layer 4 checklist: constant-time secret comparison (4.1), structured log fields only — no f-strings with user input (4.2), input bounds on all tools (4.3), credential refresh support (4.4), audit records on automated actions (4.5). Track improvement from Sprint I. Include the final report in your Week 15 deliverables alongside your ethics audit.</div>
       </div></label>
-      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit4/sprint1/
+      <div class="code-block"><pre><code>/check-antipatterns ~/noctua-labs/unit4/sprint2/
+
+# Compare this output to your Sprint I audit from Week 14.
+# The delta between the two audits IS your hardening evidence —
+# document which antipatterns were resolved and which remain.
 
 # Track improvement:
 # Sprint I:  CRITICAL __ HIGH __ MEDIUM __
@@ -614,7 +635,7 @@ class JSONFormatter(logging.Formatter):
   <strong>Class Discussion — Before Presentations</strong>
   <p>Before the demo session begins, take 15 minutes for structured reflection. These questions are the synthesis moment — 16 weeks of CCT, tools, ethics, and prototyping converge here.</p>
   <ul>
-    <li><strong>Week 1 vs. Week 16 MTTI:</strong> Your MTTI at Week 1 was roughly 26 minutes. What is your Week 16 MTTI for a similar-complexity investigation? What accounts for the difference — skill, tooling, or workflow? How much of the improvement came from faster CCT reasoning vs. faster execution?</li>
+    <li><strong>Week 1 vs. Week 16 MTTI:</strong> Your MTTI at Week 1 was recorded in your personal <code>metrics-log.csv</code>. Pull your Week 1 baseline: <code>grep 'week1' ~/noctua-labs/metrics-log.csv</code>. Compare it to your current MTTI. The improvement delta — not the absolute number — is what matters for your portfolio presentation. What accounts for the difference — skill, tooling, or workflow? How much of the improvement came from faster CCT reasoning vs. faster execution?</li>
     <li><strong>Changed assumptions:</strong> What assumption about AI-assisted security work did you hold in Week 1 that turned out to be wrong? What evidence from a specific lab changed your mind?</li>
     <li><strong>CCT in practice:</strong> Which of the five CCT pillars challenged your instincts most? Was there a lab where you realized you had been applying a pillar superficially?</li>
     <li><strong>Course redesign:</strong> If you were designing this semester's curriculum, what would you add, cut, or reorder?</li>
@@ -656,7 +677,7 @@ class JSONFormatter(logging.Formatter):
       <tr><td style="padding:6px 8px;">3</td><td style="padding:6px 8px;"><strong>Race conditions</strong></td><td style="padding:6px 8px;">If agents run concurrently, is shared state (logs, files, rate counters) protected?</td><td style="padding:6px 8px;">Thread-safe or process-isolated</td></tr>
       <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">4</td><td style="padding:6px 8px;"><strong>Enum completeness</strong></td><td style="padding:6px 8px;">Do all match/case or if-elif blocks have an explicit default?</td><td style="padding:6px 8px;">No silent fall-through on unexpected values</td></tr>
       <tr><td style="padding:6px 8px;">5</td><td style="padding:6px 8px;"><strong>Error propagation</strong></td><td style="padding:6px 8px;">Does every exception either recover gracefully or surface clearly to the caller?</td><td style="padding:6px 8px;">No bare <code>except: pass</code> blocks</td></tr>
-      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">6</td><td style="padding:6px 8px;"><strong>Secrets in env vars</strong></td><td style="padding:6px 8px;">Are all API keys, tokens, and credentials in environment variables — not in code or committed files?</td><td style="padding:6px 8px;"><code>git grep -i "api_key\s*="</code> returns zero matches</td></tr>
+      <tr style="background:rgba(255,255,255,0.03);"><td style="padding:6px 8px;">6</td><td style="padding:6px 8px;"><strong>Secrets in env vars</strong></td><td style="padding:6px 8px;">Are all API keys, tokens, and credentials in environment variables — not in code or committed files?</td><td style="padding:6px 8px;"><code>git grep -iE "(api_key|api_secret|token|password|secret|bearer|private_key)\s*[=:]" -- '*.py' '*.json' '*.yaml' '*.yml' '*.env' '*.md'</code> returns zero matches. Also review recent commits: <code>git log --all --oneline | head -20</code>. For production use, run <code>pip install truffleHog</code> or <code>pip install detect-secrets</code> for comprehensive detection.</td></tr>
       <tr><td style="padding:6px 8px;">7</td><td style="padding:6px 8px;"><strong>Blast radius</strong></td><td style="padding:6px 8px;">Does this PR change fewer than 5 files? If more, is the scope justified?</td><td style="padding:6px 8px;">Documented rationale for any large-scope change</td></tr>
     </tbody>
   </table>
