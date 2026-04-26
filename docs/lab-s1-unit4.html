@@ -21,7 +21,7 @@
 </div>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 33 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 4 Lab Progress</span><span id="prog-text">0 / 34 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -571,6 +571,52 @@ class JSONFormatter(logging.Formatter):
 # Target: READY status (no CRITICAL or HIGH)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
     </div>
 
+    <div class="lab-step" id="step-u4-budget-1">
+      <label><input type="checkbox" onchange="toggleStep('u4-budget-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step: Wire a hard token budget into your agentic loop</div>
+        <div class="step-desc">A production agentic system without a token budget is a billing liability. Wire a hard cap that stops execution and alerts when the budget is exceeded — before a runaway loop or adversarial input burns through an API allocation. <em>(Theory: Week 15/16 — Production Hardening)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code>class TokenBudgetExceeded(Exception):
+    pass
+
+class BudgetedAgentLoop:
+    def __init__(self, client, model: str, max_input_tokens: int = 50_000, max_output_tokens: int = 10_000):
+        self.client = client
+        self.model = model
+        self.max_input = max_input_tokens
+        self.max_output = max_output_tokens
+        self.used_input = 0
+        self.used_output = 0
+
+    def _check_budget(self):
+        if self.used_input >= self.max_input:
+            raise TokenBudgetExceeded(f"Input budget exhausted: {self.used_input}/{self.max_input} tokens used")
+        if self.used_output >= self.max_output:
+            raise TokenBudgetExceeded(f"Output budget exhausted: {self.used_output}/{self.max_output} tokens used")
+
+    def run(self, messages: list, tools: list = None) -> dict:
+        kwargs = {"model": self.model, "max_tokens": 1024, "messages": messages}
+        if tools:
+            kwargs["tools"] = tools
+        try:
+            self._check_budget()
+            response = self.client.messages.create(**kwargs)
+            self.used_input += response.usage.input_tokens
+            self.used_output += response.usage.output_tokens
+            self._check_budget()  # check after — catches final turn overage
+            return {"response": response, "budget_used": {"input": self.used_input, "output": self.used_output}}
+        except TokenBudgetExceeded as e:
+            # Alert and halt — do not silently continue
+            print(f"[BUDGET ALERT] {e}. Halting agent. Used: input={self.used_input}, output={self.used_output}")
+            raise
+
+# Usage:
+# loop = BudgetedAgentLoop(client, "claude-sonnet-4-6", max_input_tokens=50_000)
+# result = loop.run(messages, tools=my_tools)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key"><p><strong>Why halt instead of warn?</strong> A warning that an agent ignores is not a control — it is a log entry. A hard halt forces the caller to make an explicit decision: extend the budget (with justification), retry with a shorter prompt, or escalate to a human. In a production SOC, a runaway agent loop that over-processes due to adversarial input is both a cost risk and a potential denial-of-service vector. Budget enforcement is a security control, not just cost management.</p></div>
+    </div>
+
   </div>
 </div>
 
@@ -596,6 +642,7 @@ class JSONFormatter(logging.Formatter):
     <li><strong>Sprint II AIUC-1 Governance Audit</strong> — AIUC-1 compliance matrix for the hardened prototype</li>
     <li><strong>Sprint I vs II Comparison</strong> — metrics comparison table showing measurable improvements</li>
     <li><strong>Production Readiness Report</strong> — READY status confirmation from <code>/check-antipatterns</code> with Sprint I → Sprint II improvement delta</li>
+    <li><strong>Token Budget Guard</strong> — <code>BudgetedAgentLoop</code> wired into your sprint tool, with configurable input/output caps and hard-halt behavior on budget exhaustion</li>
   </ul>
 </div>
 

@@ -1027,6 +1027,70 @@ print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
       </div></label>
     </div>
 
+    <div class="lab-step" id="step-u5w4-eval">
+      <label><input type="checkbox" onchange="toggleStep('u5w4-eval',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step 3b: Build an automated eval harness — evals-as-code</div>
+        <div class="step-desc">Manual comparison (Steps 2–3) requires human judgment for every output. An eval harness runs programmatic checks against known-good ground truth — deterministic, repeatable, and runnable in CI whenever your agent or model changes. Build <code>eval_harness.py</code> that grades your agents automatically against <code>test_incidents.json</code>. <em>(Theory: Week 4 — Evals-as-Code for Security Agents)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code>import json, re
+from pathlib import Path
+
+def load_test_suite(path: str = "test_incidents.json") -> list:
+    return json.loads(Path(path).read_text())
+
+def grade_severity(predicted: str, expected: str) -> bool:
+    """Exact match on P1/P2/P3/P4."""
+    return predicted.strip().upper() == expected.strip().upper()
+
+def grade_ioc_count(predicted_text: str, expected_count: int, tolerance: int = 1) -> bool:
+    """Count numeric IOC mentions in output, allow ±tolerance."""
+    nums = re.findall(r'\b(\d+)\b', predicted_text)
+    counts = [int(n) for n in nums if 1 <= int(n) <= 50]
+    return any(abs(c - expected_count) <= tolerance for c in counts)
+
+def grade_recommendation(predicted_text: str, expected_keyword: str) -> bool:
+    """Check that expected keyword appears in recommendation output."""
+    return expected_keyword.lower() in predicted_text.lower()
+
+def run_eval(agent_fn, test_suite: list) -> dict:
+    """
+    agent_fn: callable(incident_text: str) -> str
+    Returns: {pass_rate, severity_accuracy, ioc_accuracy, rec_accuracy, results}
+    """
+    results = []
+    for case in test_suite:
+        output = agent_fn(case["alert_text"])
+        sev_pass = grade_severity(output, case["expected_severity"])
+        ioc_pass = grade_ioc_count(output, case["expected_ioc_count"])
+        rec_pass = grade_recommendation(output, case["expected_top_recommendation"])
+        results.append({
+            "id": case["id"],
+            "severity": sev_pass,
+            "ioc_count": ioc_pass,
+            "recommendation": rec_pass,
+            "all_pass": sev_pass and ioc_pass and rec_pass,
+        })
+
+    total = len(results)
+    return {
+        "pass_rate": sum(r["all_pass"] for r in results) / total,
+        "severity_accuracy": sum(r["severity"] for r in results) / total,
+        "ioc_accuracy": sum(r["ioc_count"] for r in results) / total,
+        "rec_accuracy": sum(r["recommendation"] for r in results) / total,
+        "results": results,
+    }
+
+# Usage:
+# from your_agent import run_managed_agent, run_sdk_agent
+# suite = load_test_suite()
+# ma_scores = run_eval(run_managed_agent, suite)
+# sdk_scores = run_eval(run_sdk_agent, suite)
+# print(json.dumps({"managed_agents": ma_scores, "agent_sdk": sdk_scores}, indent=2))</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key"><p><strong>Why evals-as-code matters for security agents.</strong> A security agent that passed your manual evaluation last week may regress silently when the model updates, when you change a system prompt, or when the threat intel corpus changes. An automated eval harness catches that regression in CI before it reaches production. The graders above are intentionally simple — severity is exact match, IOC count allows ±1, recommendation checks keyword presence. Simple graders are reproducible graders. Add complexity only when you can justify why the simpler check is insufficient.</p></div>
+      <div class="callout callout-tip"><p><strong>Add this to your CI pipeline.</strong> After the exercise, add a GitHub Actions step that runs <code>python eval_harness.py</code> on every push to your agent repo. A failing eval blocks the merge. This is how production security teams prevent silent regressions in AI-assisted detection systems — the eval suite is the regression test suite.</p></div>
+    </div>
+
     <div class="callout callout-key">
       <p><strong>Framework Comparison Report — Required Structure (10% deliverable)</strong></p>
       <p>This report is evaluated as a security practitioner document, not a generic benchmark report. Generic accuracy metrics are insufficient — include security-specific measures.</p>
@@ -1243,6 +1307,7 @@ claude mcp add mempalace -- python -m mempalace.mcp_server
   <h5>Unit 5 Major Deliverable</h5>
   <ul>
     <li><strong>Framework Comparison Report</strong> (10% of grade) — quantitative evaluation of Claude Managed Agents vs. Claude Agent SDK: same model, different infrastructure paradigm. Test suite results, observability analysis, and justified recommendation for your capstone architecture.</li>
+    <li><strong>eval_harness.py</strong> — automated eval harness grading both agent implementations against <code>test_incidents.json</code> ground truth, with pass rates for severity accuracy, IOC count, and recommendation quality</li>
     <li><strong>Both implementations</strong> — working code for Claude Managed Agents (Weeks 1–2) and Claude Agent SDK (Week 3)</li>
     <li><strong>Fleet Summary Report + Memory Poisoning Analysis</strong> — cross-team diary synthesis and red-team findings from the Week 4 agent diary exercise</li>
   </ul>

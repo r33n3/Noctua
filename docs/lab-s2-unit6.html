@@ -663,6 +663,97 @@ print(result)</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy
 </div>
 
 <hr>
+
+<h2 id="week-6-ir-drill">Capstone Exercise — AI-Assisted Incident Response Drill</h2>
+<div class="week-header"><span class="week-badge">UNIT 6</span><span class="week-sub">Exercise: Full NIST IR Cycle with AI Agents</span></div>
+
+<div class="callout callout-key"><p><strong>Exercise Goal:</strong> Run a complete NIST IR cycle for a simulated Meridian Financial breach — Prepare, Detect, Analyze, Contain, Eradicate, Recover — with an AI agent assisting at each phase. This is not a red team exercise or a blue team exercise: it is an end-to-end workflow drill that shows where AI acceleration works, where it fails, and where a human must make the call. <em>(Theory: Unit 6 — AI-Assisted Incident Response)</em></p></div>
+
+<div class="callout callout-tip"><p><strong>Scenario: Meridian Financial — credential exfiltration confirmed.</strong> At 02:14 UTC the SOC received three alerts in 90 seconds: (1) unusual after-hours authentication from an API service account, (2) a 400MB outbound transfer to an IP not in the allowlist, (3) a MFA bypass event on the CISO's account. Your AI agent team has access to the MASS scanner output from Unit 5, the Meridian IR runbook from Unit 2, and the NeMo guardrail logs from earlier in Unit 6.</p></div>
+
+<div class="lab-section">
+  <h4>Lab Exercise: NIST IR Cycle with AI Agent Handoffs</h4>
+  <div class="lab-steps">
+
+    <div class="lab-step" id="step-u6-ir-1">
+      <label><input type="checkbox" onchange="toggleStep('u6-ir-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 1 — Detect: triage the three alerts with an AI analyst agent</div>
+        <div class="step-desc">Give your Claude agent the three alert texts from the scenario. Ask it to: (1) classify each alert by the Meridian severity tier (P1–P4), (2) identify which OWASP Agentic Top 10 category each alert maps to, (3) produce a confidence score for each classification. Do not tell the agent the alerts are related — let it discover the correlation. <em>(Theory: Detection Phase — AI triage accuracy and false negative risk)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt for Phase 1:
+# "You are a SOC analyst for Meridian Financial. Triage these three alerts.
+#  For each: assign a P1-P4 severity per the Meridian IR runbook,
+#  identify the OWASP Agentic Top 10 category if applicable,
+#  give a confidence score (0-100) and your primary reason for uncertainty.
+#  Do not assume the alerts are related — evaluate each independently first.
+#
+#  Alert 1: Unusual after-hours API service account authentication, 02:14 UTC
+#  Alert 2: 400MB outbound transfer to non-allowlisted IP, 02:14 UTC
+#  Alert 3: MFA bypass event on CISO account, 02:15 UTC"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-tip" style="margin-top:10px;"><p><strong>Observe the correlation step.</strong> Did the agent spontaneously correlate the three alerts into a single incident, or did it triage them independently? A well-prompted agent should notice the 90-second window. If it doesn't, that is a detection capability gap — not a model failure, a prompting and context design failure.</p></div>
+    </div>
+
+    <div class="lab-step" id="step-u6-ir-2">
+      <label><input type="checkbox" onchange="toggleStep('u6-ir-2',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 2 — Analyze: escalate to a deeper analysis agent with MASS context</div>
+        <div class="step-desc">Feed the triage output from Phase 1 plus the most recent MASS scanner output (from Unit 5) to an analysis agent. Ask it to: (1) map each alert to a MASS finding if one exists, (2) identify the likely attack chain, (3) produce a recommended containment priority order. <em>(Theory: Analysis Phase — grounding AI recommendations in prior scan context)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt for Phase 2:
+# "You are a senior security analyst. You have two inputs:
+#  1. The triage report from Phase 1 (paste it here)
+#  2. The most recent MASS scanner output for Meridian Financial (paste it here)
+#
+#  Tasks:
+#  (a) Map each alert to a MASS finding if one exists. If no MASS finding matches, say so explicitly.
+#  (b) Reconstruct the most likely attack chain from the evidence.
+#  (c) Produce a containment priority list — which action first, which can wait, and why.
+#  (d) Flag any assumption you made that a human analyst should verify before acting."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    </div>
+
+    <div class="lab-step" id="step-u6-ir-3">
+      <label><input type="checkbox" onchange="toggleStep('u6-ir-3',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 3 — Contain/Eradicate: generate containment runbook, flag human gates</div>
+        <div class="step-desc">Ask the agent to draft a containment runbook for this incident. Critically: instruct it to mark each action with a HUMAN-REQUIRED tag if it involves: account lockout, network isolation, production system changes, or external communication. The agent proposes — a human approves all HUMAN-REQUIRED actions. <em>(Theory: Containment Phase — human-in-the-loop gates for agentic IR)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code># Claude Code prompt for Phase 3:
+# "Draft a containment and eradication runbook for the Meridian incident.
+#  Format each action as:
+#    ACTION: [what to do]
+#    GATE: [HUMAN-REQUIRED | AGENT-OK]
+#    REASON: [why this gate level]
+#    RISK-IF-DELAYED: [what gets worse if this waits 15 minutes]
+#
+#  Mark HUMAN-REQUIRED for any action involving: account changes, network
+#  isolation, production system modifications, or external stakeholder communication.
+#  Sequence actions by risk-if-delayed, not by ease of execution."</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key"><p><strong>The HUMAN-REQUIRED gate is the most important output.</strong> An AI agent that proposes containment actions without flagging which ones require human authorization is an agent that can lock out the wrong account or isolate the wrong network segment autonomously. The gate annotation is not optional — it is the safety architecture. Review the agent's gate assignments: did it correctly flag all account and network actions?</p></div>
+    </div>
+
+    <div class="lab-step" id="step-u6-ir-4">
+      <label><input type="checkbox" onchange="toggleStep('u6-ir-4',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Phase 4 — Recover + Retrospective: document what AI got right and wrong</div>
+        <div class="step-desc">Write a 1-page IR After-Action Report. Required sections: (1) What the AI agent correctly identified without human intervention. (2) What the AI agent got wrong or missed entirely. (3) Which human gates fired and why. (4) What you would change about the prompting, context, or agent design to improve the next drill. <em>(Theory: Recovery Phase — measuring AI contribution to MTTI and MTTS)</em></div>
+      </div></label>
+    </div>
+
+  </div>
+</div>
+
+<div class="deliverables">
+  <h5>Unit 6 IR Drill Deliverables</h5>
+  <ul>
+    <li><strong>Phase 1 Triage Report</strong> — agent output with severity classifications, OWASP categories, and confidence scores for all three alerts</li>
+    <li><strong>Phase 2 Attack Chain Analysis</strong> — MASS-grounded attack chain reconstruction with containment priority order</li>
+    <li><strong>Phase 3 Containment Runbook</strong> — action list with HUMAN-REQUIRED / AGENT-OK gate annotations</li>
+    <li><strong>IR After-Action Report</strong> (Phase 4) — 1-page analysis of AI contribution vs. failure modes across the full NIST IR cycle</li>
+  </ul>
+</div>
+
+<hr>
 <div class="unit-complete">
   <h3> Unit 6 Complete</h3>
   <p>You have threat modeled, red teamed, hardened, and wargamed AI agent security systems.</p>

@@ -21,7 +21,7 @@
 </div>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 7 Lab Progress</span><span id="prog-text">0 / 31 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 7 Lab Progress</span><span id="prog-text">0 / 32 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -633,6 +633,44 @@ cost = (input_tokens * input_price + output_tokens * output_price) / 1_000_000</
         <div class="step-desc">Process your 10-incident test suite with instrumentation active. Export all spans. Analyze: average cost per incident, P95 latency by agent, error rate by agent. Use the console exporter output to build a simple HTML dashboard showing these metrics.</div>
       </div></label>
     </div>
+
+    <div class="lab-step" id="step-u7w11-audit-1">
+      <label><input type="checkbox" onchange="toggleStep('u7w11-audit-1',this.checked)">
+      <div class="step-content">
+        <div class="step-title">Step: Add a decision audit log to every agent turn</div>
+        <div class="step-desc">Infrastructure metrics (latency, token cost, error rate) tell you that something went wrong. A decision audit log tells you why. Wire a structured decision log that captures the full reasoning chain for every agent turn — before incident response requires it. <em>(Theory: Week 11 — Agent Observability Beyond Metrics)</em></div>
+      </div></label>
+      <div class="code-block"><pre><code>import json, time, hashlib
+from anthropic import Anthropic
+
+client = Anthropic()
+
+def audit_log_turn(agent_name: str, turn_input: dict, turn_output: dict, tools_called: list):
+    """Emit a structured decision audit record for one agent turn."""
+    record = {
+        "ts": time.time(),
+        "agent": agent_name,
+        "input_hash": hashlib.sha256(json.dumps(turn_input, sort_keys=True).encode()).hexdigest()[:16],
+        "stop_reason": turn_output.get("stop_reason"),
+        "tools_called": [
+            {"name": t["name"], "input_keys": list(t.get("input", {}).keys())}
+            for t in tools_called
+        ],
+        "output_tokens": turn_output.get("usage", {}).get("output_tokens"),
+        "model": turn_output.get("model"),
+    }
+    # Emit as structured log line — wire to your OTel collector or write to audit.jsonl
+    print(json.dumps(record))
+    return record
+
+# Usage: call audit_log_turn() after each client.messages.create()
+# wrap your agentic loop:
+# response = client.messages.create(...)
+# tools = [b for b in response.content if b.type == "tool_use"]
+# audit_log_turn("threat_hunter", {"task": task}, response.model_dump(), [t.model_dump() for t in tools])</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="callout callout-key"><p><strong>What the audit log captures that Grafana doesn't.</strong> Grafana Tempo shows you that agent turn 7 took 3.2 seconds and cost 4,200 tokens. The decision audit log shows you that agent turn 7 called <code>network_scan</code> with <code>target=10.0.0.0/8</code> — the entire /8 — instead of the intended /24. That is the difference between knowing an incident happened and knowing what the agent decided to do. In a post-incident review, you need the decision log. In a compliance audit, you need the decision log. Wire it before you need it.</p></div>
+      <div class="callout callout-warn"><p><strong>The audit log is also an attack surface.</strong> If an attacker can write to your audit log, they can cover their tracks or inject false decision records. Treat the audit log as a security artifact: write-once, append-only, stored separately from the agent process, with cryptographic chaining if your compliance requirements demand tamper evidence. Log the <code>input_hash</code> not the raw input — the raw input may contain sensitive data.</p></div>
+    </div>
   </div>
 </div>
 <hr>
@@ -969,6 +1007,7 @@ docker run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
     <li><strong>SBOM + Dependency Scan</strong> — CycloneDX SBOM and pip-audit results for your SOC system</li>
     <li><strong>NHI Registry</strong> — agent-identities.yaml with working JWT token enforcement</li>
     <li><strong>OTel Instrumentation</strong> — working traces and cost metrics with anomaly alerting</li>
+    <li><strong>Decision Audit Log</strong> — <code>audit_log_turn()</code> wired into your agentic loop, producing structured JSONL records with tool call details and input hashes for post-incident reconstruction</li>
     <li><strong>Hardened Dockerfile + GitHub Actions Pipeline</strong> — multi-stage build with all security gates active</li>
     <li><strong>Deployment Runbook</strong> — documented operational procedures for production deployment</li>
     <li><strong>CHANGELOG.md</strong> — versioned history from Unit 4 prototype to Unit 7 production with security impact annotations</li>
