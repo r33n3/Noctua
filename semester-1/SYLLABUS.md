@@ -63,7 +63,7 @@ By the end of this course, students will be able to:
 
 9. **Compose and enforce AI security policies** that govern data handling, model governance, agent permissions, and incident response for AI-driven security systems.
 
-10. **Measure AI-augmented security workflows** using five key performance metrics: Mean Time to Triage (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Isolate (MTTI), and Augmented Mean Time to Respond (aMTTR).
+10. **Measure AI-augmented security workflows** using five key performance metrics: Mean Time to Suppress (MTTS), Mean Time to Protect (MTTP), Mean Time to Solve (MTTSol), Mean Time to Investigate (MTTI), and Augmented Mean Time to Respond (aMTTR).
 
 11. **Defend security decisions made by AI agents** by providing explanations grounded in evidence, audit logs, and structured reasoning that satisfy both technical and non-technical stakeholders.
 
@@ -265,8 +265,6 @@ Weeks 14–16 (sprint weeks) may require additional time as you iterate on proto
 
 **Required Platform Access (provided through course fees or institutional licensing):**
 - **Claude Max subscription** — Primary platform for Chat, Cowork, and Claude Code
-- **OpenAI Platform account** — API access for model comparison and multi-model evaluation
-- **AWS Academy or lab account** — For running open-source models (Ollama/vLLM) and production deployment labs
 
 **Required Hardware:**
 - Minimum: 8GB RAM, 4-core CPU, 50GB free storage
@@ -298,7 +296,7 @@ Weeks 14–16 (sprint weeks) may require additional time as you iterate on proto
 - Security tools and APIs (simulated when production access isn't available)
 
 ### External Resources
-- Claude documentation (https://claude.ai/docs)
+- Claude documentation (https://docs.anthropic.com)
 - Model Context Protocol (https://modelcontextprotocol.io/)
 - NIST Cyber AI Profile (https://csrc.nist.gov/)
 - OWASP Top 10 for Agentic Applications (https://owasp.org/)
@@ -377,13 +375,13 @@ You are expected to:
 
 ## Appendix: Performance Metrics Definitions
 
-**MTTS (Mean Time to Triage):** Time from alert generation to initial assessment of the alert's nature and severity. Measures how quickly the system (human + AI) understands the problem.
+**MTTS (Mean Time to Suppress):** Time from alert detection to active suppression (quarantine, block, or containment action taken). Measures speed of containment response.
 
 **MTTP (Mean Time to Protect):** Time from triage to implementation of protective measures (e.g., isolating a system, blocking traffic). Measures speed of protective response.
 
 **MTTSol (Mean Time to Solve):** Time from alert generation to complete resolution (root cause addressed, normal operations restored). Measures overall incident resolution speed.
 
-**MTTI (Mean Time to Isolate):** Time from alert to containment (threat isolated, spread prevented). Measures containment speed.
+**MTTI (Mean Time to Investigate):** Time from alert to completed root-cause investigation (attacker TTP identified, scope understood). Measures depth and speed of investigative analysis.
 
 **aMTTR (Augmented Mean Time to Respond):** Overall time from alert generation to resolution, accounting for human decision time and AI analysis time. Demonstrates the efficiency gain from AI augmentation.
 

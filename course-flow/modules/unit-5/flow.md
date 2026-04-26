@@ -41,7 +41,7 @@ Module-specific: For architecture design questions, never give the architecture.
 
 1. **Pattern Analysis** — Identify and document 3 multi-agent orchestration patterns (supervisor, pipeline, peer-to-peer). For each: describe the pattern, give a security use case, and name one failure mode.
 2. **MCP Context Design** — Design the context schema for a 2–3 agent system solving a defined security problem. Show what each agent sends and receives.
-3. **Framework Comparison** — Compare 2 agent frameworks (e.g., LangGraph, AutoGen, CrewAI, or custom Anthropic SDK). Evaluation criteria: orchestration model, MCP support, observability, production readiness.
+3. **Framework Comparison** — Compare 2 agent frameworks: Claude Managed Agents vs. Claude Agent SDK (PyPI: claude-agent-sdk). Evaluation criteria: hosting model (server-side vs. caller-process), state management, MCP support, observability, cost model, production readiness.
 4. **AIUC-1 Pre-Check** — Run `/audit-aiuc1` against your proposed multi-agent design. Document findings per domain.
 
 See `semester-2/weeks/unit-5.md` for full lab instructions and deliverable specs.
@@ -56,8 +56,7 @@ Three deliverable files (committed to student's repo):
 - Minimum 300 words total
 
 **`framework-comparison-report.md`**
-- 2 frameworks evaluated
-- Criteria-based comparison table
+- Claude Managed Agents vs. Claude Agent SDK — criteria-based comparison table including hosting model, MCP support, state management, observability, and cost
 - Recommendation with rationale
 
 **`aiuc1-precheck.md`**
@@ -72,6 +71,7 @@ Three deliverable files (committed to student's repo):
 **Common gaps:**
 - Pattern analysis that describes patterns without naming failure modes — push for the failure mode specifically
 - Framework comparison that is purely feature-listing without a recommendation — require a stance
+- Framework comparison that evaluates LangGraph or CrewAI instead of the two Anthropic-native options — redirect to Claude Managed Agents vs. Claude Agent SDK
 - AIUC-1 pre-check that leaves domains empty or says "N/A" — there is no N/A for a system under design
 
 **What to look for in the MCP context design:**

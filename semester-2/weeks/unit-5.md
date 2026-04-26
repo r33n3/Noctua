@@ -8,11 +8,11 @@
 
 ## Opening Hook
 
-> Single agents hit ceilings. When a task requires true parallelism, specialized expertise, or fault isolation, you need a coordinated team. This unit takes everything you built in Semester 1 — MCP tools, structured outputs, RAG — and puts it to work in multi-agent architectures for security operations. Four weeks, three frameworks, one production-grade SOC triage system.
+> Single agents hit ceilings. When a task requires true parallelism, specialized expertise, or fault isolation, you need a coordinated team. This unit takes everything you built in Semester 1 — MCP tools, structured outputs, RAG — and puts it to work in multi-agent architectures for security operations. Four weeks, two Anthropic-native orchestration paradigms, one production-grade SOC triage system.
 
 ## Unit Overview
 
-In Semester 1, you mastered building single autonomous agents with Claude Code and MCP. In Unit 5, you'll orchestrate teams of specialized agents to tackle complex security operations. You'll learn three major frameworks—Claude Agent SDK, CrewAI, and LangGraph—and discover when each excels. By week's end, you'll have built a production-grade SOC triage system, an automated incident response engine, and the evaluation framework to compare them.
+In Semester 1, you mastered building single autonomous agents with Claude Code and MCP. In Unit 5, you'll orchestrate teams of specialized agents to tackle complex security operations. You'll master two Anthropic-native orchestration paradigms—Claude Managed Agents (server-side, hosted execution) and the Claude Agent SDK (client-side, caller-process execution)—and build the evaluation framework to compare them on real security problems. By week's end, you'll have deployed a production-grade SOC triage system, extended it with persistent memory and MCP integration, and produced a quantitative framework comparison report.
 
 > **📖 Methodology:** This unit applies this course's agentic development methodology and the **Core Four Pillars** (Prompt, Model, Context, Tools) and **Think → Spec → Build → Retro cycle** to multi-agent security orchestration. You'll think critically about agent architectures, spec clear responsibilities, build rapidly using Claude Code, and review through comparative evaluation. The Orchestrator and Expert Swarm patterns form the backbone of multi-agent design in this course.
 
@@ -1085,647 +1085,520 @@ async def triage_alert(req: TriageRequest, caller: dict = Depends(verify_token))
 
 ---
 
-# WEEK 2: CrewAI for Security Operations
+# WEEK 2: Claude Managed Agents — Server-Side Orchestration
 
 ## Day 1 — Theory & Foundations
 
 ### Learning Objectives
 
-- Understand CrewAI's role-based agent abstraction and why it differs from lower-level APIs
-- Design security team personas with roles, goals, and backstories
-- Compare CrewAI processes: sequential vs. hierarchical
-- Evaluate framework trade-offs: abstraction level vs. flexibility
-- Predict when to use CrewAI vs. Claude Agent SDK
+- Understand the 3-object model (Agent, Environment, Session) and the role each plays in a Managed Agent deployment
+- Design agent context using AGENTS.md — the Anthropic standard for agent system files
+- Configure per-environment memory stores and understand the persistence model
+- Compare hosted server-side execution against direct API loops on reliability, observability, and operational trade-offs
+- Determine when Managed Agents is the right infrastructure choice vs. running your own loop
 
 ---
 
-### Lecture: CrewAI's Abstraction Model
+### Lecture: The 3-Object Model
 
-While the Claude Agent SDK gives you raw control (every agent is a chat loop you orchestrate), **CrewAI** provides higher-level abstractions: **Agents** are defined by roles, **Tasks** are units of work, and **Processes** handle coordination.
+In Week 1 you built a direct API loop: your Python code called `client.messages.create()` in a while-true, checked stop reason, looped again. You owned the loop. With **Claude Managed Agents**, Anthropic owns the loop. You define the agent once, attach it to an environment, and start sessions. The agentic loop executes server-side in Anthropic's infrastructure.
 
-**The CrewAI Mental Model:**
+This changes the mental model across three persistent objects:
 
 ```
-Agent = Role + Goals + Backstory + Tools
-Task   = Description + Agent assignment + Expected output
-Crew   = Collection of agents + Process (Sequential | Hierarchical)
+Agent       = the persistent "what" (identity, capabilities, system prompt, tools)
+Environment = the persistent "context" (memory stores, networking config, packages)
+Session     = the transient "conversation" (one task run, connects Agent + Environment)
 ```
 
-This is inspired by human team organization. In a real SOC, you hire a person with a specific role (Malware Analyst), give them goals (identify malicious samples), tell them their expertise (5 years of reverse engineering), and assign them tools (IDA Pro, debugger).
+**Creating the three objects:**
 
-**Comparison with Claude Agent SDK:**
+```python
+import anthropic
 
-| Aspect | Claude Agent SDK | CrewAI |
-|--------|------------------|--------|
-| **Abstraction** | Low-level (you control loops) | High-level (framework handles loops) |
-| **Code Volume** | 500+ lines for SOC system | 150-200 lines for same system |
-| **Flexibility** | High (customize every detail) | Medium (follow CrewAI patterns) |
-| **Learning Curve** | Steeper (understand agent loops) | Shallower (role-based thinking) |
-| **Debugging** | Fine-grained (see each tool call) | Coarser (see final task output) |
-| **Team Scaling** | Manual (add orchestration code) | Easier (add agents to crew) |
-| **Custom Processes** | Implement yourself | Use built-ins or extend framework |
+client = anthropic.Anthropic()
 
-> **🔑 Key Concept:** CrewAI trades flexibility for simplicity. You get pre-built processes (sequential, hierarchical) and don't write agent loops. In return, you can't do exotic things like debate patterns or dynamic agent spawning without heavy customization.
+# Agent — created once, versioned. Defines who the agent is.
+agent = client.beta.agents.create(
+    name="SOC Investigator",
+    description="Senior SOC analyst for multi-stage incident investigation.",
+    model="claude-opus-4-7",
+    system="""You are a senior SOC analyst. For every alert:
+1. Extract all IoCs (IPs, domains, file hashes, usernames)
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses
+3. Assess severity with written justification
+4. Produce a structured JSON report + narrative summary
+Flag low-confidence assessments. Never fabricate enrichment data.""",
+    tools=[{"type": "agent_toolset_20260401"}],
+)
+
+# Environment — created once. Defines where the agent runs.
+environment = client.beta.environments.create(
+    name="soc-investigation-env",
+    config={"type": "cloud", "networking": {"type": "unrestricted"}},
+)
+
+# Save IDs — you reuse Agent and Environment across all sessions.
+# Session is the only object created per task.
+ids = {
+    "AGENT_ID": agent.id,
+    "AGENT_VERSION": agent.version,
+    "ENVIRONMENT_ID": environment.id,
+}
+with open(".env.agents", "w") as f:
+    for k, v in ids.items():
+        f.write(f"{k}={v}\n")
+
+print(f"Agent: {agent.id}  (version {agent.version})")
+print(f"Environment: {environment.id}")
+```
+
+**Running a Session:**
+
+```python
+import anthropic, os
+
+client = anthropic.Anthropic()
+
+# Load saved IDs — do not re-create Agent or Environment on every run
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+cfg = load_env_agents()
+
+session = client.beta.sessions.create(
+    agent=cfg["AGENT_ID"],
+    environment_id=cfg["ENVIRONMENT_ID"],
+    title="Meridian Investigation",
+)
+
+# Open stream BEFORE sending — race condition otherwise
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "Investigate the Meridian alert: 47 failed RDP attempts followed by successful login from Tor exit node 185.220.101.47. LSASS memory access detected post-auth."}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "agent.tool_use":
+            print(f"\n[Tool: {event.name}]", flush=True)
+        elif event.type == "session.status_idle":
+            print("\n── Investigation complete ──")
+            break
+```
+
+**AGENTS.md — The Agent Context File**
+
+AGENTS.md is Anthropic's standard for agent context files, analogous to CLAUDE.md for the Claude Code CLI. It contains knowledge that Claude cannot infer from reading code: naming conventions, anti-patterns, known system traps, escalation thresholds. Write it by hand; generated AGENTS.md files contain generic advice that does not constrain agent behavior.
+
+```markdown
+# AGENTS.md — SOC Investigator
+
+## Patterns & Conventions
+- All severity classifications must cite at least one MITRE ATT&CK technique ID
+- Escalation thresholds: Critical = P1 (15 min), High = P2 (1 hr), Medium = P3 (4 hr)
+- Known-safe IP ranges (never escalate): 10.0.0.0/8, 192.168.0.0/16
+
+## Anti-Patterns — DO NOT
+- DO NOT fabricate threat intel — if data is unavailable, say so explicitly
+- DO NOT recommend automated containment without a human-review flag in Critical cases
+- DO NOT write findings to memory with read_only access
+
+## Known Traps
+- The staging SIEM uses UTC; the production SIEM uses local time — normalize before comparison
+- VirusTotal rate limits at 4 requests/minute on the free tier; build in retry logic
+```
+
+**Contrast with Week 1's Direct API**
+
+In Week 1, you wrote the agentic loop: you called `messages.create()`, checked `stop_reason`, handled tool use, looped. You saw every API call. In Managed Agents, Anthropic runs the loop. You see events (`agent.message`, `agent.tool_use`, `session.status_idle`) but not raw tool inputs and outputs — those execute server-side in Anthropic's container.
+
+**When to choose Managed Agents:**
+
+- Persistent state across sessions is required (investigations that span days)
+- Multi-tenant production deployment (Anthropic manages the infrastructure)
+- You want less loop code and accept reduced observability into tool execution
+- Your regulatory environment is comfortable with data transiting Anthropic's cloud
+
+**When to choose the direct API or Claude Agent SDK instead:**
+
+- You need to audit every tool call input and output (compliance requirement)
+- Your data cannot leave your infrastructure
+- You need custom orchestration logic (debate pattern, dynamic agent spawning)
+- Cost visibility per tool call matters more than operational simplicity
 
 ---
 
-### Designing Agent Personas: Beyond Prompt Injection
+> "What information does your agent need to persist across sessions that can't be reconstructed from the conversation history alone?"
 
-In CrewAI, an agent's **role**, **goals**, and **backstory** define its identity:
-
-**Role:** The job title. Specifies domain expertise.
-- Good: "Threat Intelligence Analyst"
-- Bad: "Agent" (too generic)
-
-**Goal:** What success looks like. Mission-driven, not task-driven.
-- Good: "Identify and assess threats to organizational assets, prioritizing by impact"
-- Bad: "Process alerts" (too vague)
-
-**Backstory:** Context. Grounds the agent in a persona.
-- Good: "You are a former NSA cyber threat analyst with 15 years of incident response and deep expertise in APT tradecraft and TTPs. You've investigated breaches affecting fortune 500 companies."
-- Bad: "You are helpful and harmless" (generic, doesn't differentiate)
-
-**Why Personas Matter:** A well-crafted persona reduces hallucination. Agents with clear identity ("You are a forensic analyst") make better decisions than generic instructions ("Analyze this data"). This is empirically validated in recent LLM research—specificity beats generality.
-
-> **💬 Discussion Prompt:** Should SOC agents have personas that reflect real humans (to encourage specialization) or abstract roles (to avoid anthropomorphization)? What are the implications for accountability?
-
----
-
-### Sequential vs. Hierarchical Processes
-
-**Sequential Process:**
-```mermaid
-flowchart LR
-    A["Agent 1<br/>(Alert Ingest)"]
-    B["Agent 2<br/>(Analysis)"]
-    C["Agent 3<br/>(Recommendation)"]
-    D["Final Output<br/>(Report)"]
-
-    A --> B
-    B --> C
-    C --> D
-
-    classDef agent fill:#1f6feb,stroke:#388bfd,color:#fff
-    classDef output fill:#238636,stroke:#2ea043,color:#fff
-
-    class A,B,C agent
-    class D output
-```
-
-Each agent waits for the previous one. Task 2 output feeds Task 1's work into Task 2, etc. Simple. Linear. Predictable.
-
-**Hierarchical Process:**
-```mermaid
-flowchart TD
-    M["Manager Agent<br/>(Delegator)"]
-    T1["Task 1: Network\nAnalysis"]
-    T2["Task 2: Endpoint\nAnalysis"]
-    T3["Task 3: Threat\nIntel Lookup"]
-    A["Aggregated\nResults"]
-
-    M --> T1
-    M --> T2
-    M --> T3
-    T1 --> A
-    T2 --> A
-    T3 --> A
-
-    classDef manager fill:#1f6feb,stroke:#388bfd,color:#fff
-    classDef task fill:#21262d,stroke:#388bfd,color:#e6edf3
-    classDef aggregate fill:#238636,stroke:#2ea043,color:#fff
-
-    class M manager
-    class T1,T2,T3 task
-    class A aggregate
-```
-
-Manager agent delegates to workers in parallel or batches, then synthesizes results. More complex. Enables parallelism. Mirrors org structures.
-
-**When to use each:**
-- **Sequential:** Linear incident response (detect → triage → contain → eradicate → recover). Each step depends on the previous.
-- **Hierarchical:** Multi-domain analysis (network team, endpoint team, threat intel team work independently, manager synthesizes). Agents don't depend on each other.
-
-> **📖 Further Reading:** "Organizational Hierarchies in Information Processing" in the business operations literature explores when flat vs. hierarchical decision-making excels. Apply these insights to agent architecture.
-
----
-
-### Framework Comparison: CrewAI vs Claude Agent SDK vs LangGraph
-
-We'll do a deep comparison in Week 4, but preview:
-
-| Criterion | Claude Agent SDK | CrewAI | LangGraph |
-|-----------|------------------|--------|-----------|
-| **Best For** | Custom logic, low-level control | Role-based teams, quick iteration | Stateful workflows, DAGs |
-| **Learning Time** | 1-2 days | 2-3 hours | 4-6 hours |
-| **Extensibility** | Very high | Medium | High |
-| **Documentation** | Official, comprehensive | Community-driven, good | Official (LangChain) |
-| **Production Maturity** | Stable | Maturing | Stable |
+> "If Anthropic's managed infrastructure fails during a session, what happens to your in-flight security response? How does this differ from running the loop yourself?"
 
 ---
 
 > **Knowledge Check — Week 2**
-> At the architectural level, what is each framework optimized for: CrewAI, LangGraph, and the Claude Agent SDK directly? If you're building a SOC triage pipeline that needs deterministic state management and clear failure recovery, which do you reach for first — and why?
+> The 3-object model separates Agent, Environment, and Session. What is each optimized for — and which objects do you create once vs. per task? What happens if you re-create Agent and Environment on every investigation run?
 >
-> Claude: LangGraph = explicit state machine with defined transitions (deterministic, recoverable). CrewAI = role-based teams with natural language task assignment (flexible, less deterministic). Claude Agent SDK directly = maximum control, most code. For deterministic state management, LangGraph is the right answer. If the student picks CrewAI, explore what they're missing about state management.
+> Claude: Agent and Environment are one-time setup objects — they persist across all sessions. Session is per-task. Re-creating Agent and Environment on every run wastes setup time and creates orphaned objects that accumulate API costs. The student should articulate: Agent = identity + capabilities (versioned, persistent), Environment = execution context (networking, packages, memory config), Session = one conversation run (transient, per-task).
 
 ---
 
 > **Day 1 Checkpoint — Week 2**
-> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 2 agent framework comparison.
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 2 Managed Agents 3-object model, AGENTS.md, hosted vs. client-side trade-offs.
 
 ---
 
 ## Day 2 — Hands-On Lab
 
 > **Lab Guidance — Week 2**
-> Claude: Walk through framework implementation step by step. At decision points, ask "Which framework design principle applies here?" Don't let the student skip over trade-off explanations.
+> Claude: Walk the student through each lab step in sequence. At Step 1 (memory), ask: "What context does this agent need to carry across sessions that cannot be reconstructed from the alert alone?" At Step 3 (networking), ask: "What is the minimal allowed_hosts list your SOC workflow needs — and what's on the list you'd want to audit in a security review?" Don't let them skip the reflection questions.
 >
-> **Lab Dependencies:** If not already installed, run: `pip install crewai langgraph anthropic` (https://crewai.com / https://langchain-ai.github.io/langgraph)
+> **Lab Dependencies:** SDK already installed from Week 1. Run: `python3 -c "import anthropic; print(anthropic.__version__)"` to verify.
 
 ### Lab Objectives
 
-- Reimplement the Week 1 SOC system using Claude Agent SDK, applying the persona-based agent design patterns demonstrated by CrewAI
-- Design four agent personas with roles, goals, backstories
-- Compare design patterns: how Claude Agent SDK achieves CrewAI-style personas natively
-- Evaluate the tradeoffs of framework abstraction vs. direct SDK control
-- Make data-driven recommendations on when persona-based design adds value
+- Scaffold a Managed Agent using `client.beta.agents.create()` and save IDs to `.env.agents`
+- Write AGENTS.md for your SOC investigator
+- Create a memory store, seed it with SOC context, and attach it to a session with `read_write` access
+- Run a multi-session investigation that demonstrates cross-session memory persistence
+- Extend the agent with a custom tool that bridges the Anthropic cloud to your local S1 Unit 2 MCP server
 
 ---
 
-### Step 1: Study CrewAI's Approach
+### Step 1: Create memory store and attach to first session
 
-CrewAI demonstrates a valuable pattern for multi-agent systems: **persona-based agents**. Rather than generic "Agent 1" or "Agent 2", CrewAI defines each agent with a specific **role** (job title), **goal** (mission statement), and **backstory** (expertise context). This approach forces you to think deliberately about agent specialization and expertise boundaries.
+```python
+# memory_setup.py — run once, save MEMORY_STORE_ID
+import anthropic, os
 
-In this lab, you'll study how CrewAI structures personas, then implement equivalent persona-based agents using Claude Agent SDK and the Anthropic SDK. You'll discover the underlying pattern—it's not magic, and you can build it yourself.
+client = anthropic.Anthropic()
 
----
+store = client.beta.memory_stores.create(
+    name="soc-investigation-memory",
+    description="Standing SOC context, escalation thresholds, and cross-session investigation findings.",
+)
+print(f"MEMORY_STORE_ID={store.id}")
 
-### Architecture: Persona-Based Agent Design Patterns
+# Append to .env.agents so session scripts can load it
+with open(".env.agents", "a") as f:
+    f.write(f"MEMORY_STORE_ID={store.id}\n")
 
-**Key Insight from CrewAI:** Personas matter because they guide agent behavior. An agent told "Normalize alerts" might do anything. An agent told "You are an Alert Ingestion Specialist with 8+ years integrating Zeek, Suricata, and Windows Event Log" has a clear identity and makes better decisions.
-
-**Key Design Principle:** Personas should reflect real human expertise.
-
-A good persona:
-- Has a specific job title ("Alert Ingestion Specialist", not "Agent 1")
-- Has a clear goal (a mission, not a task list)
-- Has a detailed backstory grounding expertise ("NSA analyst with 12 years experience")
-- Includes domain-specific knowledge ("Deep knowledge of MITRE ATT&CK framework")
-
-A bad persona:
-- Generic ("Security Analyst")
-- Too broad ("Do everything related to security")
-- No personality ("Helpful assistant that processes alerts")
-
-**Why This Matters:** Specific personas reduce hallucination. An agent told "You are helpful" might do anything. An agent told "You are an NSA threat analyst with 12 years of APT tracking expertise" has clear identity and makes better decisions.
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** When designing persona-based agents using Claude Agent SDK, specify:
-> - Clear role definitions (what's the job title?)
-> - Specific goal statements (not tasks, but mission)
-> - Detailed backstories with years of experience and specific expertise
-> - The exact tools this agent has access to (via function calling)
-> - System prompt hints about how this agent should approach problems
-
-**Claude Code Prompt:**
-
-```text
-Build 4 persona-based agents using Claude Code and the Anthropic SDK that
-mirror the role-based specialization pattern demonstrated by CrewAI. Each
-agent should encapsulate a specific expertise domain with a role, goal, and
-backstory.
-
-Agent 1: Alert Ingestion Specialist
-- Role: Alert Ingestion Specialist
-- Goal: Normalize alerts from diverse sources into standard format
-- Backstory: 8+ years integrating Zeek, Suricata, Windows Event Log, etc.
-- Implementation: Use Claude Agent SDK to build an agent class with system
-  prompt that reinforces this persona and its tools
-
-Agent 2: Threat Intelligence Analyst
-- Role: Threat Intelligence Analyst
-- Goal: Enrich alerts with threat intel and assign severity/confidence
-- Backstory: Former NSA analyst, 12+ years tracking APTs, knows MITRE ATT&CK
-- Implementation: System prompt should guide reasoning about threat actors,
-  TTPs, and confidence levels
-
-Agent 3: Incident Response Specialist
-- Role: Incident Response Specialist
-- Goal: Recommend containment and remediation actions compliant with policy
-- Backstory: 10+ years leading breach investigations for Fortune 500
-- Implementation: Agent should know playbooks, risk tradeoffs, and when to
-  escalate human involvement
-
-Agent 4: Security Report Writer
-- Role: Security Report Writer
-- Goal: Generate clear reports for different audiences (execs, analysts, ops)
-- Backstory: Former tech journalist, 6+ years making security digestible
-- Implementation: Agent should know how to tailor technical content for
-  executive, analyst, and ops audiences
-
-For each agent:
-1. Create an Agent class using Claude Agent SDK with a detailed system prompt
-2. Ground the agent's expertise in the backstory (include years of experience,
-   specific frameworks, domain knowledge)
-3. Assign tools that match the agent's role (threat analyst doesn't get policy
-   tools; incident responder gets playbooks)
-4. Test the agent on sample inputs to verify it reasons from its persona
-
-The goal is to demonstrate that persona-based specialization (CrewAI's
-pattern) can be implemented using Claude Agent SDK with explicit system
-prompts and tool assignments.
+# Seed with reference material the agent should always read first
+client.beta.memory_stores.memories.create(
+    store.id,
+    path="/context/escalation-thresholds.md",
+    content="""# Escalation Thresholds
+- Critical: isolate host within 15 minutes, page on-call
+- High: assign ticket within 1 hour, notify team lead
+- Medium: ticket within 4 hours
+- Low: batch review daily
+- Known-safe IPs (never escalate): 10.0.0.0/8, 192.168.0.0/16
+""",
+)
+print("Memory store seeded.")
 ```
 
-Verification:
-- [ ] Each backstory is detailed and specific (not generic)
-- [ ] Each goal is a mission statement, not a task list
-- [ ] Backstories include relevant frameworks/methodologies (MITRE ATT&CK, IR procedures)
-- [ ] Tools match the agent's role (threat analyst doesn't have policy tools)
-- [ ] Personas are realistic (not exaggerated expertise)
+```python
+# session_with_memory.py
+import anthropic, os
 
-If backstories are generic, ask Claude to make them more specific. If an agent has too many tools, ask for a narrower focus.
+client = anthropic.Anthropic()
 
----
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
 
-### Architecture: Tool Design for Multi-Agent Systems
+cfg = load_env_agents()
 
-**Key Principle from CrewAI:** Tools should return human-readable text that agents can reason about, not structured data. This allows agents to process results as they would conversation text, extracting meaning and responding to explanations.
+session = client.beta.sessions.create(
+    agent=cfg["AGENT_ID"],
+    environment_id=cfg["ENVIRONMENT_ID"],
+    title="Meridian Investigation — Session 1",
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": cfg["MEMORY_STORE_ID"],
+            "access": "read_write",
+            "instructions": "SOC context and prior findings. Check /context/ before starting. Write your findings to /findings/{incident_id}.md when done.",
+        }
+    ],
+)
 
-**Design Principle:** Each tool should be:
-- **Focused:** Does one thing well (not a Swiss Army knife)
-- **Informative:** Returns text that an agent can reason about
-- **Verified:** Returns strings agents can understand and act on
-- **Explainable:** Includes reasoning (why a lookup succeeded or failed)
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "Investigate the Meridian incident. Check memory for escalation thresholds before assessing severity. Record your findings in memory when done."}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "session.status_idle":
+            print("\n── Session complete ──")
+            break
 
-**Tool Categories in Our System:**
-1. **Data transformation:** normalize_alert (parses JSON)
-2. **External lookup:** query_threat_intel, correlate_patterns (call external APIs)
-3. **Internal lookup:** lookup_playbook (query policy/procedure databases)
-4. **Validation:** check_policy (verify action compliance)
-5. **Formatting:** format_summary (transform technical to executive language)
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** When designing tools for Claude Agent SDK, ask Claude to:
-> - Return human-readable strings (not JSON)
-> - Include confidence/certainty in responses
-> - Explain why a lookup succeeded or failed
-> - Provide context agents need to reason about results
-> - Make reasoning transparent so agents can learn from explanations
-
-**Claude Code Prompt:**
-
-```text
-Build 6 tools for a multi-agent SOC system using Claude Agent SDK. These
-tools implement the patterns demonstrated by CrewAI (readable output, clear
-explanations) but used with Claude Agent SDK for custom orchestration.
-
-Tool 1: normalize_alert(raw_json) → string
-- Takes raw JSON from Zeek/Suricata/Windows Event Log
-- Parses and extracts: alert_id, source, timestamp, src_ip, dst_ip, event_type
-- Returns: Formatted string like "Normalized Alert (ALT-2026-03-05):
-  Zeek alert from 10.0.1.105 to 203.0.113.42, suspicious_tls_handshake"
-- Handles: Missing fields (use defaults), malformed JSON (return error message)
-
-Tool 2: query_threat_intel(indicator, type) → string
-- Takes: IP/domain/hash and indicator type
-- Returns: "Malicious IP 203.0.113.42: Associated with APT28 and FIN7,
-  last seen 2026-02-28 in credential theft campaigns"
-- Or: "Unknown IP 192.168.1.50: No threat intel found"
-- Note: Always include confidence (known bad, suspected, unknown)
-
-Tool 3: correlate_patterns(event_type, src_ip) → string
-- Takes: Event type (e.g., "suspicious_tls_handshake")
-- Returns: "This event matches known attack pattern sslstrip_variant_2026
-  (CVE-2024-xxxxx). Typical of credential theft campaigns targeting
-  financial institutions."
-- Or: "No known pattern match for this event type"
-
-Tool 4: lookup_playbook(attack_type) → string
-- Takes: Attack type (credential_theft, lateral_movement, data_exfiltration)
-- Returns: Formatted playbook steps with timing:
-  "Credential Theft Response Playbook:
-   IMMEDIATE (next 15 minutes): Reset password, enable MFA, revoke sessions
-   SHORT-TERM (1-4 hours): Hunt for lateral movement, review activity logs
-   LONG-TERM (24+ hours): Implement passwordless auth, deploy anomaly detection"
-
-Tool 5: check_policy(action, environment) → string
-- Takes: Proposed action and environment (production/staging/test)
-- Returns: "Action 'Reset user password' in production: APPROVED"
-- Or: "Action 'Kill database connections' in production: REQUIRES APPROVAL -
-  may impact legitimate users"
-
-Tool 6: format_summary(findings) → string
-- Takes: Technical findings string
-- Returns: Executive-level summary
-  "EXECUTIVE SUMMARY:
-   An APT28-attributed actor attempted credential theft via suspicious TLS
-   activity. We recommend immediate account reset and access revocation.
-   Risk Level: HIGH. Escalation: YES - CEO notification required."
-
-Implement using Anthropic SDK tool definitions (function-calling format).
-All tools should return natural language strings that agents can read and
-reason about, enabling multi-agent decision-making through conversation.
-```
-
-Verification:
-- [ ] All tools return readable strings (not JSON)
-- [ ] Tool outputs include confidence/certainty signals
-- [ ] Errors are explained (not silent failures)
-- [ ] Outputs give agents enough information to make decisions
-- [ ] Tool descriptions are clear about what they do
-
-If tools return JSON instead of strings, ask Claude to convert to natural language. If confidence levels are missing, request they be added.
-
----
-
-### Architecture: Task and Workflow Design
-
-**Key Concept:** In multi-agent systems, work is broken into tasks—units of work assigned to specialized agents. Each task has:
-- **Description:** What the agent should do
-- **Expected Output:** What the agent should produce
-- **Sequential Dependency:** How outputs flow from one task to the next
-
-**Pattern from CrewAI:** CrewAI demonstrates task sequencing where the output from one task becomes input to the next. In Claude Agent SDK, you implement this manually: call agent 1, capture its output, pass to agent 2, and so on. This gives you explicit control over the workflow.
-
-**Task Design Principle:** Each task should be:
-- **Clear:** Specific instructions about what to do
-- **Verifiable:** Clear expected output format
-- **Sequential or Conditional:** Some tasks depend on previous outputs
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** Task descriptions should include:
-> - What specific data the agent will receive (alert, assessment, etc.)
-> - Step-by-step instructions (numbered list of substeps)
-> - What success looks like (expected output)
-> - Any constraints (must comply with policy, cannot break production)
-
-**Claude Code Prompt:**
-
-```text
-Design the task workflow for a 4-agent SOC triage system using Claude Agent SDK.
-Each task represents work done by one agent, with explicit output passed to the
-next agent. Implement using Claude Agent SDK—you manually orchestrate the workflow
-(unlike CrewAI which automates task chaining).
-
-Task 1: Normalize Alert (Alert Ingestion Specialist Agent)
-Description: Analyze raw security alert, normalize to standard format.
-Input: Raw JSON from IDS/SIEM/endpoint tool (Zeek, Suricata, WEL format)
-Steps:
-  1. Parse the raw JSON
-  2. Extract: alert_id, source, timestamp, src_ip, dst_ip, event_type
-  3. Normalize format (standardize field names across sources)
-  4. Identify key indicators (IPs, domains, hashes)
-Expected Output: Normalized alert with all required fields, plus explanation
-  "Normalized Alert (ALT-2026-03-05): Zeek IDS alert from 10.0.1.105 to
-  203.0.113.42 with event type 'suspicious_tls_handshake'..."
-
-Task 2: Enrich with Threat Intelligence (Threat Analyst Agent)
-Description: Take normalized alert, enrich with threat intel and patterns.
-Input: Normalized alert from Task 1 (pass the string output from agent 1)
-Steps:
-  1. Query threat intel for source IP and destination IP
-  2. Correlate event type with known attack patterns
-  3. Assign severity: low/medium/high/critical based on findings
-  4. Assign confidence: 0-100 based on signal strength
-  5. List threat actors (if known)
-Expected Output: Enriched assessment with:
-  "Threat Assessment: HIGH severity (92% confidence). Source IP 203.0.113.42
-  is associated with APT28 and FIN7. Event matches sslstrip credential theft
-  pattern. Threat Actors: APT28, FIN7"
-
-Task 3: Recommend Response Actions (Incident Response Specialist Agent)
-Description: Based on threat assessment, recommend containment and remediation.
-Input: Threat assessment from Task 2 (pass agent 2's output to agent 3)
-Steps:
-  1. Determine attack type from threat assessment
-  2. Look up standard response playbook for this attack
-  3. Filter actions based on severity (critical = all actions, low = minimal)
-  4. Check each action for policy compliance in current environment
-  5. Recommend escalation to SOC manager if severity is high/critical
-Expected Output: Response recommendation with:
-  "Response Recommendation:
-   IMMEDIATE: Reset compromised account, enable MFA, revoke sessions
-   SHORT-TERM: Hunt for lateral movement, review access logs
-   ESCALATION: YES - recommend escalation to SOC Manager due to HIGH severity"
-
-Task 4: Generate Incident Report (Security Report Writer Agent)
-Description: Synthesize all findings into incident report for multiple audiences.
-Input: All previous outputs (normalized alert, threat assessment, recommendations)
-Steps:
-  1. Write executive summary (1-2 paragraphs, business impact focus)
-  2. Write technical details (what happened, threat actors, TTPs)
-  3. Write recommended actions (immediate, short-term, long-term)
-  4. Determine escalation (should this go to CISO/board/regulators?)
-Expected Output: Professional incident report:
-  "INCIDENT REPORT (ALT-2026-03-05):
-   Executive Summary: APT28-attributed actor attempted credential theft...
-   Technical Details: Suspicious TLS handshake from known APT IP...
-   Recommended Actions: [immediate/short-term/long-term list]
-   Escalation Level: CRITICAL - recommend CEO notification"
-
-Implementation using Claude Agent SDK:
-- Create a workflow function that calls agents in sequence
-- Capture output from agent 1, pass to agent 2's prompt
-- Capture output from agents 1-2, pass to agent 3's prompt
-- Pass all previous outputs to agent 4 for final report synthesis
-- This explicit orchestration is more verbose than CrewAI but gives you
-  full control over task dependencies and agent interaction patterns
-```
-
-Verification:
-- [ ] Each task has clear sequential dependency (output of one becomes input to next)
-- [ ] Expected outputs are specific about format and content
-- [ ] Instructions are detailed enough to guide an agent
-- [ ] Tasks don't overlap (each agent has distinct responsibility)
-- [ ] Variables like {normalized_alert} match upstream outputs
-
-If task descriptions are vague, ask Claude to make them more specific. If expected outputs are undefined, request clear output format descriptions.
+# Inspect what the agent wrote
+page = client.beta.memory_stores.memories.list(cfg["MEMORY_STORE_ID"], path_prefix="/findings/")
+for mem in page.data:
+    print(f"Written: {mem.path}")
 ```
 
 ---
 
-### Architecture: Multi-Agent Orchestration and Execution
+### Step 2: Verify cross-session persistence
 
-**Key Concept:** Multi-agent orchestration in Claude Agent SDK means manually sequencing agent calls, capturing outputs, and passing them as input to the next agent.
+```python
+# session_2.py — new session, same memory store
+import anthropic
 
-**Sequential Workflow Pattern:**
-- Agent 1 (Alert Ingester) completes, output available as string variable
-- Pass Agent 1's output to Agent 2 (Threat Analyst) as context
-- Capture Agent 2's output
-- Pass to Agent 3 (Incident Response Specialist)
-- Capture and pass to Agent 4 (Report Writer)
+client = anthropic.Anthropic()
 
-**Important:** Outputs are text, not structured data. When Agent 1 outputs "Normalized Alert (ALT-2026-03-05): ...", Agent 2 reads this as plain text, extracts meaning from the explanation, and builds its analysis on top. This mirrors CrewAI's approach but you orchestrate it explicitly.
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
 
-**Context Engineering Note:**
+cfg = load_env_agents()
 
-> **🔑 Key Concept:** When building orchestration for Claude Agent SDK:
-> - Create a workflow function that calls agents in sequence
-> - Capture each agent's response (text output)
-> - Pass previous outputs as context to subsequent agent prompts
-> - Implement error handling (what if an agent fails to produce output?)
-> - Log the execution timeline for debugging and compliance
+session2 = client.beta.sessions.create(
+    agent=cfg["AGENT_ID"],
+    environment_id=cfg["ENVIRONMENT_ID"],
+    title="Follow-up Investigation — Session 2",
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": cfg["MEMORY_STORE_ID"],
+            "access": "read_write",
+            "instructions": "Check /findings/ for prior investigation results before starting.",
+        }
+    ],
+)
 
-**Claude Code Prompt:**
+with client.beta.sessions.events.stream(session2.id) as stream:
+    client.beta.sessions.events.send(
+        session2.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "We have a new alert: outbound traffic spike from the same host range as the Meridian incident. Check your memory for prior findings on Meridian before you analyze this one."}
+        ]}],
+    )
+    for event in stream:
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "session.status_idle":
+            break
 
-```text
-Build an orchestration system for 4 Claude agents using Claude Agent SDK.
-Create a workflow that chains agent calls sequentially, passing outputs
-between agents. This implements multi-agent orchestration similar to CrewAI
-but with explicit Claude Agent SDK control.
-
-Create a workflow function: run_soc_triage_workflow(raw_alert)
-
-1. Orchestration logic:
-   - Call Agent 1 (Alert Ingester) with raw_alert
-   - Capture normalized_alert output
-   - Call Agent 2 (Threat Analyst) with normalized_alert as context
-   - Capture threat_assessment output
-   - Call Agent 3 (Response Specialist) with threat_assessment as context
-   - Capture response_recommendation output
-   - Call Agent 4 (Report Writer) with all previous outputs as context
-   - Capture final incident_report output
-
-2. Each agent call follows Claude Agent SDK patterns:
-   - Initialize agent with system prompt (persona) and tools
-   - Call with appropriate input/context
-   - Capture response
-   - Parse response for next agent's input
-
-3. Execution logging:
-   - Log when each agent starts and completes
-   - Log each agent's key decisions (severity, threat confirmation, etc.)
-   - Log final incident report
-   - Time each agent's execution
-
-Example execution flow:
-- Input: Raw JSON alert from Zeek IDS
-- Agent 1: Normalizes to standard format (output: "Normalized Alert...")
-- Agent 2: Enriches with threat intel (input: Agent 1 output, output: "Threat Assessment...")
-- Agent 3: Recommends response (input: Agent 2 output, output: "Response Recommendation...")
-- Agent 4: Generates report (input: all previous outputs, output: "INCIDENT REPORT...")
-- Result: Complete incident report ready for SOC analyst
-
-The key difference from CrewAI: you write the orchestration loop explicitly,
-giving you full control over task sequencing, error handling, and agent
-interaction patterns.
+# Inspect memory versions — immutable audit trail
+memories_page = client.beta.memory_stores.memories.list(cfg["MEMORY_STORE_ID"], path_prefix="/findings/")
+for mem in memories_page.data:
+    versions = client.beta.memory_stores.memory_versions.list(
+        cfg["MEMORY_STORE_ID"], memory_id=mem.id
+    )
+    for v in versions:
+        print(f"Memory {mem.path} — Version {v.id}: operation={v.operation}")
 ```
 
-Verification:
-- [ ] Crew is created with all 4 agents and tasks in correct order
-- [ ] Sequential process ensures dependencies (task 2 waits for task 1)
-- [ ] Execution logging shows what's happening at each step
-- [ ] Final output is readable and actionable
-- [ ] Errors are caught and reported (not silent failures)
-
-If crew execution is missing, ask Claude to add it. If task outputs aren't being passed correctly between tasks, request debugging logging.
+> **Reflection:** In your `week2-notes.md`, answer: Did the agent reference prior findings unprompted? What would happen if you used `read_only` access — what would change?
 
 ---
 
-### Comparative Analysis Framework
+### Step 3: Switch to production networking — `limited` mode
 
-Rather than a pre-built comparison, design a methodology for comparing frameworks:
+Create a production-hardened environment with an explicit `allowed_hosts` allowlist. Every domain on the list is an attack surface — a prompt injection could manipulate the agent into exfiltrating data to an allowed domain.
 
-**Dimensions to Measure:**
-
-1. **Code Complexity:** Lines of code, files needed, setup time
-   - How long does it take to get from "pip install" to running?
-   - How many files do you need to write?
-   - Is the code easy to understand for someone new to the framework?
-
-2. **Flexibility:** Can you do non-standard things?
-   - Can you implement custom orchestration patterns?
-   - Can agents communicate in arbitrary ways?
-   - Can you add your own supervisory logic?
-
-3. **Output Quality:** Does the system make good decisions?
-   - Accuracy on test cases (correct severity assignments)
-   - Consistency (same alert always produces same result)
-   - Confidence calibration (high confidence = correct?)
-
-4. **Performance:** Speed and cost
-   - Latency: How long does it take per alert?
-   - Token efficiency: How many tokens for each decision?
-   - Cost: Estimated API cost per alert
-
-5. **Debuggability:** Can you understand what went wrong?
-   - Can you trace why a decision was made?
-   - Can you see which tool was called and what it returned?
-   - Can you replay past decisions?
-
-**Claude Code Prompt:**
-
-```text
-Build a comparative analysis framework for multi-agent SOC systems.
-
-Create:
-1. ComparisonFramework class that measures:
-   - code_complexity: lines of code, setup hours, number of files
-   - flexibility: score (1-5) for customization capability
-   - output_quality: accuracy, consistency, confidence calibration
-   - performance: latency, tokens per alert, cost per alert
-   - debuggability: score (1-5) for ease of understanding decisions
-
-2. Metrics collection for Claude Agent SDK implementation:
-   - Count total lines of code across all files
-   - Measure setup time (install → first successful run)
-   - Count number of files (agents.py, orchestrator.py, tools.py, etc.)
-   - Run on test dataset, measure accuracy
-   - Run same alert 10 times, measure output consistency
-   - Measure latency per alert (end-to-end time)
-   - Count tokens used for a representative alert
-   - Estimate cost at Claude API pricing
-
-3. Metrics collection for persona-based agent implementation:
-   - Same measurements as Week 1 Claude Agent SDK system for fair comparison
-   - Measure execution time for the full SOC workflow
-   - Compare code verbosity (manually orchestrated vs built-in abstractions)
-   - Compare persona-based approach effectiveness
-
-4. Comparative report showing:
-   - Side-by-side metrics table
-   - Which approach wins on each dimension
-   - Trade-offs (e.g., persona-based agents improve specificity but require more setup)
-   - Recommendations: "Use personas for: ... Use generic agents for: ..."
-
-Your job: Implement BOTH systems (Week 1 Claude Agent SDK without personas,
-Week 2 Claude Agent SDK with persona-based specialization) and collect
-metrics from both. Then generate a data-driven comparison.
+```python
+env_hardened = client.beta.environments.create(
+    name="soc-env-production",
+    config={
+        "type": "cloud",
+        "packages": {"pip": ["requests"]},
+        "networking": {
+            "type": "limited",
+            "allowed_hosts": [
+                "api.virustotal.com",
+                "api.shodan.io",
+                "otx.alienvault.com",
+                # Add only what your SOC workflow actually requires
+            ],
+            "allow_mcp_servers": True,
+            "allow_package_managers": False,
+        },
+    },
+)
+print(f"ENVIRONMENT_ID_PROD={env_hardened.id}")
+# Append to .env.agents
+with open(".env.agents", "a") as f:
+    f.write(f"ENVIRONMENT_ID_PROD={env_hardened.id}\n")
 ```
 
-This way, you'll have empirical data about whether persona-based specialization
-(demonstrated by CrewAI) improves your system, rather than relying on anecdotal
-claims.
+---
+
+### Step 4: Wire your S1 Unit 2 MCP server as a custom tool
+
+Your local MCP server runs on `localhost:3000`. The Anthropic cloud cannot reach it directly. Use the **custom tool** pattern: define the tool schema in the agent config so Claude knows when to call it. When it does, the session emits `agent.custom_tool_use` and pauses. Your local runner calls the MCP server and returns the result via `user.custom_tool_result`.
+
+```python
+# agent_with_mcp_tool.py
+agent_v2 = client.beta.agents.create(
+    name="SOC Investigator v2",
+    model="claude-opus-4-7",
+    system="""You are a senior SOC analyst. For every investigation:
+1. Use the soc_intel_lookup tool to check your local threat-intel MCP server for IOCs
+2. Use web_search for external enrichment (only against allowed hosts)
+3. Apply CCT analysis and produce a structured JSON report""",
+    tools=[
+        {"type": "agent_toolset_20260401"},
+        {
+            "type": "custom",
+            "name": "soc_intel_lookup",
+            "description": """Query the local SOC threat-intelligence MCP server for enrichment data on an indicator of compromise.
+Use this tool FIRST before any external lookup.
+Input: indicator (string) — an IP address, domain, file hash, or URL.
+Returns: JSON with reputation score, associated campaigns, first/last seen dates, and any internal asset matches.""",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "indicator": {
+                        "type": "string",
+                        "description": "The IOC to look up: IP address, domain, file hash (MD5/SHA256), or URL",
+                    }
+                },
+                "required": ["indicator"],
+            },
+        },
+    ],
+)
+print(f"AGENT_V2_ID={agent_v2.id}")
+with open(".env.agents", "a") as f:
+    f.write(f"AGENT_V2_ID={agent_v2.id}\n")
+```
+
+```python
+# runner_with_custom_tool.py
+import anthropic, os, json, urllib.request
+
+client = anthropic.Anthropic()
+MCP_SERVER_URL = "http://localhost:3000"
+
+def call_mcp_server(tool_name: str, arguments: dict) -> str:
+    payload = json.dumps({"tool": tool_name, "arguments": arguments}).encode()
+    req = urllib.request.Request(
+        f"{MCP_SERVER_URL}/call",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        return resp.read().decode()
+
+def load_env_agents(path=".env.agents"):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and "=" in line and not line.startswith("#"):
+                key, _, value = line.partition("=")
+                config[key.strip()] = value.strip()
+    return config
+
+cfg = load_env_agents()
+events_by_id = {}
+
+session = client.beta.sessions.create(
+    agent=cfg["AGENT_V2_ID"],
+    environment_id=cfg["ENVIRONMENT_ID_PROD"],
+    resources=[{
+        "type": "memory_store",
+        "memory_store_id": cfg["MEMORY_STORE_ID"],
+        "access": "read_write",
+        "instructions": "Check /context/ for thresholds. Write findings to /findings/.",
+    }],
+)
+
+with client.beta.sessions.events.stream(session.id) as stream:
+    client.beta.sessions.events.send(
+        session.id,
+        events=[{"type": "user.message", "content": [
+            {"type": "text", "text": "Investigate the Meridian alert. Use soc_intel_lookup first."}
+        ]}],
+    )
+    for event in stream:
+        events_by_id[event.id] = event
+        if event.type == "agent.message":
+            for block in event.content:
+                if hasattr(block, "text"):
+                    print(block.text, end="", flush=True)
+        elif event.type == "agent.custom_tool_use":
+            print(f"\n[Custom tool: {event.name}({event.input})]", flush=True)
+        elif event.type == "session.status_idle":
+            stop = event.stop_reason
+            if stop and stop.type == "requires_action":
+                for event_id in stop.event_ids:
+                    tool_event = events_by_id[event_id]
+                    result = call_mcp_server(tool_event.name, tool_event.input)
+                    client.beta.sessions.events.send(
+                        session.id,
+                        events=[{
+                            "type": "user.custom_tool_result",
+                            "custom_tool_use_id": event_id,
+                            "content": [{"type": "text", "text": result}],
+                        }],
+                    )
+            elif stop and stop.type == "end_turn":
+                print("\n── Investigation complete ──")
+                break
+```
 
 ---
 
-### Deliverables
+### Step 5: End-to-end test and production-hardening writeup
 
-1. **Persona-based SOC system** (using Claude Agent SDK) fully functional
-2. **Comparative analysis report** (2000+ words):
-   - Code complexity metrics
-   - Specialization effectiveness
-   - Output quality comparison
-   - Development time (time-to-insight)
-   - Debugging experience
-   - When persona-based agents help vs. generic agents
-3. **Test results** on 5 alert scenarios (same as Week 1)
-4. **Code repository** with your Claude Agent SDK persona-based implementation
+Run `runner_with_custom_tool.py` against the Meridian incident using your hardened environment. Confirm: (1) the agent checks memory for prior context, (2) `soc_intel_lookup` is called before external enrichment, (3) blocked network requests fail at the container layer, (4) findings are written to the memory store.
+
+In `week2-notes.md`, document:
+- Which memory access level (`read_write` vs `read_only`) would you use for a shared reference knowledge base versus a per-case findings store? Why?
+- What domains did you add to `allowed_hosts`? Justify each one.
+- How does the custom tool pattern compare to the YAML-based MCP server from S1 Unit 2? What is the same, what is different?
+- Sketch a threat model: who could manipulate what in this system (memory store, custom tool results, network routing)?
+
+**Week 2 Deliverables:**
+- `memory_setup.py` — memory store creation and seeding
+- `session_with_memory.py` — session runner with memory mount
+- `session_2.py` — cross-session persistence verification
+- `agent_with_mcp_tool.py` — agent config with custom tool definition
+- `runner_with_custom_tool.py` — runner handling `agent.custom_tool_use` events
+- `AGENTS.md` — human-written agent context file for your SOC investigator
+- `week2-notes.md` — production-hardening decisions and threat model sketch
 
 ---
 
-### Sources & Tools
-
-- [CrewAI Documentation](https://docs.crewai.com) — Study for persona patterns
-- [CrewAI GitHub](https://github.com/joaomdmoura/crewai) — Study patterns, don't build with
-
----
-
-> **Lab Checkpoint — Week 2**
-> Claude: Ask: "How did the framework comparison lab go? Did the persona-based reimplementation reveal meaningful differences from the Week 1 approach?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 2 Lab" table. Note in the Confusion Log if any framework concept was confusing.
+> **Day 2 Checkpoint — Week 2**
+> Claude: Ask: "How did the Managed Agents lab go? Did cross-session memory work end-to-end? What did the custom tool event pattern reveal about the difference between server-side and local execution?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 2 — Day 2 Lab" table. Note in the Confusion Log if any Managed Agents concept was confusing.
 
 ---
 
@@ -1734,650 +1607,461 @@ claims.
 > Update `.noctua/progress.md`: Set Current Position to Unit 5, Week 3.
 > Then ask: "Ready for Week 3?"
 
----
 
----
-
-# WEEK 3: LangGraph for Stateful Security Workflows
+# WEEK 3: Claude Agent SDK — Client-Side Orchestration
 
 ## Day 1 — Theory & Foundations
 
 ### Learning Objectives
 
-- Understand state machines and why they matter for incident response
-- Design security workflows as directed acyclic graphs (DAGs)
-- Implement conditional routing based on threat severity
-- Compare stateful (LangGraph) vs. stateless (CrewAI) orchestration
-- Build recovery and rollback mechanisms
+- Understand the `query()` async generator and how to consume the event stream in your own process
+- Configure `ClaudeAgentOptions` for model, system prompt, tools, and MCP servers
+- Spawn specialist subagents using `AgentDefinition` and understand when Claude delegates
+- Compare Claude Agent SDK (client-side) with Managed Agents (server-side) on observability, billing, and compliance
+- Determine when client-side loop ownership is the right architectural choice
 
 ---
 
-### Lecture: The Case for Stateful Workflows
+### Lecture: The Claude Agent SDK — Client-Side Loop Ownership
 
-CrewAI and Claude Agent SDK are largely **stateless**: each task processes inputs and produces outputs. But security workflows are **stateful**: they progress through phases (Detection → Triage → Investigation → Containment), and the path depends on accumulated state.
+In Weeks 1 and 2 you used Claude Managed Agents: Anthropic's infrastructure runs the agentic loop. The Claude Agent SDK inverts that ownership — the loop runs in **your Python process**. You call `query()`, an async generator, and iterate events as they arrive. Every tool call, every tool result, every reasoning turn is visible in your process.
 
-**Why State Machines for Security:**
+**Package and imports:**
 
-1. **Explicit Transitions:** "If severity=critical, go to Containment. If severity=low, escalate to analyst queue."
-2. **Recovery:** If Containment fails, you can rewind to Investigation and try a different approach.
-3. **Compliance:** State machines are auditable. "Show me the exact path this incident followed."
-4. **Clarity:** State machines are executable specifications. No ambiguity about workflow logic.
-
-**Example: Incident Response State Machine**
-
-```mermaid
-stateDiagram-v2
-    [*] --> Detection
-    Detection --> Triage
-
-    Triage --> Containment: severity=critical
-    Triage --> Investigation: severity=high
-    Triage --> Archive: severity=low
-
-    Investigation --> Containment: threat_confirmed=true
-    Investigation --> Archive: threat_confirmed=false
-
-    Containment --> Eradication: containment_success=true
-    Containment --> Investigation: containment_success=false<br/>(retry)
-
-    Eradication --> [*]
-    Archive --> [*]
+```bash
+pip install claude-agent-sdk
+# Verify: python3 -c 'from claude_agent_sdk import query, ClaudeAgentOptions; print("SDK ready")'
+# Package: https://pypi.org/project/claude-agent-sdk/ (v0.1.59+, April 2026)
 ```
-
-LangGraph lets you encode this explicitly.
-
-> **🔑 Key Concept:** State is truth. In LangGraph, the state object is the source of truth—agents read it, agents update it, transitions depend on it. This eliminates the "What does the system know right now?" confusion that plagues stateless systems.
-
----
-
-### LangGraph Core Concepts
-
-**StateGraph:** The directed graph representing your workflow.
 
 ```python
-from langgraph.graph import StateGraph
-from typing import TypedDict
-
-class IncidentState(TypedDict):
-    alert_id: str
-    severity: str  # low, medium, high, critical
-    threat_confirmed: bool
-    containment_executed: bool
-    phase: str  # detection, triage, investigation, containment, eradication, recovery
+from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 ```
 
-**Nodes:** Functions that process state. Each node is responsible for updating specific parts of state.
+**The `query()` async generator:**
 
-**Edges:** Connections between nodes, optionally conditional.
-
-```
-graph.add_node("triage", triage_node)
-graph.add_edge("detection", "triage")  # Always go to triage after detection
-graph.add_conditional_edges(
-    "triage",
-    lambda state: "containment" if state["severity"] == "critical" else "investigation"
-)
-```
-
-**Conditional Routing:** Different paths based on state.
+`query()` is the core primitive. Call it with a prompt and options; iterate the resulting async generator to receive events.
 
 ```python
-def route_by_severity(state):
-    if state["severity"] == "critical":
-        return "containment"
-    elif state["severity"] == "high":
-        return "investigation"
-    else:
-        return "archive"
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-graph.add_conditional_edges("triage", route_by_severity)
+SOC_SYSTEM_PROMPT = """You are a senior SOC analyst conducting incident investigations.
+Given a security alert:
+1. Extract and enrich all IoCs (IPs, domains, file hashes) using web search
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a structured JSON report followed by a concise narrative summary"""
+
+async def investigate(alert_text: str) -> str:
+    report_parts = []
+    tool_calls = []
+
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt=SOC_SYSTEM_PROMPT,
+            allowed_tools=["WebSearch", "WebFetch", "Read", "Write"],
+        ),
+    ):
+        # Every message, tool call, and result is visible here
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+                    report_parts.append(block.text)
+                elif getattr(block, "type", None) == "tool_use":
+                    # Full tool input visible — contrast with Managed Agents
+                    tool_calls.append({"name": block.name, "input": block.input})
+                    print(f"\n[Tool: {block.name}({block.input})]", flush=True)
+        if hasattr(message, "result"):
+            print(f"\n── Session complete ({len(tool_calls)} tool calls) ──")
+
+    return "".join(report_parts)
 ```
 
----
+**`ClaudeAgentOptions` — configuring the agent:**
 
-### Incident Response as a State Machine
+| Parameter | What it controls |
+|---|---|
+| `system_prompt` | The agent's system-level instructions |
+| `allowed_tools` | Which built-in tools the agent can call |
+| `model` | Model name (defaults to claude-sonnet-4-6) |
+| `mcp_servers` | Native MCP server wiring (dict of name → server config) |
+| `agents` | Subagent definitions (AgentDefinition objects) |
 
-**States:**
-1. **Detection:** Raw alert received, preliminary validation
-2. **Triage:** Alert classification, severity assignment
-3. **Investigation:** Deep analysis, threat hunting, evidence collection
-4. **Containment:** Isolation and access removal
-5. **Eradication:** Removal of attacker artifacts
-6. **Recovery:** Restoration to operational state
-7. **Lessons Learned:** Post-incident review and recommendations
+**`AgentDefinition` — spawning subagents:**
 
-**Transitions:**
-```mermaid
-stateDiagram-v2
-    [*] --> Detection
-    Detection --> Triage
+`AgentDefinition` lets the orchestrating agent delegate subtasks to specialist subagents. The `description` field is what Claude reads to decide when to invoke the subagent — write it as "when to use this agent," not "what it does."
 
-    Triage --> Investigation: severity=high/critical
-    Triage --> Archive: severity=low
-    Triage --> Escalate: manual escalation
+```python
+from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 
-    Investigation --> Containment: threat_confirmed=true
-    Investigation --> Archive: threat_confirmed=false
-
-    Containment --> Eradication: success=true
-    Containment --> Containment: retry
-
-    Eradication --> Recovery
-    Recovery --> LessonsLearned
-    LessonsLearned --> [*]
-
-    Archive --> [*]
-    Escalate --> [*]
+async def investigate_with_subagents(alert_text: str):
+    async for message in query(
+        prompt=f"Conduct a full SOC investigation on this alert:\n\n{alert_text}",
+        options=ClaudeAgentOptions(
+            system_prompt="""You are a SOC investigation coordinator.
+For each alert: first use the ioc-recon agent to enrich all IoCs,
+then use the threat-analyst agent to perform CCT analysis and produce the final report.""",
+            allowed_tools=["Agent", "WebSearch"],  # "Agent" enables subagent delegation
+            agents={
+                "ioc-recon": AgentDefinition(
+                    description="IOC enrichment specialist. Use for looking up IPs, domains, file hashes, and URLs against threat intel sources. Use this FIRST before any analysis.",
+                    prompt="""You are an IOC enrichment specialist.
+For each indicator: search for reputation data, associated campaigns, geolocation, ASN, and first/last seen.
+Return a structured summary of findings for each IOC.""",
+                    tools=["WebSearch", "WebFetch"],
+                    model="inherit",
+                ),
+                "threat-analyst": AgentDefinition(
+                    description="CCT analysis and report generation specialist. Use AFTER IOC enrichment to apply MITRE ATT&CK mapping, generate hypotheses, and produce the incident report.",
+                    prompt="""You are a senior threat analyst.
+Given enriched IOC data and alert context:
+1. Map to MITRE ATT&CK (technique IDs and names)
+2. Generate 3 hypotheses with probabilities (must sum to 100%)
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a JSON report: {severity, mitre_techniques, hypotheses, recommendations}
+5. Follow with a 2-paragraph narrative summary""",
+                    tools=["Write"],
+                    model="inherit",
+                ),
+            },
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+        if hasattr(message, "result"):
+            print("\n── Investigation complete ──")
 ```
 
-**Rollback Mechanism:**
-If Containment fails, rewind to Investigation. Try a different approach.
+**Native MCP server wiring:**
 
-> **📖 Further Reading:** NIST SP 800-61 (Incident Response Lifecycle) defines the phases empirically validated across thousands of incidents. LangGraph lets you automate them.
+Unlike Managed Agents (which required the custom tool event pattern), Claude Agent SDK wires MCP servers natively. Claude calls them as first-class tools, and you see full inputs and outputs in your event stream.
+
+```python
+async def investigate_with_mcp(alert_text: str):
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt="...",
+            allowed_tools=["WebSearch", "WebFetch"],
+            mcp_servers={
+                "soc-intel": {
+                    "command": "python3",
+                    "args": ["path/to/your/s1-unit2-mcp-server.py"],
+                }
+            },
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "tool_use":
+                    # MCP tool calls visible here with full inputs
+                    print(f"\n[MCP tool: {block.name}({block.input})]")
+                elif getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+```
+
+**Framework comparison — Managed Agents vs. Claude Agent SDK:**
+
+| Dimension | Claude Managed Agents | Claude Agent SDK |
+|---|---|---|
+| Loop ownership | Anthropic (server-side) | You (client-side) |
+| Tool execution | Server-side container | Your process |
+| Tool call visibility | Event type only (name, no inputs) | Full inputs and outputs |
+| Persistent state | Memory stores across sessions | Stateless per call |
+| MCP integration | Custom tool event pattern | Native, first-class |
+| Billing | Per session | Per API call |
+| Setup code | Agent + Environment + Session | `query()` + options |
+| When to choose | Persistent state, multi-tenant prod | Full observability, custom logic |
+
+**When to choose Claude Agent SDK:**
+
+- You need to audit every tool call input and output for compliance
+- Your data cannot leave your infrastructure (tools run in your process)
+- You need custom orchestration logic that Managed Agents doesn't support
+- You need cost visibility per individual tool call
+- You want full control over retry logic and error handling
 
 ---
 
-### Stateful vs. Stateless Orchestration
+> "Your security SOC needs to log every tool call with the analyst's reasoning before it executes. Which framework makes this easier — Managed Agents or the Claude Agent SDK? What does your answer tell you about when observability matters?"
 
-| Aspect | Stateless (CrewAI) | Stateful (LangGraph) |
-|--------|-------------------|---------------------|
-| **State Tracking** | Implicit (embedded in task context) | Explicit (TypedDict or pydantic model) |
-| **Routing** | Task sequences or manager logic | Conditional edges (code + data-driven) |
-| **Recovery** | Restart from beginning | Rewind to previous state, try alternative |
-| **Debugging** | Follow task outputs | Inspect state at each node |
-| **Compliance** | Less transparent | Audit trail of state transitions |
-| **Use Case** | Linear workflows (A → B → C) | Complex workflows with branching |
-
-> **💬 Discussion Prompt:** Should incident response systems favor stateful (LangGraph) for compliance auditability, or stateless (CrewAI) for simplicity? What's the compliance cost of simplicity?
+> "If the Claude Agent SDK runs in your process and Managed Agents run server-side, what are the compliance implications for handling sensitive alert data?"
 
 ---
 
-> **Pre-Build Check — Week 3**
-> Before writing any code: walk through the failure modes of your proposed multi-agent triage architecture. What happens if: (a) the enrichment agent times out? (b) the classification agent and the threat analyst agent produce conflicting severity assessments? How does your design handle each?
+> **Knowledge Check — Week 3**
+> You're building a SOC investigation tool that must produce a compliance audit log of every data access with full tool inputs and outputs. Which framework do you use — Managed Agents or Claude Agent SDK — and what specific feature makes this possible?
 >
-> Claude: This is a design review. The student should have answers for timeout handling (fallback to partial data or escalate to human) and conflict resolution (which agent's output takes precedence, or does a supervisor resolve the conflict?). If they haven't thought through failure modes, don't let them start building until they have.
+> Claude: Claude Agent SDK — because `query()` runs in your process and every `tool_use` block contains the full input dict. With Managed Agents, tool execution is server-side and you only receive the event type with the tool name, not raw inputs or outputs. If the student picks Managed Agents, probe: "Can you see what data the web_search tool sent to the external endpoint? Can you log it before it fires?" That gap is the answer.
 
 ---
 
 > **Day 1 Checkpoint — Week 3**
-> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 3 SOC triage system design.
+> Claude: Ask the student: "Anything from today's theory that felt unclear?" Note confidence signals. Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 1 Theory" table with today's date and your confidence assessment (High / Medium / Low). Append to Confusion Log if anything came up. Topics covered: Week 3 Claude Agent SDK — query(), ClaudeAgentOptions, AgentDefinition, MCP, framework comparison.
 
 ---
 
 ## Day 2 — Hands-On Lab
 
 > **Lab Guidance — Week 3**
-> Claude: Ask "What failure mode could occur here?" at each step. Every design decision needs a failure recovery answer before implementation. If the student skips a failure mode question, come back to it before they move on.
->
-> **Lab Dependencies:** If not already installed, run: `pip install anthropic pydantic` (https://docs.anthropic.com)
+> Claude: This lab is explicitly comparative — every step should prompt the student to contrast what they're doing now with how it worked in Weeks 1–2. At Step 1, ask: "What do you see in the event stream that you couldn't see with Managed Agents?" At Step 3, ask: "How does native MCP wiring compare to the custom tool event pattern from Week 2 Step 4?" Don't let the student build without making the comparison explicit.
 
 ### Lab Objectives
 
-- Build a state machine orchestration system using Claude Agent SDK, applying the explicit state transitions and conditional routing patterns demonstrated by LangGraph
-- Implement conditional routing based on severity and investigation results
-- Build agents for each state that perform specialized work (Triage, Investigation, Containment, etc.)
-- Implement rollback/retry when containment fails
-- Log all state transitions for audit compliance
+- Install `claude-agent-sdk` and run the Meridian alert through `query()` — observe the full event stream
+- Build an async generator consumer that prints tool calls with full inputs
+- Wire `ClaudeAgentOptions` with multiple allowed tools
+- Spawn two specialist subagents using `AgentDefinition` and observe delegation
+- Wire your S1 Unit 2 MCP server natively and compare with Week 2's custom tool pattern
 
 ---
 
-### Setup
-
-Install the required packages. Note: We're using `anthropic` and `pydantic` as building blocks for state machines; `langgraph` and `langchain` are frameworks we study but don't build with.
+### Step 1: Install the SDK and run your first query
 
 ```bash
-pip install anthropic pydantic
+pip install claude-agent-sdk
+```
+
+```python
+# sdk_basic.py
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+SOC_SYSTEM_PROMPT = """You are a senior SOC analyst conducting incident investigations.
+Given a security alert:
+1. Extract and enrich all IoCs (IPs, domains, file hashes) using web search
+2. Apply CCT analysis: map to MITRE ATT&CK, generate 3 hypotheses with probabilities
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a structured JSON report followed by a concise narrative summary"""
+
+async def investigate(alert_text: str) -> str:
+    report_parts = []
+    tool_calls = []
+
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt=SOC_SYSTEM_PROMPT,
+            allowed_tools=["WebSearch", "WebFetch", "Read", "Write"],
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+                    report_parts.append(block.text)
+                elif getattr(block, "type", None) == "tool_use":
+                    tool_calls.append({"name": block.name, "input": block.input})
+                    print(f"\n[Tool: {block.name}({block.input})]", flush=True)
+        if hasattr(message, "result"):
+            print(f"\n── Session complete ({len(tool_calls)} tool calls) ──")
+
+    return "".join(report_parts)
+
+meridian_alert = """
+ALERT: Unusual authentication pattern detected
+Time: 2024-01-15 03:42:17 UTC
+Source IP: 185.220.101.47 (Tor exit node)
+Target: finance-workstation-07 (user: j.morrison@meridianfinancial.com)
+Event: 47 failed RDP attempts followed by successful login
+Post-auth: PowerShell execution, LSASS memory access detected
+"""
+
+result = asyncio.run(investigate(meridian_alert))
+```
+
+> **Compare now:** You see the full `tool.input` dict — the exact query string sent to web search, the exact URL fetched. In Weeks 1–2 with Managed Agents, you only received `agent.tool_use` with the tool name. That observability gap is the central trade-off you'll document in Week 4.
+
+---
+
+### Step 2: Add SOC subagents using AgentDefinition
+
+```python
+# sdk_with_subagents.py
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
+
+meridian_incident_text = """
+ALERT: Suspicious outbound TLS connection detected
+Source: 10.0.4.23 (MERIDIAN-WS-042, Finance Workstation)
+Destination: 203.0.113.42:443
+Time: 2026-04-15T14:32:11Z
+Bytes transferred: 847,293 (unusually high for this endpoint)
+Certificate: self-signed, issued to 'updates.meridian-secure.com'
+Note: This domain was registered 3 days ago.
+"""
+
+async def investigate_with_subagents(alert_text: str):
+    async for message in query(
+        prompt=f"Conduct a full SOC investigation on this alert:\n\n{alert_text}",
+        options=ClaudeAgentOptions(
+            system_prompt="""You are a SOC investigation coordinator.
+For each alert: first use the ioc-recon agent to enrich all IoCs,
+then use the threat-analyst agent to perform CCT analysis and produce the final report.""",
+            allowed_tools=["Agent", "WebSearch"],
+            agents={
+                "ioc-recon": AgentDefinition(
+                    description="IOC enrichment specialist. Use for looking up IPs, domains, file hashes, and URLs against threat intel sources. Use this FIRST before any analysis.",
+                    prompt="""You are an IOC enrichment specialist.
+For each indicator: search for reputation data, associated campaigns, geolocation, ASN, and first/last seen.
+Return a structured summary of findings for each IOC.""",
+                    tools=["WebSearch", "WebFetch"],
+                    model="inherit",
+                ),
+                "threat-analyst": AgentDefinition(
+                    description="CCT analysis and report generation specialist. Use AFTER IOC enrichment to apply MITRE ATT&CK mapping, generate hypotheses, and produce the incident report.",
+                    prompt="""You are a senior threat analyst.
+Given enriched IOC data and alert context:
+1. Map to MITRE ATT&CK (technique IDs and names)
+2. Generate 3 hypotheses with probabilities (must sum to 100%)
+3. Assess severity (Critical/High/Medium/Low) with justification
+4. Produce a JSON report: {severity, mitre_techniques, hypotheses, recommendations}
+5. Follow with a 2-paragraph narrative summary""",
+                    tools=["Write"],
+                    model="inherit",
+                ),
+            },
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
+        if hasattr(message, "result"):
+            print("\n── Investigation complete ──")
+
+asyncio.run(investigate_with_subagents(meridian_incident_text))
 ```
 
 ---
 
-### Architecture: State Machine Design for Incident Response
+### Step 3: Wire your S1 Unit 2 MCP server natively
 
-**Key Concept from LangGraph:** Incident response can be modeled as a **state machine**—a set of states and transitions. The incident progresses through phases (Detection → Triage → Investigation → ...), with specific conditions determining which phase comes next.
+Unlike Week 2 (where you handled `agent.custom_tool_use` events manually), the SDK wires MCP servers natively — no event handling code needed. Full input visibility is automatic.
 
-**Why State Machines for Security?**
-- **Explicit transitions:** "If severity=critical, go to Containment. If threat_confirmed=false, go to Archive."
-- **Recovery:** If Containment fails, you can rewind and try a different approach
-- **Auditability:** Every state change is recorded (compliance requirement)
-- **Debugging:** You can inspect state at any point in the workflow
+```python
+# sdk_with_mcp.py
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-**State Design:** Define a State class (using Pydantic or dataclass) that captures all data the incident carries as it progresses:
-- Alert details (source IP, event type)
-- Analysis results (severity, threat actors)
-- Action results (containment success, eradication status)
-- History (what phases did we go through)
-- Audit trail (why did we make each decision)
+async def investigate_with_mcp(alert_text: str):
+    async for message in query(
+        prompt=alert_text,
+        options=ClaudeAgentOptions(
+            system_prompt="""You are a senior SOC analyst. For every investigation:
+1. Use the soc-intel MCP server first for internal threat intel lookup
+2. Use WebSearch for external enrichment
+3. Apply CCT analysis and produce a structured JSON report""",
+            allowed_tools=["WebSearch", "WebFetch"],
+            mcp_servers={
+                "soc-intel": {
+                    "command": "python3",
+                    "args": ["path/to/your/s1-unit2-mcp-server.py"],
+                    # Or for a persistent HTTP server:
+                    # "url": "http://localhost:3000"
+                }
+            },
+        ),
+    ):
+        if hasattr(message, "content") and message.content:
+            for block in message.content:
+                if getattr(block, "type", None) == "tool_use":
+                    print(f"\n[MCP tool: {block.name}({block.input})]")
+                elif getattr(block, "type", None) == "text":
+                    print(block.text, end="", flush=True)
 
-**Node Functions:** Each node represents a phase in the workflow and is responsible for:
-- Reading the current state
-- Doing its work (an agent analyzes, contains, reports)
-- Updating the state with results
-- Returning the updated state
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** When designing state machines for incident response:
-> - Define state schema (all data the incident carries)
-> - Design node functions as pure state transforms (no side effects)
-> - Specify transition logic (based on what state values?)
-> - Identify decision points (when to escalate, archive, retry)
-> - Implement using Claude Agent SDK with explicit control flow
-
-**Claude Code Prompt:**
-
-```text
-Design a state machine for incident response with 7+ states using Claude
-Agent SDK. This implements the pattern demonstrated by LangGraph (explicit
-states, conditional transitions) but using Claude Code for orchestration.
-
-State Definition (using Pydantic or dataclass):
-Include fields for:
-- Alert info: alert_id, timestamp, src_ip, dst_ip, event_type
-- Analysis results: severity, confidence, threat_confirmed, threat_actors
-- Actions taken: containment_executed, containment_success, eradication_executed
-- History: current_phase, phase_history (audit trail)
-- Decisions: list of decisions and reasoning
-
-Nodes (one per incident response phase):
-1. detection_node: Validate alert has required fields. Transition: always to triage
-2. triage_node: Classify severity (low/medium/high/critical). Update state with severity,
-   confidence. Transition: conditional based on severity
-3. investigation_node: Deep analysis, threat hunting. Update threat_confirmed, threat_actors.
-   Transition: conditional based on threat_confirmed
-4. containment_node: Execute isolation/remediation. Update containment_success.
-   Transition: conditional based on success
-5. eradication_node: Remove attacker artifacts. Transition: always to recovery
-6. recovery_node: Restore systems. Transition: always to lessons_learned
-7. lessons_learned_node: Post-incident review. Transition: END
-8. archive_node: Close benign incident. Transition: END
-
-Node Implementation Pattern (using Claude Agent SDK):
-- Each node is a function: node(state) → updated_state
-- Use a Claude agent for the analytical work (triage, investigation, etc.)
-- Read current state (severity, threat_confirmed, etc.)
-- Call agent to do work (analyze incident, decide if containment succeeded)
-- Update state with results from agent
-- Record decision in state['decisions']
-- Return updated state
-
-Example: triage_node using Claude Agent SDK
-- Reads: state['event_type'], state['src_ip']
-- Calls: Claude agent (triage specialist persona) to classify severity
-- Agent returns: "SEVERITY: HIGH. This lateral movement indicates compromise."
-- Updates: state['severity'] = 'high', state['confidence'] = 92
-- Records: {"phase": "triage", "decision": "Assigned HIGH severity because lateral_movement"}
-- Returns: updated state
-
-All nodes must:
-1. Print debug log ("[TRIAGE] Classifying alert ALT-001")
-2. Update state.current_phase and state.phase_history
-3. Record decisions in state.decisions
-4. Return the updated state
-5. Use Claude Agent SDK for agent work (not external frameworks)
+asyncio.run(investigate_with_mcp(meridian_incident_text))
 ```
 
-Verification:
-- [ ] State includes all fields needed for analysis, action, and audit
-- [ ] Each node does one thing well (detection ≠ triage)
-- [ ] Nodes record their decisions (for audit trail)
-- [ ] Node functions return updated state
-- [ ] Phase history tracks path through state machine
-- [ ] Decisions log explains "why" for each action
-
-If nodes are missing decision recording, ask Claude to add it. If state doesn't include audit trail fields, request they be added.
+> **Compare with Week 2:** In Week 2 you defined the MCP server as a custom tool schema and handled `agent.custom_tool_use` events yourself. Here, the SDK wires MCP natively — no event handling code needed. Both give you the MCP tool result, but the SDK path shows you the full input automatically.
 
 ---
 
-### Architecture: Conditional Routing Logic
+### Step 4: Run the test suite and record metrics
 
-**Key Concept:** Routing functions decide which node executes next based on current state. They're **pure functions**—given the same state, they always produce the same routing decision.
+Run your Claude Agent SDK implementation against 5+ test incidents. Record the same metrics you captured for Weeks 1–2: severity classification accuracy, latency (wall-clock), token cost, and report completeness. Add Claude Agent SDK as a new column in your comparison spreadsheet.
 
-**Routing Pattern:**
+```python
+import asyncio, time, json
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+async def run_test_suite(incidents: list) -> list:
+    results = []
+    for incident in incidents:
+        start = time.time()
+        report_parts = []
+
+        async for message in query(
+            prompt=incident["alert_text"],
+            options=ClaudeAgentOptions(
+                system_prompt=SOC_SYSTEM_PROMPT,
+                allowed_tools=["WebSearch", "WebFetch", "Write"],
+            ),
+        ):
+            if hasattr(message, "content") and message.content:
+                for block in message.content:
+                    if getattr(block, "type", None) == "text":
+                        report_parts.append(block.text)
+
+        elapsed = time.time() - start
+        report = "".join(report_parts)
+        results.append({
+            "id": incident["id"],
+            "framework": "claude_agent_sdk",
+            "latency_s": round(elapsed, 1),
+            "severity_correct": incident["expected_severity"].lower() in report.lower(),
+            "ioc_count_found": sum(1 for ioc in incident["expected_iocs"] if ioc in report),
+        })
+    return results
+
+# Use the same test incidents as your Managed Agents runs for a fair comparison
+test_incidents = [
+    {"id": "w3-test-1", "alert_text": meridian_incident_text,
+     "expected_severity": "high", "expected_iocs": ["10.0.4.23", "203.0.113.42"]}
+    # Expand with 4+ more incidents for a meaningful comparison
+]
+
+results = asyncio.run(run_test_suite(test_incidents))
+with open("results_claude_agent_sdk.json", "w") as f:
+    json.dump(results, f, indent=2)
+
+print(f"Accuracy: {sum(r['severity_correct'] for r in results)}/{len(results)}")
+print(f"Avg latency: {sum(r['latency_s'] for r in results)/len(results):.1f}s")
 ```
-After Triage: if severity in [high, critical] → Investigation else → Archive
-After Investigation: if threat_confirmed=true → Containment else → Archive
-After Containment: if containment_success=true → Eradication else → Retry (or escalate)
-```
-
-**Routing Decisions Should Be:**
-- **Explicit:** Clear condition in code (not magical, not learned)
-- **Justified:** Reason for condition documented (why escalate on high severity?)
-- **Testable:** Same state always produces same routing decision
-- **Transparent:** Easy to audit and explain to stakeholders
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** When designing routing for incident response:
-> - Define clear conditions for each routing decision
-> - Explain why each condition makes sense (security rationale)
-> - Handle edge cases (what if severity is unknown? Fail safe to lower action)
-> - Support retry/rollback logic (if containment fails, investigate again)
-> - Implement as pure Python functions (no side effects)
-
-**Claude Code Prompt:**
-
-```text
-Design conditional routing functions for your incident response state
-machine using Claude Agent SDK. These functions implement the pattern
-demonstrated by LangGraph: explicit conditions and deterministic routing.
-
-Routing functions (pure functions: state → next_node_name):
-
-1. route_after_triage(state) → string
-   Decision: Should we investigate or close this incident?
-   - If severity in [high, critical]: "investigation" (escalate)
-   - If severity in [low, medium]: "archive" (close as benign/low-risk)
-   - Default: "archive" (fail-safe to low action)
-
-2. route_after_investigation(state) → string
-   Decision: Is the threat real? Should we contain it?
-   - If threat_confirmed=true: "containment" (proceed to remediation)
-   - If threat_confirmed=false: "archive" (false alarm, close)
-   - Rationale: No point containing if threat isn't real
-
-3. route_after_containment(state) → string
-   Decision: Did containment work? What's next?
-   - If containment_success=true: "eradication" (remove attacker artifacts)
-   - If containment_success=false: "investigation" (retry with different approach)
-   - Rationale: If we can't contain, need more information before proceeding
-
-4. Default routing (after eradication, recovery):
-   - eradication → recovery (always)
-   - recovery → lessons_learned (always)
-   - lessons_learned → END (always)
-   - archive → END (always)
-
-Implementation requirements:
-- Each function takes state, returns string (next node name)
-- No side effects (no logging, no state mutations)
-- Include docstring explaining the logic
-- Handle missing/unexpected state values gracefully
-- Use explicit Python conditionals (not AI-based decisions)
-
-Example:
-def route_after_triage(state):
-    \"\"\"Route based on severity classification.\"\"\"
-    severity = state.severity or 'medium'
-    if severity in ['high', 'critical']:
-        return 'investigation'  # Escalate for analysis
-    else:
-        return 'archive'  # Low risk, close incident
-
-Include comments explaining security rationale:
-# Escalate high/critical to investigation because:
-# - High likelihood of real threat
-# - Cost of false negative (missed attack) > cost of extra investigation
-# - Low severity incidents may be false positives, archive to reduce noise
-
-These routing functions are the "glue" between state machine nodes—they
-implement human judgment about incident response in explicit, auditable,
-testable code.
-```
-
-Verification:
-- [ ] Each routing function handles the conditions it's responsible for
-- [ ] Edge cases are handled (unknown severity defaults safely)
-- [ ] Rationale is documented (why this routing decision?)
-- [ ] Functions are pure (no mutations, no logging)
-- [ ] All possible state values lead to a valid next node
-- [ ] Retry logic exists for failure cases (containment_success=false)
-
-If routing logic is missing edge cases, ask Claude to add them. If rationale isn't documented, request security reasoning be added.
 
 ---
 
-### Architecture: Building and Executing the State Machine
+### Step 5: Document trade-offs and write week3-notes.md
 
-**Key Concept:** A state machine for incident response is a **directed acyclic graph (DAG)** where:
-- **Nodes** are functions that process state (using Claude agents)
-- **Edges** are transitions (static or conditional routing)
-- **Execution** processes an incident from initial alert to final resolution
+Add a "Claude Agent SDK" section to your `framework-comparison-report.md`. Cover:
 
-**Two Types of Edges:**
-1. **Static Edges:** "After node A, always go to node B"
-   - Detection → Triage (always)
-   - Eradication → Recovery (always)
+1. What you own vs. what Managed Agents owns (loop execution, tool execution, persistence)
+2. Observability — can you audit every tool call for compliance?
+3. MCP integration — native (SDK) vs. custom-tool-event pattern (Managed Agents)
+4. When you'd choose client-side ownership over hosted infrastructure in a real SOC deployment
 
-2. **Conditional Edges:** "After node A, go to B or C based on state"
-   - After Triage: investigation (if high severity) or archive (if low)
-   - After Investigation: containment (if threat confirmed) or archive (if not)
+In `week3-notes.md`, answer:
+- List every tool call the SDK showed you that Managed Agents hid. Is that visibility gap a security concern in your SOC context?
+- With client-side execution, your process is part of the attack surface — a malicious tool result could affect your runner. How would you defend against that?
+- Subagent delegation: did Claude invoke the right subagent automatically based on description? What would have happened with a vague description?
+- For your capstone architecture (Unit 8), would you choose Managed Agents or Claude Agent SDK? What is the deciding factor?
 
-**Execution Pattern:** Unlike LangGraph (which compiles and validates), you'll implement this in Claude Agent SDK as:
-1. Initialize state from alert data
-2. Call detection_node(state) → updated_state
-3. Route based on route_after_detection(updated_state)
-4. Call next node, repeat until terminal state
-5. Return final state with complete audit trail
-
-**Context Engineering Note:**
-
-> **🔑 Key Concept:** When implementing a state machine:
-> - Design all nodes that participate in the workflow
-> - Define all static edges (always-transitions)
-> - Define all conditional edges (routing decisions)
-> - Specify entry point (usually 'detection')
-> - Implement as explicit Python control flow (if/elif/else routing)
-
-**Claude Code Prompt:**
-
-```text
-Build a state machine executor for incident response using Claude Agent SDK.
-Implement the workflow as explicit Python control flow (if/elif/else routing)
-with nodes calling Claude agents. This demonstrates the LangGraph pattern
-(state machine, explicit routing) using Claude Agent SDK.
-
-Create a class: IncidentResponseStateMachine
-
-1. Initialize with:
-   - All node functions (detection_node, triage_node, ..., archive_node)
-   - All routing functions (route_after_triage, route_after_investigation, ...)
-   - Entry point: 'detection'
-
-2. Implement execute(initial_state) method:
-   - Start at entry point node
-   - Call current_node(state) → updated_state
-   - Determine next node using routing function
-   - Continue until reaching terminal state (END)
-   - Return final_state with complete audit trail
-
-3. Node execution flow:
-   current_node = 'detection'
-   state = initial_state
-
-   while current_node != 'END':
-       # Execute current node (it calls a Claude agent)
-       state = nodes[current_node](state)
-
-       # Route to next node
-       if current_node == 'triage':
-           next_node = route_after_triage(state)
-       elif current_node == 'investigation':
-           next_node = route_after_investigation(state)
-       # ... etc
-       else:
-           next_node = default_route(current_node)
-
-       current_node = next_node
-
-   return state
-
-4. State machine diagram (for your design doc):
-
-```mermaid
-stateDiagram-v2
-    [*] --> detection
-    detection --> triage
-
-    triage --> investigation: severity=high/critical
-    triage --> archive: severity=low
-
-    investigation --> containment: threat_confirmed=true
-    investigation --> archive: threat_confirmed=false
-
-    containment --> eradication: success=true
-    containment --> investigation: success=false<br/>(retry)
-
-    eradication --> recovery
-    recovery --> lessons_learned
-    lessons_learned --> [*]
-
-    archive --> [*]
-```
-
-5. The state machine supports:
-   - Forward progression (detection→...→lessons_learned)
-   - Early termination (archive at triage or investigation)
-   - Retry loops (containment failure→investigation for different approach)
-
-This implementation gives you the benefits of LangGraph (explicit states,
-clear routing, auditable decisions) using Claude Agent SDK (full control
-over agent orchestration).
-```
-
-Verification:
-- [ ] All nodes are added to the graph
-- [ ] Static edges are correct (always-transitions)
-- [ ] Conditional edges reference valid routing functions
-- [ ] Entry point is set to 'detection'
-- [ ] Graph compiles without errors
-- [ ] All nodes can be reached (no orphaned nodes)
-- [ ] All paths terminate at END (no infinite loops)
-
-If the graph won't compile, check for:
-- Misspelled node names in edges
-- Routing functions that return invalid node names
-- Missing nodes referenced in edges
-- Circular dependencies (should be DAG)
+**Week 3 Deliverables:**
+- `sdk_basic.py` — basic `query()` investigation with full tool call inspection
+- `sdk_with_subagents.py` — ioc-recon + threat-analyst subagent pipeline
+- `sdk_with_mcp.py` — MCP server wired natively
+- `results_claude_agent_sdk.json` — test suite results
+- `week3-notes.md` — observability analysis and paradigm trade-off writeup
 
 ---
 
-### Execution and Testing Your State Machine
-
-**Execution Pattern Using Claude Agent SDK:**
-1. Initialize IncidentState with alert data
-2. Call `state_machine.execute(state)` to run the workflow
-3. Capture final state
-4. Generate audit trail from `state.decisions`
-
-**Test Design:**
-Create test cases with various alert types:
-- Benign alerts (should archive at triage)
-- Critical threats (should proceed to containment)
-- Ambiguous cases (should investigate before deciding)
-
-**Claude Code Prompt:**
-
-```text
-Build execution and testing for your incident response state machine
-using Claude Agent SDK.
-
-Create:
-1. run_incident_response(alert_data) function using Claude Agent SDK:
-   - Initialize IncidentState from alert data
-   - Call state_machine.execute(state)
-   - Capture result_state
-   - Generate and print audit trail
-   - Return result_state with full history
-
-   Audit trail should show:
-   - Alert ID and initial data
-   - Phase progression (detection → triage → ...)
-   - Key decisions at each phase (severity assigned, threat confirmed, etc.)
-   - Final status (archive or escalated to containment)
-
-2. Test framework:
-   - Define 5-10 test cases with different event types
-   - Each test specifies: alert data and expected outcome
-   - Run each test, capture result
-   - Verify actual phase progression matches expected
-   - Generate test report
-
-   Test cases:
-   - benign_login: Normal user login → archive at triage
-   - critical_lateral_movement: Suspicious lateral movement → investigate → contain
-   - ambiguous_dns: Unknown DNS query → investigate → archive
-   - malware_detected: Known malware → investigate → contain → eradicate
-
-3. Validate results:
-   - Severity assignments (low/medium/high/critical)
-   - Threat confirmation decisions (true/false)
-   - Phase progression (correct routing)
-   - Audit trail completeness (all decisions logged)
-
-Example test execution using Claude Agent SDK:
-alert = {
-  'alert_id': 'ALT-001',
-  'src_ip': '203.0.113.42',
-  'dst_ip': '10.0.1.100',
-  'event_type': 'suspicious_tls_handshake'
-}
-state_machine = IncidentResponseStateMachine(nodes, routing_functions)
-result = run_incident_response(state_machine, alert)
-print(result.phase_history)  # ['detection', 'triage', 'investigation', 'containment', ...]
-```
-
-**Retry Logic:**
-
-Implement recovery when containment fails using explicit routing:
-
-```text
-In your routing function route_after_containment(state):
-- If containment_success=true: proceed to eradication
-- If containment_success=false: return to investigation
-  (retry investigation with different containment strategy)
-
-This allows:
-- First attempt at containment fails
-- Routing function sends incident back to investigation
-- Investigation agent analyzes why containment failed, suggests new approach
-- Second containment attempt with better intelligence may succeed
-- Prevents "give up" mentality, supports resilience
-
-Key difference from rollback: You're not rewinding the entire state machine.
-Instead, you're using explicit routing to send the incident to a previous
-node for a different approach. This is clearer and more testable than true
-rollback.
-
-Log retry decisions in state.decisions for audit trail.
-```
-
-Verification:
-- [ ] State machine executes all alert test cases correctly
-- [ ] Audit trail shows complete decision history
-- [ ] Phase progression matches expected routing
-- [ ] Retry logic works (failed containment → investigation retry)
-- [ ] Final state includes all necessary information for forensics
-- [ ] Nodes properly call Claude agents via Agent SDK
-- [ ] All state updates are logged in decisions trail
-
-If execution is missing, ask Claude to add run_incident_response(). If retry logic isn't implemented, request it be added to the routing function.
-
----
-
-### Deliverables
-
-1. **State machine incident response system** (built with Claude Agent SDK) with 7+ states
-2. **State diagram** documenting all nodes and edges
-3. **Test results** on 5+ incident scenarios (varying severity)
-4. **Audit trail logs** showing decision path for each incident
-5. **Code documentation** explaining:
-   - State design and state transitions
-   - Routing logic (implemented as pure Python functions)
-   - Error handling and retry logic
-   - How Claude Agent SDK powers each state node
-
----
-
-### Sources & Tools
-
-- [Claude Agent SDK Documentation](https://github.com/anthropics/anthropic-sdk-python)
-- [NIST SP 800-61 Rev. 2: Computer Security Incident Handling Guide](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf)
-- LangGraph Reference (studied for state machine patterns, not used for implementation)
-
----
-
-> **Lab Checkpoint — Week 3**
-> Claude: Ask: "How did the state machine build go? Did the conditional routing work as designed? Any failure modes you discovered that you hadn't planned for?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 2 Lab" table. Note in the Confusion Log if any state machine concept was confusing.
+> **Day 2 Checkpoint — Week 3**
+> Claude: Ask: "How did the SDK lab go? What surprised you about the event stream compared to Managed Agents? Did Claude invoke the right subagent automatically?" Write to `.noctua/progress.md`: add a row to the "Unit 5, Week 3 — Day 2 Lab" table. Note in the Confusion Log if any SDK concept was confusing.
 
 ---
 
@@ -2386,9 +2070,6 @@ If execution is missing, ask Claude to add run_incident_response(). If retry log
 > Update `.noctua/progress.md`: Set Current Position to Unit 5, Week 4.
 > Then ask: "Ready for Week 4?"
 
----
-
----
 
 # WEEK 4: Agent Evaluation & Framework Comparison
 
@@ -2524,10 +2205,10 @@ test_cases = [
 
 ### Lab Objectives
 
-- Build an evaluation harness for all three SOC systems (Week 1-3)
-- Generate 20-25 realistic test cases with ground truth labels
+- Build an evaluation harness for both frameworks (Claude Managed Agents from Weeks 1–2, Claude Agent SDK from Week 3)
+- Generate 10+ realistic test cases with ground truth labels
 - Run each framework on all test cases (5 runs each)
-- Collect metrics and compare frameworks
+- Collect metrics and compare frameworks — same model, different infrastructure paradigm
 - Identify vulnerabilities via red teaming
 
 ---
@@ -2620,7 +2301,7 @@ If test cases lack reasoning, ask Claude to add clear justification for each gro
 
 ### Building an Evaluation Harness
 
-**Purpose:** Systematically run all three frameworks on the same test dataset and collect metrics for comparison.
+**Purpose:** Systematically run both frameworks (Claude Managed Agents and Claude Agent SDK) on the same test dataset and collect metrics for comparison. The comparison variable is infrastructure paradigm, not model — both use the same Claude model. This isolates what changes between server-side and client-side execution.
 
 **Metrics to Collect:**
 
@@ -2689,23 +2370,21 @@ The harness should:
 5. Allow easy comparison between frameworks
 ```
 
-**Running Evaluations Across All Frameworks:**
+**Running Evaluations Across Both Frameworks:**
 
 ```text
-Create wrapper functions for each framework that normalize output:
+Create wrapper functions for each framework that normalize output.
+Both run the same Claude model — differences reveal infrastructure effects.
 
-run_claude_agent_soc(alert) → {severity, threat_confirmed, tokens_used}
-run_crewai_soc(alert) → {severity, threat_confirmed, tokens_used}
-run_langgraph_ir(alert) → {severity, threat_confirmed, tokens_used}
+run_managed_agents_soc(alert) → {severity, threat_confirmed, tokens_used, latency_s}
+run_claude_agent_sdk_soc(alert) → {severity, threat_confirmed, tokens_used, latency_s}
 
 Execute evaluation:
-harness_sdk = EvaluationHarness("Claude Agent SDK", run_claude_agent_soc)
-harness_crew = EvaluationHarness("CrewAI", run_crewai_soc)
-harness_graph = EvaluationHarness("LangGraph", run_langgraph_ir)
+harness_ma  = EvaluationHarness("Claude Managed Agents", run_managed_agents_soc)
+harness_sdk = EvaluationHarness("Claude Agent SDK",      run_claude_agent_sdk_soc)
 
+harness_ma.run_all_tests(test_dataset, num_runs=5)
 harness_sdk.run_all_tests(test_dataset, num_runs=5)
-harness_crew.run_all_tests(test_dataset, num_runs=5)
-harness_graph.run_all_tests(test_dataset, num_runs=5)
 
 Generate comparison table showing:
 - Framework name
@@ -2714,12 +2393,16 @@ Generate comparison table showing:
 - Average token cost per alert
 - Estimated cost in dollars
 - Consistency score (0-1, higher = more consistent)
+- Tool call visibility (observable inputs/outputs vs. event-type-only)
 
 Example output:
-Framework      | Accuracy | Latency (s) | Cost/Alert | Consistency
-Claude SDK     | 90%      | 2.3         | $0.008     | 0.95
-CrewAI         | 88%      | 1.5         | $0.005     | 0.92
-LangGraph      | 87%      | 1.1         | $0.006     | 0.93
+Framework              | Accuracy | Latency (s) | Cost/Alert | Consistency
+Managed Agents         | 89%      | 2.1         | $0.007     | 0.94
+Claude Agent SDK       | 90%      | 2.3         | $0.008     | 0.95
+
+Note: Similar accuracy is expected — same model, same system prompt, same task.
+Differences in latency and cost reveal infrastructure overhead.
+Observability gap is not captured in accuracy metrics — document it qualitatively.
 ```
 
 Verification:
@@ -2793,7 +2476,7 @@ def red_team_adversarial_attacks():
 
 ## Context Library: Multi-Agent Patterns
 
-You've now designed and built three different multi-agent orchestration systems. This is exactly the kind of work that belongs in your personal **context library**—patterns you'll reference repeatedly in future roles.
+You've now designed and built two multi-agent orchestration systems across two infrastructure paradigms. This is exactly the kind of work that belongs in your personal **context library**—patterns you'll reference repeatedly in future roles.
 
 ### What to Capture
 
@@ -2818,7 +2501,7 @@ As you complete Week 4, extract and save:
    - Save as: `context-library/evaluation/harness-template.py` (a reusable class you can copy-paste into future projects)
 
 4. **Framework Decision Matrix**
-   - Your findings on Claude Agent SDK vs. CrewAI vs. LangGraph
+   - Your findings on Claude Managed Agents vs. Claude Agent SDK
    - Pros/cons for different use cases (SOC triage, threat hunting, incident response)
    - Performance metrics table from your evaluation
    - Save as: `context-library/frameworks/selection-guide.md`
@@ -2901,9 +2584,9 @@ By end of Semester 2, your context library won't just be reference material—it
 2. **Test dataset** (20-25 labeled cases with ground truth)
 3. **Comparison report** (3000+ words):
    - Metrics table: accuracy, latency, cost, consistency
-   - Framework strengths and weaknesses
+   - Paradigm strengths and weaknesses (Managed Agents vs. Claude Agent SDK)
    - Cost-benefit analysis
-   - Recommendations for framework selection
+   - Recommendations for paradigm selection by use case
 4. **Red team report** (vulnerabilities found and categorized)
 5. **Visualization:** Charts comparing frameworks on key dimensions
 
@@ -2969,12 +2652,12 @@ Real-world examples: MASS is essentially a plugin — 12 specialized analyzers c
 **Requirements:**
 - Choose a security use case (SOC automation, threat hunting, incident response, vulnerability management)
 - Select an architecture pattern (supervisor, hierarchical, debate, or hybrid)
-- Choose a framework (Claude Agent SDK, CrewAI, or LangGraph)
+- Choose an infrastructure paradigm (Claude Managed Agents or Claude Agent SDK)
 - Build a prototype with 3+ specialized agents
-- Evaluate using the framework from Week 4
+- Evaluate using the harness from Week 4
 - Write a design justification (2000 words) explaining:
   - Why this architecture for this use case?
-  - Why this framework vs. alternatives?
+  - Why this paradigm vs. the alternative?
   - What metrics matter most?
   - How would you deploy and monitor this in production?
 

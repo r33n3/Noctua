@@ -51,7 +51,7 @@ Your capstone project must include:
    - `docker-compose.yml` for local testing and development
    - Container image scanning (Trivy) results documenting any CVE findings and mitigations
    - Supply chain security (SBOM) in CycloneDX or SPDX format
-9. **Infrastructure as Code (IaC)** — CloudFormation or Terraform template showing how your system deploys to production (ECS task definition, Kubernetes manifests, or equivalent). IaC enables repeatable, versioned deployments.
+9. **Containerized Deployment** — A `Dockerfile` and deployment instructions showing how your system runs in production. Push your container to GHCR with `docker push ghcr.io/<your-org>/<your-image>:latest` and document the `docker run` command with required env vars. Kubernetes manifests are optional stretch credit.
 10. **CI/CD Pipeline** — GitHub Actions workflow demonstrating the DevSecOps promotion pipeline:
    - Pre-commit: secrets detection
    - PR review: SAST scanning (Bandit/Semgrep)
@@ -63,7 +63,7 @@ Your capstone project must include:
 
 > **🔑 Key Concept:** The capstone is not just about building a cool system—it's about demonstrating that you can engineer agentic security solutions with the same rigor as traditional software engineering. Production-quality means security, observability, documentation, and responsible AI built in from the start, not bolted on afterward.
 
-> **🚀 Production-Promotable Capstone:** By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), an IaC template ready for your ops team to deploy to ECS/Kubernetes, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a **deployable artifact with full provenance, governance, and operational readiness**. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.
+> **🚀 Production-Promotable Capstone:** By Week 16, your capstone must be ready to move from demo to production. This means: containerized and tested locally via docker-compose, with a complete CI/CD pipeline defined (GitHub Actions with all security gates), a container image in GHCR ready for your ops team to pull and run, and documentation proving observability and incident response are designed in. Your capstone isn't just code; it's a **deployable artifact with full provenance, governance, and operational readiness**. If leadership said "deploy this Monday morning," your team could hand off a complete, hardened system—not a collection of notebooks and scripts.
 
 > **💡 Pro Tip:** Define your target organization before designing your system. Who are they? What do they do? What data do they process? What's their regulatory environment? What's their security maturity? A well-defined organizational context makes your architecture decisions more grounded and your capstone more convincing.
 
@@ -127,7 +127,7 @@ Here are concrete, achievable project ideas suitable for a 4-week capstone:
 
 > **💬 Discussion Prompt:** In your team, discuss which project idea resonates with your interests. Why? What real-world problem would you want to solve? How would a multi-agent approach help where a single agent or traditional automation would fall short?
 
-> **📖 Further Reading:** Review [Framework documentation](../../docs/frameworks.html) to understand available agent frameworks (Claude Agent SDK, CrewAI, LangGraph) and how they support multi-agent patterns.
+> **📖 Further Reading:** Review [Framework documentation](../../docs/frameworks.html) to understand the Anthropic-native paradigms (Claude Managed Agents, Claude Agent SDK) and how they support multi-agent patterns.
 
 > **🔑 Key Concept:** Both PeaRL and MASS are open source because their creator believes **security should always be open to anyone to use**. This isn't just ideology — it's sound engineering. Open-source security tools benefit from community review, diverse perspectives, and rapid improvement cycles. When you build your capstone, consider: would the security community benefit from your work being open? How does open-sourcing change your approach to code quality, documentation, and design?
 
@@ -228,7 +228,7 @@ Submit to faculty:
   - Tools and data sources
   - How it communicates with other agents
 - **Orchestration:** How do agents coordinate? Sequential? Hierarchical? Debate? Feedback loops?
-- **Framework choice:** Which framework will you use? (Claude Agent SDK, CrewAI, LangGraph?) Why is it the right fit?
+- **Framework choice:** Which paradigm will you use? (Claude Managed Agents, Claude Agent SDK, or direct Anthropic API?) Why is it the right fit for your problem — consider hosting model, state management needs, observability requirements, and cost.
 
 > **🔑 Key Concept:** Good multi-agent design is about **separation of concerns**. Each agent should have a clear, bounded role. Agent A doesn't try to do everything; it calls Agent B when specialized expertise is needed. This mirrors how human teams work. The **Pit of Success** principle from *Agentic Engineering* (Ch. 3) means designing your multi-agent system so the right behavior (agents respecting role boundaries, escalating appropriately, handling failures gracefully) emerges naturally from the architecture, not from constant oversight.
 
@@ -298,7 +298,7 @@ Submit to faculty:
 
 > **⚠️ Common Pitfall:** Slides that are text-heavy or too technical. Reviewers want to understand your vision in 15 minutes. Use diagrams. Show your system architecture visually. Practice beforehand and time yourself.
 
-> **💡 Pro Tip:** In the Q&A, be honest about unknowns. "We haven't decided on framework yet, but we're between CrewAI and LangGraph because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.
+> **💡 Pro Tip:** In the Q&A, be honest about unknowns. "We haven't decided on framework yet, but we're between Claude Managed Agents and the Claude Agent SDK because..." is better than "We'll use whatever works." Reviewers respect intellectual honesty.
 
 #### Step 5: Incorporate Feedback and Finalize (Thursday–Friday)
 
@@ -324,7 +324,7 @@ After your presentation, you'll receive written feedback from reviewers focusing
 
 #### Sources & Tools
 
-- [Framework Documentation](../../docs/frameworks.html) — Claude Agent SDK, CrewAI, LangGraph comparison
+- [Framework Documentation](../../docs/frameworks.html) — Claude Managed Agents, Claude Agent SDK comparison
 - [Lab Setup Guide](../../docs/lab-setup.html) — Getting your development environment ready
 - [Reading List](../../docs/reading.html) — MITRE ATLAS, agentic patterns, responsible AI
 
@@ -974,7 +974,7 @@ Congratulations! You've completed a graduate-level course in agentic security en
 ## Key Resources
 
 - [Reading List](../../docs/reading.html) — MITRE ATLAS, agent frameworks, security hardening, responsible AI
-- [Frameworks Documentation](../../docs/frameworks.html) — Claude Agent SDK, CrewAI, LangGraph patterns
+- [Frameworks Documentation](../../docs/frameworks.html) — Claude Managed Agents, Claude Agent SDK patterns
 - [Lab Setup Guide](../../docs/lab-setup.html) — Environment configuration, deployment, debugging
 
 ---

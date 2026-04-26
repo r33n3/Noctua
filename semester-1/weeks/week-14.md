@@ -129,7 +129,7 @@ As you move through Unit 4 and into Units 7–8, understand the full delivery pi
 
 The key insight: **Don't waste time hardening prototypes that won't be used.** Rapid prototyping identifies which ideas have merit. Only prototypes that leadership selects move to hardening.
 
-> **Key Concept:** **Containerize from Day 1.** The moment you write your first line of code, wrap it in a Dockerfile and docker-compose.yml. This means the path from your laptop to production is already paved. When leadership selects your prototype for delivery, you're not rewriting for containers — you're adding security gates (pre-commit hooks, build scanning), IaC (CloudFormation/Terraform for ECS), and observability. Containerization from Day 1 eliminates the "containerize for production" bottleneck that derails most projects.
+> **Key Concept:** **Containerize from Day 1.** The moment you write your first line of code, wrap it in a Dockerfile and docker-compose.yml. This means the path from your laptop to production is already paved. When leadership selects your prototype for delivery, you're not rewriting for containers — you're adding security gates (pre-commit hooks, build scanning), GHCR (containerize and push to GitHub Container Registry), and observability. Containerization from Day 1 eliminates the "containerize for production" bottleneck that derails most projects.
 
 ### Prototyping vs. Production Architecture: The API-First Pattern
 
@@ -148,7 +148,7 @@ Claude Agent → MCP Server → Direct database access
 
 ```
 Claude Agent → MCP Server → FastAPI Backend → Database
-(Properly decoupled, ready for ECS deployment)
+(Properly decoupled, container-ready for GHCR deployment)
 ```
 
 **Why the refactor matters:** A prototype might call a database directly from the MCP server. That works for testing. But when you containerize for production, you need:
@@ -162,9 +162,9 @@ Claude Agent → MCP Server → FastAPI Backend → Database
 
 When you build a security tool, measure yourself against these:
 
-1. **MTTS — Mean Time To Spot/Triage:** How long from alert to "we understand what this is?"
+1. **MTTS — Mean Time to Suppress:** How long from alert to active suppression (quarantine, block, or containment action taken)?
    - Example: Recon subagent identifies malicious IP in 4.2 seconds
-   - In a sprint: Can your prototype identify the threat in < 10 sec?
+   - In a sprint: Can your prototype identify and flag the threat for containment in < 10 sec?
 
 2. **MTTP — Mean Time To Protect:** How long from understanding to taking protective action?
    - Example: Isolate compromised server, revoke credentials, block IP
@@ -174,9 +174,9 @@ When you build a security tool, measure yourself against these:
    - Example: Threat removed, system hardened, new monitoring in place
    - In a sprint: Not always achievable; aim for MTTS + MTTP
 
-4. **MTTI — Mean Time To Isolate:** How long to stop lateral movement?
+4. **MTTI — Mean Time to Investigate:** How long from alert to completed root-cause investigation?
    - Critical metric for ransomware, APTs
-   - In a sprint: Does your tool enable rapid isolation?
+   - In a sprint: Does your tool surface root-cause information quickly? How long to understand what happened?
 
 5. **aMTTR — Augmented Mean Time To Respond:** Overall metric including human review
    - Realistic: MTTS + time for analyst review + MTTP

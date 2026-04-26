@@ -17,7 +17,7 @@ This course represents the second half of a year-long graduate sequence in advan
 
 Semester 2 builds on the Semester 1 foundation: students optimize and compare multi-agent frameworks, conduct sophisticated multi-stage attacks and defenses up to a full autonomous wargame, go deep on production security engineering (supply chain, NHI governance, observability), and complete a capstone with full AIUC-1 certification documentation and Assessment Stack justification.
 
-The course emphasizes practical hands-on experience with cutting-edge tools in the agentic AI ecosystem, including the Claude SDK, Claude Managed Agents, the OpenAI Agents SDK, and Model Context Protocol (MCP). Students extend what they built in Semester 1 rather than starting from scratch.
+The course emphasizes practical hands-on experience with cutting-edge tools in the agentic AI ecosystem, including the Claude Agent SDK, Claude Managed Agents, and Model Context Protocol (MCP). Students extend what they built in Semester 1 rather than starting from scratch.
 
 ### Key Terminology
 - **Collaborative Critical Thinking (CCT):** The systematic application of structured reasoning to design robust agentic systems, considering agent interactions, failure modes, security boundaries, and ethical implications. This is distinct from "prompting" and represents deep architectural and design thinking.
@@ -42,10 +42,10 @@ Semester 2 does not re-teach any of this. Week 1 begins at the optimization and 
 ### Lab Philosophy
 Semester 2 labs maximize the capabilities of Claude Max subscriptions and the cutting-edge agentic toolstack:
 
-- **Claude Code and Agent SDK:** Students already know the SDK. Labs extend depth: subagent optimization, concurrent execution, comparative evaluation against Claude Managed Agents and the OpenAI Agents SDK.
-- **Multi-Vendor Perspective:** Students have built with the Claude Agent SDK. Now they compare architectural trade-offs across Claude Managed Agents, the OpenAI Agents SDK, and Claude SDK direct on the same security problems.
+- **Claude Code and Agent SDK:** Students already know the SDK. Labs extend depth: subagent optimization, concurrent execution, comparative evaluation against Claude Managed Agents.
+- **Multi-Vendor Perspective:** Students have built with the Claude Agent SDK. Now they compare architectural trade-offs across Claude Managed Agents and the Claude Agent SDK on the same security problems.
 - **Autonomous Rapid Prototyping:** Students are proficient with the toolstack. Sprint velocity is higher. Week 1 starts at a complexity level that Week 11 Semester 1 sprints reached by Week 4.
-- **Production Depth:** Semester 1 introduced containerization and CI/CD gates. Semester 2 goes deep: supply chain security (SBOM, dependency signing), NHI governance, OpenTelemetry observability, ECS/Kubernetes deployment.
+- **Production Depth:** Semester 1 introduced containerization and CI/CD gates. Semester 2 goes deep: supply chain security (SBOM, dependency signing), NHI governance, OpenTelemetry observability, GHCR container deployment.
 
 ---
 
@@ -55,7 +55,7 @@ By the end of this course, students will be able to:
 
 1. **Design and implement multi-agent architectures** that orchestrate specialized agents for complex cybersecurity tasks, comparing supervisor, hierarchical, debate, and swarm patterns.
 
-2. **Evaluate and select appropriate agentic frameworks** (Claude SDK, Claude Managed Agents, OpenAI Agents SDK) based on security requirements, workflow characteristics, and operational constraints.
+2. **Evaluate and select appropriate agentic frameworks** (Claude Agent SDK, Claude Managed Agents) based on security requirements, workflow characteristics, and operational constraints.
 
 3. **Conduct Collaborative Critical Thinking analysis** to design agent systems that are secure, efficient, and resilient to adversarial manipulation.
 
@@ -110,7 +110,7 @@ Each week consists of two class sessions:
 |------|-------|
 | [Week 1: Multi-Agent Architecture Patterns](weeks/unit-5.md#week-1-multi-agent-architecture-patterns) | SDK deep dive: concurrent execution, cost optimization, per-agent benchmarking |
 | [Week 2: Claude Managed Agents](weeks/unit-5.md#week-2-claude-managed-agents) | Server-side execution patterns and managed agent deployment compared to Claude SDK direct |
-| [Week 3: OpenAI Agents SDK](weeks/unit-5.md#week-3-openai-agents-sdk) | OpenAI's agent framework; cross-vendor comparison on the same security problem set |
+| [Week 3: Claude Agent SDK](weeks/unit-5.md#week-3-claude-agent-sdk) | Client-side agent library (PyPI: claude-agent-sdk); Claude Managed Agents vs. Claude Agent SDK comparison |
 | [Week 4: Agent Evaluation and Benchmarking](weeks/unit-5.md#week-4-agent-evaluation-and-benchmarking) | Quantitative framework comparison: CPT, aMTTR, synthesis quality, ARR |
 
 [→ View Full Unit 5 Content](weeks/unit-5.md)
@@ -134,14 +134,14 @@ Each week consists of two class sessions:
 
 ### Unit 7: Production Security Engineering (Full Depth) (Weeks 9-12)
 
-*Students arrive having containerized a prototype and run basic CI/CD security gates in Semester 1 Week 15. This unit extends to full production depth: supply chain signing, NHI governance, OpenTelemetry observability, and ECS/Kubernetes deployment.*
+*Students arrive having containerized a prototype and run basic CI/CD security gates in Semester 1 Week 15. This unit extends to full production depth: supply chain signing, NHI governance, OpenTelemetry observability, and GHCR-based container deployment.*
 
 | Week | Topic |
 |------|-------|
 | [Week 9: AI Supply Chain Security](weeks/unit-7.md#week-9-ai-supply-chain-security) | Supply chain deep: SBOM signing, model provenance, dependency integrity verification |
 | [Week 10: Non-Human Identity Governance](weeks/unit-7.md#week-10-non-human-identity-nhi-governance) | NHI governance deep: per-agent credentials, rotation, audit, zero-trust for agents |
 | [Week 11: Observability and Cost Management](weeks/unit-7.md#week-11-observability-cost-management-and-operational-excellence) | OpenTelemetry, distributed tracing, cost dashboards, anomaly alerting |
-| [Week 12: Deploying Agentic Systems](weeks/unit-7.md#week-12-deploying-agentic-security-systems) | ECS/Kubernetes deployment, IaC, canary deployments, operational runbooks |
+| [Week 12: Deploying Agentic Systems](weeks/unit-7.md#week-12-deploying-agentic-security-systems) | container deployment with GHCR, CI/CD promotion pipeline, operational runbooks |
 
 [→ View Full Unit 7 Content](weeks/unit-7.md)
 
@@ -175,7 +175,7 @@ Final grade calculation:
 | Component | Weight | Due Week(s) | Description |
 |-----------|--------|------------|-------------|
 | Lab Exercises (12 labs) | 20% | 1-12 | Weekly lab deliverables and reports |
-| Framework Comparison Report | 10% | 4 | Unit 5 evaluation comparing all three frameworks (Claude SDK, Claude Managed Agents, OpenAI Agents SDK) |
+| Framework Comparison Report | 10% | 4 | Unit 5 evaluation comparing two frameworks (Claude Managed Agents vs. Claude Agent SDK) |
 | Red Team Exercise | 8% | 6 | Offensive security assessment of peer system |
 | Blue Team Exercise | 7% | 7 | Defensive hardening and response |
 | Capstone Project | 40% | 13-16 | Code, documentation, presentation, reflection |
@@ -250,8 +250,7 @@ Extra credit is assessed on: Does the deliverable communicate findings more effe
 - All students should have access to:
   - A computer capable of running Docker, Python, and development tools
   - Anthropic Claude API access (Claude Max subscription preferred for full agentic capabilities)
-  - GitHub account for code repositories
-  - Cloud computing credits (AWS, GCP, or Azure) for deployment (if needed)
+  - GitHub account for code repositories and container deployment (GHCR — GitHub Container Registry — is free with a GitHub account and is the deployment target for all production labs)
 - Cost of tools is student responsibility; financial hardship should be discussed with instructor
 
 ---
@@ -261,7 +260,6 @@ Extra credit is assessed on: Does the deliverable communicate findings more effe
 ### Required Texts and Documentation
 - Claude Agent SDK Documentation: https://docs.anthropic.com/agents
 - Claude Managed Agents Documentation: https://docs.anthropic.com/managed-agents
-- OpenAI Agents SDK Documentation: https://platform.openai.com/docs/agents
 - Model Context Protocol (MCP) Specification: https://modelcontextprotocol.io/
 - MITRE ATLAS Framework: https://atlas.mitre.org/
 
@@ -281,7 +279,6 @@ Extra credit is assessed on: Does the deliverable communicate findings more effe
 - Claude Code (IDE and code execution)
 - Claude Agent SDK (building agentic systems)
 - Claude Managed Agents (server-side agent execution and deployment)
-- OpenAI Agents SDK (cross-vendor multi-agent framework)
 - OpenTelemetry (observability)
 - Docker and containerization tools
 - CI/CD platforms (GitHub Actions, GitLab CI, etc.)
