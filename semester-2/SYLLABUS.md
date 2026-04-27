@@ -111,7 +111,7 @@ Each week consists of two class sessions:
 | [Week 1: Multi-Agent Architecture Patterns](weeks/unit-5.md#week-1-multi-agent-architecture-patterns) | SDK deep dive: concurrent execution, cost optimization, per-agent benchmarking |
 | [Week 2: Claude Managed Agents](weeks/unit-5.md#week-2-claude-managed-agents) | Server-side execution patterns and managed agent deployment compared to Claude SDK direct |
 | [Week 3: Claude Agent SDK](weeks/unit-5.md#week-3-claude-agent-sdk) | Client-side agent library (PyPI: claude-agent-sdk); Claude Managed Agents vs. Claude Agent SDK comparison |
-| [Week 4: Agent Evaluation and Benchmarking](weeks/unit-5.md#week-4-agent-evaluation-and-benchmarking) | Quantitative framework comparison: CPT, aMTTR, synthesis quality, ARR |
+| [Week 4: Agent Evaluation and Benchmarking](weeks/unit-5.md#week-4-agent-evaluation-and-benchmarking) | Quantitative framework comparison: CPT, aMTTR, synthesis quality, ARR; cross-agent MemPalace diaries, diary poisoning red-team, evals-as-code harness (`eval_harness.py`) |
 
 [→ View Full Unit 5 Content](weeks/unit-5.md)
 
@@ -126,7 +126,7 @@ Each week consists of two class sessions:
 | [Week 5: Adversarial AI Threat Landscape](weeks/unit-6.md#week-5-the-adversarial-ai-threat-landscape) | Advanced MITRE ATLAS: multi-stage attack chains, full PeaRL chain execution |
 | [Week 6: Red Teaming AI Agents](weeks/unit-6.md#week-6-red-teaming-ai-agents--offensive-techniques) | Sophisticated offensive techniques beyond Semester 1: supply chain attacks, model poisoning |
 | [Week 7: Defending AI Agents](weeks/unit-6.md#week-7-defending-ai-agents--guardrails-and-hardening) | Advanced defense: behavioral monitoring, anomaly detection, automated response |
-| [Week 8: AI Attacker vs. Defender Wargame](weeks/unit-6.md#week-8-ai-attacker-vs-defender-wargame) | Full autonomous wargame: attack and defend pipelines running simultaneously |
+| [Week 8: AI Attacker vs. Defender Wargame](weeks/unit-6.md#week-8-ai-attacker-vs-defender-wargame) | Full autonomous wargame: attack and defend pipelines running simultaneously; AI-assisted NIST IR drill (Meridian scenario) with HUMAN-REQUIRED gate annotations and 4-deliverable IR after-action package |
 
 [→ View Full Unit 6 Content](weeks/unit-6.md)
 
@@ -140,7 +140,7 @@ Each week consists of two class sessions:
 |------|-------|
 | [Week 9: AI Supply Chain Security](weeks/unit-7.md#week-9-ai-supply-chain-security) | Supply chain deep: SBOM signing, model provenance, dependency integrity verification |
 | [Week 10: Non-Human Identity Governance](weeks/unit-7.md#week-10-non-human-identity-nhi-governance) | NHI governance deep: per-agent credentials, rotation, audit, zero-trust for agents |
-| [Week 11: Observability and Cost Management](weeks/unit-7.md#week-11-observability-cost-management-and-operational-excellence) | OpenTelemetry, distributed tracing, cost dashboards, anomaly alerting |
+| [Week 11: Observability and Cost Management](weeks/unit-7.md#week-11-observability-cost-management-and-operational-excellence) | OpenTelemetry, distributed tracing, cost dashboards, anomaly alerting; decision audit log (`audit_log_turn()`) capturing tool call details and input hashes for post-incident reconstruction |
 | [Week 12: Deploying Agentic Systems](weeks/unit-7.md#week-12-deploying-agentic-security-systems) | container deployment with GHCR, CI/CD promotion pipeline, operational runbooks |
 
 [→ View Full Unit 7 Content](weeks/unit-7.md)

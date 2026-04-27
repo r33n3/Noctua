@@ -296,7 +296,66 @@ def main_with_error_handling():
         sys.exit(1)
 ```
 
-### Step 2: Security Hardening (20 min)
+### Step 2: Token Budget Guard (20 min)
+
+Add a `BudgetedAgentLoop` — a hard-halt token cap that prevents runaway agent loops from exhausting your API budget. This is a security control as much as a cost control: an unbounded agent loop is an availability risk.
+
+```python
+class BudgetedAgentLoop:
+    """Agent loop with a hard token cap. Halts safely on budget exhaustion."""
+
+    def __init__(self, max_tokens: int, client: Anthropic):
+        self.max_tokens = max_tokens
+        self.tokens_used = 0
+        self.client = client
+
+    def _tokens_remaining(self) -> int:
+        return self.max_tokens - self.tokens_used
+
+    def run(self, messages: list, system: str, model: str = "claude-haiku-4-5-20251001") -> dict:
+        """Run one agent turn. Returns result dict with status and tokens_used."""
+        if self._tokens_remaining() <= 0:
+            logger.warning("Token budget exhausted — hard halt.")
+            return {"status": "budget_exhausted", "tokens_used": self.tokens_used, "result": None}
+
+        response = self.client.messages.create(
+            model=model,
+            max_tokens=min(1024, self._tokens_remaining()),
+            system=system,
+            messages=messages
+        )
+        consumed = response.usage.input_tokens + response.usage.output_tokens
+        self.tokens_used += consumed
+        logger.info(json.dumps({
+            "event": "agent_turn",
+            "tokens_this_turn": consumed,
+            "tokens_total": self.tokens_used,
+            "budget": self.max_tokens,
+            "budget_pct": round(self.tokens_used / self.max_tokens * 100, 1)
+        }))
+
+        if self.tokens_used >= self.max_tokens:
+            logger.warning("Token budget reached after this turn — no further turns allowed.")
+
+        return {
+            "status": "ok",
+            "tokens_used": self.tokens_used,
+            "result": response.content[0].text
+        }
+```
+
+**Wire it into your sprint prototype:**
+```python
+# Replace direct client.messages.create calls with:
+budget_loop = BudgetedAgentLoop(max_tokens=50_000, client=client)
+result = budget_loop.run(messages=conversation, system=system_prompt)
+if result["status"] == "budget_exhausted":
+    fallback_response = analyze_with_rules(events)  # Degrade gracefully
+```
+
+**Why this is a security control:** An agent that can be prompted into an unbounded reasoning loop (e.g., via a crafted adversarial input) becomes a denial-of-service vector. The hard halt with graceful degradation closes that surface.
+
+### Step 2b: Security Hardening (20 min)
 
 Add input sanitization, tool access control, rate limiting:
 
@@ -507,6 +566,7 @@ Update your demo to show hardening:
    - Logging at all key steps
    - Rate limiting (if applicable)
    - Output validation before acting
+   - **Token Budget Guard** — `BudgetedAgentLoop` with hard halt on budget exhaustion and graceful degradation to rule-based fallback
 
 2. **Hardening Report** (1,000–1,500 words):
    - Summary of improvements made

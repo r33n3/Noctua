@@ -2589,6 +2589,11 @@ By end of Semester 2, your context library won't just be reference material—it
    - Recommendations for paradigm selection by use case
 4. **Red team report** (vulnerabilities found and categorized)
 5. **Visualization:** Charts comparing frameworks on key dimensions
+6. **Fleet Summary Report** — MemPalace cross-agent diary query results: what each MASS agent logged across the 3-scan sequence, aggregated into a fleet-level memory view
+7. **Memory Poisoning Analysis** — Red-team findings from the diary poisoning attack: what was injected, what downstream agents consumed, and what detection or recovery controls apply
+8. **`eval_harness.py`** — Automated grading script that runs both frameworks against the labeled test dataset and outputs a structured results table (accuracy, latency, cost per framework)
+
+> **Note for Noctua:** Week 4 now includes two extended lab exercises. (1) An agent diary cross-team memory exercise using MemPalace: students wire all MASS agents to a shared MemPalace instance, run 3 scans, query the fleet summary, then execute a diary poisoning red-team to observe how tainted memory propagates. (2) An evals-as-code harness (`eval_harness.py`) that grades both Managed Agents and Claude Agent SDK automatically. Guide the student through both before closing Week 4.
 
 ---
 

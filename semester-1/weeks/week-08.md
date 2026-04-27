@@ -398,6 +398,40 @@ Track citation fidelity manually: read 2-3 citations from each answer. Does the 
 
 ---
 
+## Production Memory Extension (Steps 8–11)
+
+Week 8 includes a production memory extension that goes beyond single-session RAG. After completing the core RAG pipeline (Parts 1–5 above), students continue with a structured memory architecture exercise using **MemPalace** — a hierarchical memory layer that organizes the security knowledge base into persistent, addressable memory structures.
+
+**Step 8 — Install MemPalace:**
+```bash
+pip install mempalace
+```
+
+**Step 9 — Mine the security knowledge base into Wing/Room/Drawer hierarchy:**
+Use MemPalace to structure your `security-kb/` documents into a three-level hierarchy:
+- **Wing** — broad domain (e.g., "access-control", "incident-response", "threat-intel")
+- **Room** — document or policy cluster within a Wing
+- **Drawer** — individual chunks (the same units your RAG pipeline already embedded)
+
+This mirrors how human memory organizes related material and enables address-based retrieval alongside semantic retrieval.
+
+**Step 10 — L0–L3 memory budget exercise:**
+Practice the four memory tiers to understand what lives where and why:
+
+| Layer | Scope | MemPalace mapping |
+|---|---|---|
+| **L0 — In-context** | Active prompt window | Current query + top retrieved chunks |
+| **L1 — Session** | Conversation state | Active Wing, current incident thread |
+| **L2 — Persistent** | Cross-session knowledge | Rooms and Drawers in your MemPalace |
+| **L3 — Cold archive** | Historical records | Archived incidents, rotated threat intel |
+
+For each tier: identify what your SOC assistant currently stores there, what the cost is (tokens, latency, storage), and what would break if that tier disappeared.
+
+**Step 11 — Build-vs-adopt decision:**
+Document your architectural decision: should your production security assistant build a custom RAG pipeline (as built in Parts 1–5), adopt a structured memory system like MemPalace, or combine both? Write a 300–500 word decision brief covering tradeoffs (freshness, addressability, embedding cost, operational complexity).
+
+---
+
 ## Deliverables
 
 > **Save to:** `~/noctua-labs/unit2/week8/` (RAG code and knowledge base), `context-library/patterns/` (add RAG pipeline pattern)
@@ -407,6 +441,7 @@ Track citation fidelity manually: read 2-3 citations from each answer. Does the 
 3. **Evaluation Report** — retrieval precision, citation fidelity, RAG vs. unaugmented comparison
 4. **Sample Q&A** — 10-15 questions with RAG answers and citations, quality evaluation per answer
 5. **Performance Metrics** — avg retrieval time, avg generation time, total latency per query
+6. **Memory Architecture Decision** — build-vs-adopt brief (300–500 words) covering RAG, MemPalace, and combined approaches; L0–L3 memory budget mapping for your SOC assistant
 
 ---
 

@@ -3389,6 +3389,43 @@ After the wargame, reflect on:
 
 ---
 
+---
+
+## AI-Assisted IR Drill — Capstone Exercise
+
+> **Note for Noctua:** Unit 6 now includes an AI-Assisted Incident Response Drill as a capstone exercise running the full NIST IR lifecycle. The scenario is **Meridian** — a simulated breach of a financial services firm's AI-powered fraud detection system. Walk the student through all five NIST phases in sequence: Detect → Analyze → Contain → Eradicate → Recover.
+
+### Exercise Overview
+
+**Scenario:** Meridian Financial — adversary has compromised the fraud-detection AI agent's tool credentials and is exfiltrating transaction data while suppressing alerts.
+
+**NIST IR Phases Covered:**
+
+1. **Detect** — Triage incoming alerts; build a Triage Report identifying confirmed vs. suspected indicators
+2. **Analyze** — Map the full attack chain from initial access to exfiltration; produce an Attack Chain Analysis
+3. **Contain** — Draft a Containment Runbook; every automated containment action must include a `HUMAN-REQUIRED:` annotation describing what a human must verify or approve before execution
+4. **Eradicate** — Enumerate root-cause controls: credential rotation, model re-validation, policy tightening
+5. **Recover** — Define restoration criteria and verification gates before returning the agent to production
+
+### HUMAN-REQUIRED Gate Policy
+
+Any runbook step that could disrupt production, revoke access, or modify agent behavior autonomously **must** be annotated:
+
+```
+HUMAN-REQUIRED: [action summary] — [what a human must verify before this executes]
+```
+
+This is a hard requirement on the Containment Runbook deliverable. Steps without this annotation on containment actions are incomplete.
+
+### IR Drill Deliverables
+
+1. **Triage Report** — Structured alert analysis: confirmed indicators, suspected indicators, severity classification, recommended escalation path
+2. **Attack Chain Analysis** — Full kill-chain reconstruction from first indicator to data exfiltration, mapped to MITRE ATLAS techniques
+3. **Containment Runbook** — Step-by-step containment playbook with `HUMAN-REQUIRED:` gate annotations on all automated actions
+4. **IR After-Action Report** — Post-incident review: timeline, what worked, what failed, control gaps, and recommendations for hardening the agent system
+
+---
+
 ## Unit 6 Complete — End-of-Unit Review
 
 > **Claude: Unit 6 Review Flow**

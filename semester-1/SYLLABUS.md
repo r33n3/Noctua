@@ -108,7 +108,7 @@ By the end of this course, students will be able to:
 | [Week 5: Model Context Protocol](weeks/week-05.md) | Introduction to MCP architecture and standardization |
 | [Week 6: Tool Design Patterns](weeks/week-06.md) | Building robust, secure tools |
 | [Week 7: Structured Outputs](weeks/week-07.md) | Machine-readable formats for reports |
-| [Week 8: RAG for Security](weeks/week-08.md) | Domain-specific knowledge systems |
+| [Week 8: RAG for Security](weeks/week-08.md) | Domain-specific knowledge systems; production memory architecture (MemPalace L0–L3) |
 
 [→ View Unit 2 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-2.md)
 
@@ -133,7 +133,7 @@ By the end of this course, students will be able to:
 |------|-------|
 | [Week 13: Claude Code Deep Dive](weeks/week-13.md) | Agentic stack mastery |
 | [Week 14: Rapid Prototyping Sprint I](weeks/week-14.md) | Build from concept to demo in 3 hours |
-| [Week 15: Rapid Prototyping Sprint II](weeks/week-15.md) | Hardening and production-ready quality |
+| [Week 15: Rapid Prototyping Sprint II](weeks/week-15.md) | Hardening and production-ready quality; token budget controls |
 | [Week 16: Midyear Presentations](weeks/week-16.md) | Demo and reflection |
 
 [→ View Unit 4 Week Files](weeks/) | [→ Archived Unit Content](weeks/archive/unit-4.md)
@@ -328,14 +328,14 @@ Weeks 14–16 (sprint weeks) may require additional time as you iterate on proto
 | 5 | Model Context Protocol | First MCP server |
 | 6 | Tool Design Patterns | Multi-tool MCP server |
 | 7 | Structured Outputs | Report generator |
-| 8 | RAG for Security | RAG security assistant |
+| 8 | RAG for Security + MemPalace memory architecture (L0–L3) | RAG security assistant + Memory Architecture Decision |
 | 9 | AIUC-1 Standard for AI Agents | AIUC-1 domain audit report |
 | 10 | OWASP Top 10 | Vulnerability assessment |
 | 11 | Bias and Fairness | Bias analysis report |
 | 12 | Privacy and AI Policy | AI Security Policy |
 | 13 | Agentic Stack Deep Dive | Multi-agent prototype |
 | 14 | Rapid Prototyping Sprint I | Working prototype + metrics |
-| 15 | Rapid Prototyping Sprint II | Hardened prototype |
+| 15 | Rapid Prototyping Sprint II (token budget controls) | Hardened prototype + Token Budget Guard |
 | 16 | Midyear Presentations | Final project presentation |
 
 ---

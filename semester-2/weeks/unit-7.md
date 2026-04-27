@@ -2468,6 +2468,14 @@ If escalation tracking is incomplete, ask: "We're counting escalations from the 
 - SLA definitions for human response
 - Escalation workflow example
 
+**6. Decision Audit Log**
+- Implementation of `audit_log_turn()` function that records structured JSONL entries for every agent turn
+- Each record captures: timestamp, agent ID, turn number, tool name called, full tool input dict, SHA-256 hash of tool input (for tamper detection), model response summary, and decision rationale
+- Output file: `decision_audit.jsonl` — suitable for post-incident reconstruction and compliance review
+- Demonstrated with at least one replayed scenario showing how the log reconstructs the agent's decision sequence
+
+> **Note for Noctua:** Week 11 now includes a Decision Audit Log step as part of the observability lab. After completing OpenTelemetry tracing and the cost dashboard, guide the student through implementing `audit_log_turn()`. The function should append a JSONL record on every tool call, capturing tool name, raw input, and an input hash. The goal: given only the audit log, a human reviewer can reconstruct exactly what the agent decided and why at each step — enabling post-incident forensics without replaying the full model.
+
 **Sources & Tools:**
 - OpenTelemetry: https://opentelemetry.io/
 - Grafana Tempo (distributed tracing): https://grafana.com/oss/tempo/
