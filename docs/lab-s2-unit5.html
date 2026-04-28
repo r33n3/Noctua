@@ -14,14 +14,14 @@
 
 <h1>Lab Guide: Unit 5 — Multi-Agent Orchestration for Security</h1>
 <p><strong>CSEC 602 | Weeks 1–4 | Semester 2</strong></p>
-<p>Build, compare, and evaluate multi-agent security systems using Claude Managed Agents and OpenAI Agents SDK. Produce a quantitative framework comparison for your midyear report.</p>
+<p>Build, compare, and evaluate multi-agent security systems using Claude Managed Agents and Claude Agent SDK. Produce a quantitative framework comparison for your midyear report.</p>
 
 <div class="callout callout-tip">
   <strong>Claude as your agent swarm designer:</strong> Use Claude to design your agent swarm before you build it. Describe the system you want, then ask: "What can go wrong when these agents interact?" You'll surface failure modes before they're bugs.
 </div>
 
 <div class="lab-progress">
-  <div class="lab-progress-header"><span>Unit 5 Lab Progress</span><span id="prog-text">0 / 22 steps complete</span></div>
+  <div class="lab-progress-header"><span>Unit 5 Lab Progress</span><span id="prog-text">0 / 28 steps complete</span></div>
   <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-fill"></div></div>
 </div>
 <hr>
@@ -1315,7 +1315,7 @@ claude mcp add mempalace -- python -m mempalace.mcp_server
 
 <div class="callout callout-tip">
   <strong>Your Comparison Doesn't Exist Publicly Yet — Post It</strong>
-  <p>The practitioner deciding between Claude Managed Agents and OpenAI Agents SDK for a production SOC deployment next month will be searching for exactly what you built. Open source the test suite, publish the results as a GitHub repo, and write a README summarizing your findings and recommendations.</p>
+  <p>The practitioner deciding between Claude Managed Agents and Claude Agent SDK for a production SOC deployment next month will be searching for exactly what you built. Open source the test suite, publish the results as a GitHub repo, and write a README summarizing your findings and recommendations.</p>
   <p>The security community — including hobbyists, junior engineers, and teams at organizations that can't afford consultants — makes better decisions when practitioners share real evaluations. You ran the experiment. Share the results. Be the resource you wished existed when you started this unit.</p>
 </div>
 
@@ -1340,10 +1340,10 @@ claude mcp add mempalace -- python -m mempalace.mcp_server
     {t:"Unit 2: Agent Tool Architecture",d:"MCP servers, tool design patterns, structured outputs, and RAG-based knowledge retrieval — the infrastructure layer of context engineering.",tags:["unit2","mcp","tool design","rag","knowledge retrieval"],url:"s1-unit2.html"},
     {t:"Unit 3: AI Security Governance",d:"AIUC-1 compliance framework, OWASP Agentic Top 10, bias auditing, data governance policy. Technical governance stack for production AI security systems.",tags:["unit3","aiuc1","owasp","governance","compliance"],url:"s1-unit3.html"},
     {t:"Unit 4: Rapid Prototyping",d:"Sprint methodology for AI tools: design doc, build, test, retro. Production hardening checklist.",tags:["unit4","prototyping","sprint"],url:"s1-unit4.html"},
-    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, OpenAI Agents SDK, A2A protocol, state machines, parallel vs sequential execution, Claude Managed Agents, agent memory with MemPalace diaries.",tags:["unit5","multi-agent","openai agents sdk","a2a","managed agents"],url:"s2-unit5.html"},
+    {t:"Unit 5: Multi-Agent Systems",d:"Orchestrator/worker patterns, Claude Managed Agents, Claude Agent SDK, A2A protocol, state machines, parallel vs sequential execution, agent memory with MemPalace diaries.",tags:["unit5","multi-agent","claude agent sdk","a2a","managed agents"],url:"s2-unit5.html"},
     {t:"Claude Managed Agents",d:"Anthropic-hosted agent harness. Agent (create once, versioned config) → Session (per run, provisioned container). agent_toolset_20260401 enables bash/file/web tools server-side. Stream-first pattern: open stream, then send user.message event.",tags:["managed agents","anthropic","session","agent","stream","hosted"],url:"s2-unit5.html#week-3"},
     {t:"MemPalace Agent Diaries",d:"Persistent cross-agent memory using MemPalace diary tools. AAAK compact entry format. Per-agent diary wings (static_analysis, red_team, tribunal_judge_1/2/3). Fleet summary across agent diaries. Memory poisoning as attack vector — diary injection changes future agent behavior without code changes.",tags:["mempalace","diary","memory","agent","aaak","poisoning","fleet"],url:"s2-unit5.html#week-4-agent-diary"},
-    {t:"OpenAI Agents SDK",d:"Runner-managed agent loop in your process. Agent + @function_tool decorator. handoffs=[] for delegation, .as_tool() for orchestration. Runner.run_sync() or run_streamed().",tags:["openai","agents sdk","runner","handoffs","function_tool"],url:"s2-unit5.html#week-2"},
+    {t:"OpenAI Agents SDK (stretch)",d:"Cross-provider client-side SDK exposure. Agent + @function_tool decorator. handoffs=[] for delegation, Runner.run_sync() or run_streamed(). Architecturally equivalent to Claude Agent SDK. Optional stretch in Week 3.",tags:["openai","agents sdk","stretch","cross-provider"],url:"s2-unit5.html#week-3"},
     {t:"Unit 6: Attack vs Defend",d:"Prompt injection, jailbreaking, tool poisoning, data exfiltration via agents, NeMo Guardrails defenses.",tags:["unit6","attack","defense","prompt injection","red team"],url:"s2-unit6.html"},
     {t:"Unit 7: Production Security",d:"NHI governance, SPIFFE/SPIRE, Allowance Profiles, network egress, dual-scan, Grafana Tempo, cost caps.",tags:["unit7","production","security","nhi","spiffe"],url:"s2-unit7.html"},
     {t:"Unit 8: Capstone",d:"End-to-end secure agentic system. Design, build, red-team, harden, present. Portfolio deliverable.",tags:["unit8","capstone","portfolio"],url:"s2-unit8.html"},
